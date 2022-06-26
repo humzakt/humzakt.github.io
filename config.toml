@@ -1,13 +1,13 @@
 baseURL = 'http://humza-k-t.github.io/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'Stuff By Humza'
  theme = "anatole"
 enableEmoji = true
 
 
 [params]
- title = "A Bot with a Blog"
- author = "HelmUpgradeBot"
- description = "Automatic blogging from a GitHub bot"
+ title = "Stuff By Humza"
+ author = "Humza Tareen"
+ description = "Blogs, Tips and other stuff"
   profilePicture = "images/pic.jpg"
    mainSections = ["blog"]
