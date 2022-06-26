@@ -1,13 +1,77 @@
-baseURL = 'http://humzakt.github.io/'
-languageCode = 'en-us'
-title = 'Stuff By Humza'
- theme = "anatole"
-enableEmoji = true
+baseurl = "http://humzakt.github.io"
+title = "Humza Tareen"
+theme = "hugo-coder"
+languagecode = "en"
+defaultcontentlanguage = "en"
 
+paginate = 20
+
+pygmentsstyle = "bw"
+pygmentscodefences = true
+pygmentscodefencesguesssyntax = true
+
+disqusShortname = "yourdiscussshortname"
 
 [params]
- title = "Stuff By Humza"
- author = "Humza Tareen"
- description = "Blogs, Tips and other stuff"
-  profilePicture = "images/pic.jpg"
-   mainSections = ["blog"]
+  author = "Humza Tareen"
+  info = "CyberSecurity Enthusiast | Web & Mobile Dev"
+  description = "Humza Tareen's personal website"
+  keywords = "blog,developer,personal"
+  avatarurl = "images/pic.jpg"
+  #gravatar = "john.doe@example.com"
+
+  favicon_32 = "/img/favicon-32x32.png"
+  favicon_16 = "/img/favicon-16x16.png"
+
+  since = 2019
+
+  enableTwemoji = true
+
+  colorScheme = "auto"
+  hidecolorschemetoggle = false
+
+[taxonomies]
+  category = "categories"
+  series = "series"
+  tag = "tags"
+  author = "authors"
+
+[params.googleTagManager]
+    id = "G-9TWYCEB2L9"
+
+# Social links
+[[params.social]]
+  name = "Linkedin"
+  icon = "fa fa-linkedin fa-2x"
+  weight = 1
+  url = "https://linkedin.com/in/humzakt/"
+
+[[params.social]]
+  name = "Github"
+  icon = "fa fa-github fa-2x"
+  weight = 2
+  url = "https://github.com/humzakt/"
+
+[[params.social]]
+  name = "Twitter"
+  icon = "fa fa-twitter fa-2x"
+  weight = 3
+  url = "https://twitter.com/humzakt/"
+
+# Menu links
+[[menu.main]]
+  name = "Blog"
+  weight = 1
+  url  = "posts/"
+[[menu.main]]
+  name = "About"
+  weight = 2
+  url = "about/"
+[[menu.main]]
+  name = "Projects"
+  weight = 3
+  url = "projects/"
+[[menu.main]]
+  name = "Contact"
+  weight = 4
+  url = "contact/"
