@@ -10,7 +10,7 @@ pygmentsstyle = "bw"
 pygmentscodefences = true
 pygmentscodefencesguesssyntax = true
 
-disqusShortname = "yourdiscussshortname"
+disqusShortname = ""
 
 [params]
   author = "Humza Tareen"
@@ -20,10 +20,10 @@ disqusShortname = "yourdiscussshortname"
   avatarurl = "images/pic.jpg"
 #  gravatar = "humzakhawartareen@gmail.com"
 
-  favicon_32 = "/img/favicon-32x32.png"
-  favicon_16 = "/img/favicon-16x16.png"
+  favicon_32 = "fa fa-twitter fa-2x"
+  favicon_16 = "fa fa-twitter fa-2x"
 
-  since = 2019
+  since = 2022
 
   enableTwemoji = true
 
@@ -34,7 +34,7 @@ disqusShortname = "yourdiscussshortname"
   category = "categories"
   series = "series"
   tag = "tags"
-  author = "authors"
+  author = "Humza Tareen"
 
 [params.googleTagManager]
     id = "G-9TWYCEB2L9"
