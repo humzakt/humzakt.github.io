@@ -1,6 +1,11 @@
 +++
-title = "Contact"
-slug = "contact"
-+++
+title= "Contact Me"
+description= "Humza Tareen's Contact Page"
 
-coming soon
+aliases= ["about-us", "about-humza", "contact"]
+tags = [
+    "shortcodes",
+    "privacy",
+]
+author= "Humza Tareen"
++++
