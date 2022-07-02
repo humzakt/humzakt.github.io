@@ -196,7 +196,7 @@ author= "Humza Tareen"
 
 ## Certifications
 
-> - [Linux Certifications](https://tryhackme.com/p/humzakt)
+> - Linux & Ethical Hacking Certifications [(TryHackMe)](https://tryhackme.com/p/humzakt)
 >
 > - Complete Flutter Certification by Angela Yu (Udemy)
 >
