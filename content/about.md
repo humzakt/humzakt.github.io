@@ -11,8 +11,6 @@ tags = [
 author= "Humza Tareen"
 +++
 
-> {{< tweet humzakt 1513556739345498120 >}}
-
 # Introduction
 
 > Results-driven Computer Science student from NUST. Passionate about developing user-friendly software

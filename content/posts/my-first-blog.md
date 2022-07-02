@@ -5,9 +5,7 @@ draft: false
 disableComments: true
 slug: "hello"
 
-tags: ["shortcodes", "privacy"]
+tags: ["first-blog", "hello-world"]
 ---
 
-Hello World!
-
-{{< tweet humzakt 1541001593868394496 >}}
+{{< tweet humzakt 1513556739345498120 >}}
