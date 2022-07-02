@@ -51,7 +51,7 @@ author= "Humza Tareen"
 >
 > 🇵🇰 (+92) 312 5472423
 >
-> [Website](https://www.humzakt.github.io)
+> [🌏 Visit My Website](https://www.humzakt.github.io)
 >
 > [Reach Me Out on LinkedIn](https://www.linkedin.com/in/humzakt/)
 >
