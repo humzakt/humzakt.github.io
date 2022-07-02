@@ -25,13 +25,13 @@ author= "Humza Tareen"
       - [Database Management](#database-management)
       - [Version Control](#version-control)
   - [Experience](#experience)
-      - [Mobile App Developer Intern &emsp;&emsp; (2020-2020)](#mobile-app-developer-intern--2020-2020)
-      - [JAVA Developer Intern &emsp;&emsp; (2019-2019)](#java-developer-intern--2019-2019)
+      - [Mobile App Developer Intern &emsp;&emsp; (January 2022- June 2022)](#mobile-app-developer-intern--january-2022--june-2022)
+      - [JAVA Developer Intern &emsp;&emsp; (June 2021-August 2019)](#java-developer-intern--june-2021-august-2019)
   - [Volunteer Work](#volunteer-work)
       - [Campus Ambassador &emsp;&emsp; (2021-Present)](#campus-ambassador--2021-present)
       - [Event Head &emsp;&emsp; (December, 2020)](#event-head--december-2020)
-      - [Learning Coach &emsp;&emsp; (June, 2020 - September, 2020)](#learning-coach--june-2020---september-2020)
-      - [Team Lead Head &emsp;&emsp; (May, 2020)](#team-lead-head--may-2020)
+      - [Learning Coach &emsp;&emsp; (June, 2021 - September, 2021)](#learning-coach--june-2021---september-2021)
+      - [Team Lead Head &emsp;&emsp; (May, 2021)](#team-lead-head--may-2021)
   - [Projects](#projects)
       - [Obesity Management System](#obesity-management-system)
       - [Flash Chat](#flash-chat)
@@ -125,13 +125,13 @@ author= "Humza Tareen"
 
 ## Experience
 
-#### Mobile App Developer Intern &emsp;&emsp; (2020-2020)
+#### Mobile App Developer Intern &emsp;&emsp; (January 2022- June 2022)
 
 > [NUST](https://nust.edu.pk)
 >
 > Developed a cross platform app based on Flutter for the Learning Management System(LMS) which will be used by students all over NUST on daily basis. It will be launched on Android and IOS platforms.
 
-#### JAVA Developer Intern &emsp;&emsp; (2019-2019)
+#### JAVA Developer Intern &emsp;&emsp; (June 2021-August 2019)
 
 > [NUST](https://nust.edu.pk)
 >
@@ -154,13 +154,13 @@ author= "Humza Tareen"
 >
 > Worked with a team of 40 and organized on of the largest tech events in Islamabad in collaboration with Association of Computing Machines (ACM) Nust and Google Developer Group (GDG) Islamabad. The event was attended by 700+ audience. I had to manage the team as well as coordinate with external and internal partners of the event.
 
-#### Learning Coach &emsp;&emsp; (June, 2020 - September, 2020)
+#### Learning Coach &emsp;&emsp; (June, 2021 - September, 2021)
 
 > [The Citizens Foundation](https://www.linkedin.com/company/the-citizens-foundation/)
 >
 > Teaching underprivileged kids from remote areas to prepare them for admissions in top universities. My main subject was English. After the completion of the program, the skills of students were greatly improved and they were able to easily understand and write english statements.
 
-#### Team Lead Head &emsp;&emsp; (May, 2020)
+#### Team Lead Head &emsp;&emsp; (May, 2021)
 
 > ###### Project Insaniyat
 >
