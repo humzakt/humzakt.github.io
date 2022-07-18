@@ -1,6 +1,6 @@
 ---
 title: "Cyber Daily Briefs (Daily Updated) "
-date: 2022-06-26T17:42:49+05:00
+date: 2022-07-03T17:42:49+05:00
 draft: false
 disableComments: true
 slug: "CyberBrief"
