@@ -81,16 +81,21 @@ connectsrc = ["'self'", "https://www.google-analytics.com"]
   icon = "fa fa-github fa-2x"
   weight = 2
   url = "https://github.com/humzakt/"
+  [[params.social]]
+  name = "Medium"
+  icon = "fa fa-medium fa-2x"
+  weight = 4
+  url = "https://medium.com/@humzakt/"
 
 [[params.social]]
   name = "Twitter"
   icon = "fa fa-twitter fa-2x"
-  weight = 3
+  weight = 5
   url = "https://twitter.com/humzakt/"
   [[params.social]]
   name = "Discord"
   icon = "fa fa-discord fa-2x"
-  weight = 4
+  weight = 6
   url = "https://discord.com/users/humzakt"
  
 
@@ -98,7 +103,7 @@ connectsrc = ["'self'", "https://www.google-analytics.com"]
 [[menu.main]]
   name = "Blog"
   weight = 1
-  url  = "posts/"
+  url  = "https://medium.com/@humzakt"
 [[menu.main]]
   name = "About"
   weight = 2
