@@ -25,11 +25,12 @@ author= "Humza Tareen"
       - [Database Management](#database-management)
       - [Version Control](#version-control)
   - [Experience](#experience)
+      - [Mobile App Developer (July 2022 – August 2022)](#mobile-app-developer-july-2022--august-2022)
       - [Mobile App Developer Intern (January 2022- June 2022)](#mobile-app-developer-intern-january-2022--june-2022)
       - [JAVA Developer Intern (June 2021-August 2019)](#java-developer-intern-june-2021-august-2019)
   - [Volunteer Work](#volunteer-work)
-      - [Campus Ambassador (2021-Present)](#campus-ambassador-2021-present)
-      - [Event Head DevFest'21 (December, 2020)](#event-head-devfest21-december-2020)
+      - [Campus Ambassador (2022-Present)](#campus-ambassador-2022-present)
+      - [Event Head DevFest'21 (December, 2021)](#event-head-devfest21-december-2021)
       - [Learning Coach (June, 2021 - September, 2021)](#learning-coach-june-2021---september-2021)
       - [Team Lead (May, 2021)](#team-lead-may-2021)
   - [Projects](#projects)
@@ -125,6 +126,12 @@ author= "Humza Tareen"
 
 ## Experience
 
+#### Mobile App Developer (July 2022 – August 2022)
+
+> Freelance
+>
+> Developed PalMy, a social app for people to interact based on their common location. The app used APIs for interactions and Firebase for realtime-chat. The support for multiple languages was also added. App is planned to be launched on App Stores soon.
+
 #### Mobile App Developer Intern (January 2022- June 2022)
 
 > [NUST](https://nust.edu.pk)
@@ -141,14 +148,14 @@ author= "Humza Tareen"
 
 ## Volunteer Work
 
-#### Campus Ambassador (2021-Present)
+#### Campus Ambassador (2022-Present)
 
 > [Royal Cyber](https://www.royalcyber.com/)
 >
 > Organized a seminar " Full Stack Ecommerce Development" which discussed different aspects of
 > Salesforce CRM. This event introduced Royal Cyber to the students of [SEECS , Nust](https://seecs.nust.edu.pk/)
 
-#### Event Head DevFest'21 (December, 2020)
+#### Event Head DevFest'21 (December, 2021)
 
 > ###### Google Developers Fest Islamabad
 >
