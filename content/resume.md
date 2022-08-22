@@ -25,9 +25,10 @@ author= "Humza Tareen"
       - [Database Management](#database-management)
       - [Version Control](#version-control)
   - [Experience](#experience)
+      - [Mobile App Developer Intern (August 2022- September 2022)](#mobile-app-developer-intern-august-2022--september-2022)
       - [Mobile App Developer (July 2022 – August 2022)](#mobile-app-developer-july-2022--august-2022)
-      - [Mobile App Developer Intern (January 2022- June 2022)](#mobile-app-developer-intern-january-2022--june-2022)
-      - [JAVA Developer Intern (June 2021-August 2019)](#java-developer-intern-june-2021-august-2019)
+      - [Mobile App Developer Intern (January 2022- March 2022)](#mobile-app-developer-intern-january-2022--march-2022)
+      - [JAVA Developer Intern (June 2021-August 2021)](#java-developer-intern-june-2021-august-2021)
   - [Volunteer Work](#volunteer-work)
       - [Campus Ambassador (2022-Present)](#campus-ambassador-2022-present)
       - [Event Head DevFest'21 (December, 2021)](#event-head-devfest21-december-2021)
@@ -126,19 +127,25 @@ author= "Humza Tareen"
 
 ## Experience
 
+#### Mobile App Developer Intern (August 2022- September 2022)
+
+> [NUST](https://nust.edu.pk)
+>
+> Developing an app with Flutter and Firebase for NIPS SECDIV International Islamabad Conference 2022 to facilitate attendees from around the world with realtime on ground updates and happenings in the 3-day event.
+
 #### Mobile App Developer (July 2022 – August 2022)
 
 > Freelance
 >
 > Developed PalMy, a social app for people to interact based on their common location. The app used APIs for interactions and Firebase for realtime-chat. The support for multiple languages was also added. App is planned to be launched on App Stores soon.
 
-#### Mobile App Developer Intern (January 2022- June 2022)
+#### Mobile App Developer Intern (January 2022- March 2022)
 
 > [NUST](https://nust.edu.pk)
 >
 > Developed a cross platform app based on Flutter for the Learning Management System(LMS) which will be used by students all over NUST on daily basis. It will be launched on Android and IOS platforms.
 
-#### JAVA Developer Intern (June 2021-August 2019)
+#### JAVA Developer Intern (June 2021-August 2021)
 
 > [NUST](https://nust.edu.pk)
 >
