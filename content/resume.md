@@ -137,7 +137,7 @@ author= "Humza Tareen"
 
 > Freelance
 >
-> Developed PalMy, a social app for people to interact based on their common location. The app used APIs for interactions and Firebase for realtime-chat. The support for multiple languages was also added. App is planned to be launched on App Stores soon.
+> Developed PalMy, a social app for people to interact based on their common location. The Flutter app used REST APIs for interactions and Firebase for realtime-chat along with multiple Google APIs. The support for multiple languages was also added. App is planned to be launched on App Stores soon.
 
 #### Mobile App Developer Intern (January 2022- March 2022)
 
