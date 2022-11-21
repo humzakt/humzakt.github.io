@@ -108,10 +108,10 @@ connectsrc = ["'self'", "https://www.google-analytics.com"]
   name = "About"
   weight = 2
   url = "about/"
-[[menu.main]]
-  name = "Resume"
-  weight = 3
-  url = "resume/#table-of-contents"
+# [[menu.main]]
+ # name = "Resume"
+ # weight = 3
+ # url = "resume/#table-of-contents"
   [[menu.main]]
   name = "Projects"
   weight = 3
