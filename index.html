@@ -158,11 +158,50 @@
     .hero {
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 60px;
       padding: 0 50px;
       max-width: var(--max-width);
       margin: 0 auto;
+    }
+    .hero-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .hero-image {
+      flex-shrink: 0;
+      position: relative;
+    }
+    .hero-image img {
+      width: 280px;
+      height: 280px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+      filter: grayscale(20%);
+      transition: var(--transition);
+    }
+    .hero-image img:hover {
+      filter: grayscale(0%);
+      transform: translate(-4px, -4px);
+    }
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 280px;
+      height: 280px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      z-index: -1;
+      transition: var(--transition);
+    }
+    .hero-image:hover::after {
+      top: 10px;
+      left: 10px;
     }
     .hero-intro {
       font-family: var(--font-mono);
@@ -314,13 +353,72 @@
     }
 
     /* ===== ABOUT ===== */
+    .about-layout {
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+    }
     .about-content {
-      margin-bottom: 40px;
+      flex: 1;
+      min-width: 0;
     }
     .about-text {
       max-width: 700px;
       font-size: 16px;
       line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .about-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .about-detail {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+    .about-detail i {
+      color: var(--accent);
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+    .about-photo {
+      flex-shrink: 0;
+      position: relative;
+    }
+    .about-photo img {
+      width: 240px;
+      height: 240px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+      filter: grayscale(20%);
+      transition: var(--transition);
+    }
+    .about-photo img:hover {
+      filter: grayscale(0%);
+      transform: translate(-4px, -4px);
+    }
+    .about-photo::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 240px;
+      height: 240px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      z-index: -1;
+      transition: var(--transition);
+    }
+    .about-photo:hover::after {
+      top: 10px;
+      left: 10px;
     }
     .value-cards {
       display: grid;
@@ -405,6 +503,8 @@
       margin-bottom: 4px;
     }
     .exp-role .company { color: var(--accent); }
+    .exp-role .company a { color: var(--accent); }
+    .exp-role .company a:hover { text-decoration: underline; }
     .exp-meta {
       font-family: var(--font-mono);
       font-size: 13px;
@@ -459,6 +559,8 @@
       margin-bottom: 4px;
     }
     .more-item-title .company { color: var(--accent); }
+    .more-item-title .company a { color: var(--accent); }
+    .more-item-title .company a:hover { text-decoration: underline; }
     .more-item-meta {
       font-family: var(--font-mono);
       font-size: 12px;
@@ -764,7 +866,17 @@
       .nav-links { display: none; }
       .hamburger { display: flex; }
       .mobile-menu { display: flex; }
-      .hero { padding: 0 25px; }
+      .hero { padding: 0 25px; flex-direction: column; text-align: center; gap: 40px; }
+      .hero-image { order: -1; margin-top: 80px; }
+      .hero-image img { width: 200px; height: 200px; }
+      .hero-image::after { width: 200px; height: 200px; }
+      .hero-buttons { justify-content: center; }
+      .trust-strip { justify-content: center; }
+      .about-layout { flex-direction: column; align-items: center; }
+      .about-photo { order: -1; }
+      .about-photo img { width: 200px; height: 200px; }
+      .about-photo::after { width: 200px; height: 200px; }
+      .about-details { justify-content: center; }
       .section { padding: 80px 25px; }
       .metrics { padding: 60px 25px; }
       .metrics-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -820,22 +932,27 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="hero">
-    <p class="hero-intro fade-in">Hi, my name is</p>
-    <h1 class="hero-name fade-in">Humza Tareen.</h1>
-    <h2 class="hero-tagline fade-in">I build AI systems that ship.</h2>
-    <p class="hero-description fade-in">
-      AI Software Engineer at Turing with end-to-end experience shipping AI systems &mdash; from enhancing foundational LLMs for Apple, Meta, and Bytedance to architecting internal agentic automations that scale entire development workflows.
-    </p>
-    <div class="hero-buttons fade-in">
-      <a href="#contact" class="btn-primary">Get in Touch</a>
-      <a href="#experience" class="btn-ghost">View My Work</a>
+    <div class="hero-content">
+      <p class="hero-intro fade-in">Hi, my name is</p>
+      <h1 class="hero-name fade-in">Humza Tareen.</h1>
+      <h2 class="hero-tagline fade-in">I build AI systems that ship.</h2>
+      <p class="hero-description fade-in">
+        AI Software Engineer at <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a> with end-to-end experience shipping AI systems &mdash; from enhancing foundational LLMs for Apple, Meta, and Bytedance to architecting internal agentic automations that scale entire development workflows.
+      </p>
+      <div class="hero-buttons fade-in">
+        <a href="#contact" class="btn-primary">Get in Touch</a>
+        <a href="#experience" class="btn-ghost">View My Work</a>
+      </div>
+      <div class="trust-strip fade-in">
+        <span class="trust-badge">Apple</span>
+        <span class="trust-badge">Meta</span>
+        <span class="trust-badge">Bytedance</span>
+        <span class="trust-badge">Fortune 500</span>
+        <span class="trust-badge">IEEE Published</span>
+      </div>
     </div>
-    <div class="trust-strip fade-in">
-      <span class="trust-badge">Apple</span>
-      <span class="trust-badge">Meta</span>
-      <span class="trust-badge">Bytedance</span>
-      <span class="trust-badge">Fortune 500</span>
-      <span class="trust-badge">IEEE Published</span>
+    <div class="hero-image fade-in">
+      <img src="https://avatars.githubusercontent.com/u/77065466?v=4" alt="Humza Tareen" width="280" height="280">
     </div>
   </section>
 
@@ -868,10 +985,29 @@
       <h2 class="section-title">About Me</h2>
       <span class="section-line"></span>
     </div>
-    <div class="about-content fade-in">
-      <p class="about-text">
-        AI Software Engineer at Turing with end-to-end experience shipping AI systems. Having progressed from enhancing foundational LLMs for world-class companies like Apple, Meta, and Bytedance to leading a globally-distributed team of 10+ across 3 continents, Humza now architects the internal agentic automations (Python, FastAPI, RAG, GCP) that scale Turing's development workflow. He is actively seeking new challenges and is eager to relocate globally for the right opportunity to build impactful, user-facing AI products.
-      </p>
+    <div class="about-layout fade-in">
+      <div class="about-content">
+        <p class="about-text">
+          AI Software Engineer at <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a> with end-to-end experience shipping AI systems. Having progressed from enhancing foundational LLMs for world-class companies like Apple, Meta, and Bytedance to leading a globally-distributed team of 10+ across 3 continents, Humza now architects the internal agentic automations (Python, FastAPI, RAG, GCP) that scale Turing's development workflow. He is actively seeking new challenges and is willing to relocate globally for the right opportunity to build impactful, user-facing AI products.
+        </p>
+        <div class="about-details">
+          <div class="about-detail">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Pakistan &middot; Willing to Relocate</span>
+          </div>
+          <div class="about-detail">
+            <i class="fa-solid fa-language"></i>
+            <span>English &mdash; Professional Proficiency</span>
+          </div>
+          <div class="about-detail">
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Open to Full-Time &amp; Consulting</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-photo">
+        <img src="https://avatars.githubusercontent.com/u/77065466?v=4" alt="Humza Tareen" width="240" height="240">
+      </div>
     </div>
     <div class="value-cards">
       <div class="value-card fade-in">
@@ -933,7 +1069,7 @@
     <!-- Turing -->
     <div class="exp-panel active" id="panel-turing" role="tabpanel">
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ Turing</span></h3>
+        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">July 2025 - Present &middot; Palo Alto, California, United States</p>
         <ul class="exp-bullets">
           <li>Engineered a suite of backend services using Python, FastAPI, RAG, PostgreSQL, Redis, and GCP to automate the model evaluation and data processing pipelines.</li>
@@ -942,7 +1078,7 @@
         </ul>
       </div>
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Pod Lead <span class="company">@ Turing</span></h3>
+        <h3 class="exp-role">Pod Lead <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">March 2025 - July 2025 &middot; Palo Alto, California, United States</p>
         <ul class="exp-bullets">
           <li>Promoted to lead, train, and manage a high-performing, globally-distributed team of 10+ AI Trainers across 3 continents.</li>
@@ -952,7 +1088,7 @@
         </ul>
       </div>
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">LLM Python Developer <span class="company">@ Turing</span></h3>
+        <h3 class="exp-role">LLM Python Developer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">September 2024 - March 2025 &middot; Palo Alto, California, United States</p>
         <ul class="exp-bullets">
           <li>Played a key role in developing and evaluating domain-specific Large Language Models for industry leaders including Apple, Meta, and Bytedance.</li>
@@ -966,7 +1102,7 @@
     <!-- Royal Cyber -->
     <div class="exp-panel" id="panel-royalcyber" role="tabpanel">
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ Royal Cyber Inc.</span></h3>
+        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
         <p class="exp-meta">January 2025 - July 2025 &middot; Naperville, Illinois, United States</p>
         <ul class="exp-bullets">
           <li>Fine-tuned open-source Llama models on AWS Bedrock to build domain-specific copilots for financial services clients, ensuring high accuracy on specialized queries.</li>
@@ -975,7 +1111,7 @@
         </ul>
       </div>
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Technical Trainee <span class="company">@ Royal Cyber Inc.</span></h3>
+        <h3 class="exp-role">Technical Trainee <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
         <p class="exp-meta">May 2024 - January 2025 &middot; Naperville, Illinois, United States</p>
         <ul class="exp-bullets">
           <li>Contributed to the development of RC AI OPS, an intelligent agent that significantly enhances the operational efficiency of APIs and backend systems by 50%.</li>
@@ -984,7 +1120,7 @@
         </ul>
       </div>
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Intern - Middleware Technologies <span class="company">@ Royal Cyber Inc.</span></h3>
+        <h3 class="exp-role">Intern - Middleware Technologies <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
         <p class="exp-meta">February 2024 - May 2024 &middot; Naperville, Illinois, United States</p>
         <ul class="exp-bullets">
           <li>Mulesoft Certified Developer - Level 1.</li>
@@ -996,7 +1132,7 @@
     <!-- NCAI -->
     <div class="exp-panel" id="panel-ncai" role="tabpanel">
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Deep Learning Researcher <span class="company">@ National Center of Artificial Intelligence (NCAI), Pakistan</span></h3>
+        <h3 class="exp-role">Deep Learning Researcher <span class="company">@ <a href="https://ncai.pk" target="_blank" rel="noopener noreferrer">National Center of Artificial Intelligence (NCAI), Pakistan</a></span></h3>
         <p class="exp-meta">September 2023 - May 2024 &middot; Islamabad, Pakistan</p>
         <ul class="exp-bullets">
           <li>Authored an IEEE conference publication on my award-winning (1st Prize, SEECS Open House) explainable AI (XAI) system for glaucoma detection, which achieved state-of-the-art results using Python and PyTorch.</li>
@@ -1007,7 +1143,7 @@
     <!-- InLights -->
     <div class="exp-panel" id="panel-inlights" role="tabpanel">
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ InLights</span></h3>
+        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.inlights.com" target="_blank" rel="noopener noreferrer">InLights</a></span></h3>
         <p class="exp-meta">October 2023 - February 2024 &middot; Islamabad, Pakistan</p>
         <ul class="exp-bullets">
           <li>Led the Priority Signals team and revamped core processes for efficient development and deployment.</li>
@@ -1015,7 +1151,7 @@
         </ul>
       </div>
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Mobile Application Developer <span class="company">@ InLights</span></h3>
+        <h3 class="exp-role">Mobile Application Developer <span class="company">@ <a href="https://www.inlights.com" target="_blank" rel="noopener noreferrer">InLights</a></span></h3>
         <p class="exp-meta">October 2022 - August 2023 &middot; Islamabad, Pakistan</p>
         <ul class="exp-bullets">
           <li>Engineered a mobile application prototype aimed at optimizing emergency vehicle response times.</li>
@@ -1027,7 +1163,7 @@
     <!-- Bitnine -->
     <div class="exp-panel" id="panel-bitnine" role="tabpanel">
       <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ Bitnine Global Inc.</span></h3>
+        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://bitnine.net" target="_blank" rel="noopener noreferrer">Bitnine Global Inc.</a></span></h3>
         <p class="exp-meta">March 2023 - August 2023 &middot; Vancouver, British Columbia, Canada</p>
         <ul class="exp-bullets">
           <li>Contributed to the internal workings of Apache AGE to enhance its integration with PostgreSQL.</li>
@@ -1042,17 +1178,17 @@
     <!-- More -->
     <div class="exp-panel" id="panel-more" role="tabpanel">
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Software Engineer Intern <span class="company">@ WALEE</span></h4>
+        <h4 class="more-item-title">Software Engineer Intern <span class="company">@ <a href="https://www.walee.pk" target="_blank" rel="noopener noreferrer">WALEE</a></span></h4>
         <p class="more-item-meta">August 2022 - October 2023 &middot; Islamabad, Pakistan</p>
         <p class="more-item-desc">MEAN Stack development, Twitter data analysis, code reviews, scalable solution design, boosting system performance.</p>
       </div>
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Core Contributor <span class="company">@ Unify</span></h4>
+        <h4 class="more-item-title">Core Contributor <span class="company">@ <a href="https://unify.ai" target="_blank" rel="noopener noreferrer">Unify</a></span></h4>
         <p class="more-item-meta">July 2023 - August 2023 &middot; Remote</p>
         <p class="more-item-desc">Open source Unify-Ivy Project. Implemented and tested functions for scipy integration with multiple backends.</p>
       </div>
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Mobile Application Developer <span class="company">@ Sparkleo Technologies</span></h4>
+        <h4 class="more-item-title">Mobile Application Developer <span class="company">@ <a href="https://sparkleo.io" target="_blank" rel="noopener noreferrer">Sparkleo Technologies</a></span></h4>
         <p class="more-item-meta">January 2023 - April 2023 &middot; Islamabad, Pakistan</p>
         <p class="more-item-desc">Built Flutter apps for Bluetooth Low Energy with Firebase. Developed sparkleo.io using Next.js, performed SEO to rank on first page of Google, completed CI/CD pipeline configuration.</p>
       </div>
@@ -1062,22 +1198,22 @@
         <p class="more-item-desc">Developed PalMy, a social app for people to interact based on common location. Flutter app using REST APIs, Firebase realtime-chat, Google APIs, and multi-language support.</p>
       </div>
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Junior Application Developer <span class="company">@ Shader Bytes</span></h4>
+        <h4 class="more-item-title">Junior Application Developer <span class="company">@ Shader Bytes</span></h4><!-- No public website available -->
         <p class="more-item-meta">August 2022 - October 2022 &middot; Remote</p>
         <p class="more-item-desc">Mobile app debugging, backend services setup, and updating foreign clients regarding projects.</p>
       </div>
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Mobile App Developer <span class="company">@ NUST</span></h4>
+        <h4 class="more-item-title">Mobile App Developer <span class="company">@ <a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer">NUST</a></span></h4>
         <p class="more-item-meta">August 2022 - September 2022</p>
         <p class="more-item-desc">Created a guest navigation app for international visitors to check programme schedules and navigate venues. Built with Flutter and Firebase, published to Google Play Store.</p>
       </div>
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Application Developer <span class="company">@ NUST</span></h4>
+        <h4 class="more-item-title">Application Developer <span class="company">@ <a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer">NUST</a></span></h4>
         <p class="more-item-meta">January 2022 - April 2022</p>
         <p class="more-item-desc">Developed a cross-platform Flutter app for the Learning Management System (LMS) used by students across NUST.</p>
       </div>
       <div class="more-item fade-in">
-        <h4 class="more-item-title">Java Internship <span class="company">@ NUST</span></h4>
+        <h4 class="more-item-title">Java Internship <span class="company">@ <a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer">NUST</a></span></h4>
         <p class="more-item-meta">July 2021 - August 2021</p>
         <p class="more-item-desc">Developed a Binary Search Tree game in Java and JavaFX to improve analytical skills of young kids.</p>
       </div>
@@ -1218,7 +1354,7 @@
     <div class="edu-card fade-in">
       <div class="edu-icon"><i class="fa-solid fa-graduation-cap"></i></div>
       <div class="edu-info">
-        <h3>National University of Sciences and Technology (NUST)</h3>
+        <h3><a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer" style="color: var(--heading);">National University of Sciences and Technology (NUST)</a></h3>
         <p>Bachelor's degree, Computer Science</p>
         <p class="edu-dates">October 2020 - June 2024</p>
       </div>
@@ -1257,7 +1393,7 @@
     <p class="contact-number fade-in">06. What's Next?</p>
     <h2 class="contact-heading fade-in">Get In Touch</h2>
     <p class="contact-text fade-in">
-      Currently based in Saudi Arabia. Available for full-time roles and consulting engagements worldwide. Open to global relocation for the right opportunity.
+      Currently based in Pakistan. Available for full-time roles and consulting engagements worldwide. Willing to relocate globally for the right opportunity.
     </p>
     <div class="contact-cards fade-in">
       <a href="mailto:humzakhawartareen@gmail.com" class="contact-card">
