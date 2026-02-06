@@ -1026,6 +1026,20 @@ img { max-width: 100%; }
   transition: var(--transition);
 }
 .footer-links a:hover { color: var(--accent); transform: translateY(-3px); }
+.footer-nav {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.footer-nav a {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer-nav a:hover { color: var(--accent); }
 .footer-text {
   font-family: var(--font-mono);
   font-size: 12px;
