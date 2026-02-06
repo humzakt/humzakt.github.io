@@ -561,17 +561,11 @@ img { max-width: 100%; }
 /* ===== EXPERIENCE TABS ===== */
 .exp-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0;
   border-bottom: 2px solid #233554;
   margin-bottom: 30px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent) transparent;
 }
-.exp-tabs::-webkit-scrollbar { height: 4px; }
-.exp-tabs::-webkit-scrollbar-track { background: transparent; }
-.exp-tabs::-webkit-scrollbar-thumb { background: rgba(100,255,218,0.3); border-radius: 2px; }
 .exp-tab {
   font-family: var(--font-mono);
   font-size: 13px;
