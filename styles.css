@@ -887,7 +887,7 @@ img { max-width: 100%; }
   border-radius: 4px;
 }
 .cert-card svg.cert-logo {
-  width: 32px;
+  width: 36px;
   height: 28px;
   flex-shrink: 0;
 }
