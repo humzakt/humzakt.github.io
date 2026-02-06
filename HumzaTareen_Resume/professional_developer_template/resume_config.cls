@@ -38,7 +38,7 @@
 \RequirePackage{relsize}
 \usepackage{graphicx}
 
-\setmainfont{TeX Gyre Heros} % adjust font style here
+\setmainfont{Helvetica Neue} % adjust font style here
 
 % Additional fonts can be found at the following URL: https://www.draketo.de/anderes/latex-fonts.html#org9f59ea3
 
