@@ -3,8 +3,7 @@
 %-------------------------------------------------------------------------------
 
 \documentclass[letterpaper]{resume_config}
-\usepackage{graphicx} 
-\usepackage{tikz} % REQUIRED for the round image
+
 %-------------------------------------------------------------------------------
 %                Resume Starts Here
 %-------------------------------------------------------------------------------
@@ -12,35 +11,22 @@
 \begin{document}
 
 %-------------------------------------------------------------------------------
-%                Header (Image + Info)
+%                Header (No Image)
 %-------------------------------------------------------------------------------
 
-\noindent
-\begin{minipage}[c]{0.18\textwidth}
-    \begin{tikzpicture}
-        % 1. Create a circular clipping path (radius 1.1cm = 2.2cm diameter)
-        \clip (-0.1,-0.01) circle (1.1cm);
-        % 2. Place the image centered. 
-        % Adjust 'width' to be slightly larger than the diameter (2.2cm) to ensure coverage
-        \node at (0,0) {\includegraphics[width=2.5cm]{photo.jpg}}; 
-    \end{tikzpicture}
-\end{minipage}%
-\hfill
-\begin{minipage}[c]{0.80\textwidth}
-    \centering
+\begin{center}
     {\Huge \textbf{Humza Tareen}} \\ \vspace{4pt}
     Islamabad, Pakistan $\cdot$ Open to Global Relocation \\
     +92 3125472423 $\cdot$ humzakhawartareen@gmail.com \\
     \href{https://linkedin.com/in/humzakt}{linkedin.com/in/humzakt} $\cdot$ \href{https://github.com/humzakt}{github.com/humzakt} $\cdot$ \href{https://humzakt.github.io}{humzakt.github.io}
-\end{minipage}
+\end{center}
 
-\vspace{5pt} % Adjust spacing after header
+\vspace{-2pt}
 
 %-------------------------------------------------------------------------------
 %                Work Experience
 %-------------------------------------------------------------------------------
 
-\vspace{-5pt}
 \section{Work Experience}
 
 \WorkExperience
@@ -49,9 +35,10 @@
     {Sep 2024 -- Present} % beginning and end of employment
     {Palo Alto, CA (Remote)} % city, country of employment
     {
-        \item \textbf{Software Engineer (Jul 2025 -- Present):} Architecting AI-powered backend services using Python, FastAPI, RAG, PostgreSQL, Redis, and GCP that automate end-to-end model evaluation and data processing pipelines, directly accelerating the development lifecycle for AI training teams.
-        \item \textbf{Pod Lead (Mar -- Jul 2025):} Led a globally distributed team of 10+ AI engineers across 3 continents. Owned execution of high-priority GenAI benchmarking projects for key APAC clients under accelerated timelines. Built quality control frameworks for fully remote async workflows.
-        \item \textbf{LLM Python Developer (Sep 2024 -- Mar 2025):} Developed and evaluated domain-specific LLMs for \textbf{Apple, Meta, and Bytedance}. Specialized in RLHF, advanced reasoning, and Code Interpreter development. Engineered evaluation suites that improved final product accuracy and safety.
+        \item \textbf{Software Engineer (Jul 2025 -- Present):} Architected scalable, AI-powered agentic automations using Python, FastAPI, and RAG on GCP. Accelerated development by integrating AI-native tools (Cursor, OpenAI Codex, Claude Code) to optimize microservices.
+        \item Engineered backend services with PostgreSQL and Redis to automate end-to-end model evaluation pipelines.
+        \item \textbf{Pod Lead (Mar -- Jul 2025):} Led a globally distributed team of 10+ AI Trainers, implementing Agile methodologies to manage high-priority GenAI benchmarking and QA for APAC clients.
+        \item \textbf{LLM Python Developer (Sep 2024 -- Mar 2025):} Developed domain-specific LLMs (RLHF, reasoning) for \textbf{Apple, Meta, and Bytedance}; enhanced capabilities via custom Code Interpreter development.
     }
 
 
@@ -61,10 +48,10 @@
     {Feb 2024 -- Jul 2025} % beginning and end of employment
     {Naperville, IL (Remote)} % city, country of employment
     {
-        \item Co-developed \textbf{`RC AI OPS'}, a GenAI agent (Python, LangChain) that automated error resolution and improved backend operational efficiency by \textbf{50\%}.
-        \item Fine-tuned open-source Llama models on AWS Bedrock to build domain-specific copilots for financial services clients.
-        \item Architected and delivered GenAI integrations for \textbf{Fortune 500 clients} using Mulesoft, Salesforce, and Apache Kafka.
-        \item Built AI agents for Middleware Technologies (IBM ACE/MQ, Salesforce OMS), reducing admin and developer workloads by \textbf{60\%}. Earned \textbf{Mulesoft Certified Developer -- Level 1}.
+        \item Co-developed \textbf{`RC AI OPS'} GenAI agent using LangChain, automating error resolution to improve backend efficiency by \textbf{50\%}.
+        \item Fine-tuned Llama models on AWS Bedrock to power domain-specific copilots for financial services clients.
+        \item Architected GenAI integrations for \textbf{Fortune 500 clients} using Mulesoft, IBM \& Salesforce iPaaS platforms.
+        \item Built AI agents for Middleware Technologies (IBM ACE/MQ, Salesforce OMS), reducing developer workloads by \textbf{60\%}.
     }
 
 
@@ -74,24 +61,13 @@
     {Sep 2023 -- May 2024} % beginning and end of employment
     {Islamabad, Pakistan} % city, country of employment
     {
-        \item Authored a peer-reviewed IEEE EMBC paper on ``OptiGuard,'' an award-winning (\textbf{1st Prize, SEECS Open House}) explainable AI system for glaucoma detection achieving state-of-the-art results.
-        \item Designed a two-stage deep learning pipeline: Detectron2 + Mask R-CNN for optic disc/cup segmentation, and EfficientNet-B0 with Grad-CAM explainability (Python, PyTorch).
-    }
-
-\WorkExperience
-    {Software Engineer} % job title
-    {Bitnine Global Inc.} % company name
-    {Mar 2023 -- Aug 2023} % beginning and end of employment
-    {Vancouver, BC, Canada} % city, country of employment
-    {
-        \item Contributed to Apache AGE core, developing `agtype' datatype methods to enhance PostgreSQL graph database integration.
-        \item Built an enterprise automation framework for cross-platform testing (Windows, CentOS, Red Hat, Debian, Ubuntu).
+        \item Authored the award-winning (\textbf{1st Prize, SEECS Open House}) ``OptiGuard'' system for glaucoma detection (see Publications).
+        \item Developed novel CAD systems using PyTorch and Hugging Face, achieving state-of-the-art performance in medical imaging.
     }
 
 %-------------------------------------------------------------------------------
 %                Publications
 %-------------------------------------------------------------------------------
-
 
 \section{Publications}
 
@@ -101,14 +77,13 @@
 \vspace{-2pt}
 \begin{itemize} \itemsep -1pt
     \item \small \textbf{Authors:} Syed Safi Ullah Shah, Muhammad Huzaifa, \textbf{Humza Tareen}, Muhammad Naseer Bajwa
-    \item Developed a state-of-the-art CAD system for glaucoma detection using Retinal Fundus Images, with robust generalization across SMDG-19 and G1020 datasets.
-    \item Integrated Explainable AI (Grad-CAM, attention mechanisms, LLM-generated reports) to provide visual and quantitative transparency for clinical professionals.
+    \item Developed a state-of-the-art CAD system for glaucoma detection using Retinal Fundus Images (RFI), achieving robust generalization on SMDG-19 and G1020 datasets.
+    \item Integrated Explainable AI (XAI) features to provide visual and quantitative transparency, enhancing trust for clinical professionals.
 \end{itemize}
 
 %-------------------------------------------------------------------------------
 %                Education
 %-------------------------------------------------------------------------------
-
 
 \section{Education}
 
@@ -122,16 +97,14 @@
 %                Skills
 %-------------------------------------------------------------------------------
 
-
 \section{Skills \& Certifications}
 
 \SkillList{
-    \SkillItem{AI/ML}{: Agentic Systems, RAG, RLHF, LLM Fine-Tuning, Model Evaluation, PyTorch, LangChain, Detectron2}
-    \SkillItem{Backend \& Databases}{: Python, FastAPI, PostgreSQL, Redis, Node.js, MEAN Stack, Java, REST APIs}
-    \SkillItem{Cloud \& DevOps}{: GCP, AWS (Bedrock), Docker, CI/CD, Apache Kafka, Mulesoft, Salesforce}
-    \SkillItem{Mobile \& Web}{: Flutter, Firebase, Next.js, JavaScript, HTML/CSS}
+    \SkillItem{AI/ML}{: Agentic Systems, RAG, RLHF, GenAI, Model Evaluation, PyTorch, LangChain}
+    \SkillItem{Backend \& Databases}{: Python, FastAPI, Microservices, PostgreSQL, Redis, SQL, APIs}
+    \SkillItem{Cloud \& DevOps}{: Google Cloud Platform (GCP), Docker, CI/CD, Kong Gateway}
 }
 \vspace{2pt}
-\noindent \textbf{Certifications:} Mulesoft Certified Developer L1, Microsoft Power Platform Fundamentals (PL-900), Applied Data Science Specialization, Machine Learning with Python
+\noindent \textbf{Certifications:} IBM Certified Cloud Automation Sales Consultant, Microsoft Power Platform Fundamentals PL-900
 
 \end{document}
