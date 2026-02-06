@@ -266,6 +266,34 @@
       }
     }
 
+    /* Resume dropdown */
+    .resume-dropdown { position: relative; display: inline-block; }
+    .resume-toggle {
+      cursor: pointer; background: none; border: none; font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #64ffda; font-size: 14px; font-weight: 500; padding: 0;
+    }
+    .resume-toggle .fa-chevron-down { font-size: 10px; transition: transform 0.2s ease; }
+    .resume-dropdown.open .resume-toggle .fa-chevron-down { transform: rotate(180deg); }
+    .resume-dropdown-menu {
+      position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(8px);
+      min-width: 160px; background: #112240; border: 1px solid #233554; border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; visibility: hidden;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s; z-index: 1000; overflow: hidden;
+    }
+    .resume-dropdown.open .resume-dropdown-menu {
+      opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+    }
+    .resume-dropdown-menu a {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      color: #8892b0; font-size: 14px; font-family: 'JetBrains Mono', monospace;
+      text-decoration: none; transition: background 0.15s ease, color 0.15s ease; min-height: 44px;
+    }
+    .resume-dropdown-menu a:hover, .resume-dropdown-menu a:focus-visible {
+      background: rgba(100,255,218,0.08); color: #64ffda;
+    }
+    .resume-dropdown-menu a i { width: 16px; text-align: center; font-size: 14px; }
+
     /* Responsive */
     @media (max-width: 600px) {
       .paths {
@@ -330,9 +358,51 @@
       <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
       <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
       <span class="divider"></span>
-      <a href="HumzaTareen_Resume.pdf" download="HumzaTareen_Resume.pdf" class="landing-resume" aria-label="Download Resume"><i class="fa-solid fa-download" aria-hidden="true"></i> Resume</a>
+      <div class="resume-dropdown">
+        <button class="resume-toggle landing-resume" aria-expanded="false" aria-haspopup="true" aria-label="Resume options">
+          <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="resume-dropdown-menu" role="menu">
+          <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" role="menuitem"><i class="fa-solid fa-eye" aria-hidden="true"></i> View</a>
+          <a href="HumzaTareen_Resume.pdf" download="HumzaTareen_Resume.pdf" role="menuitem"><i class="fa-solid fa-download" aria-hidden="true"></i> Download</a>
+        </div>
+      </div>
     </div>
   </div>
+
+  <script>
+    document.querySelectorAll('.resume-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = btn.closest('.resume-dropdown');
+        const isOpen = dropdown.classList.contains('open');
+        document.querySelectorAll('.resume-dropdown.open').forEach(d => {
+          d.classList.remove('open');
+          d.querySelector('.resume-toggle').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          dropdown.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.resume-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        d.querySelector('.resume-toggle').setAttribute('aria-expanded', 'false');
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.resume-dropdown.open').forEach(d => {
+          d.classList.remove('open');
+          const toggle = d.querySelector('.resume-toggle');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.focus();
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>

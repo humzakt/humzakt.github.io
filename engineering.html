@@ -33,7 +33,15 @@
       <a href="#experience" role="listitem"><span class="nav-number" aria-hidden="true">02.</span>Experience</a>
       <a href="#skills" role="listitem"><span class="nav-number" aria-hidden="true">03.</span>Skills</a>
       <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Education</a>
-      <a href="HumzaTareen_Resume.pdf" download="HumzaTareen_Resume.pdf" class="nav-cta" role="listitem"><i class="fa-solid fa-download" aria-hidden="true" style="margin-right: 5px;"></i>Resume</a>
+      <div class="resume-dropdown" role="listitem">
+        <button class="nav-cta resume-toggle" aria-expanded="false" aria-haspopup="true">
+          <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="resume-dropdown-menu" role="menu">
+          <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" role="menuitem"><i class="fa-solid fa-eye" aria-hidden="true"></i> View</a>
+          <a href="HumzaTareen_Resume.pdf" download="HumzaTareen_Resume.pdf" role="menuitem"><i class="fa-solid fa-download" aria-hidden="true"></i> Download</a>
+        </div>
+      </div>
       <a href="#contact" class="nav-cta" role="listitem">Hire Me</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu" type="button">
@@ -54,7 +62,15 @@
     <a href="#experience" class="mobile-link"><span class="nav-number" aria-hidden="true">02.</span> Experience</a>
     <a href="#skills" class="mobile-link"><span class="nav-number" aria-hidden="true">03.</span> Skills</a>
     <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Education</a>
-    <a href="HumzaTareen_Resume.pdf" download="HumzaTareen_Resume.pdf" class="nav-cta mobile-link"><i class="fa-solid fa-download" aria-hidden="true" style="margin-right: 5px;"></i>Resume</a>
+    <div class="resume-dropdown">
+      <button class="nav-cta mobile-link resume-toggle" aria-expanded="false" aria-haspopup="true">
+        <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+      </button>
+      <div class="resume-dropdown-menu" role="menu">
+        <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" role="menuitem"><i class="fa-solid fa-eye" aria-hidden="true"></i> View</a>
+        <a href="HumzaTareen_Resume.pdf" download="HumzaTareen_Resume.pdf" role="menuitem"><i class="fa-solid fa-download" aria-hidden="true"></i> Download</a>
+      </div>
+    </div>
     <a href="#contact" class="nav-cta mobile-link">Hire Me</a>
   </nav>
 
@@ -668,6 +684,40 @@
 
     // --- Dynamic copyright year ---
     document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+    // --- Resume dropdown ---
+    document.querySelectorAll('.resume-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = btn.closest('.resume-dropdown');
+        const isOpen = dropdown.classList.contains('open');
+        // Close all dropdowns first
+        document.querySelectorAll('.resume-dropdown.open').forEach(d => {
+          d.classList.remove('open');
+          d.querySelector('.resume-toggle').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          dropdown.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.resume-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        d.querySelector('.resume-toggle').setAttribute('aria-expanded', 'false');
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.resume-dropdown.open').forEach(d => {
+          d.classList.remove('open');
+          const toggle = d.querySelector('.resume-toggle');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.focus();
+        });
+      }
+    });
   </script>
 
 </body>
