@@ -414,7 +414,7 @@
     </div>
     <p class="footer-text">
       Designed &amp; Built by Humza Tareen with <a href="https://cursor.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Cursor</a><br>
-      &copy; 2026 Humza Tareen
+      &copy; <span id="copyright-year"></span> Humza Tareen
     </p>
   </footer>
 
@@ -575,6 +575,9 @@
     }, { threshold: 0.2, rootMargin: '-70px 0px -50% 0px' });
 
     sections.forEach(section => sectionObserver.observe(section));
+
+    // --- Dynamic copyright year ---
+    document.getElementById('copyright-year').textContent = new Date().getFullYear();
   </script>
 
 </body>
