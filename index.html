@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Humza Tareen — AI Engineer | Shipping AI Solutions with Enterprise Clients</title>
-  <meta name="description" content="AI Engineer who ships production AI systems directly with enterprise clients. Delivered GenAI solutions for Apple, Meta, Bytedance, and Fortune 500. Led cross-continental teams. IBM &amp; Mulesoft certified. Open to GTM, Forward Deployed, and Solutions Engineering roles.">
+  <title>Humza Tareen — AI Engineer &amp; Researcher</title>
+  <meta name="description" content="AI Engineer who ships solutions with enterprise clients. IEEE-published researcher. Explore my engineering portfolio or research profile.">
   <meta name="author" content="Humza Tareen">
-  <meta property="og:title" content="Humza Tareen — AI Engineer &amp; Solutions Architect">
-  <meta property="og:description" content="Shipped AI solutions for Apple, Meta, Bytedance, and Fortune 500 clients. Built GenAI agents that cut workloads by 60%. IBM &amp; Mulesoft certified. Open to new opportunities.">
+  <meta property="og:title" content="Humza Tareen — AI Engineer &amp; Researcher">
+  <meta property="og:description" content="Shipped AI systems for Apple, Meta, Bytedance, Fortune 500. IEEE EMBC published. Explore my work.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://humzakt.github.io">
   <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
@@ -15,647 +15,324 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0a192f;
+      color: #8892b0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(100,255,218,0.2); color: #e6f1ff; }
+
+    /* Subtle animated background */
+    .bg-glow {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 800px;
+      height: 800px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(100,255,218,0.03) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .landing {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      max-width: 720px;
+      width: 100%;
+    }
+
+    .landing-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 3px solid #64ffda;
+      margin-bottom: 28px;
+      opacity: 0;
+      transform: scale(0.9);
+      animation: fadeScale 0.6s ease forwards;
+    }
+
+    .landing-name {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 700;
+      color: #e6f1ff;
+      margin-bottom: 8px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s ease 0.15s forwards;
+    }
+
+    .landing-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(14px, 2.5vw, 16px);
+      color: #64ffda;
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s ease 0.3s forwards;
+    }
+
+    .landing-text {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #8892b0;
+      margin-bottom: 48px;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s ease 0.4s forwards;
+    }
+
+    /* Path cards */
+    .paths {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.6s ease 0.5s forwards;
+    }
+
+    .path-card {
+      background: rgba(17, 34, 64, 0.85);
+      border: 1px solid rgba(100, 255, 218, 0.1);
+      border-radius: 12px;
+      padding: 36px 28px;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.645,0.045,0.355,1);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .path-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #64ffda, transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .path-card:hover {
+      border-color: rgba(100, 255, 218, 0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px -15px rgba(2, 12, 27, 0.7);
+    }
+    .path-card:hover::before {
+      opacity: 1;
+    }
+
+    .path-icon {
+      font-size: 36px;
+      color: #64ffda;
+      margin-bottom: 18px;
+    }
+
+    .path-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e6f1ff;
+      margin-bottom: 10px;
+    }
+
+    .path-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #8892b0;
+      margin-bottom: 20px;
+    }
+
+    .path-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .path-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #64ffda;
+      background: rgba(100,255,218,0.08);
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(100,255,218,0.12);
+    }
+
+    .path-arrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #64ffda;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      transition: all 0.3s ease;
+    }
+    .path-card:hover .path-arrow {
+      gap: 10px;
+    }
+
+    /* Bottom links */
+    .landing-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.65s forwards;
+    }
+    .landing-links a {
+      font-size: 18px;
+      color: #8892b0;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .landing-links a:hover {
+      color: #64ffda;
+      transform: translateY(-2px);
+    }
+    .landing-links .divider {
+      width: 1px;
+      height: 20px;
+      background: #233554;
+    }
+    .landing-resume {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px !important;
+      color: #ccd6f6 !important;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .landing-resume:hover {
+      color: #64ffda !important;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeScale {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Focus */
+    *:focus-visible {
+      outline: 2px solid #64ffda;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .landing-photo, .landing-name, .landing-sub, .landing-text, .paths, .landing-links {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .paths {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .path-card {
+        padding: 28px 20px;
+      }
+      .landing-text {
+        margin-bottom: 36px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <a href="#hero" class="skip-link">Skip to main content</a>
+  <div class="bg-glow"></div>
 
-  <!-- ===== NAVIGATION ===== -->
-  <nav class="nav" id="nav" aria-label="Main navigation">
-    <a href="index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
-    <div class="nav-links" role="list">
-      <div class="page-switcher">
-        <a href="index.html" class="active-page">Engineering</a>
-        <a href="research.html">Research</a>
-      </div>
-      <a href="#about" role="listitem"><span class="nav-number" aria-hidden="true">01.</span>About</a>
-      <a href="#experience" role="listitem"><span class="nav-number" aria-hidden="true">02.</span>Experience</a>
-      <a href="#skills" role="listitem"><span class="nav-number" aria-hidden="true">03.</span>Skills</a>
-      <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Education</a>
-      <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" class="nav-cta" role="listitem"><i class="fa-solid fa-download" aria-hidden="true" style="margin-right: 5px;"></i>Resume</a>
-      <a href="#contact" class="nav-cta" role="listitem">Hire Me</a>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu" type="button">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </nav>
-
-  <!-- Mobile Menu -->
-  <div class="mobile-overlay" id="mobileOverlay"></div>
-  <nav class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Mobile navigation" aria-hidden="true">
-    <div class="mobile-page-switcher">
-      <a href="index.html" class="active-page">Engineering</a>
-      <a href="research.html">Research</a>
-    </div>
-    <a href="#about" class="mobile-link"><span class="nav-number" aria-hidden="true">01.</span> About</a>
-    <a href="#experience" class="mobile-link"><span class="nav-number" aria-hidden="true">02.</span> Experience</a>
-    <a href="#skills" class="mobile-link"><span class="nav-number" aria-hidden="true">03.</span> Skills</a>
-    <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Education</a>
-    <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" class="nav-cta mobile-link"><i class="fa-solid fa-download" aria-hidden="true" style="margin-right: 5px;"></i>Resume</a>
-    <a href="#contact" class="nav-cta mobile-link">Hire Me</a>
-  </nav>
-
-  <!-- ===== HERO ===== -->
-  <main>
-  <section class="hero" id="hero">
-    <div class="hero-content">
-      <p class="hero-intro fade-in">Hi, my name is</p>
-      <h1 class="hero-name fade-in">Humza Tareen.</h1>
-      <h2 class="hero-tagline fade-in">I ship AI solutions with customers.</h2>
-      <p class="hero-description fade-in">
-        I sit at the intersection of <strong style="color: var(--text-light);">engineering, enterprise delivery, and client success</strong>. I've fine-tuned LLMs for <strong style="color: var(--text-light);">Apple, Meta, and Bytedance</strong>, delivered GenAI integrations for <strong style="color: var(--text-light);">Fortune 500 clients</strong> across Mulesoft, Salesforce, and Kafka, and built agentic automations that cut client workloads by 60%. Currently providing services to <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a> and actively open to new challenges.
-      </p>
-      <div class="hero-buttons fade-in">
-        <a href="mailto:humzakhawartareen@gmail.com" class="btn-primary">Let's Talk</a>
-        <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" class="btn-ghost"><i class="fa-solid fa-download" aria-hidden="true" style="margin-right: 6px;"></i>Download Resume</a>
-      </div>
-      <div class="trust-strip fade-in">
-        <span class="trust-badge">Apple</span>
-        <span class="trust-badge">Meta</span>
-        <span class="trust-badge">Bytedance</span>
-        <span class="trust-badge">Fortune 500 Clients</span>
-        <span class="trust-badge">IBM Certified</span>
-        <span class="trust-badge">Mulesoft Certified</span>
-        <span class="trust-badge">IEEE Published</span>
-      </div>
-    </div>
-    <div class="hero-image fade-in">
-      <img src="suit-blue-bg.jpg" alt="Humza Tareen — AI Software Engineer" width="280" height="280">
-    </div>
-  </section>
-
-  <!-- ===== METRICS ===== -->
-  <section class="metrics" id="metrics">
-    <div class="metrics-inner">
-      <div class="metric-card fade-in">
-        <div class="metric-number" data-target="60" data-suffix="%">0</div>
-        <div class="metric-label">Client Workload Reduction Delivered</div>
-      </div>
-      <div class="metric-card fade-in">
-        <div class="metric-number" data-target="50" data-suffix="%">0</div>
-        <div class="metric-label">Efficiency Gains for Fortune 500 Clients</div>
-      </div>
-      <div class="metric-card fade-in">
-        <div class="metric-number" data-target="10" data-suffix="+">0</div>
-        <div class="metric-label">Engineers Led Across 3 Continents</div>
-      </div>
-      <div class="metric-card fade-in">
-        <div class="metric-number" data-target="3" data-suffix="+">0</div>
-        <div class="metric-label">Enterprise Platforms Integrated (Mulesoft, Salesforce, Kafka)</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== ABOUT ===== -->
-  <section class="section" id="about">
-    <div class="section-header fade-in">
-      <span class="section-number">01.</span>
-      <h2 class="section-title">About Me</h2>
-      <span class="section-line" aria-hidden="true"></span>
-    </div>
-    <div class="about-layout fade-in">
-      <div class="about-content">
-        <p class="about-text">
-          I'm an AI engineer who thrives where <strong style="color: var(--text-light);">technology meets customer outcomes</strong>. My career has taken me from training LLMs for the world's most demanding tech companies (Apple, Meta, Bytedance), to leading a globally-distributed team of 10+ across 3 continents, to delivering GenAI solutions directly to Fortune 500 enterprise clients across Mulesoft, Salesforce, and Kafka.
-        </p>
-        <p class="about-text">
-          What sets me apart is that I don't just write code &mdash; I <strong style="color: var(--text-light);">ship solutions that solve real client problems</strong>. I've scoped and delivered POCs for financial services clients, built AI agents that reduced customer workloads by 60%, architected integrations across enterprise iPaaS platforms, and hold IBM Cloud Sales and Mulesoft certifications that let me speak both the technical and business language. I also bring peer-reviewed research published at IEEE EMBC.
-        </p>
-        <div class="about-details">
-          <div class="about-detail">
-            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-            <span>Pakistan &middot; Ready to Relocate Globally</span>
-          </div>
-          <div class="about-detail">
-            <i class="fa-solid fa-language" aria-hidden="true"></i>
-            <span>English &mdash; Professional Proficiency</span>
-          </div>
-          <div class="about-detail">
-            <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
-            <span>Open to GTM, FDE, Solutions &amp; Full-Time Roles</span>
-          </div>
-        </div>
-      </div>
-      <div class="about-photo">
-        <img src="suit-blue-bg.jpg" alt="Humza Tareen" width="240" height="240">
-      </div>
-    </div>
-    <div class="value-cards">
-      <div class="value-card fade-in">
-        <div class="value-card-icon"><i class="fa-solid fa-handshake" aria-hidden="true"></i></div>
-        <h3 class="value-card-title">Client &amp; Enterprise Delivery</h3>
-        <div class="value-card-items">
-          <span class="pill">Fortune 500 Clients</span>
-          <span class="pill">POC Delivery</span>
-          <span class="pill">Technical Presales</span>
-          <span class="pill">Enterprise Integrations</span>
-          <span class="pill">IBM Sales Certified</span>
-          <span class="pill">Mulesoft Certified</span>
-        </div>
-      </div>
-      <div class="value-card fade-in">
-        <div class="value-card-icon"><i class="fa-solid fa-brain" aria-hidden="true"></i></div>
-        <h3 class="value-card-title">AI &amp; LLM Systems</h3>
-        <div class="value-card-items">
-          <span class="pill">Agentic Systems</span>
-          <span class="pill">RAG</span>
-          <span class="pill">RLHF</span>
-          <span class="pill">LLM Fine-Tuning</span>
-          <span class="pill">PyTorch</span>
-          <span class="pill">LangChain</span>
-        </div>
-      </div>
-      <div class="value-card fade-in">
-        <div class="value-card-icon"><i class="fa-solid fa-server" aria-hidden="true"></i></div>
-        <h3 class="value-card-title">Full-Stack Engineering</h3>
-        <div class="value-card-items">
-          <span class="pill">Python / FastAPI</span>
-          <span class="pill">PostgreSQL / Redis</span>
-          <span class="pill">GCP / AWS</span>
-          <span class="pill">Docker / CI/CD</span>
-          <span class="pill">Kafka / Mulesoft</span>
-          <span class="pill">Salesforce</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== EXPERIENCE ===== -->
-  <section class="section" id="experience">
-    <div class="section-header fade-in">
-      <span class="section-number">02.</span>
-      <h2 class="section-title">Where I've Shipped</h2>
-      <span class="section-line" aria-hidden="true"></span>
-    </div>
-
-    <div class="exp-tabs fade-in" role="tablist" aria-label="Company tabs">
-      <button class="exp-tab active" data-tab="turing" role="tab" aria-selected="true" aria-controls="panel-turing" id="tab-turing">Turing</button>
-      <button class="exp-tab" data-tab="royalcyber" role="tab" aria-selected="false" aria-controls="panel-royalcyber" id="tab-royalcyber">Royal Cyber</button>
-      <button class="exp-tab" data-tab="ncai" role="tab" aria-selected="false" aria-controls="panel-ncai" id="tab-ncai">NCAI</button>
-      <button class="exp-tab" data-tab="inlights" role="tab" aria-selected="false" aria-controls="panel-inlights" id="tab-inlights">InLights</button>
-      <button class="exp-tab" data-tab="bitnine" role="tab" aria-selected="false" aria-controls="panel-bitnine" id="tab-bitnine">Bitnine</button>
-      <button class="exp-tab" data-tab="more" role="tab" aria-selected="false" aria-controls="panel-more" id="tab-more">More</button>
-    </div>
-
-    <!-- Turing -->
-    <div class="exp-panel active" id="panel-turing" role="tabpanel" aria-labelledby="tab-turing">
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
-        <p class="exp-meta">July 2025 &mdash; Present &middot; Palo Alto, CA (Remote)</p>
-        <ul class="exp-bullets">
-          <li>Architecting a suite of AI-powered backend services (Python, FastAPI, RAG, PostgreSQL, Redis, GCP) that automate the entire model evaluation and data processing pipeline &mdash; directly accelerating the development lifecycle for AI training teams.</li>
-          <li>Designing and shipping production solutions that enable faster iteration and higher-quality output across the organization's internal tooling.</li>
-          <li>Collaborating cross-functionally to identify bottlenecks and deliver robust, scalable systems now integral to core internal operations.</li>
-        </ul>
-      </div>
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Pod Lead <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
-        <p class="exp-meta">March 2025 &mdash; July 2025 &middot; Palo Alto, CA (Remote)</p>
-        <ul class="exp-bullets">
-          <li>Promoted to lead a globally-distributed team of 10+ AI engineers across 3 continents, serving as the primary point of accountability for client delivery.</li>
-          <li>Owned end-to-end execution of high-priority projects for key APAC clients, delivering model evaluations under accelerated timelines while managing client expectations and escalations.</li>
-          <li>Built quality control frameworks and onboarding workflows that maintained consistently high output and client satisfaction in a fully remote, async environment.</li>
-        </ul>
-      </div>
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">LLM Python Developer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
-        <p class="exp-meta">September 2024 &mdash; March 2025 &middot; Palo Alto, CA (Remote)</p>
-        <ul class="exp-bullets">
-          <li>Developed and evaluated domain-specific LLMs for Apple, Meta, and Bytedance &mdash; directly contributing to the quality of models used by billions.</li>
-          <li>Specialized in RLHF, advanced reasoning tasks, and Code Interpreter development to enhance model capabilities.</li>
-          <li>Engineered complex evaluation suites to identify and resolve subtle model failures, improving final product accuracy and safety.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Royal Cyber -->
-    <div class="exp-panel" id="panel-royalcyber" role="tabpanel" aria-labelledby="tab-royalcyber">
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
-        <p class="exp-meta">January 2025 &mdash; July 2025 &middot; Naperville, IL</p>
-        <ul class="exp-bullets">
-          <li>Scoped, built, and delivered GenAI solutions directly for Fortune 500 enterprise clients using Mulesoft, Salesforce, and Apache Kafka &mdash; owning the full lifecycle from technical discovery to production deployment.</li>
-          <li>Fine-tuned Llama models on AWS Bedrock to build domain-specific copilots for financial services clients, translating complex client requirements into high-accuracy AI products.</li>
-          <li>Co-built 'RC AI OPS', a GenAI agent (Python, LangChain) deployed to client environments that automated error resolution and improved backend operational efficiency by 50%.</li>
-        </ul>
-      </div>
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Technical Trainee <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
-        <p class="exp-meta">May 2024 &mdash; January 2025 &middot; Naperville, IL</p>
-        <ul class="exp-bullets">
-          <li>Built and deployed AI agents for enterprise Middleware Technologies (Mulesoft, IBM ACE, IBM MQ, ODM, Salesforce OMS), reducing client admin and developer workloads by 60%.</li>
-          <li>Delivered AI agents accessible through Teams, Slack, and web &mdash; ensuring seamless adoption across customer organizations using Copilot Studio, Chainlit, LangChain, and Bot Framework.</li>
-        </ul>
-      </div>
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Intern &mdash; Middleware <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
-        <p class="exp-meta">February 2024 &mdash; May 2024 &middot; Naperville, IL</p>
-        <ul class="exp-bullets">
-          <li>Earned Mulesoft Certified Developer (Level 1). Delivered multiple customer-facing POCs integrating Mule 4 APIs with Kafka, Flink, Slack, Gmail, Salesforce, and ServiceNow.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- NCAI -->
-    <div class="exp-panel" id="panel-ncai" role="tabpanel" aria-labelledby="tab-ncai">
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Deep Learning Researcher <span class="company">@ <a href="https://ncai.pk" target="_blank" rel="noopener noreferrer">NCAI, Pakistan</a></span></h3>
-        <p class="exp-meta">September 2023 &mdash; May 2024 &middot; Islamabad, Pakistan</p>
-        <ul class="exp-bullets">
-          <li>Authored a peer-reviewed paper published at <a href="https://ieeexplore.ieee.org/document/11253669" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">IEEE EMBC 2025</a> on an award-winning explainable AI system for glaucoma detection (1st Prize, SEECS Open House).</li>
-          <li>Achieved state-of-the-art results using attention-driven CNNs, Grad-CAM explainability, and a custom segmentation pipeline (Python, PyTorch, Detectron2).</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- InLights -->
-    <div class="exp-panel" id="panel-inlights" role="tabpanel" aria-labelledby="tab-inlights">
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.inlights.com" target="_blank" rel="noopener noreferrer">InLights</a></span></h3>
-        <p class="exp-meta">October 2023 &mdash; February 2024 &middot; Islamabad, Pakistan</p>
-        <ul class="exp-bullets">
-          <li>Led the Priority Signals team, owning the product roadmap and revamping core development and deployment processes.</li>
-          <li>Directed the internship and MVP development program, translating client requirements into working prototypes that resulted in multiple industrial contract wins.</li>
-        </ul>
-      </div>
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Mobile Application Developer <span class="company">@ <a href="https://www.inlights.com" target="_blank" rel="noopener noreferrer">InLights</a></span></h3>
-        <p class="exp-meta">October 2022 &mdash; August 2023 &middot; Islamabad, Pakistan</p>
-        <ul class="exp-bullets">
-          <li>Engineered a mobile application prototype for optimizing emergency vehicle response times using Flutter &amp; Firebase.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Bitnine -->
-    <div class="exp-panel" id="panel-bitnine" role="tabpanel" aria-labelledby="tab-bitnine">
-      <div class="exp-entry fade-in">
-        <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://bitnine.net" target="_blank" rel="noopener noreferrer">Bitnine Global Inc.</a></span></h3>
-        <p class="exp-meta">March 2023 &mdash; August 2023 &middot; Vancouver, BC, Canada</p>
-        <ul class="exp-bullets">
-          <li>Contributed to Apache AGE's core, developing methods for the 'agtype' datatype to enhance PostgreSQL graph database integration.</li>
-          <li>Built an internal enterprise automation framework for cross-platform testing (Windows, CentOS, Red Hat, Debian, Ubuntu).</li>
-          <li>Authored technical blogs driving the company's developer marketing and online presence.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- More -->
-    <div class="exp-panel" id="panel-more" role="tabpanel" aria-labelledby="tab-more">
-      <div class="more-item fade-in">
-        <h4 class="more-item-title">Software Engineer Intern <span class="company">@ <a href="https://www.walee.pk" target="_blank" rel="noopener noreferrer">WALEE</a></span></h4>
-        <p class="more-item-meta">Aug 2022 &mdash; Oct 2023 &middot; Islamabad</p>
-        <p class="more-item-desc">Full-stack MEAN Stack development. Built scalable features, performed Twitter data analysis, led code reviews.</p>
-      </div>
-      <div class="more-item fade-in">
-        <h4 class="more-item-title">Core Contributor <span class="company">@ <a href="https://unify.ai" target="_blank" rel="noopener noreferrer">Unify</a></span></h4>
-        <p class="more-item-meta">Jul &mdash; Aug 2023 &middot; Remote</p>
-        <p class="more-item-desc">Open source contributor to Unify-Ivy. Implemented and tested scipy integration functions across multiple backends.</p>
-      </div>
-      <div class="more-item fade-in">
-        <h4 class="more-item-title">Mobile Developer <span class="company">@ <a href="https://sparkleo.io" target="_blank" rel="noopener noreferrer">Sparkleo Technologies</a></span></h4>
-        <p class="more-item-meta">Jan &mdash; Apr 2023 &middot; Islamabad</p>
-        <p class="more-item-desc">Built Flutter/BLE apps with Firebase. Developed sparkleo.io (Next.js), achieved first-page Google ranking via SEO, configured CI/CD pipeline.</p>
-      </div>
-      <div class="more-item fade-in">
-        <h4 class="more-item-title">Mobile App Developer <span class="company">@ Freelance</span></h4>
-        <p class="more-item-meta">Jun &mdash; Nov 2022 &middot; Remote</p>
-        <p class="more-item-desc">Built PalMy, a location-based social app (Flutter, REST APIs, Firebase realtime chat, Google APIs, multi-language support).</p>
-      </div>
-      <div class="more-item fade-in">
-        <h4 class="more-item-title">Additional Roles <span class="company">@ <a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer">NUST</a> &amp; Others</span></h4>
-        <p class="more-item-meta">2021 &mdash; 2022</p>
-        <p class="more-item-desc">Multiple mobile &amp; application development roles at NUST (LMS app, guest navigation app). Junior developer at Shader Bytes. Campus Ambassador at SayabiDevs and Royal Cyber.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== SKILLS ===== -->
-  <section class="section" id="skills">
-    <div class="section-header fade-in">
-      <span class="section-number">03.</span>
-      <h2 class="section-title">Technical Toolkit</h2>
-      <span class="section-line" aria-hidden="true"></span>
-    </div>
-    <div class="skills-grid">
-      <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-plug" aria-hidden="true"></i> Enterprise Integration &amp; iPaaS</h3>
-        <div class="skill-pills">
-          <span class="skill-pill">Mulesoft</span>
-          <span class="skill-pill">Salesforce</span>
-          <span class="skill-pill">Apache Kafka</span>
-          <span class="skill-pill">Apache Flink</span>
-          <span class="skill-pill">IBM ACE / MQ</span>
-          <span class="skill-pill">ServiceNow</span>
-          <span class="skill-pill">REST APIs</span>
-        </div>
-      </div>
-      <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI &amp; LLM Systems</h3>
-        <div class="skill-pills">
-          <span class="skill-pill">Agentic Systems</span>
-          <span class="skill-pill">RAG</span>
-          <span class="skill-pill">RLHF</span>
-          <span class="skill-pill">LLM Fine-Tuning</span>
-          <span class="skill-pill">Model Evaluation</span>
-          <span class="skill-pill">PyTorch</span>
-          <span class="skill-pill">LangChain</span>
-          <span class="skill-pill">Copilot Studio</span>
-        </div>
-      </div>
-      <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-server" aria-hidden="true"></i> Backend &amp; Infrastructure</h3>
-        <div class="skill-pills">
-          <span class="skill-pill">Python</span>
-          <span class="skill-pill">FastAPI</span>
-          <span class="skill-pill">PostgreSQL</span>
-          <span class="skill-pill">Redis</span>
-          <span class="skill-pill">Node.js</span>
-          <span class="skill-pill">GCP</span>
-          <span class="skill-pill">AWS (Bedrock)</span>
-          <span class="skill-pill">Docker</span>
-        </div>
-      </div>
-      <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-handshake" aria-hidden="true"></i> GTM &amp; Client Delivery</h3>
-        <div class="skill-pills">
-          <span class="skill-pill">POC Scoping &amp; Delivery</span>
-          <span class="skill-pill">Technical Presales</span>
-          <span class="skill-pill">Client Onboarding</span>
-          <span class="skill-pill">Cross-Functional Collaboration</span>
-          <span class="skill-pill">Agile / Scrum</span>
-          <span class="skill-pill">Remote Team Leadership</span>
-        </div>
-      </div>
-      <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile &amp; Web</h3>
-        <div class="skill-pills">
-          <span class="skill-pill">Flutter</span>
-          <span class="skill-pill">Firebase</span>
-          <span class="skill-pill">Next.js</span>
-          <span class="skill-pill">JavaScript</span>
-          <span class="skill-pill">HTML/CSS</span>
-        </div>
-      </div>
-      <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-toolbox" aria-hidden="true"></i> Tools &amp; Practices</h3>
-        <div class="skill-pills">
-          <span class="skill-pill">Git</span>
-          <span class="skill-pill">Bot Framework</span>
-          <span class="skill-pill">Chainlit</span>
-          <span class="skill-pill">CI/CD</span>
-          <span class="skill-pill">Code Review</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== EDUCATION & CERTIFICATIONS ===== -->
-  <section class="section" id="education">
-    <div class="section-header fade-in">
-      <span class="section-number">04.</span>
-      <h2 class="section-title">Education &amp; Credentials</h2>
-      <span class="section-line" aria-hidden="true"></span>
-    </div>
-
-    <div class="edu-card fade-in">
-      <div class="edu-icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></div>
-      <div class="edu-info">
-        <h3><a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer">National University of Sciences &amp; Technology (NUST)</a></h3>
-        <p>Bachelor of Science, Computer Science</p>
-        <p class="edu-dates">October 2020 &mdash; June 2024</p>
-      </div>
-    </div>
-
-    <div class="cert-grid">
-      <div class="cert-card fade-in">
-        <i class="fa-brands fa-ibm" aria-hidden="true"></i>
-        <span>IBM Certified Cloud Automation Sales Consultant</span>
-      </div>
-      <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
-        <span>Mulesoft Certified Developer &mdash; Level 1</span>
-      </div>
-      <div class="cert-card fade-in">
-        <i class="fa-brands fa-microsoft" aria-hidden="true"></i>
-        <span>Microsoft Certified: Power Platform Fundamentals (PL-900)</span>
-      </div>
-      <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
-        <span>Applied Data Science Specialization</span>
-      </div>
-      <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
-        <span>Machine Learning with Python</span>
-      </div>
-      <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
-        <span>Introduction to Cloud Computing</span>
-      </div>
-      <div class="cert-card fade-in">
-        <i class="fa-solid fa-award" aria-hidden="true"></i>
-        <span>IEEE EMBC 2025 Publication &mdash; <a href="https://ieeexplore.ieee.org/document/11253669" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">OptiGuard</a></span>
-      </div>
-    </div>
-  </section>
-
-  </main>
-
-  <!-- ===== CONTACT ===== -->
-  <section class="contact-section" id="contact">
-    <p class="contact-number fade-in">05. What's Next?</p>
-    <h2 class="contact-heading fade-in">Let's Ship Something Together</h2>
-    <p class="contact-text fade-in">
-      I'm actively looking for my next challenge &mdash; whether that's a GTM Engineering, Forward Deployed, Solutions Engineering, or full-stack AI role at a company that ships directly with customers. I bring the rare combination of deep AI engineering chops and hands-on enterprise client delivery experience. Based in Pakistan and ready to relocate worldwide.
+  <div class="landing">
+    <img src="suit-blue-bg.jpg" alt="Humza Tareen" class="landing-photo" width="120" height="120">
+    <h1 class="landing-name">Humza Tareen</h1>
+    <p class="landing-sub">AI Engineer &amp; Researcher</p>
+    <p class="landing-text">
+      I ship AI solutions with enterprise clients and publish peer-reviewed research. Choose the profile that best fits what you're looking for.
     </p>
-    <div class="contact-cards fade-in">
-      <a href="mailto:humzakhawartareen@gmail.com" class="contact-card" aria-label="Email humzakhawartareen@gmail.com">
-        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-        <span>humzakhawartareen@gmail.com</span>
+
+    <div class="paths">
+      <a href="engineering.html" class="path-card" aria-label="View Engineering Portfolio">
+        <div class="path-icon"><i class="fa-solid fa-rocket" aria-hidden="true"></i></div>
+        <div class="path-title">Engineering</div>
+        <p class="path-desc">
+          For recruiters, hiring managers, and teams looking for a GTM Engineer, Forward Deployed Engineer, or AI Solutions Architect.
+        </p>
+        <div class="path-tags">
+          <span class="path-tag">Fortune 500</span>
+          <span class="path-tag">GenAI Agents</span>
+          <span class="path-tag">Enterprise iPaaS</span>
+          <span class="path-tag">Client Delivery</span>
+        </div>
+        <span class="path-arrow">Explore <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
       </a>
-      <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" class="contact-card" aria-label="LinkedIn profile">
-        <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
-        <span>linkedin.com/in/humzakt</span>
-      </a>
-      <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" class="contact-card" aria-label="GitHub profile">
-        <i class="fa-brands fa-github" aria-hidden="true"></i>
-        <span>github.com/humzakt</span>
+
+      <a href="research.html" class="path-card" aria-label="View Research Profile">
+        <div class="path-icon"><i class="fa-solid fa-flask-vial" aria-hidden="true"></i></div>
+        <div class="path-title">Research</div>
+        <p class="path-desc">
+          For PhD programs, scholarship committees, and research labs looking for a candidate in AI/ML, Computer Vision, and Healthcare AI.
+        </p>
+        <div class="path-tags">
+          <span class="path-tag">IEEE EMBC 2025</span>
+          <span class="path-tag">Explainable AI</span>
+          <span class="path-tag">Deep Learning</span>
+          <span class="path-tag">Medical Imaging</span>
+        </div>
+        <span class="path-arrow">Explore <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
       </a>
     </div>
-    <a href="mailto:humzakhawartareen@gmail.com" class="btn-hello fade-in">Say Hello</a>
-  </section>
 
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-      <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+    <div class="landing-links">
       <a href="mailto:humzakhawartareen@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+      <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+      <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      <span class="divider"></span>
+      <a href="HumzaTareen_Resume.pdf" target="_blank" rel="noopener noreferrer" class="landing-resume" aria-label="Download Resume"><i class="fa-solid fa-download" aria-hidden="true"></i> Resume</a>
     </div>
-    <p class="footer-text">
-      Designed &amp; Built by Humza Tareen<br>
-      &copy; 2026 Humza Tareen
-    </p>
-  </footer>
-
-  <!-- ===== JAVASCRIPT ===== -->
-  <script>
-    // --- Navigation scroll effect ---
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 50);
-    });
-
-    // --- Mobile menu ---
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const mobileOverlay = document.getElementById('mobileOverlay');
-    const mobileLinks = document.querySelectorAll('.mobile-link');
-
-    function toggleMobileMenu() {
-      hamburger.classList.toggle('active');
-      mobileMenu.classList.toggle('open');
-      mobileOverlay.classList.toggle('open');
-      const isOpen = mobileMenu.classList.contains('open');
-      document.body.style.overflow = isOpen ? 'hidden' : '';
-      hamburger.setAttribute('aria-expanded', isOpen);
-      mobileMenu.setAttribute('aria-hidden', !isOpen);
-    }
-
-    hamburger.addEventListener('click', toggleMobileMenu);
-    mobileOverlay.addEventListener('click', toggleMobileMenu);
-    mobileLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        if (mobileMenu.classList.contains('open')) toggleMobileMenu();
-      });
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
-        toggleMobileMenu();
-        hamburger.focus();
-      }
-    });
-
-    // --- Experience tabs ---
-    const tabs = document.querySelectorAll('.exp-tab');
-    const panels = document.querySelectorAll('.exp-panel');
-
-    function activateTab(tab) {
-      const target = tab.getAttribute('data-tab');
-      tabs.forEach(t => {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-        t.setAttribute('tabindex', '-1');
-      });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      tab.setAttribute('tabindex', '0');
-      tab.focus();
-
-      panels.forEach(p => p.classList.remove('active'));
-      document.getElementById('panel-' + target).classList.add('active');
-
-      const newPanel = document.getElementById('panel-' + target);
-      newPanel.querySelectorAll('.fade-in').forEach(el => {
-        el.classList.remove('visible');
-        void el.offsetWidth;
-        observer.observe(el);
-      });
-    }
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => activateTab(tab));
-    });
-
-    document.querySelector('.exp-tabs').addEventListener('keydown', (e) => {
-      const tabsArr = Array.from(tabs);
-      const currentIdx = tabsArr.indexOf(document.activeElement);
-      if (currentIdx === -1) return;
-      let newIdx;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        newIdx = (currentIdx + 1) % tabsArr.length;
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        newIdx = (currentIdx - 1 + tabsArr.length) % tabsArr.length;
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        newIdx = 0;
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        newIdx = tabsArr.length - 1;
-      }
-      if (newIdx !== undefined) activateTab(tabsArr[newIdx]);
-    });
-
-    tabs.forEach(tab => {
-      if (!tab.classList.contains('active')) tab.setAttribute('tabindex', '-1');
-    });
-
-    // --- Scroll fade-in animations ---
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-    // --- Metrics counter animation ---
-    let metricsAnimated = false;
-    const metricsObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !metricsAnimated) {
-          metricsAnimated = true;
-          animateMetrics();
-          metricsObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.3 });
-
-    const metricsSection = document.getElementById('metrics');
-    if (metricsSection) metricsObserver.observe(metricsSection);
-
-    function animateMetrics() {
-      document.querySelectorAll('.metric-number[data-target]').forEach(numEl => {
-        const target = parseInt(numEl.getAttribute('data-target'));
-        const suffix = numEl.getAttribute('data-suffix') || '';
-        const duration = 2000;
-        const start = performance.now();
-        function update(currentTime) {
-          const elapsed = currentTime - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          numEl.textContent = Math.round(eased * target) + suffix;
-          if (progress < 1) requestAnimationFrame(update);
-        }
-        requestAnimationFrame(update);
-      });
-    }
-
-    // --- Active nav link highlighting ---
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-    const sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute('id');
-          navLinks.forEach(link => {
-            link.style.color = link.getAttribute('href') === '#' + id ? 'var(--accent)' : '';
-          });
-        }
-      });
-    }, { threshold: 0.2, rootMargin: '-70px 0px -50% 0px' });
-
-    sections.forEach(section => sectionObserver.observe(section));
-  </script>
+  </div>
 
 </body>
 </html>
