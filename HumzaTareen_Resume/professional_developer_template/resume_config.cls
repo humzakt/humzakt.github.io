@@ -9,7 +9,7 @@
 %                Class options
 %-------------------------------------------------------------------------------
 
-\LoadClass[11pt]{article} % adjust font size here
+\LoadClass[10pt]{article} % adjust font size here
 
 %-------------------------------------------------------------------------------
 %                Packages
@@ -55,24 +55,23 @@
 \raggedright
 
 \geometry{
-    paper=letterpaper, % Paper size, change to letterpaper for US letter size
-    top=0.5in, % Top margin
-    bottom=0.5in, % Bottom margin
-    left=0.5in, % Left margin
-    right=0.5in, % Right margin
-    headheight=0.75cm, % Header height
-    footskip=1cm, % Space from the bottom margin to the baseline of the footer
-    headsep=0.5cm % Space from the top margin to the baseline of the header
-% showframe, % Uncomment to show how the type block is set on the page
+    paper=letterpaper,
+    top=0.3in,
+    bottom=0.3in,
+    left=0.4in,
+    right=0.4in,
+    headheight=0pt,
+    footskip=0pt,
+    headsep=0pt
 }
 
 % section title format
 \titleformat{\section}%
-    {\vspace{-4pt}\scshape\raggedright\large\bfseries}% format
+    {\vspace{-6pt}\scshape\raggedright\large\bfseries}% format
     {}% label
     {0em}% space between label and title
     {}% before code
-    [\color{black}\titlerule\vspace{-5pt}]% after code
+    [\color{black}\titlerule\vspace{-7pt}]% after code
 
 %-------------------------------------------------------------------------------
 %                Custom Commands
@@ -102,11 +101,10 @@
     \begin{tabular*}{\textwidth}{@{}l @{\extracolsep{\fill}} r}
         \textbf{#1} & \textit{#3} \\
         #2 & #4 \\
-    \end{tabular*}
-    
-    \begin{itemize}[noitemsep, topsep=0pt, leftmargin=1em]
+    \end{tabular*}\vspace{-4pt}
+    \begin{itemize}[noitemsep, topsep=0pt, leftmargin=1em, parsep=0pt, partopsep=0pt]
         #5
-    \end{itemize}
+    \end{itemize}\vspace{-2pt}
 }
 
 \newcommand{\Certification}[3]{
@@ -125,7 +123,7 @@
 \newcommand{\SkillItem}[2]{\item \textbf{#1}{#2}}
 
 \newcommand{\SkillList}[1]{
-    \begin{itemize}[label={}, itemsep=-0.2em, leftmargin=0em]
+    \begin{itemize}[label={}, itemsep=-0.3em, leftmargin=0em, topsep=0pt, parsep=0pt]
                 #1
-        \end{itemize}
+        \end{itemize}\vspace{-4pt}
 }
