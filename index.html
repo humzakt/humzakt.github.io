@@ -33,6 +33,57 @@
     img { max-width: 100%; }
     ::selection { background: rgba(100,255,218,0.2); color: #e6f1ff; }
 
+    /* ===== ACCESSIBILITY: Focus styles ===== */
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+    /* Skip-to-content link */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      z-index: 9999;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 16px;
+      outline: 2px solid var(--heading);
+      outline-offset: 2px;
+    }
+    /* Screen-reader only utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    /* Respect prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      html { scroll-behavior: auto; }
+      .fade-in { opacity: 1; transform: none; }
+    }
+
     /* ===== CSS VARIABLES ===== */
     :root {
       --bg: #0a192f;
@@ -302,10 +353,9 @@
       color: var(--accent);
     }
     .section-title {
-      font-size: 28px;
+      font-size: clamp(22px, 4vw, 28px);
       font-weight: 700;
       color: var(--heading);
-      white-space: nowrap;
     }
     .section-line {
       flex: 1;
@@ -469,7 +519,12 @@
       margin-bottom: 30px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) transparent;
     }
+    .exp-tabs::-webkit-scrollbar { height: 4px; }
+    .exp-tabs::-webkit-scrollbar-track { background: transparent; }
+    .exp-tabs::-webkit-scrollbar-thumb { background: rgba(100,255,218,0.3); border-radius: 2px; }
     .exp-tab {
       font-family: var(--font-mono);
       font-size: 13px;
@@ -574,7 +629,7 @@
     /* ===== SKILLS ===== */
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
       gap: 24px;
     }
     .skill-category {
@@ -661,7 +716,7 @@
     }
     .leadership-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
       gap: 24px;
     }
     .leadership-card {
@@ -726,7 +781,7 @@
     }
     .cert-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
       gap: 16px;
     }
     .cert-card {
@@ -758,7 +813,7 @@
       margin: 0 auto;
     }
     .contact-heading {
-      font-size: 42px;
+      font-size: clamp(28px, 6vw, 42px);
       font-weight: 700;
       color: var(--heading);
       margin-bottom: 16px;
@@ -895,41 +950,48 @@
       .exp-tab { padding: 10px 14px; font-size: 12px; }
       .hero-buttons { flex-direction: column; }
       .hero-buttons a { text-align: center; }
+      .edu-card { flex-direction: column; align-items: center; text-align: center; }
+      .pub-card { padding: 24px 16px; }
+      .about-details { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Skip to main content for keyboard users -->
+  <a href="#hero" class="skip-link">Skip to main content</a>
+
   <!-- ===== NAVIGATION ===== -->
-  <nav class="nav" id="nav">
-    <a href="#" class="nav-logo">HT</a>
-    <div class="nav-links">
-      <a href="#about"><span class="nav-number">01.</span>About</a>
-      <a href="#experience"><span class="nav-number">02.</span>Experience</a>
-      <a href="#skills"><span class="nav-number">03.</span>Skills</a>
-      <a href="#publications"><span class="nav-number">04.</span>Publications</a>
-      <a href="#education"><span class="nav-number">05.</span>Education</a>
-      <a href="#contact" class="nav-cta">Get in Touch</a>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="#" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <a href="#about" role="listitem"><span class="nav-number" aria-hidden="true">01.</span>About</a>
+      <a href="#experience" role="listitem"><span class="nav-number" aria-hidden="true">02.</span>Experience</a>
+      <a href="#skills" role="listitem"><span class="nav-number" aria-hidden="true">03.</span>Skills</a>
+      <a href="#publications" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Publications</a>
+      <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">05.</span>Education</a>
+      <a href="#contact" class="nav-cta" role="listitem">Get in Touch</a>
     </div>
-    <div class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu" type="button">
       <span></span>
       <span></span>
       <span></span>
-    </div>
+    </button>
   </nav>
 
   <!-- Mobile Menu -->
   <div class="mobile-overlay" id="mobileOverlay"></div>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#about" class="mobile-link"><span class="nav-number">01.</span> About</a>
-    <a href="#experience" class="mobile-link"><span class="nav-number">02.</span> Experience</a>
-    <a href="#skills" class="mobile-link"><span class="nav-number">03.</span> Skills</a>
-    <a href="#publications" class="mobile-link"><span class="nav-number">04.</span> Publications</a>
-    <a href="#education" class="mobile-link"><span class="nav-number">05.</span> Education</a>
+  <nav class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Mobile navigation" aria-hidden="true">
+    <a href="#about" class="mobile-link"><span class="nav-number" aria-hidden="true">01.</span> About</a>
+    <a href="#experience" class="mobile-link"><span class="nav-number" aria-hidden="true">02.</span> Experience</a>
+    <a href="#skills" class="mobile-link"><span class="nav-number" aria-hidden="true">03.</span> Skills</a>
+    <a href="#publications" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Publications</a>
+    <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">05.</span> Education</a>
     <a href="#contact" class="nav-cta mobile-link">Get in Touch</a>
-  </div>
+  </nav>
 
   <!-- ===== HERO ===== -->
+  <main>
   <section class="hero" id="hero">
     <div class="hero-content">
       <p class="hero-intro fade-in">Hi, my name is</p>
@@ -982,7 +1044,7 @@
     <div class="section-header fade-in">
       <span class="section-number">01.</span>
       <h2 class="section-title">About Me</h2>
-      <span class="section-line"></span>
+      <span class="section-line" aria-hidden="true"></span>
     </div>
     <div class="about-layout fade-in">
       <div class="about-content">
@@ -991,15 +1053,15 @@
         </p>
         <div class="about-details">
           <div class="about-detail">
-            <i class="fa-solid fa-location-dot"></i>
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
             <span>Pakistan &middot; Willing to Relocate</span>
           </div>
           <div class="about-detail">
-            <i class="fa-solid fa-language"></i>
+            <i class="fa-solid fa-language" aria-hidden="true"></i>
             <span>English &mdash; Professional Proficiency</span>
           </div>
           <div class="about-detail">
-            <i class="fa-solid fa-briefcase"></i>
+            <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
             <span>Open to Full-Time &amp; Consulting</span>
           </div>
         </div>
@@ -1010,7 +1072,7 @@
     </div>
     <div class="value-cards">
       <div class="value-card fade-in">
-        <div class="value-card-icon"><i class="fa-solid fa-brain"></i></div>
+        <div class="value-card-icon"><i class="fa-solid fa-brain" aria-hidden="true"></i></div>
         <h3 class="value-card-title">AI &amp; LLM Systems</h3>
         <div class="value-card-items">
           <span class="pill">Agentic Systems</span>
@@ -1022,7 +1084,7 @@
         </div>
       </div>
       <div class="value-card fade-in">
-        <div class="value-card-icon"><i class="fa-solid fa-server"></i></div>
+        <div class="value-card-icon"><i class="fa-solid fa-server" aria-hidden="true"></i></div>
         <h3 class="value-card-title">Backend Engineering</h3>
         <div class="value-card-items">
           <span class="pill">Python</span>
@@ -1034,7 +1096,7 @@
         </div>
       </div>
       <div class="value-card fade-in">
-        <div class="value-card-icon"><i class="fa-solid fa-cloud"></i></div>
+        <div class="value-card-icon"><i class="fa-solid fa-cloud" aria-hidden="true"></i></div>
         <h3 class="value-card-title">Cloud &amp; DevOps</h3>
         <div class="value-card-items">
           <span class="pill">GCP</span>
@@ -1053,20 +1115,20 @@
     <div class="section-header fade-in">
       <span class="section-number">02.</span>
       <h2 class="section-title">Where I've Worked</h2>
-      <span class="section-line"></span>
+      <span class="section-line" aria-hidden="true"></span>
     </div>
 
-    <div class="exp-tabs fade-in" role="tablist">
-      <button class="exp-tab active" data-tab="turing" role="tab">Turing</button>
-      <button class="exp-tab" data-tab="royalcyber" role="tab">Royal Cyber</button>
-      <button class="exp-tab" data-tab="ncai" role="tab">NCAI</button>
-      <button class="exp-tab" data-tab="inlights" role="tab">InLights</button>
-      <button class="exp-tab" data-tab="bitnine" role="tab">Bitnine</button>
-      <button class="exp-tab" data-tab="more" role="tab">More</button>
+    <div class="exp-tabs fade-in" role="tablist" aria-label="Company tabs">
+      <button class="exp-tab active" data-tab="turing" role="tab" aria-selected="true" aria-controls="panel-turing" id="tab-turing">Turing</button>
+      <button class="exp-tab" data-tab="royalcyber" role="tab" aria-selected="false" aria-controls="panel-royalcyber" id="tab-royalcyber">Royal Cyber</button>
+      <button class="exp-tab" data-tab="ncai" role="tab" aria-selected="false" aria-controls="panel-ncai" id="tab-ncai">NCAI</button>
+      <button class="exp-tab" data-tab="inlights" role="tab" aria-selected="false" aria-controls="panel-inlights" id="tab-inlights">InLights</button>
+      <button class="exp-tab" data-tab="bitnine" role="tab" aria-selected="false" aria-controls="panel-bitnine" id="tab-bitnine">Bitnine</button>
+      <button class="exp-tab" data-tab="more" role="tab" aria-selected="false" aria-controls="panel-more" id="tab-more">More</button>
     </div>
 
     <!-- Turing -->
-    <div class="exp-panel active" id="panel-turing" role="tabpanel">
+    <div class="exp-panel active" id="panel-turing" role="tabpanel" aria-labelledby="tab-turing">
       <div class="exp-entry fade-in">
         <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">July 2025 - Present &middot; Palo Alto, California, United States</p>
@@ -1099,7 +1161,7 @@
     </div>
 
     <!-- Royal Cyber -->
-    <div class="exp-panel" id="panel-royalcyber" role="tabpanel">
+    <div class="exp-panel" id="panel-royalcyber" role="tabpanel" aria-labelledby="tab-royalcyber">
       <div class="exp-entry fade-in">
         <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.royalcyber.com" target="_blank" rel="noopener noreferrer">Royal Cyber Inc.</a></span></h3>
         <p class="exp-meta">January 2025 - July 2025 &middot; Naperville, Illinois, United States</p>
@@ -1129,7 +1191,7 @@
     </div>
 
     <!-- NCAI -->
-    <div class="exp-panel" id="panel-ncai" role="tabpanel">
+    <div class="exp-panel" id="panel-ncai" role="tabpanel" aria-labelledby="tab-ncai">
       <div class="exp-entry fade-in">
         <h3 class="exp-role">Deep Learning Researcher <span class="company">@ <a href="https://ncai.pk" target="_blank" rel="noopener noreferrer">National Center of Artificial Intelligence (NCAI), Pakistan</a></span></h3>
         <p class="exp-meta">September 2023 - May 2024 &middot; Islamabad, Pakistan</p>
@@ -1140,7 +1202,7 @@
     </div>
 
     <!-- InLights -->
-    <div class="exp-panel" id="panel-inlights" role="tabpanel">
+    <div class="exp-panel" id="panel-inlights" role="tabpanel" aria-labelledby="tab-inlights">
       <div class="exp-entry fade-in">
         <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.inlights.com" target="_blank" rel="noopener noreferrer">InLights</a></span></h3>
         <p class="exp-meta">October 2023 - February 2024 &middot; Islamabad, Pakistan</p>
@@ -1160,7 +1222,7 @@
     </div>
 
     <!-- Bitnine -->
-    <div class="exp-panel" id="panel-bitnine" role="tabpanel">
+    <div class="exp-panel" id="panel-bitnine" role="tabpanel" aria-labelledby="tab-bitnine">
       <div class="exp-entry fade-in">
         <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://bitnine.net" target="_blank" rel="noopener noreferrer">Bitnine Global Inc.</a></span></h3>
         <p class="exp-meta">March 2023 - August 2023 &middot; Vancouver, British Columbia, Canada</p>
@@ -1175,7 +1237,7 @@
     </div>
 
     <!-- More -->
-    <div class="exp-panel" id="panel-more" role="tabpanel">
+    <div class="exp-panel" id="panel-more" role="tabpanel" aria-labelledby="tab-more">
       <div class="more-item fade-in">
         <h4 class="more-item-title">Software Engineer Intern <span class="company">@ <a href="https://www.walee.pk" target="_blank" rel="noopener noreferrer">WALEE</a></span></h4>
         <p class="more-item-meta">August 2022 - October 2023 &middot; Islamabad, Pakistan</p>
@@ -1224,11 +1286,11 @@
     <div class="section-header fade-in">
       <span class="section-number">03.</span>
       <h2 class="section-title">Skills &amp; Technologies</h2>
-      <span class="section-line"></span>
+      <span class="section-line" aria-hidden="true"></span>
     </div>
     <div class="skills-grid">
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-brain"></i> AI &amp; Machine Learning</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI &amp; Machine Learning</h3>
         <div class="skill-pills">
           <span class="skill-pill">Agentic Systems</span>
           <span class="skill-pill">RAG</span>
@@ -1241,7 +1303,7 @@
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-server"></i> Backend Development</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-server" aria-hidden="true"></i> Backend Development</h3>
         <div class="skill-pills">
           <span class="skill-pill">Python</span>
           <span class="skill-pill">FastAPI</span>
@@ -1253,7 +1315,7 @@
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-cloud"></i> Cloud &amp; Infrastructure</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-cloud" aria-hidden="true"></i> Cloud &amp; Infrastructure</h3>
         <div class="skill-pills">
           <span class="skill-pill">GCP</span>
           <span class="skill-pill">AWS</span>
@@ -1262,7 +1324,7 @@
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-plug"></i> Integration &amp; Middleware</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-plug" aria-hidden="true"></i> Integration &amp; Middleware</h3>
         <div class="skill-pills">
           <span class="skill-pill">Mulesoft</span>
           <span class="skill-pill">Salesforce</span>
@@ -1274,7 +1336,7 @@
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-mobile-screen-button"></i> Mobile Development</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile Development</h3>
         <div class="skill-pills">
           <span class="skill-pill">Flutter</span>
           <span class="skill-pill">Firebase</span>
@@ -1282,7 +1344,7 @@
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-code"></i> Web Development</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-code" aria-hidden="true"></i> Web Development</h3>
         <div class="skill-pills">
           <span class="skill-pill">Next.js</span>
           <span class="skill-pill">JavaScript</span>
@@ -1290,7 +1352,7 @@
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-toolbox"></i> Tools &amp; Frameworks</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-toolbox" aria-hidden="true"></i> Tools &amp; Frameworks</h3>
         <div class="skill-pills">
           <span class="skill-pill">Git</span>
           <span class="skill-pill">Bot Framework</span>
@@ -1305,11 +1367,11 @@
     <div class="section-header fade-in">
       <span class="section-number">04.</span>
       <h2 class="section-title">Publications &amp; Leadership</h2>
-      <span class="section-line"></span>
+      <span class="section-line" aria-hidden="true"></span>
     </div>
 
     <div class="pub-card fade-in">
-      <div class="pub-icon"><i class="fa-solid fa-file-lines"></i></div>
+      <div class="pub-icon"><i class="fa-solid fa-file-lines" aria-hidden="true"></i></div>
       <h3 class="pub-title">OptiGuard: Generalized, Attention-Driven &amp; Explainable Glaucoma Classification</h3>
       <p class="pub-venue">IEEE Conference Publication</p>
       <span class="pub-badge">1st Prize, SEECS Open House</span>
@@ -1347,11 +1409,11 @@
     <div class="section-header fade-in">
       <span class="section-number">05.</span>
       <h2 class="section-title">Education &amp; Certifications</h2>
-      <span class="section-line"></span>
+      <span class="section-line" aria-hidden="true"></span>
     </div>
 
     <div class="edu-card fade-in">
-      <div class="edu-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div class="edu-icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></div>
       <div class="edu-info">
         <h3><a href="https://nust.edu.pk" target="_blank" rel="noopener noreferrer" style="color: var(--heading);">National University of Sciences and Technology (NUST)</a></h3>
         <p>Bachelor's degree, Computer Science</p>
@@ -1361,32 +1423,33 @@
 
     <div class="cert-grid">
       <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate"></i>
+        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
         <span>Machine Learning with Python</span>
       </div>
       <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate"></i>
+        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
         <span>Introduction to Cloud Computing</span>
       </div>
       <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate"></i>
+        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
         <span>Microsoft Certified: Power Platform Fundamentals</span>
       </div>
       <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate"></i>
+        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
         <span>Applied Data Science Specialization</span>
       </div>
       <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate"></i>
+        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
         <span>Mulesoft Certified Developer - Level 1</span>
       </div>
       <div class="cert-card fade-in">
-        <i class="fa-solid fa-certificate"></i>
+        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
         <span>SayabiDevs Campus Ambassador Program 2022</span>
       </div>
     </div>
   </section>
 
+  </main>
   <!-- ===== CONTACT ===== -->
   <section class="contact-section" id="contact">
     <p class="contact-number fade-in">06. What's Next?</p>
@@ -1395,16 +1458,16 @@
       Currently based in Pakistan. Available for full-time roles and consulting engagements worldwide. Willing to relocate globally for the right opportunity.
     </p>
     <div class="contact-cards fade-in">
-      <a href="mailto:humzakhawartareen@gmail.com" class="contact-card">
-        <i class="fa-solid fa-envelope"></i>
+      <a href="mailto:humzakhawartareen@gmail.com" class="contact-card" aria-label="Email humzakhawartareen@gmail.com">
+        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
         <span>humzakhawartareen@gmail.com</span>
       </a>
-      <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" class="contact-card">
-        <i class="fa-brands fa-linkedin"></i>
+      <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" class="contact-card" aria-label="LinkedIn profile">
+        <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
         <span>linkedin.com/in/humzakt</span>
       </a>
-      <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" class="contact-card">
-        <i class="fa-brands fa-github"></i>
+      <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" class="contact-card" aria-label="GitHub profile">
+        <i class="fa-brands fa-github" aria-hidden="true"></i>
         <span>github.com/humzakt</span>
       </a>
     </div>
@@ -1446,7 +1509,10 @@
       hamburger.classList.toggle('active');
       mobileMenu.classList.toggle('open');
       mobileOverlay.classList.toggle('open');
-      document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+      const isOpen = mobileMenu.classList.contains('open');
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+      hamburger.setAttribute('aria-expanded', isOpen);
+      mobileMenu.setAttribute('aria-hidden', !isOpen);
     }
 
     hamburger.addEventListener('click', toggleMobileMenu);
@@ -1457,28 +1523,78 @@
       });
     });
 
+    // Close mobile menu with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+        toggleMobileMenu();
+        hamburger.focus();
+      }
+    });
+
     // --- Experience tabs ---
     const tabs = document.querySelectorAll('.exp-tab');
     const panels = document.querySelectorAll('.exp-panel');
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab');
+    function activateTab(tab) {
+      const target = tab.getAttribute('data-tab');
 
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById('panel-' + target).classList.add('active');
-
-        // Re-trigger fade-in for newly visible elements
-        const newPanel = document.getElementById('panel-' + target);
-        newPanel.querySelectorAll('.fade-in').forEach(el => {
-          el.classList.remove('visible');
-          void el.offsetWidth; // force reflow
-          observer.observe(el);
-        });
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+        t.setAttribute('tabindex', '-1');
       });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      tab.setAttribute('tabindex', '0');
+      tab.focus();
+
+      panels.forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + target).classList.add('active');
+
+      // Re-trigger fade-in for newly visible elements
+      const newPanel = document.getElementById('panel-' + target);
+      newPanel.querySelectorAll('.fade-in').forEach(el => {
+        el.classList.remove('visible');
+        void el.offsetWidth;
+        observer.observe(el);
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => activateTab(tab));
+    });
+
+    // Keyboard navigation for tabs (arrow keys)
+    document.querySelector('.exp-tabs').addEventListener('keydown', (e) => {
+      const tabsArr = Array.from(tabs);
+      const currentIdx = tabsArr.indexOf(document.activeElement);
+      if (currentIdx === -1) return;
+
+      let newIdx;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIdx = (currentIdx + 1) % tabsArr.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIdx = (currentIdx - 1 + tabsArr.length) % tabsArr.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIdx = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIdx = tabsArr.length - 1;
+      }
+
+      if (newIdx !== undefined) {
+        activateTab(tabsArr[newIdx]);
+      }
+    });
+
+    // Set initial tabindex for non-active tabs
+    tabs.forEach(tab => {
+      if (!tab.classList.contains('active')) {
+        tab.setAttribute('tabindex', '-1');
+      }
     });
 
     // --- Scroll fade-in animations ---
