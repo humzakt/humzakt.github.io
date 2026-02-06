@@ -9,7 +9,7 @@
 %                Class options
 %-------------------------------------------------------------------------------
 
-\LoadClass[10pt]{article} % adjust font size here
+\LoadClass[11pt]{article} % adjust font size here
 
 %-------------------------------------------------------------------------------
 %                Packages
@@ -56,10 +56,10 @@
 
 \geometry{
     paper=letterpaper,
-    top=0.3in,
-    bottom=0.3in,
-    left=0.4in,
-    right=0.4in,
+    top=0.35in,
+    bottom=0.35in,
+    left=0.45in,
+    right=0.45in,
     headheight=0pt,
     footskip=0pt,
     headsep=0pt
@@ -67,11 +67,11 @@
 
 % section title format
 \titleformat{\section}%
-    {\vspace{-6pt}\scshape\raggedright\large\bfseries}% format
+    {\vspace{-4pt}\scshape\raggedright\large\bfseries}% format
     {}% label
     {0em}% space between label and title
     {}% before code
-    [\color{black}\titlerule\vspace{-7pt}]% after code
+    [\color{black}\titlerule\vspace{-5pt}]% after code
 
 %-------------------------------------------------------------------------------
 %                Custom Commands
