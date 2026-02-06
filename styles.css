@@ -886,6 +886,11 @@ img { max-width: 100%; }
   object-fit: contain;
   border-radius: 4px;
 }
+.cert-card svg.cert-logo {
+  width: 32px;
+  height: 28px;
+  flex-shrink: 0;
+}
 .cert-card span {
   font-size: 14px;
   color: var(--text-light);
