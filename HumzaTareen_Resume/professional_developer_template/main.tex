@@ -1,0 +1,127 @@
+%-------------------------------------------------------------------------------
+%                Document & Class
+%-------------------------------------------------------------------------------
+
+\documentclass[letterpaper]{resume_config}
+\usepackage{graphicx} 
+\usepackage{tikz} % REQUIRED for the round image
+%-------------------------------------------------------------------------------
+%                Resume Starts Here
+%-------------------------------------------------------------------------------
+
+\begin{document}
+
+%-------------------------------------------------------------------------------
+%                Header (Image + Info)
+%-------------------------------------------------------------------------------
+
+\noindent
+\begin{minipage}[c]{0.18\textwidth}
+    \begin{tikzpicture}
+        % 1. Create a circular clipping path (radius 1.1cm = 2.2cm diameter)
+        \clip (-0.1,-0.01) circle (1.1cm);
+        % 2. Place the image centered. 
+        % Adjust 'width' to be slightly larger than the diameter (2.2cm) to ensure coverage
+        \node at (0,0) {\includegraphics[width=2.5cm]{photo.jpg}}; 
+    \end{tikzpicture}
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{0.80\textwidth}
+    \centering
+    {\Huge \textbf{Humza Tareen}} \\ \vspace{4pt}
+    Islamabad, Pakistan \\
+    +92 3125472423 $\cdot$ humzakhawartareen@gmail.com \\
+    linkedin.com/in/humzakt $\cdot$ github.com/humzakt
+\end{minipage}
+
+\vspace{5pt} % Adjust spacing after header
+
+%-------------------------------------------------------------------------------
+%                Work Experience
+%-------------------------------------------------------------------------------
+
+\vspace{-5pt}
+\section{Work Experience}
+
+\WorkExperience
+    {Software Engineer} % job title
+    {Turing} % company name
+    {Sep 2024 -- Present} % beginning and end of employment
+    {Remote} % city, country of employment
+    {
+        \item \textbf{Software Engineer (July 2025 -- Present):} Architected scalable, AI-powered agentic automations using Python, FastAPI, and RAG on GCP. Accelerated development by integrating AI-native tools (\textbf{Cursor, OpenAI Codex, Claude Code}) to optimize microservices.
+        \item Engineered backend services with PostgreSQL and Redis to automate end-to-end model evaluation pipelines.
+        \item \textbf{Pod Lead (Mar 2025 -- July 2025):} Led a globally distributed team of 10+ AI Trainers, implementing Agile methodologies to manage high-priority GenAI benchmarking and QA for APAC clients.
+        \item \textbf{LLM Python Developer (Sep 2024 -- Mar 2025):} Developed domain-specific LLMs (RLHF, reasoning) for Apple, Meta, and Bytedance; enhanced capabilities via custom Code Interpreter development.
+    }
+
+
+\WorkExperience
+    {Software Engineer} % job title
+    {Royal Cyber Inc.} % company name
+    {Feb 2024 -- July 2025} % beginning and end of employment
+    {Remote} % city, country of employment
+    {
+        \item Co-developed 'RC AI OPS' GenAI agent using LangChain, automating error resolution to improve backend efficiency by 50\%.
+        \item Fine-tuned Llama models on AWS Bedrock to power domain-specific copilots for financial services clients.
+        \item Architected GenAI integrations for Fortune 500 clients using Mulesoft, IBM \& Salesforce iPaaS platforms.
+        \item Architected GenAI integrations for Fortune 500 clients using Mulesoft, IBM \& Salesforce iPaaS platforms.
+    }
+
+
+\WorkExperience
+    {Deep Learning Researcher} % job title
+    {Deep Learning Lab, NCAI} % company name
+    {Sep 2023 -- May 2024} % beginning and end of employment
+    {Islamabad, Pakistan} % city, country of employment
+    {
+        \item Authored the award-winning (1st Prize) "OptiGuard" system for glaucoma detection (see Publications below).
+        \item Developed novel Computer-Aided Diagnosis (CAD) systems using PyTorch and Hugging Face, achieving state-of-the-art performance in medical imaging tasks.
+    }
+ 
+%-------------------------------------------------------------------------------
+%                Publications
+%-------------------------------------------------------------------------------
+
+
+\section{Publications}
+
+\noindent \textbf{OptiGuard: Generalized, Attention-Driven \& Explainable Glaucoma Classification} \\
+\textit{47th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC), 2025}
+\vspace{-2pt}
+\begin{itemize} \itemsep -1pt
+    \item \small \textbf{Authors:} Syed Safi Ullah Shah, Muhammad Huzaifa, \textbf{Humza Tareen}, Muhammad Naseer Bajwa
+    \item Developed a state-of-the-art CAD system for glaucoma detection using Retinal Fundus Images (RFI), achieving robust generalization on SMDG-19 and G1020 datasets.
+    \item Integrated Explainable AI (XAI) features to provide visual and quantitative transparency, enhancing trust for clinical professionals.
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+%                Education
+%-------------------------------------------------------------------------------
+
+
+\section{Education}
+
+\EducationExperience
+    {National University of Sciences And Technology (NUST)} % school name
+    {B.Sc. in Computer Science} % credential name
+    {May 2024} % date of graduation
+    {Islamabad, Pakistan} % city, country of school
+    {Majors in Artificial Intelligence \& Deep Learning}
+
+%-------------------------------------------------------------------------------
+%                Skills
+%-------------------------------------------------------------------------------
+
+
+\section{Skills \& Certifications}
+
+\SkillList{
+    \SkillItem{AI/ML}{: Agentic Systems, RAG, RLHF, GenAI, Model Evaluation, PyTorch, LangChain}
+    \SkillItem{Backend \& Databases}{: Python, FastAPI, Microservices, PostgreSQL, Redis, SQL, APIs}
+    \SkillItem{Cloud \& DevOps}{: Google Cloud Platform (GCP), Docker, CI/CD, Kong Gateway}
+}
+\vspace{2pt}
+\noindent \textbf{Certifications:} IBM Certified Cloud Automation Sales Consultant, Microsoft Power Platform Fundamentals PL-900
+
+\end{document}
