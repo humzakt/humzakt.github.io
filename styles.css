@@ -879,6 +879,13 @@ img { max-width: 100%; }
   color: var(--accent);
   flex-shrink: 0;
 }
+.cert-card .cert-logo {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 4px;
+}
 .cert-card span {
   font-size: 14px;
   color: var(--text-light);
