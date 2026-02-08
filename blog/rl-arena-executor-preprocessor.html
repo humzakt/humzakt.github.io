@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage — Humza Tareen</title>
+  <title>Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing — Humza Tareen</title>
   <meta name="description" content="How I built a reinforcement learning arena for AI coding agents with Gym-style API, Cloud Build sandboxing, Redis episode management, and a 15-step preprocessor.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="Reinforcement Learning, GKE, Cloud Build, Redis, Firestore, Python, FastAPI, Gym API">
   <link rel="canonical" href="https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html">
-  <meta property="og:title" content="Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage">
+  <meta property="og:title" content="Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing">
   <meta property="og:description" content="How I built a reinforcement learning arena for AI coding agents with Gym-style API, Cloud Build sandboxing, Redis episode management, and a 15-step preprocessor.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html">
@@ -22,14 +22,14 @@
   <meta property="article:tag" content="Redis">
   <meta property="article:tag" content="Python">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage">
+  <meta name="twitter:title" content="Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing">
   <meta name="twitter:description" content="How I built a reinforcement learning arena for AI coding agents with Gym-style API, Cloud Build sandboxing, Redis episode management, and a 15-step preprocessor.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage",
+    "headline": "Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing",
     "description": "How I built a reinforcement learning arena for AI coding agents with Gym-style API, Cloud Build sandboxing, Redis episode management, and a 15-step preprocessor.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
@@ -96,7 +96,7 @@
     <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage</h1>
+        <h1 class="blog-title">Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing</h1>
         <div class="blog-meta"><time datetime="2026-02-08">Feb 8, 2026</time><span>&middot;</span><span>8 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
         <div class="blog-tags">
           <span class="blog-tag">Reinforcement Learning</span><span class="blog-tag">GKE</span><span class="blog-tag">Cloud Build</span><span class="blog-tag">Redis</span><span class="blog-tag">Python</span>
@@ -104,9 +104,9 @@
       </header>
       <div class="blog-content">
         <h2>What it does</h2>
-        <p>This is a Gym-style RL environment for training AI coding agents. I built it from scratch across <strong>4 PRs</strong>, totaling <strong>12,000+ lines</strong> of production code.</p>
+        <p>This is a Gym-style RL environment for training AI coding agents. I built it from the ground up as a production-ready system.</p>
         <h2>Executor Service (PRs #31, #32)</h2>
-        <p><strong>2,800+ lines</strong> across <strong>53 files</strong> with <strong>81% test coverage</strong>.</p>
+        <p>Production-ready executor service with comprehensive test coverage.</p>
         <h3>Gym-Style API</h3>
         <ul>
           <li><code>POST /episodes</code> — Create a new training episode</li>
@@ -135,7 +135,7 @@
           <li>And more for comprehensive error handling</li>
         </ul>
         <h2>Preprocessor Service (PR #28)</h2>
-        <p><strong>3,900+ lines</strong> across <strong>41 files</strong>. "The Task Chef" — transforms raw repositories into training-ready tasks.</p>
+        <p>"The Task Chef" — transforms raw repositories into training-ready tasks.</p>
         <h3>15-Step Pipeline</h3>
         <ol>
           <li><strong>Repo cloning:</strong> Fetch source code from Git</li>
@@ -159,12 +159,8 @@
         <h2>By the Numbers</h2>
         <table>
           <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Pull requests</td><td>4</td></tr>
-          <tr><td>Total lines</td><td>12,000+</td></tr>
-          <tr><td>Test coverage</td><td>81% (Executor Service)</td></tr>
           <tr><td>GKE clusters</td><td>3 (up to 39 nodes)</td></tr>
           <tr><td>GCS buckets</td><td>55</td></tr>
-          <tr><td>Issues filed</td><td>8</td></tr>
         </table>
       </div>
       <footer class="blog-footer">

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Humza Tareen | Technical Articles on Cloud Architecture, AI, and Production Engineering</title>
+  <meta name="description" content="Technical articles by Humza Tareen covering cloud architecture on GCP, AI/ML infrastructure, production engineering, and lessons from building production systems.">
+  <meta name="author" content="Humza Tareen">
+  <meta property="og:title" content="Blog — Humza Tareen">
+  <meta property="og:description" content="Technical articles on cloud architecture, AI/ML infrastructure, and production engineering.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://humzakt.github.io/blog.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog — Humza Tareen">
+  <meta name="twitter:description" content="Technical articles on cloud architecture, AI/ML infrastructure, and production engineering.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <link rel="canonical" href="https://humzakt.github.io/blog.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Humza Tareen — Engineering Blog",
+    "description": "Technical deep-dives on cloud architecture, AI/ML infrastructure, and production engineering.",
+    "url": "https://humzakt.github.io/blog.html",
+    "author": {
+      "@type": "Person",
+      "name": "Humza Tareen",
+      "url": "https://humzakt.github.io"
+    }
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <style>
+    .blog-hero {
+      padding: 140px 0 60px;
+      text-align: center;
+    }
+    .blog-hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      color: #ccd6f6;
+      margin-bottom: 12px;
+    }
+    .blog-hero p {
+      font-size: 18px;
+      color: #8892b0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .blog-filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 20px 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .blog-filter-btn {
+      background: transparent;
+      border: 1px solid #233554;
+      color: #8892b0;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .blog-filter-btn:hover,
+    .blog-filter-btn.active {
+      border-color: #64ffda;
+      color: #64ffda;
+      background: rgba(100,255,218,0.05);
+    }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+    .blog-card {
+      background: rgba(17, 34, 64, 0.6);
+      border: 1px solid #233554;
+      border-radius: 8px;
+      padding: 28px 24px 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-card:hover {
+      transform: translateY(-4px);
+      border-color: #64ffda;
+      box-shadow: 0 10px 30px -15px rgba(2,12,27,0.7);
+    }
+    .blog-card-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #64ffda;
+      margin-bottom: 12px;
+    }
+    .blog-card h3 {
+      color: #ccd6f6;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      transition: color 0.25s ease;
+    }
+    .blog-card:hover h3 {
+      color: #64ffda;
+    }
+    .blog-card p {
+      color: #8892b0;
+      font-size: 14px;
+      line-height: 1.6;
+      flex-grow: 1;
+      margin-bottom: 16px;
+    }
+    .blog-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .blog-card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #64ffda;
+      background: rgba(100,255,218,0.07);
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+    .blog-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #64ffda;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      padding: 100px 20px 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .blog-back:hover {
+      text-decoration: underline;
+    }
+    .blog-empty {
+      text-align: center;
+      color: #8892b0;
+      font-size: 16px;
+      padding: 60px 20px;
+    }
+    @media (max-width: 600px) {
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="engineering.html">Engineering</a>
+        <a href="research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <a href="engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Portfolio</a>
+
+    <div class="blog-hero">
+      <h1>Blog</h1>
+      <p>Technical deep-dives and lessons from building production systems on GCP</p>
+    </div>
+
+    <!-- Filter buttons -->
+    <div class="blog-filters" role="tablist" aria-label="Filter articles by topic">
+      <button class="blog-filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button class="blog-filter-btn" data-filter="infrastructure" role="tab" aria-selected="false">Infrastructure</button>
+      <button class="blog-filter-btn" data-filter="ml-ai" role="tab" aria-selected="false">ML / AI</button>
+      <button class="blog-filter-btn" data-filter="devops" role="tab" aria-selected="false">DevOps</button>
+      <button class="blog-filter-btn" data-filter="api-design" role="tab" aria-selected="false">API Design</button>
+      <button class="blog-filter-btn" data-filter="performance" role="tab" aria-selected="false">Performance</button>
+    </div>
+
+    <!-- Article grid -->
+    <div class="blog-grid" id="blog-grid">
+      <p class="blog-empty">Loading articles...</p>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+
+  <script>
+  (function() {
+    var grid = document.getElementById('blog-grid');
+
+    async function loadArticles() {
+      try {
+        var resp = await fetch('blog/article-meta.json');
+        if (resp.ok) {
+          var articles = await resp.json();
+          renderArticles(articles);
+          return;
+        }
+      } catch (e) { /* fallback */ }
+      grid.innerHTML = '<p class="blog-empty">Articles coming soon — stay tuned!</p>';
+    }
+
+    function renderArticles(articles) {
+      if (!articles.length) {
+        grid.innerHTML = '<p class="blog-empty">Articles coming soon — stay tuned!</p>';
+        return;
+      }
+      grid.innerHTML = '';
+      articles.forEach(function(article) {
+        var themes = (article.themes || []).join(' ');
+        var date = article.date ? new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        var primaryPlatform = Object.keys(article.platforms || {})[0] || 'medium';
+        var platformUrl = article.platforms ? article.platforms[primaryPlatform] : '#';
+        var isInternal = platformUrl.includes('humzakt.github.io/blog/') || platformUrl.startsWith('blog/');
+
+        var card = document.createElement('div');
+        card.className = 'blog-card';
+        card.setAttribute('data-themes', themes);
+        card.setAttribute('data-href', platformUrl);
+        card.setAttribute('role', 'link');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', article.title);
+
+        var tagsHtml = (article.components || []).slice(0, 4).map(function(c) {
+          return '<span class="blog-card-tag">' + c + '</span>';
+        }).join('');
+
+        card.innerHTML =
+          '<span class="blog-card-date">' + date + '</span>' +
+          '<h3>' + article.title + '</h3>' +
+          '<p>' + article.summary + '</p>' +
+          '<div class="blog-card-tags">' + tagsHtml + '</div>';
+
+        card.addEventListener('click', function() {
+          if (isInternal) {
+            window.location.href = platformUrl;
+          } else {
+            window.open(platformUrl, '_blank', 'noopener');
+          }
+        });
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            card.click();
+          }
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Filter functionality
+    document.querySelectorAll('.blog-filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.blog-filter-btn').forEach(function(b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        var filter = btn.getAttribute('data-filter');
+        document.querySelectorAll('.blog-card').forEach(function(card) {
+          if (filter === 'all' || (card.getAttribute('data-themes') || '').includes(filter)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    loadArticles();
+  })();
+  </script>
+
+</body>
+</html>

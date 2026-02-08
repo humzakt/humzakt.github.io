@@ -104,7 +104,7 @@
       </header>
       <div class="blog-content">
         <h2>What This Service Does</h2>
-        <p>The RAG Retrieval Service enables continuous learning via pgvector similarity search. I contributed <strong>4 focused PRs</strong>, each solving a critical problem in production.</p>
+        <p>The RAG Retrieval Service enables continuous learning via pgvector similarity search. Each contribution solved a critical problem in production.</p>
         <h2>Emergency Embedding Migration (PR #7)</h2>
         <p><code>text-embedding-004</code> was deprecated overnight. All queries started returning 404 errors. This PR made the embedding model configurable via environment variables (<code>EMBED_MODEL</code>, <code>EMBED_DIMENSIONS</code>).</p>
         <p><strong>Migration strategy:</strong></p>
@@ -113,7 +113,7 @@
           <li>Batch re-embedding pipeline</li>
           <li>Feature flag switch for zero-downtime deployment</li>
         </ul>
-        <p><strong>Result:</strong> 470 lines across 6 files, zero downtime migration. The service now supports any embedding model via configuration.</p>
+        <p><strong>Result:</strong> Zero downtime migration. The service now supports any embedding model via configuration.</p>
         <h2>Provenance and Metadata (PR #4)</h2>
         <p>CLI eval agents needed outcome data for calibration. I added provenance and metadata options to the retrieve endpoint:</p>
         <ul>

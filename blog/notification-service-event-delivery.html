@@ -104,16 +104,16 @@
       </header>
       <div class="blog-content">
         <h2>What This Service Does</h2>
-        <p>Handles all event-driven delivery. When evaluations complete, scores generate, or agents finish, this dispatches notifications via webhooks. <strong>6 PRs, 18 issues from audit.</strong></p>
+        <p>Handles all event-driven delivery. When evaluations complete, scores generate, or agents finish, this dispatches notifications via webhooks. Security audit findings identified and addressed.</p>
         <h2>Architecture diagram</h2>
 <pre><code>Event Sources (Pub/Sub) → Notification Service (Cloud Run) → Subscription Registry → Delivery Pipeline (Cloud Tasks) → Webhook Dispatch (with retries) → Dead Letter Queue → Circuit Breaker → Observability (correlation IDs)</code></pre>
         <h2>Validation Error Handling (PR #1)</h2>
         <p>Pydantic v2 embeds original Python exception in validation errors. FastAPI crashed with <code>"ValueError is not JSON serializable"</code> turning 422 into 500. Fix: jsonable_encoder with custom Exception encoder.</p>
         <h2>Alembic Migration System (PR #6)</h2>
-        <p>+791 lines. Complete DB migration system: Alembic config with PostgreSQL 17, full schema migration (subscriptions, notifications, delivery logs, DLQ), indexes, CI/CD integration.</p>
+        <p>Complete DB migration system: Alembic config with PostgreSQL 17, full schema migration (subscriptions, notifications, delivery logs, DLQ), indexes, CI/CD integration.</p>
         <h2>Cloud Tasks Production Delivery (PR #5)</h2>
         <p>Draft PR (+921/-71). At-least-once delivery with idempotent handlers, exponential backoff, DLQ for permanent failures, per-subscriber circuit breakers.</p>
-        <h2>Audit Findings (18 Issues)</h2>
+        <h2>Audit Findings</h2>
         <p>Race conditions in caching/dispatch/subscription services. Memory leaks from unbounded growth. No DB backup before migrations. No automated tests in CI/CD. Missing .dockerignore. Fire-and-forget event publisher. Overly permissive CORS.</p>
       </div>
       <footer class="blog-footer">

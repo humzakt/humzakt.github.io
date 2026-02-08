@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building an Automated LLM Scoring Service: 52 PRs from v1 to Production — Humza Tareen</title>
+  <title>Building an Automated LLM Scoring Service: From Prototype to Production — Humza Tareen</title>
   <meta name="description" content="How I built and hardened an automated rating service that scores LLM outputs. From idempotent Cloud Tasks to LiteLLM proxy, Redis state management, and VPC networking battles.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="LLM, Auto-Rating, Cloud Run, Cloud Tasks, Redis, LiteLLM, PostgreSQL, Python, FastAPI">
   <link rel="canonical" href="https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html">
-  <meta property="og:title" content="Building an Automated LLM Scoring Service: 52 PRs from v1 to Production">
+  <meta property="og:title" content="Building an Automated LLM Scoring Service: From Prototype to Production">
   <meta property="og:description" content="How I built and hardened an automated rating service that scores LLM outputs. From idempotent Cloud Tasks to LiteLLM proxy, Redis state management, and VPC networking battles.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html">
@@ -23,14 +23,14 @@
   <meta property="article:tag" content="Python">
   <meta property="article:tag" content="FastAPI">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Building an Automated LLM Scoring Service: 52 PRs from v1 to Production">
+  <meta name="twitter:title" content="Building an Automated LLM Scoring Service: From Prototype to Production">
   <meta name="twitter:description" content="Idempotent Cloud Tasks, LiteLLM proxy, Redis state management, and VPC networking battles.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Building an Automated LLM Scoring Service: 52 PRs from v1 to Production",
+    "headline": "Building an Automated LLM Scoring Service: From Prototype to Production",
     "description": "How I built and hardened an automated rating service that scores LLM outputs.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
@@ -97,7 +97,7 @@
     <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">Building an Automated LLM Scoring Service: 52 PRs from v1 to Production</h1>
+        <h1 class="blog-title">Building an Automated LLM Scoring Service: From Prototype to Production</h1>
         <div class="blog-meta"><time datetime="2026-02-08">Feb 8, 2026</time><span>&middot;</span><span>10 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
         <div class="blog-tags">
           <span class="blog-tag">Cloud Run</span><span class="blog-tag">Cloud Tasks</span><span class="blog-tag">Redis</span><span class="blog-tag">LiteLLM</span><span class="blog-tag">Python</span><span class="blog-tag">FastAPI</span>
@@ -105,27 +105,25 @@
       </header>
       <div class="blog-content">
         <h2>What This Service Does</h2>
-        <p>The Auto-Rater evaluates LLM outputs using configurable scoring criteria. It takes an agent's output, runs it through multiple evaluation strategies (direct scoring, debate, chain-of-thought), and produces structured quality assessments. I shipped <strong>52 PRs</strong> taking it from prototype to production.</p>
+        <p>The Auto-Rater evaluates LLM outputs using configurable scoring criteria. It takes an agent's output, runs it through multiple evaluation strategies (direct scoring, debate, chain-of-thought), and produces structured quality assessments. I led the engineering effort taking it from prototype to production.</p>
         <h2>The v1 → v2 Migration</h2>
         <p><strong>v1 Problems:</strong> Hardcoded model names, no idempotency (Cloud Tasks retries created duplicates), 4,270 lines of <code>print()</code> statements, Redis client with no timeouts, DB pool sized for dev.</p>
-        <h2>Idempotent Cloud Tasks (PRs #31, #32)</h2>
-        <p>Most impactful pattern. Cloud Tasks delivers at-least-once, so every handler must be idempotent. PR #31 added idempotent writes for COT generations. PR #32 extended to all evaluation writes with deterministic IDs from payload using <code>INSERT ... ON CONFLICT DO NOTHING</code>. Zero duplicate evaluations since deployment.</p>
-        <h2>The Logging Overhaul (PR #21)</h2>
-        <p>+5,630/-4,270 lines. Replaced every <code>print()</code> with structured logging. Added env-driven config, correlation IDs via <code>X-Correlation-ID</code>, cross-service correlation with notification service, PII stripping.</p>
-        <h2>OpenAI Responses Envelope (PRs #26, #27)</h2>
+        <h2>Idempotent Cloud Tasks</h2>
+        <p>Most impactful pattern. Cloud Tasks delivers at-least-once, so every handler must be idempotent. Added idempotent writes for COT generations, then extended to all evaluation writes with deterministic IDs from payload using <code>INSERT ... ON CONFLICT DO NOTHING</code>. Zero duplicate evaluations since deployment.</p>
+        <h2>The Logging Overhaul</h2>
+        <p>Replaced every <code>print()</code> with structured logging. Added env-driven config, correlation IDs via <code>X-Correlation-ID</code>, cross-service correlation with notification service, PII stripping.</p>
+        <h2>OpenAI Responses Envelope</h2>
         <p>OpenAI-compatible responses envelope with LiteLLM pass-through. Any model available through LiteLLM works without code changes — just change model name in config.</p>
-        <h2>The VPC Connector Saga (PRs #46-#54)</h2>
-        <p>3-day debugging marathon across 8 PRs. Cloud Run couldn't connect to Redis (Memorystore). PR #46: socket timeouts to prevent infinite hangs. PRs #48-#49: added VPC connector. PR #51: discovered Direct VPC Egress conflicting with connector. PRs #53-#54: removed VPC connector (infra had moved to Direct VPC). Lesson: Cloud Run networking has two mutually exclusive modes.</p>
-        <h2>Redis State Recovery (PRs #43, #44)</h2>
-        <p>Evaluations take 1-30 min. Frontend polls Redis for progress. Discovered state updates logging "success" even when key didn't exist. PR #44 (+293/-152, 17 files) rewrote Redis state management to verify results and create recovery records.</p>
-        <h2>Production Hardening (PR #40)</h2>
+        <h2>The VPC Connector Saga</h2>
+        <p>3-day debugging marathon. Cloud Run couldn't connect to Redis (Memorystore). Added socket timeouts to prevent infinite hangs, then added VPC connector. Discovered Direct VPC Egress conflicting with connector. Removed VPC connector (infra had moved to Direct VPC). Lesson: Cloud Run networking has two mutually exclusive modes.</p>
+        <h2>Redis State Recovery</h2>
+        <p>Evaluations take 1-30 min. Frontend polls Redis for progress. Discovered state updates logging "success" even when key didn't exist. Rewrote Redis state management to verify results and create recovery records.</p>
+        <h2>Production Hardening</h2>
         <p>Cloud Run defaults to 80 concurrent requests. Each holds DB connection. 80 × 10 instances = 800 connections against Cloud SQL supporting ~100. Fix: <code>containerConcurrency=10</code>, <code>uvicorn workers=1</code>, <code>pool_size=5</code>, <code>max_overflow=10</code>.</p>
         <h2>By the Numbers</h2>
         <table>
           <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Pull requests</td><td>52 (all merged)</td></tr>
           <tr><td>Issues filed</td><td>71</td></tr>
-          <tr><td>Lines added</td><td>~95,000+</td></tr>
           <tr><td>Timeframe</td><td>Aug 2025 — Feb 2026</td></tr>
           <tr><td>GCP services</td><td>Cloud Run, Cloud Tasks, Cloud SQL, Redis (Memorystore), GCS, Pub/Sub, Secret Manager</td></tr>
         </table>

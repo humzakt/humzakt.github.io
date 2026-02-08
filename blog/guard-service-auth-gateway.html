@@ -105,17 +105,17 @@
       </header>
       <div class="blog-content">
         <h2>What This Service Does</h2>
-        <p>The Guard Service is the front door to the platform. Handles auth (Google OIDC, JWT, API keys), authorization, API routing via Kong, admin dashboard for notifications/subscriptions/delivery logs. <strong>10 PRs</strong> and <strong>22 security issues</strong> filed.</p>
+        <p>The Guard Service is the front door to the platform. Handles auth (Google OIDC, JWT, API keys), authorization, API routing via Kong, admin dashboard for notifications/subscriptions/delivery logs. Multiple security vulnerabilities identified and addressed.</p>
         <h2>Notifications Admin Dashboard (PRs #44-#48)</h2>
-        <p>5 PRs in a single day: <strong>PR #44</strong> fixed crashes with missing notification IDs. <strong>PR #45</strong> row-click details modal + pnpm lockfile (+4,053 lines). <strong>PR #46</strong> subscription "All vs Active" filter + sortable tables. <strong>PR #47</strong> table pagination + delivery log filters. <strong>PR #48</strong> admin guide documentation.</p>
+        <p>Delivered multiple features in rapid succession: <strong>PR #44</strong> fixed crashes with missing notification IDs. <strong>PR #45</strong> row-click details modal + pnpm lockfile. <strong>PR #46</strong> subscription "All vs Active" filter + sortable tables. <strong>PR #47</strong> table pagination + delivery log filters. <strong>PR #48</strong> admin guide documentation.</p>
         <h2>Route Cache Invalidation Bug (PR #43)</h2>
         <p>API gateway caches routes for performance. Admin updates didn't invalidate cache. Stale routes served for 5 min. Deleting a service returned 200 instead of 404. Fix: explicit cache invalidation on mutations + proper 404.</p>
         <h2>Invite Auth Flow (PR #52)</h2>
         <p>Two bugs: invite URL pointed to wrong OAuth callback, accepting invite could downgrade existing user's role. Fix: correct URL construction + role comparison (only upgrade, never downgrade).</p>
-        <h2>Security Audit (22 Issues)</h2>
+        <h2>Security Audit</h2>
         <p><strong>Critical:</strong> hardcoded Cloud Run URL in OpenAPI spec, missing security scanning. <strong>High:</strong> JWT in localStorage (XSS), missing POSTGRES_HOST in prod, no error boundaries, console.log leaking data. <strong>Medium:</strong> missing OAuth state validation, no DB enum validation, missing indexes.</p>
         <h2>Pre-Commit Hooks (PR #49)</h2>
-        <p>+15,403/-11,781 lines. Added formatting + compile/typecheck hooks for backend (Python/ruff) and frontend (Prettier/ESLint).</p>
+        <p>Added formatting + compile/typecheck hooks for backend (Python/ruff) and frontend (Prettier/ESLint).</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>I Audited Our AI Platform and Found 25 Critical Security Issues — Humza Tareen</title>
-  <meta name="description" content="A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a 3,677-line God Class. Here's the methodology and fixes.">
+  <title>I Audited Our AI Platform and Found Critical Security Gaps — Humza Tareen</title>
+  <meta name="description" content="A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a monolithic God Class. Here's the methodology and fixes.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="Security, Audit, Cloud Security, SQL Injection, GCP, Python, Production Hardening">
   <link rel="canonical" href="https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html">
-  <meta property="og:title" content="I Audited Our AI Platform and Found 25 Critical Security Issues">
-  <meta property="og:description" content="A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a 3,677-line God Class. Here's the methodology and fixes.">
+  <meta property="og:title" content="I Audited Our AI Platform and Found Critical Security Gaps">
+  <meta property="og:description" content="A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a monolithic God Class. Here's the methodology and fixes.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html">
   <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
@@ -22,15 +22,15 @@
   <meta property="article:tag" content="Python">
   <meta property="article:tag" content="DevOps">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="I Audited Our AI Platform and Found 25 Critical Security Issues">
-  <meta name="twitter:description" content="A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a 3,677-line God Class. Here's the methodology and fixes.">
+  <meta name="twitter:title" content="I Audited Our AI Platform and Found Critical Security Gaps">
+  <meta name="twitter:description" content="A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a monolithic God Class. Here's the methodology and fixes.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "I Audited Our AI Platform and Found 25 Critical Security Issues",
-    "description": "A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a 3,677-line God Class. Here's the methodology and fixes.",
+    "headline": "I Audited Our AI Platform and Found Critical Security Gaps",
+    "description": "A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a monolithic God Class. Here's the methodology and fixes.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
     "publisher": { "@type": "Person", "name": "Humza Tareen" },
@@ -99,7 +99,7 @@
     <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">I Audited Our AI Platform and Found 25 Critical Security Issues</h1>
+        <h1 class="blog-title">I Audited Our AI Platform and Found Critical Security Gaps</h1>
         <div class="blog-meta">
           <time datetime="2026-02-08">Feb 8, 2026</time>
           <span>&middot;</span>
@@ -131,7 +131,7 @@
 
         <h2>Architecture Issues</h2>
         <ul>
-          <li>A 3,677-line ParallelOrchestrator class (textbook God Class)</li>
+          <li>A monolithic ParallelOrchestrator class (textbook God Class)</li>
           <li>V1 dependencies leaking into V2 code (architecture boundary violation)</li>
           <li>In-memory rate limiting (doesn't work across Cloud Run instances)</li>
           <li>CPU-bound algorithms blocking the async event loop</li>
@@ -156,7 +156,7 @@
         </ul>
 
         <h2>The Filing System</h2>
-        <p>156 GitHub issues with severity labels: 25 Critical, 50 High, 60 Medium, 21 Low. Systematic issue tracking meant nothing fell through the cracks.</p>
+        <p>156 GitHub issues with severity labels: Critical, High, Medium, and Low. Systematic issue tracking meant nothing fell through the cracks.</p>
         <p>The takeaway: schedule security audits. Don't wait for an incident. The 2 days I spent auditing saved us from at least 3 potential production incidents.</p>
         
       </div>

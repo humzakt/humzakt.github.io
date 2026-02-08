@@ -73,7 +73,7 @@
     "blogPost": [
       {
         "@type": "BlogPosting",
-        "headline": "Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters",
+        "headline": "Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System",
         "url": "https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html",
         "datePublished": "2026-02-08",
         "author": { "@type": "Person", "name": "Humza Tareen" }
@@ -96,34 +96,6 @@
         "@type": "BlogPosting",
         "headline": "How to Build Idempotent Cloud Tasks Handlers in Python",
         "url": "https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html",
-        "datePublished": "2026-02-08",
-        "author": { "@type": "Person", "name": "Humza Tareen" }
-      },
-      {
-        "@type": "BlogPosting",
-        "headline": "Zero-Downtime Embedding Migration: Switching Models in a Production RAG System",
-        "url": "https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html",
-        "datePublished": "2026-02-08",
-        "author": { "@type": "Person", "name": "Humza Tareen" }
-      },
-      {
-        "@type": "BlogPosting",
-        "headline": "I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks",
-        "url": "https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html",
-        "datePublished": "2026-02-08",
-        "author": { "@type": "Person", "name": "Humza Tareen" }
-      },
-      {
-        "@type": "BlogPosting",
-        "headline": "Building an RL Training Arena for AI Code Agents on GCP",
-        "url": "https://humzakt.github.io/blog/rl-training-arena-code-agents.html",
-        "datePublished": "2026-02-08",
-        "author": { "@type": "Person", "name": "Humza Tareen" }
-      },
-      {
-        "@type": "BlogPosting",
-        "headline": "I Audited Our AI Platform and Found 25 Critical Security Issues",
-        "url": "https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html",
         "datePublished": "2026-02-08",
         "author": { "@type": "Person", "name": "Humza Tareen" }
       }
@@ -153,8 +125,8 @@
       <a href="#about" role="listitem"><span class="nav-number" aria-hidden="true">01.</span>About</a>
       <a href="#experience" role="listitem"><span class="nav-number" aria-hidden="true">02.</span>Experience</a>
       <a href="#skills" role="listitem"><span class="nav-number" aria-hidden="true">03.</span>Skills</a>
-      <a href="#articles" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Articles</a>
-      <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">05.</span>Education</a>
+      <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Education</a>
+      <a href="#articles" role="listitem"><span class="nav-number" aria-hidden="true">05.</span>Articles</a>
       <div class="resume-dropdown" role="listitem">
         <button class="nav-cta resume-toggle" aria-expanded="false" aria-haspopup="true">
           <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -183,8 +155,8 @@
     <a href="#about" class="mobile-link"><span class="nav-number" aria-hidden="true">01.</span> About</a>
     <a href="#experience" class="mobile-link"><span class="nav-number" aria-hidden="true">02.</span> Experience</a>
     <a href="#skills" class="mobile-link"><span class="nav-number" aria-hidden="true">03.</span> Skills</a>
-    <a href="#articles" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Articles</a>
-    <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">05.</span> Education</a>
+    <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Education</a>
+    <a href="#articles" class="mobile-link"><span class="nav-number" aria-hidden="true">05.</span> Articles</a>
     <div class="resume-dropdown">
       <button class="nav-cta mobile-link resume-toggle" aria-expanded="false" aria-haspopup="true">
         <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -345,9 +317,11 @@
         <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">July 2025 &mdash; Present &middot; Palo Alto, CA (Remote)</p>
         <ul class="exp-bullets">
-          <li>Architecting a suite of AI-powered backend services (Python, FastAPI, RAG, PostgreSQL, Redis, GCP) that automate the entire model evaluation and data processing pipeline &mdash; directly accelerating the development lifecycle for AI training teams.</li>
-          <li>Accelerating development velocity by integrating AI-native tools (Cursor, OpenAI Codex, Claude Code) into daily workflows &mdash; shipping production-grade microservices at significantly faster timelines.</li>
-          <li>Collaborating cross-functionally to identify bottlenecks and deliver robust, scalable systems now integral to core internal operations.</li>
+          <li>Architected and shipped 10 production microservices on GCP (Cloud Run, GKE, AlloyDB, Pub/Sub, Cloud Tasks) powering an AI agent evaluation platform &mdash; including the core evaluation engine, automated LLM scoring service, RAG retrieval pipeline, RL training arena, and authentication gateway.</li>
+          <li>Diagnosed and resolved a critical AlloyDB SSL connection failure affecting 5% of evaluation tasks by tracing it to a connection pool lifecycle mismatch &mdash; reducing failure rate to 0.01%.</li>
+          <li>Built an automated LLM scoring service with idempotent Cloud Tasks delivery, LiteLLM proxy integration for model-agnostic evaluation, and Redis-based real-time state tracking &mdash; handling thousands of evaluations daily with zero duplicates.</li>
+          <li>Designed an event-driven pipeline using Pub/Sub (35 topics with DLQs), Cloud Tasks, and Cloud Scheduler to orchestrate 6-phase evaluation workflows with independent retry and zero silent failures.</li>
+          <li>Conducted a systematic security audit across the platform, identifying critical vulnerabilities (SQL injection, hardcoded credentials, unauthenticated endpoints) and implementing fixes via GCP Secret Manager, parameterized queries, and structured logging.</li>
         </ul>
       </div>
       <div class="exp-entry fade-in">
@@ -562,35 +536,10 @@
     </div>
   </section>
 
-  <!-- ===== FEATURED ARTICLES ===== -->
-  <section class="section" id="articles" aria-labelledby="articles-title">
-    <div class="section-header fade-in">
-      <span class="section-number">04.</span>
-      <h2 class="section-title" id="articles-title">Featured Articles</h2>
-      <span class="section-line" aria-hidden="true"></span>
-    </div>
-    <p class="section-subtitle fade-in">Technical deep-dives and lessons from production</p>
-
-    <!-- Filter tags -->
-    <div class="article-filters fade-in" role="tablist" aria-label="Filter articles by topic">
-      <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
-      <button class="filter-btn" data-filter="infrastructure" role="tab" aria-selected="false">Infrastructure</button>
-      <button class="filter-btn" data-filter="ml-ai" role="tab" aria-selected="false">ML/AI</button>
-      <button class="filter-btn" data-filter="devops" role="tab" aria-selected="false">DevOps</button>
-      <button class="filter-btn" data-filter="performance" role="tab" aria-selected="false">Performance</button>
-      <button class="filter-btn" data-filter="api-design" role="tab" aria-selected="false">API Design</button>
-    </div>
-
-    <!-- Article cards grid (populated dynamically from article-meta.json) -->
-    <div class="articles-grid" id="articles-grid">
-      <p class="articles-loading fade-in">Loading articles...</p>
-    </div>
-  </section>
-
   <!-- ===== EDUCATION & CERTIFICATIONS ===== -->
   <section class="section" id="education">
     <div class="section-header fade-in">
-      <span class="section-number">05.</span>
+      <span class="section-number">04.</span>
       <h2 class="section-title">Education &amp; Credentials</h2>
       <span class="section-line" aria-hidden="true"></span>
     </div>
@@ -637,6 +586,26 @@
         <img src="https://cdn.simpleicons.org/ieee/64ffda" alt="IEEE" class="cert-logo">
         <span>IEEE EMBC 2025 Publication &mdash; <a href="https://ieeexplore.ieee.org/document/11253669" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">OptiGuard</a></span>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURED ARTICLES ===== -->
+  <section class="section" id="articles" aria-labelledby="articles-title">
+    <div class="section-header fade-in">
+      <span class="section-number">05.</span>
+      <h2 class="section-title" id="articles-title">Featured Articles</h2>
+      <span class="section-line" aria-hidden="true"></span>
+    </div>
+    <p class="section-subtitle fade-in">Technical deep-dives and lessons from production</p>
+
+    <!-- Article cards grid (populated dynamically, limited to 4) -->
+    <div class="articles-grid" id="articles-grid">
+      <p class="articles-loading fade-in">Loading articles...</p>
+    </div>
+    <div class="articles-view-all fade-in" style="text-align: center; margin-top: 2rem;">
+      <a href="blog.html" class="btn-ghost" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px;">
+        View All Articles <i class="fas fa-arrow-right"></i>
+      </a>
     </div>
   </section>
 
@@ -955,7 +924,9 @@
           return;
         }
         grid.innerHTML = '';
-        articles.forEach(function(article) {
+        // Show only first 4 articles on main page
+        var displayArticles = articles.slice(0, 4);
+        displayArticles.forEach(function(article) {
           const themes = (article.themes || []).join(' ');
           const date = article.date ? new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
           const primaryPlatform = Object.keys(article.platforms || {})[0] || 'medium';

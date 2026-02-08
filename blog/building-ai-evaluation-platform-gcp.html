@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters — Humza Tareen</title>
-  <meta name="description" content="A deep dive into the architecture behind a production-grade AI agent evaluation system on GCP with 35 Cloud Run services, 3 GKE clusters, and 17 PostgreSQL databases.">
+  <title>Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System — Humza Tareen</title>
+  <meta name="description" content="A deep dive into the architecture behind a production-grade AI agent evaluation system on GCP with multiple Cloud Run services, several GKE clusters, and managed databases.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="GCP, Cloud Run, GKE, Kubernetes, Microservices, AI, Cloud Architecture, PostgreSQL, Pub/Sub, Cloud Tasks, Python, FastAPI">
   <link rel="canonical" href="https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html">
   <!-- Open Graph -->
-  <meta property="og:title" content="Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters">
+  <meta property="og:title" content="Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System">
   <meta property="og:description" content="A deep dive into the architecture behind a production-grade AI agent evaluation system on GCP.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html">
@@ -24,14 +24,14 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Building an AI Evaluation Platform on GCP">
-  <meta name="twitter:description" content="35 microservices, 3 K8s clusters, 35 Pub/Sub topics. Architecture deep dive.">
+  <meta name="twitter:description" content="Architecture deep dive into a production-grade AI evaluation platform on GCP.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <!-- JSON-LD BlogPosting -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters, and Lessons Learned",
+    "headline": "Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System",
     "description": "A deep dive into the architecture behind a production-grade AI agent evaluation system on GCP.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": {
@@ -116,7 +116,7 @@
 
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters, and Lessons Learned</h1>
+        <h1 class="blog-title">Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System</h1>
         <div class="blog-meta">
           <time datetime="2026-02-08">Feb 8, 2026</time>
           <span>·</span>
@@ -165,25 +165,25 @@
 
         <h3>Infrastructure Layer</h3>
 <pre><code>┌─────────────────────────────────────────────────┐
-│          Cloud Run (35 services)                 │
+│          Cloud Run (multiple services)           │
 │  Auto-scaling: 0-100 instances per service       │
 │  Regions: us-central1, us-west1, asia-southeast1 │
 ├─────────────────────────────────────────────────┤
-│       GKE (3 clusters, up to 39 nodes)           │
+│       GKE (several clusters, auto-scaling)       │
 │  - CLI Eval: n2-standard-8 + n2-highmem-4       │
 │  - OSWorld: e2-medium + n2-standard-4            │
 ├─────────────────────────────────────────────────┤
 │              Data Layer                           │
-│  - 17 Cloud SQL (PostgreSQL 17, Regional HA)     │
-│  - 12 Firestore databases                        │
+│  - Cloud SQL (PostgreSQL, Regional HA)           │
+│  - Multiple Firestore databases                  │
 │  - Redis (Memorystore) for caching               │
 │  - pgvector for embedding similarity search      │
 ├─────────────────────────────────────────────────┤
 │        Event &amp; Orchestration                     │
-│  - 35 Pub/Sub topics (with DLQs)                │
+│  - Dozens of Pub/Sub topics (with DLQs)         │
 │  - Cloud Tasks for reliable async execution      │
-│  - Cloud Scheduler (6 daily automation jobs)     │
-│  - 55 GCS buckets for artifacts &amp; results        │
+│  - Cloud Scheduler for daily automation          │
+│  - GCS buckets for artifacts &amp; results          │
 ├─────────────────────────────────────────────────┤
 │            Observability                          │
 │  - Structured logging with correlation IDs       │

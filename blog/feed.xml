@@ -20,7 +20,7 @@
     </image>
 
     <item>
-      <title>Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters, and Lessons Learned</title>
+      <title>Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System and Lessons Learned</title>
       <link>https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -29,7 +29,7 @@
       <category>GCP</category>
       <category>Kubernetes</category>
       <category>Microservices</category>
-      <description>A deep dive into the architecture behind a production-grade AI agent evaluation system on GCP with 35 Cloud Run services, 3 GKE clusters, and 17 PostgreSQL databases.</description>
+      <description>A deep dive into the architecture behind a production-grade AI agent evaluation system on GCP with multiple Cloud Run services, several GKE clusters, and managed databases.</description>
     </item>
 
     <item>
@@ -42,7 +42,7 @@
       <category>GCP</category>
       <category>Pub/Sub</category>
       <category>Cloud Tasks</category>
-      <description>How we orchestrated a 6-phase AI evaluation pipeline with 35 Pub/Sub topics, dead-letter queues, and zero silent failures.</description>
+      <description>How we orchestrated a 6-phase AI evaluation pipeline with dozens of Pub/Sub topics, dead-letter queues, and zero silent failures.</description>
     </item>
 
     <item>
@@ -85,7 +85,7 @@
     </item>
 
     <item>
-      <title>I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks</title>
+      <title>I Built an Open-Source AI Code Quality Tool</title>
       <link>https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -111,7 +111,7 @@
     </item>
 
     <item>
-      <title>I Audited Our AI Platform and Found 25 Critical Security Issues</title>
+      <title>I Audited Our AI Platform and Found Critical Security Gaps</title>
       <link>https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -120,10 +120,10 @@
       <category>Cloud Security</category>
       <category>DevOps</category>
       <category>Python</category>
-      <description>A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a 3,677-line God Class. Here's the methodology and fixes.</description>
+      <description>A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a monolithic God Class. Here's the methodology and fixes.</description>
     </item>
     <item>
-      <title>Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API</title>
+      <title>Building the Core AI Evaluation Engine: AlloyDB Fixes and a Headless API</title>
       <link>https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -131,11 +131,11 @@
       <category>Cloud Architecture</category>
       <category>AlloyDB</category>
       <category>GKE</category>
-      <description>Deep dive into the core evaluation engine. 72 PRs covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API.</description>
+      <description>Deep dive into the core evaluation engine covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API.</description>
     </item>
 
     <item>
-      <title>Building an Automated LLM Scoring Service: 52 PRs from v1 to Production</title>
+      <title>Building an Automated LLM Scoring Service: From v1 to Production</title>
       <link>https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -143,7 +143,7 @@
       <category>AI Infrastructure</category>
       <category>Cloud Tasks</category>
       <category>LiteLLM</category>
-      <description>From idempotent Cloud Tasks to LiteLLM proxy, Redis state management, and VPC networking battles. 52 PRs shipping an automated LLM rating service.</description>
+      <description>From idempotent Cloud Tasks to LiteLLM proxy, Redis state management, and VPC networking battles. Shipping an automated LLM rating service.</description>
     </item>
 
     <item>
@@ -155,7 +155,7 @@
       <category>Security</category>
       <category>Authentication</category>
       <category>API Gateway</category>
-      <description>Auth gateway with Google OIDC, JWT, Kong integration, notifications admin dashboard, and 22 security issues filed.</description>
+      <description>Auth gateway with Google OIDC, JWT, Kong integration, notifications admin dashboard, and critical security issues filed.</description>
     </item>
 
     <item>
@@ -183,7 +183,7 @@
     </item>
 
     <item>
-      <title>Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage</title>
+      <title>Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing</title>
       <link>https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -191,7 +191,7 @@
       <category>ML Infrastructure</category>
       <category>Reinforcement Learning</category>
       <category>GKE</category>
-      <description>RL training arena for AI coding agents. Gym-style API, Cloud Build sandboxing, 15-step preprocessor. 12,000+ lines from scratch.</description>
+      <description>RL training arena for AI coding agents. Gym-style API, Cloud Build sandboxing, 15-step preprocessor. Built from scratch.</description>
     </item>
 
     <item>
@@ -203,7 +203,7 @@
       <category>Microservices</category>
       <category>HITL</category>
       <category>WebSocket</category>
-      <description>Four additional services: HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service, and memory evaluation suite.</description>
+      <description>Four additional services: HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.</description>
     </item>
   </channel>
 </rss>

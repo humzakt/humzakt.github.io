@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API — Humza Tareen</title>
-  <meta name="description" content="Deep dive into the core evaluation engine behind an AI agent assessment platform. 72 PRs covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API.">
+  <title>Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API — Humza Tareen</title>
+  <meta name="description" content="Deep dive into the core evaluation engine behind an AI agent assessment platform. Extensive contributions covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="AI Evaluation, Cloud Run, AlloyDB, GKE, KEDA, Firestore, Python, FastAPI, PostgreSQL">
   <link rel="canonical" href="https://humzakt.github.io/blog/atlas-evaluations-core-engine.html">
-  <meta property="og:title" content="Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API">
-  <meta property="og:description" content="Deep dive into the core evaluation engine behind an AI agent assessment platform. 72 PRs over 4 months.">
+  <meta property="og:title" content="Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API">
+  <meta property="og:description" content="Deep dive into the core evaluation engine behind an AI agent assessment platform. Extensive engineering contributions over 4 months.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/atlas-evaluations-core-engine.html">
   <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
@@ -22,14 +22,14 @@
   <meta property="article:tag" content="KEDA">
   <meta property="article:tag" content="Firestore">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Building the Core AI Evaluation Engine: 72 PRs">
+  <meta name="twitter:title" content="Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API">
   <meta name="twitter:description" content="AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API",
+    "headline": "Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API",
     "description": "Deep dive into the core evaluation engine behind an AI agent assessment platform.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
@@ -96,7 +96,7 @@
     <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API</h1>
+        <h1 class="blog-title">Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API</h1>
         <div class="blog-meta"><time datetime="2026-02-08">Feb 8, 2026</time><span>&middot;</span><span>12 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
         <div class="blog-tags">
           <span class="blog-tag">Cloud Run</span><span class="blog-tag">AlloyDB</span><span class="blog-tag">GKE</span><span class="blog-tag">KEDA</span><span class="blog-tag">Firestore</span><span class="blog-tag">Python</span><span class="blog-tag">FastAPI</span>
@@ -104,7 +104,7 @@
       </header>
       <div class="blog-content">
         <h2>What This Service Does</h2>
-        <p>The Evaluation Engine is the brain of the entire AI assessment platform. It manages the full lifecycle of evaluating AI coding agents: creating tasks, orchestrating agent execution across GKE clusters, collecting outputs, running LLM-based judging, and aggregating results. I contributed <strong>72 pull requests</strong> to this service over 4 months.</p>
+        <p>The Evaluation Engine is the brain of the entire AI assessment platform. It manages the full lifecycle of evaluating AI coding agents: creating tasks, orchestrating agent execution across GKE clusters, collecting outputs, running LLM-based judging, and aggregating results. I made extensive contributions to this service over 4 months, focusing on reliability, scalability, and feature development.</p>
         <h2>The Architecture</h2>
 <pre><code>┌──────────────────────────────────────────────────┐
 │           Evaluation Engine (Cloud Run)           │
@@ -117,29 +117,29 @@
 │  Cloud Tasks              │  Pub/Sub (35 topics)  │
 │  Cloud Scheduler          │  GCS (55 buckets)     │
 └──────────────────────────────────────────────────┘</code></pre>
-        <h2>The AlloyDB SSL Crisis (PRs #264–#395)</h2>
+        <h2>The AlloyDB SSL Crisis</h2>
         <p>This was a multi-week battle. Our evaluation tasks — which run 5-30 minutes — were randomly failing at a 5% rate with <code>SSL connection has been closed unexpectedly</code>.</p>
         <p><strong>The timeline of fixes:</strong></p>
         <ol>
-          <li><strong>PR #264</strong> — First attempt: retry agent-runs fetch on DB SSL disconnect (+608/-55). Added retry decorators. Helped, but didn't fix root cause.</li>
-          <li><strong>PR #267</strong> — Suppress DB SSL errors on session close. Prevent noisy traces from masking the real problem.</li>
-          <li><strong>PR #268</strong> — Firestore score verification + DB pool alignment (+378/-22). Discovered scores writing to the wrong Firestore database.</li>
-          <li><strong>PR #272</strong> — Retry agent_runs on transient SSL disconnects. More targeted retry logic.</li>
-          <li><strong>PR #282</strong> — Harden sessions + transient DB reads (+257/-40). Root cause analysis session.</li>
-          <li><strong>PR #287</strong> — Reduce stale SSL pooled connections. Found actual root cause: AlloyDB kills idle connections at ~10 min, pool recycled at 15 min.</li>
-          <li><strong>PR #395</strong> — Final fix: <code>pool_recycle=180</code>, <code>pool_pre_ping=True</code> (+164/-74).</li>
+          <li><strong>First attempt:</strong> Added retry decorators for agent-runs fetch on DB SSL disconnect. Helped, but didn't fix root cause.</li>
+          <li><strong>Error suppression:</strong> Suppressed DB SSL errors on session close to prevent noisy traces from masking the real problem.</li>
+          <li><strong>Firestore discovery:</strong> During database pool alignment work, discovered scores writing to the wrong Firestore database.</li>
+          <li><strong>Targeted retries:</strong> Implemented more targeted retry logic for transient SSL disconnects on agent_runs.</li>
+          <li><strong>Root cause analysis:</strong> Hardened sessions and transient DB reads to better understand the failure pattern.</li>
+          <li><strong>Connection pooling discovery:</strong> Found actual root cause: AlloyDB kills idle connections at ~10 min, pool recycled at 15 min.</li>
+          <li><strong>Final fix:</strong> Configured <code>pool_recycle=180</code> and <code>pool_pre_ping=True</code> to prevent stale connections.</li>
         </ol>
-        <p><strong>Result:</strong> 5% failure rate → 0.01%. Seven PRs over 2 weeks to fully understand and fix one infrastructure bug.</p>
-        <h2>The Firestore Default Database Trap (PRs #268, #271, #294, #300)</h2>
+        <p><strong>Result:</strong> 5% failure rate → 0.01%. Multiple iterations over 2 weeks to fully understand and fix one infrastructure bug.</p>
+        <h2>The Firestore Default Database Trap</h2>
         <p>Firestore has a <code>(default)</code> database. If you don't specify which database to use, everything routes there. We had 12 Firestore databases, but several code paths were accidentally hitting the default.</p>
-        <p><strong>PR #294</strong> was the definitive fix: prevent Firestore default-db misrouting + restore auto-export. Every Firestore reference now explicitly specifies its database ID.</p>
-        <p><strong>PR #300</strong> extended this to the React frontend — real-time listeners were using the wrong database, causing stale UI data.</p>
-        <h2>Continuous Learning Pipeline (PR #411)</h2>
-        <p>PR #411 resolved gaps preventing agent training on historical performance. Fixed data flow between the evaluation engine, RAG service (pgvector), and auto-rater (+211/-9).</p>
-        <h2>Headless API Mode (PR #415)</h2>
-        <p>The final major feature: a headless API mode (+2,541 lines) allowing external services to trigger evaluations programmatically without the web UI. Teams can now run agent evaluations as part of their CI/CD pipelines.</p>
-        <h2>KEDA Autoscaling (PR #306)</h2>
-        <p>We use KEDA on GKE to scale agent execution pods based on Pub/Sub message backlog. PR #306 fixed an invalid <code>idleReplicaCount</code> setting preventing scale-to-zero, and warm replicas not being maintained. After the fix, the cluster properly scales 0→39 nodes based on evaluation queue depth.</p>
+        <p>The definitive fix was preventing Firestore default-db misrouting and restoring auto-export. Every Firestore reference now explicitly specifies its database ID.</p>
+        <p>This was also extended to the React frontend — real-time listeners were using the wrong database, causing stale UI data.</p>
+        <h2>Continuous Learning Pipeline</h2>
+        <p>Resolved gaps preventing agent training on historical performance. Fixed data flow between the evaluation engine, RAG service (pgvector), and auto-rater.</p>
+        <h2>Headless API Mode</h2>
+        <p>The final major feature: a headless API mode allowing external services to trigger evaluations programmatically without the web UI. Teams can now run agent evaluations as part of their CI/CD pipelines.</p>
+        <h2>KEDA Autoscaling</h2>
+        <p>We use KEDA on GKE to scale agent execution pods based on Pub/Sub message backlog. Fixed an invalid <code>idleReplicaCount</code> setting preventing scale-to-zero, and warm replicas not being maintained. After the fix, the cluster properly scales 0→39 nodes based on evaluation queue depth.</p>
         <h2>Security Audit (37 Issues Filed)</h2>
         <ul>
           <li><strong>Critical:</strong> Firestore rules allowing unauthenticated read/write, production K8s using <code>:latest</code> tags, zero frontend test coverage, no React Error Boundaries</li>
@@ -148,9 +148,7 @@
         <h2>By the Numbers</h2>
         <table>
           <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Pull requests</td><td>72 (71 merged, 1 closed)</td></tr>
           <tr><td>Issues filed</td><td>37 (including 4 critical)</td></tr>
-          <tr><td>Lines added</td><td>~85,000+</td></tr>
           <tr><td>Timeframe</td><td>Nov 2025 — Feb 2026</td></tr>
           <tr><td>GCP services</td><td>Cloud Run, GKE, AlloyDB, Firestore, Cloud Tasks, Pub/Sub, Cloud Scheduler, GCS, Secret Manager</td></tr>
         </table>

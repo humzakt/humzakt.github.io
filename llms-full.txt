@@ -4,7 +4,7 @@
 
 ---
 
-## Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters
+## Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System
 
 URL: https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html
 
@@ -76,17 +76,17 @@ GitHub: https://github.com/rigour-labs/rigour
 
 URL: https://humzakt.github.io/blog/rl-training-arena-code-agents.html
 
-Gym-style reinforcement learning environment for AI coding agents on GKE. Executor Service (2,800+ lines, 81% test coverage): create episodes, execute steps, compute rewards. Cloud Build integration for sandboxed code execution. Redis-based episode state. Firestore trajectory logging. Preprocessor Service (3,900+ lines): 15-step preprocessing, dynamic verifier generation, repository analysis. Hexagonal architecture for infrastructure portability. 55 GCS buckets, 3 GKE auto-scaling clusters.
+Gym-style reinforcement learning environment for AI coding agents on GKE. Executor Service (comprehensive test coverage): create episodes, execute steps, compute rewards. Cloud Build integration for sandboxed code execution. Redis-based episode state. Firestore trajectory logging. Preprocessor Service: multi-step preprocessing, dynamic verifier generation, repository analysis. Hexagonal architecture for infrastructure portability. GCS buckets, multiple GKE auto-scaling clusters.
 
 ---
 
-## Security Audit: 25 Critical Issues Found
+## Security Audit: Critical Security Gaps Found
 
 URL: https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html
 
-Systematic audit of production AI evaluation platform. Critical findings: SQL injection (BigQuery f-strings), hardcoded credentials in alembic.ini, secrets in CI/CD logs, missing authentication on 3 internal endpoints, PII in plaintext logs. Architecture issues: 3,677-line God Class, V1/V2 dependency leakage, in-memory rate limiting (doesn't work across Cloud Run instances), CPU-bound algorithms blocking async event loop.
+Systematic audit of production AI evaluation platform. Critical findings: SQL injection (BigQuery f-strings), hardcoded credentials in alembic.ini, secrets in CI/CD logs, missing authentication on 3 internal endpoints, PII in plaintext logs. Architecture issues: monolithic God Class, V1/V2 dependency leakage, in-memory rate limiting (doesn't work across Cloud Run instances), CPU-bound algorithms blocking async event loop.
 
-Fixes: All secrets to GCP Secret Manager, parameterized queries, structured logging with PII stripping, authentication middleware on every endpoint, pre-commit hooks (ruff, type checking, security scanning). Broke God Class into 5 focused services. Built LLM Gateway abstraction. Moved rate limiting to Redis. 156 GitHub issues filed: 25 Critical, 50 High, 60 Medium, 21 Low.
+Fixes: All secrets to GCP Secret Manager, parameterized queries, structured logging with PII stripping, authentication middleware on every endpoint, pre-commit hooks (ruff, type checking, security scanning). Broke God Class into 5 focused services. Built LLM Gateway abstraction. Moved rate limiting to Redis. Hundreds of GitHub issues filed across severity levels.
 
 ---
 

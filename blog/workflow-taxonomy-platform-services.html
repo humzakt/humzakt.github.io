@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals — Humza Tareen</title>
-  <meta name="description" content="A roundup of four additional services: a HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service, and memory evaluation suite.">
+  <meta name="description" content="A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="Microservices, HITL, Workflow, Taxonomy, Platform, Python, FastAPI, WebSocket, PostgreSQL">
   <link rel="canonical" href="https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html">
   <meta property="og:title" content="Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals">
-  <meta property="og:description" content="A roundup of four additional services: a HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service, and memory evaluation suite.">
+  <meta property="og:description" content="A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html">
   <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
@@ -24,14 +24,14 @@
   <meta property="article:tag" content="PostgreSQL">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals">
-  <meta name="twitter:description" content="A roundup of four additional services: a HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service, and memory evaluation suite.">
+  <meta name="twitter:description" content="A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals",
-    "description": "A roundup of four additional services: a HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service, and memory evaluation suite.",
+    "description": "A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
     "publisher": { "@type": "Person", "name": "Humza Tareen" },
@@ -105,7 +105,7 @@
       </header>
       <div class="blog-content">
         <h2>1. Workflow Orchestration</h2>
-        <p><strong>1 massive PR:</strong> <code>+53,964/-17,707</code> across <strong>182 files</strong>.</p>
+        <p>A comprehensive Human-in-the-Loop (HITL) workflow system built from the ground up.</p>
         <p>A Human-in-the-Loop (HITL) workflow system enabling complex multi-step processes with human approval gates. Features include:</p>
         <ul>
           <li>Production logging infrastructure</li>
@@ -115,16 +115,16 @@
           <li>Alembic database migrations</li>
         </ul>
         <h2>2. Taxonomy Workflow Engine</h2>
-        <p><strong>6 PRs</strong>, totaling <strong>~9,500 lines</strong>.</p>
+        <p>A classification system for evaluation tasks built with multiple focused contributions.</p>
         <p>Classification system for evaluation tasks. Key contributions:</p>
         <ul>
-          <li>File upload functionality (<code>+6,930/-1,551</code>)</li>
+          <li>File upload functionality</li>
           <li>Keyword matching improvements</li>
           <li>Bug fixes and stability improvements</li>
         </ul>
         <p><strong>Infrastructure:</strong> Cloud SQL + GCS + Cloud Run</p>
         <h2>3. Core Platform Service</h2>
-        <p><strong>5 PRs</strong> covering:</p>
+        <p>Key contributions include:</p>
         <ul>
           <li>User management (delete endpoint)</li>
           <li>JWT authentication bug fixes</li>
@@ -132,7 +132,7 @@
           <li>Improved <code>start_dev.sh</code> with Docker container handling</li>
         </ul>
         <h2>4. Memory Evaluation Suite</h2>
-        <p><strong>1 PR:</strong> <code>+12,493/-3,152</code></p>
+        <p>Pre-commit workflow implementation:</p>
         <p>Pre-commit workflow with Ruff linting and formatting via GitHub Actions. Ensures code quality and consistency across the codebase.</p>
         <h2>Common Patterns</h2>
         <p>Across all services, I maintained consistent patterns:</p>
