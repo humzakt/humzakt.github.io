@@ -25,6 +25,16 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 - [RL Training Arena for Code Agents](https://humzakt.github.io/blog/rl-training-arena-code-agents.html): Reinforcement learning on GKE with Cloud Build sandboxing
 - [Security Audit: 25 Critical Issues](https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html): SQL injection, hardcoded credentials, and a 3,677-line God Class
 
+## Service Deep-Dives
+
+- [Core AI Evaluation Engine (72 PRs)](https://humzakt.github.io/blog/atlas-evaluations-core-engine.html): AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, headless API
+- [Automated LLM Scoring Service (52 PRs)](https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html): Idempotent Cloud Tasks, LiteLLM proxy, Redis state, VPC networking
+- [Auth Gateway & Admin Dashboard](https://humzakt.github.io/blog/guard-service-auth-gateway.html): JWT, OIDC, Kong, notifications admin, 22 security issues
+- [Notification Service](https://humzakt.github.io/blog/notification-service-event-delivery.html): Cloud Tasks delivery, circuit breakers, webhook dispatch
+- [RAG Retrieval Service](https://humzakt.github.io/blog/rag-service-embedding-search.html): pgvector, emergency embedding migration, provenance tracking
+- [RL Training Arena](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Gym-style API, Cloud Build sandboxing, 81% test coverage
+- [Workflow, Taxonomy, Platform, Memory Evals](https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html): Four services roundup
+
 ## Links
 
 - Portfolio: https://humzakt.github.io

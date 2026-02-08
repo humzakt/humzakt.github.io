@@ -86,5 +86,82 @@
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html"
     }
+  },
+  {
+    "id": "atlas-evaluations-core-engine",
+    "title": "Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API",
+    "summary": "Deep dive into the core evaluation engine. 72 PRs covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API for external integrations.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "ml-ai", "devops"],
+    "components": ["Cloud Run", "AlloyDB", "GKE", "KEDA", "Firestore", "Python"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/atlas-evaluations-core-engine.html"
+    }
+  },
+  {
+    "id": "auto-rater-service-llm-scoring",
+    "title": "Building an Automated LLM Scoring Service: 52 PRs from v1 to Production",
+    "summary": "From idempotent Cloud Tasks to LiteLLM proxy integration, Redis state management, VPC networking battles, and a complete logging overhaul. 52 PRs shipping an automated rating service.",
+    "date": "2026-02-08",
+    "themes": ["ml-ai", "infrastructure", "api-design"],
+    "components": ["Cloud Run", "Cloud Tasks", "Redis", "LiteLLM", "Python", "FastAPI"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html"
+    }
+  },
+  {
+    "id": "guard-service-auth-gateway",
+    "title": "Building an Auth Gateway with Admin Dashboard: JWT, OIDC, and Notifications Admin",
+    "summary": "Authentication gateway with Google OIDC, JWT, Kong integration, notifications admin dashboard with pagination and delivery logs, route cache invalidation, and 22 security issues.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Authentication", "JWT", "Kong", "React", "Cloud Run"],
+    "platforms": {
+      "linkedin": "https://humzakt.github.io/blog/guard-service-auth-gateway.html"
+    }
+  },
+  {
+    "id": "notification-service-event-delivery",
+    "title": "Building a Notification Service: Cloud Tasks Delivery, Circuit Breakers, and Webhook Dispatch",
+    "summary": "Production notification service with Cloud Tasks delivery, circuit breakers, dead-letter queues, subscription management, Alembic migrations from scratch, and 18 audit issues.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "api-design"],
+    "components": ["Cloud Tasks", "Webhooks", "FastAPI", "PostgreSQL", "Event-Driven"],
+    "platforms": {
+      "devto": "https://humzakt.github.io/blog/notification-service-event-delivery.html"
+    }
+  },
+  {
+    "id": "rag-service-embedding-search",
+    "title": "Building a RAG Retrieval Service: pgvector, Embedding Migrations, and Provenance Tracking",
+    "summary": "RAG retrieval service with pgvector for similarity search. Emergency embedding model migration in 48 hours with zero downtime, plus provenance tracking for evaluation calibration.",
+    "date": "2026-02-08",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["RAG", "pgvector", "Embeddings", "PostgreSQL", "FastAPI"],
+    "platforms": {
+      "devto": "https://humzakt.github.io/blog/rag-service-embedding-search.html"
+    }
+  },
+  {
+    "id": "rl-arena-executor-preprocessor",
+    "title": "Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage",
+    "summary": "Reinforcement learning arena for AI coding agents. Gym-style API, Cloud Build sandboxing, Redis episode management, 15-step preprocessor pipeline. 12,000+ lines from scratch.",
+    "date": "2026-02-08",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["Reinforcement Learning", "GKE", "Cloud Build", "Redis", "Python"],
+    "platforms": {
+      "linkedin": "https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html"
+    }
+  },
+  {
+    "id": "workflow-taxonomy-platform-services",
+    "title": "Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals",
+    "summary": "A roundup of four additional services: HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service with auth fixes, and memory evaluation suite.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Microservices", "HITL", "WebSocket", "Python", "FastAPI"],
+    "platforms": {
+      "linkedin": "https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html"
+    }
   }
 ]

@@ -122,5 +122,88 @@
       <category>Python</category>
       <description>A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a 3,677-line God Class. Here's the methodology and fixes.</description>
     </item>
+    <item>
+      <title>Building the Core AI Evaluation Engine: 72 PRs, AlloyDB Fixes, and a Headless API</title>
+      <link>https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Cloud Architecture</category>
+      <category>AlloyDB</category>
+      <category>GKE</category>
+      <description>Deep dive into the core evaluation engine. 72 PRs covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API.</description>
+    </item>
+
+    <item>
+      <title>Building an Automated LLM Scoring Service: 52 PRs from v1 to Production</title>
+      <link>https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>AI Infrastructure</category>
+      <category>Cloud Tasks</category>
+      <category>LiteLLM</category>
+      <description>From idempotent Cloud Tasks to LiteLLM proxy, Redis state management, and VPC networking battles. 52 PRs shipping an automated LLM rating service.</description>
+    </item>
+
+    <item>
+      <title>Building an Auth Gateway with Admin Dashboard: JWT, OIDC, and Notifications Admin</title>
+      <link>https://humzakt.github.io/blog/guard-service-auth-gateway.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/guard-service-auth-gateway.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Security</category>
+      <category>Authentication</category>
+      <category>API Gateway</category>
+      <description>Auth gateway with Google OIDC, JWT, Kong integration, notifications admin dashboard, and 22 security issues filed.</description>
+    </item>
+
+    <item>
+      <title>Building a Notification Service: Cloud Tasks Delivery, Circuit Breakers, and Webhook Dispatch</title>
+      <link>https://humzakt.github.io/blog/notification-service-event-delivery.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/notification-service-event-delivery.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Event-Driven Systems</category>
+      <category>Cloud Tasks</category>
+      <category>Webhooks</category>
+      <description>Production notification service with Cloud Tasks delivery, circuit breakers, dead-letter queues, and Alembic migrations from scratch.</description>
+    </item>
+
+    <item>
+      <title>Building a RAG Retrieval Service: pgvector, Embedding Migrations, and Provenance Tracking</title>
+      <link>https://humzakt.github.io/blog/rag-service-embedding-search.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/rag-service-embedding-search.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>AI/ML Infrastructure</category>
+      <category>RAG</category>
+      <category>pgvector</category>
+      <description>RAG retrieval service with pgvector. Emergency embedding migration in 48 hours with zero downtime, plus provenance tracking.</description>
+    </item>
+
+    <item>
+      <title>Building an RL Training Arena: Gym-Style API, Cloud Build Sandboxing, and 81% Test Coverage</title>
+      <link>https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>ML Infrastructure</category>
+      <category>Reinforcement Learning</category>
+      <category>GKE</category>
+      <description>RL training arena for AI coding agents. Gym-style API, Cloud Build sandboxing, 15-step preprocessor. 12,000+ lines from scratch.</description>
+    </item>
+
+    <item>
+      <title>Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals</title>
+      <link>https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Microservices</category>
+      <category>HITL</category>
+      <category>WebSocket</category>
+      <description>Four additional services: HITL workflow orchestrator (54K lines), taxonomy workflow engine, core platform service, and memory evaluation suite.</description>
+    </item>
   </channel>
 </rss>
