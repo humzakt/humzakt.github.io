@@ -870,6 +870,7 @@ img { max-width: 100%; }
   overflow: hidden;
   transition: all var(--transition-speed, 0.3s) ease;
   position: relative;
+  cursor: pointer;
 }
 
 .article-card::after {

@@ -969,6 +969,10 @@
           const card = document.createElement('article');
           card.className = 'article-card fade-in';
           card.setAttribute('data-themes', themes);
+          card.setAttribute('data-href', platformUrl);
+          card.setAttribute('role', 'link');
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('aria-label', article.title);
           card.innerHTML = `
             <div class="article-card-content">
               <div class="article-meta">
@@ -980,11 +984,26 @@
               <div class="article-tags">
                 ${(article.components || []).slice(0, 4).map(function(c) { return '<span class="article-tag">' + c + '</span>'; }).join('')}
               </div>
-              <a href="${platformUrl}"${linkTarget} class="article-link">
+              <span class="article-link">
                 ${linkLabel} <i class="fas fa-arrow-right"></i>
-              </a>
+              </span>
             </div>
           `;
+          // Make the entire card clickable
+          card.addEventListener('click', function() {
+            var href = this.getAttribute('data-href');
+            if (isInternal) {
+              window.location.href = href;
+            } else {
+              window.open(href, '_blank', 'noopener');
+            }
+          });
+          card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.click();
+            }
+          });
           grid.appendChild(card);
         });
 
