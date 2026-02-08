@@ -852,6 +852,7 @@
       const grid = document.getElementById('articles-grid');
       if (!grid) return;
 
+      // Platform icons kept for future external links
       const PLATFORM_ICONS = {
         linkedin: 'fab fa-linkedin',
         medium: 'fab fa-medium',
@@ -931,11 +932,7 @@
           const date = article.date ? new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
           const primaryPlatform = Object.keys(article.platforms || {})[0] || 'medium';
           const platformUrl = article.platforms ? article.platforms[primaryPlatform] : '#';
-          const iconClass = PLATFORM_ICONS[primaryPlatform] || 'fas fa-external-link-alt';
-          // Determine if link is internal (same site) or external
           const isInternal = platformUrl.includes('humzakt.github.io/blog/') || platformUrl.startsWith('blog/');
-          const linkTarget = isInternal ? '' : ' target="_blank" rel="noopener"';
-          const linkLabel = isInternal ? 'Read article' : ('Read on ' + primaryPlatform);
 
           const card = document.createElement('article');
           card.className = 'article-card fade-in';
@@ -948,7 +945,6 @@
             <div class="article-card-content">
               <div class="article-meta">
                 <time datetime="${article.date || ''}">${date}</time>
-                <span class="article-platform-badge"><i class="${iconClass}"></i> ${primaryPlatform}</span>
               </div>
               <h3 class="article-title">${article.title}</h3>
               <p class="article-excerpt">${(article.summary || '').substring(0, 150)}${article.summary && article.summary.length > 150 ? '...' : ''}</p>
@@ -956,7 +952,7 @@
                 ${(article.components || []).slice(0, 4).map(function(c) { return '<span class="article-tag">' + c + '</span>'; }).join('')}
               </div>
               <span class="article-link">
-                ${linkLabel} <i class="fas fa-arrow-right"></i>
+                Read article <i class="fas fa-arrow-right"></i>
               </span>
             </div>
           `;
