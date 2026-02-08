@@ -14,26 +14,23 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 - **DevOps & Security**: CI/CD with GitHub Actions, Cloud Build, security auditing, structured logging
 - **Open Source**: Created Rigour (AI code quality tool, rapid iteration and continuous delivery)
 
-## Blog Articles
+## Blog Articles (15)
 
 - [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): How I built an AI evaluation platform from scratch on GCP — architecture decisions, production incidents, and lessons learned
+- [Core AI Evaluation Engine](https://humzakt.github.io/blog/atlas-evaluations-core-engine.html): The two-week AlloyDB SSL detective story, a Firestore default database trap, and why KEDA autoscaling needed careful tuning
+- [Automated LLM Scoring Service](https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html): Taking an LLM scoring service from fragile prototype to production — idempotency patterns, VPC debugging, and Redis state recovery
 - [Event-Driven Architecture on GCP](https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html): Why I chose events over HTTP for a 6-phase pipeline that runs for 30 minutes — and how it saved us from retry hell
+- [Auth Gateway & Admin Dashboard](https://humzakt.github.io/blog/guard-service-auth-gateway.html): Building an authentication backbone with JWT, OIDC, and Kong — plus the cache invalidation bug that reminded me why it's one of the hardest problems in CS
+- [Notification Service](https://humzakt.github.io/blog/notification-service-event-delivery.html): Designing an event delivery system with Cloud Tasks, circuit breakers, and webhook dispatch — and the Pydantic v2 serialization bug that broke everything
+- [RAG Retrieval Service](https://humzakt.github.io/blog/rag-service-embedding-search.html): Building a pgvector-powered retrieval pipeline, surviving a midnight deprecation crisis, and tracking document provenance
+- [RL Training Arena for Code Agents](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Building a Gym-style reinforcement learning environment on GKE — and why Cloud Build sandboxing was the key to safe code execution
+- [RL Training Arena Deep-Dive](https://humzakt.github.io/blog/rl-training-arena-code-agents.html): Teaching AI to code through structured feedback — the reward shaping and hexagonal architecture behind a training arena
+- [The Connective Tissue of an AI Platform](https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html): The four services nobody sees but everyone depends on — workflow orchestration, taxonomy routing, JWT auth, and LLM memory evaluation
 - [Debugging AlloyDB SSL Connection Drops](https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html): The two-week detective story of an AlloyDB SSL bug that was silently failing 5% of our evaluation tasks
 - [Idempotent Cloud Tasks Handlers in Python](https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html): How a simple 3-step pattern eliminated duplicate records and made Cloud Tasks retries safe
-- [Zero-Downtime Embedding Migration](https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html): When our embedding model got deprecated overnight, here's how we migrated 48 hours of production data without a single outage
+- [Zero-Downtime Embedding Migration](https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html): When our embedding model got deprecated overnight, here's how we migrated production data without a single outage
 - [Open-Source AI Code Quality Tool](https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html): Why I built Rigour — the open-source quality gate that caught security vulnerabilities AI code generators missed
-- [RL Training Arena for Code Agents](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Building a Gym-style reinforcement learning environment on GKE — and why Cloud Build sandboxing was the key to safe code execution
 - [Security Audit: Critical Gaps Found](https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html): What I found when I audited my own production platform — SQL injection, hardcoded secrets, and a monolithic God Class that nearly broke everything
-
-## Service Deep-Dives
-
-- [Core AI Evaluation Engine](https://humzakt.github.io/blog/atlas-evaluations-core-engine.html): AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, headless API
-- [Automated LLM Scoring Service](https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html): Idempotent Cloud Tasks, LiteLLM proxy, Redis state, VPC networking
-- [Auth Gateway & Admin Dashboard](https://humzakt.github.io/blog/guard-service-auth-gateway.html): JWT, OIDC, Kong, notifications admin, critical security vulnerabilities
-- [Notification Service](https://humzakt.github.io/blog/notification-service-event-delivery.html): Cloud Tasks delivery, circuit breakers, webhook dispatch
-- [RAG Retrieval Service](https://humzakt.github.io/blog/rag-service-embedding-search.html): pgvector, emergency embedding migration, provenance tracking
-- [RL Training Arena](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Gym-style API, Cloud Build sandboxing, comprehensive test coverage
-- [The Connective Tissue of an AI Platform](https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html): HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth, LLM memory evaluation
 
 ## Links
 
