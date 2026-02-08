@@ -58,11 +58,85 @@
     }
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Humza Tareen — Engineering Blog",
+    "description": "Technical deep-dives on cloud architecture, AI/ML infrastructure, and production engineering.",
+    "url": "https://humzakt.github.io/engineering.html#articles",
+    "author": {
+      "@type": "Person",
+      "name": "Humza Tareen",
+      "url": "https://humzakt.github.io"
+    },
+    "blogPost": [
+      {
+        "@type": "BlogPosting",
+        "headline": "Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters",
+        "url": "https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "Event-Driven Architecture on GCP: Pub/Sub, Cloud Tasks, and Cloud Scheduler in Practice",
+        "url": "https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "The Database Bug That Took Down Our AI Pipeline: Debugging AlloyDB SSL Connection Drops",
+        "url": "https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "How to Build Idempotent Cloud Tasks Handlers in Python",
+        "url": "https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "Zero-Downtime Embedding Migration: Switching Models in a Production RAG System",
+        "url": "https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks",
+        "url": "https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "Building an RL Training Arena for AI Code Agents on GCP",
+        "url": "https://humzakt.github.io/blog/rl-training-arena-code-agents.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "I Audited Our AI Platform and Found 25 Critical Security Issues",
+        "url": "https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html",
+        "datePublished": "2026-02-08",
+        "author": { "@type": "Person", "name": "Humza Tareen" }
+      }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
 </head>
 <body>
 
@@ -887,6 +961,10 @@
           const primaryPlatform = Object.keys(article.platforms || {})[0] || 'medium';
           const platformUrl = article.platforms ? article.platforms[primaryPlatform] : '#';
           const iconClass = PLATFORM_ICONS[primaryPlatform] || 'fas fa-external-link-alt';
+          // Determine if link is internal (same site) or external
+          const isInternal = platformUrl.includes('humzakt.github.io/blog/') || platformUrl.startsWith('blog/');
+          const linkTarget = isInternal ? '' : ' target="_blank" rel="noopener"';
+          const linkLabel = isInternal ? 'Read article' : ('Read on ' + primaryPlatform);
 
           const card = document.createElement('article');
           card.className = 'article-card fade-in';
@@ -902,8 +980,8 @@
               <div class="article-tags">
                 ${(article.components || []).slice(0, 4).map(function(c) { return '<span class="article-tag">' + c + '</span>'; }).join('')}
               </div>
-              <a href="${platformUrl}" target="_blank" rel="noopener" class="article-link">
-                Read on ${primaryPlatform} <i class="fas fa-external-link-alt"></i>
+              <a href="${platformUrl}"${linkTarget} class="article-link">
+                ${linkLabel} <i class="fas fa-arrow-right"></i>
               </a>
             </div>
           `;

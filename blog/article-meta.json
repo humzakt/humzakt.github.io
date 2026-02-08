@@ -1,1 +1,90 @@
-[]
+[
+  {
+    "id": "building-ai-evaluation-platform-gcp",
+    "title": "Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters",
+    "summary": "A deep dive into the architecture behind a production-grade AI agent evaluation system with 35 Cloud Run services, 3 GKE clusters, 17 PostgreSQL databases, and 35 Pub/Sub topics.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "ml-ai", "devops"],
+    "components": ["GCP", "Cloud Run", "GKE", "Pub/Sub", "PostgreSQL", "Python"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html"
+    }
+  },
+  {
+    "id": "event-driven-architecture-gcp-pubsub",
+    "title": "Event-Driven Architecture on GCP: Pub/Sub, Cloud Tasks, and Cloud Scheduler",
+    "summary": "How we orchestrated a 6-phase AI evaluation pipeline with 35 Pub/Sub topics, dead-letter queues, Cloud Tasks, Cloud Scheduler, and zero silent failures.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "devops"],
+    "components": ["GCP", "Pub/Sub", "Cloud Tasks", "Cloud Scheduler", "Microservices"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html"
+    }
+  },
+  {
+    "id": "debugging-alloydb-ssl-connection-drops",
+    "title": "The Database Bug That Took Down Our AI Pipeline: Debugging AlloyDB SSL Drops",
+    "summary": "How we diagnosed and fixed random SSL connection failures in AlloyDB that caused 5% of our evaluation tasks to fail. A 3-line config change that saved hundreds of engineering hours.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "performance"],
+    "components": ["AlloyDB", "PostgreSQL", "SQLAlchemy", "Cloud Run", "Python"],
+    "platforms": {
+      "devto": "https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html"
+    }
+  },
+  {
+    "id": "idempotent-cloud-tasks-handlers-python",
+    "title": "How to Build Idempotent Cloud Tasks Handlers in Python",
+    "summary": "The pattern that eliminated our duplicate record bugs. A practical guide using FastAPI, PostgreSQL, and deterministic UUIDs for at-least-once delivery systems.",
+    "date": "2026-02-08",
+    "themes": ["infrastructure", "api-design", "devops"],
+    "components": ["Cloud Tasks", "GCP", "FastAPI", "PostgreSQL", "Python"],
+    "platforms": {
+      "devto": "https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html"
+    }
+  },
+  {
+    "id": "rag-embedding-migration-zero-downtime",
+    "title": "Zero-Downtime Embedding Migration: Switching Models in a Production RAG System",
+    "summary": "Step-by-step playbook for migrating embedding models in production using pgvector. Two environment variables made the difference between a 2-day migration and a 2-week one.",
+    "date": "2026-02-08",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["RAG", "pgvector", "Embeddings", "PostgreSQL", "Python"],
+    "platforms": {
+      "devto": "https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html"
+    }
+  },
+  {
+    "id": "open-source-rigour-ai-code-quality",
+    "title": "I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks",
+    "summary": "Rigour: an open-source quality gate for AI-generated code supporting 10+ languages, security vulnerability detection, and MCP protocol for IDE integration.",
+    "date": "2026-02-08",
+    "themes": ["devops", "ml-ai"],
+    "components": ["Open Source", "TypeScript", "AI", "MCP", "Developer Tools"],
+    "platforms": {
+      "linkedin": "https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html"
+    }
+  },
+  {
+    "id": "rl-training-arena-code-agents",
+    "title": "Building an RL Training Arena for AI Code Agents on GCP",
+    "summary": "A reinforcement learning environment for training AI coding agents. Gym-style API, Cloud Build sandboxing, Redis episode state, Firestore trajectories. 12,000+ lines of code.",
+    "date": "2026-02-08",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["Reinforcement Learning", "GKE", "Cloud Build", "Redis", "Python"],
+    "platforms": {
+      "linkedin": "https://humzakt.github.io/blog/rl-training-arena-code-agents.html"
+    }
+  },
+  {
+    "id": "security-audit-ai-platform-25-critical-issues",
+    "title": "I Audited Our AI Platform and Found 25 Critical Security Issues",
+    "summary": "A systematic security audit revealed SQL injection, hardcoded credentials, secrets in logs, and a 3,677-line God Class. Here's the methodology and how we fixed them.",
+    "date": "2026-02-08",
+    "themes": ["devops", "infrastructure"],
+    "components": ["Security", "GCP", "Secret Manager", "Python", "Cloud Run"],
+    "platforms": {
+      "linkedin": "https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html"
+    }
+  }
+]

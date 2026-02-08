@@ -52,6 +52,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -140,7 +142,7 @@
     /* Path cards */
     .paths {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       margin-bottom: 48px;
       opacity: 0;
@@ -332,6 +334,14 @@
     .resume-dropdown-menu a i { width: 16px; text-align: center; font-size: 14px; }
 
     /* Responsive */
+    @media (max-width: 900px) {
+      .paths {
+        grid-template-columns: 1fr 1fr;
+      }
+      .paths .path-card:last-child {
+        grid-column: 1 / -1;
+      }
+    }
     @media (max-width: 600px) {
       .paths {
         grid-template-columns: 1fr;
@@ -387,6 +397,21 @@
           <span class="path-tag">Medical Imaging</span>
         </div>
         <span class="path-arrow">Explore <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+
+      <a href="engineering.html#articles" class="path-card" aria-label="Read Technical Blog">
+        <div class="path-icon"><i class="fa-solid fa-pen-nib" aria-hidden="true"></i></div>
+        <div class="path-title">Blog</div>
+        <p class="path-desc">
+          Technical deep-dives on cloud architecture, AI infrastructure, and production engineering from real-world systems.
+        </p>
+        <div class="path-tags">
+          <span class="path-tag">GCP Architecture</span>
+          <span class="path-tag">Kubernetes</span>
+          <span class="path-tag">AI/ML Infra</span>
+          <span class="path-tag">Production Patterns</span>
+        </div>
+        <span class="path-arrow">Read articles <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
       </a>
     </div>
 

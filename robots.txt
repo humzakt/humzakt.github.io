@@ -1,4 +1,50 @@
+# Humza Tareen Portfolio — robots.txt
+# Last updated: 2026-02-08
+
 User-agent: *
 Allow: /
+Disallow: /HumzaTareen_Resume/
 
+# Sitemap
 Sitemap: https://humzakt.github.io/sitemap.xml
+
+# RSS Feed
+# Feed: https://humzakt.github.io/blog/feed.xml
+
+# LLMs.txt (AI discovery)
+# LLMs: https://humzakt.github.io/llms.txt
+# LLMs-full: https://humzakt.github.io/llms-full.txt
+
+# AI Search Crawlers — explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Cohere-ai
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /

@@ -1,0 +1,36 @@
+# Humza Tareen — AI Engineer & Researcher
+
+> AI Engineer who ships production systems with enterprise clients. IEEE-published researcher. Building at the intersection of AI, cloud infrastructure, and developer tooling.
+
+## About
+
+Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered GenAI solutions for Fortune 500 clients including Apple, Meta, and Bytedance. He holds a BS in Computer Science from NUST and is published in IEEE EMBC 2025. He is certified in IBM Cloud Pak for Integration, Mulesoft, and Microsoft Power Platform.
+
+## Key Areas of Expertise
+
+- **Cloud Architecture**: 35+ Cloud Run microservices, 3 GKE clusters, 17 PostgreSQL databases on GCP
+- **AI/ML Infrastructure**: RAG systems with pgvector, LLM evaluation pipelines, reinforcement learning training arenas
+- **Event-Driven Systems**: Pub/Sub, Cloud Tasks, Cloud Scheduler, dead-letter queues
+- **DevOps & Security**: CI/CD with GitHub Actions, Cloud Build, security auditing, structured logging
+- **Open Source**: Created Rigour (AI code quality tool, 38 releases in 5 weeks)
+
+## Blog Articles
+
+- [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): Architecture deep-dive into 35 microservices, 3 K8s clusters, 17 databases
+- [Event-Driven Architecture on GCP](https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html): Pub/Sub, Cloud Tasks, Cloud Scheduler patterns for a 6-phase pipeline
+- [Debugging AlloyDB SSL Connection Drops](https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html): Root cause analysis of 5% task failure rate — fixed with 3 lines
+- [Idempotent Cloud Tasks Handlers in Python](https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html): The pattern that eliminated duplicate record bugs
+- [Zero-Downtime Embedding Migration](https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html): Switching RAG embedding models in production with pgvector
+- [Open-Source AI Code Quality Tool](https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html): Rigour — quality gate for AI-generated code
+- [RL Training Arena for Code Agents](https://humzakt.github.io/blog/rl-training-arena-code-agents.html): Reinforcement learning on GKE with Cloud Build sandboxing
+- [Security Audit: 25 Critical Issues](https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html): SQL injection, hardcoded credentials, and a 3,677-line God Class
+
+## Links
+
+- Portfolio: https://humzakt.github.io
+- Engineering Profile: https://humzakt.github.io/engineering.html
+- Research Profile: https://humzakt.github.io/research.html
+- LinkedIn: https://www.linkedin.com/in/humzakt
+- GitHub: https://github.com/humzakt
+- RSS Feed: https://humzakt.github.io/blog/feed.xml
+- Email: humzakhawartareen@gmail.com

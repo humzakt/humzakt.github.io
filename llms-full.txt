@@ -1,0 +1,98 @@
+# Humza Tareen — Full Content for AI/LLM Consumption
+
+> AI Engineer who ships production systems with enterprise clients. IEEE-published researcher.
+
+---
+
+## Building an AI Evaluation Platform on GCP: 35 Microservices, 3 Kubernetes Clusters
+
+URL: https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html
+
+How do you evaluate whether an AI coding agent is actually good at writing code? Over the past 6 months, Humza Tareen built a production AI evaluation platform on GCP. The architecture includes 35 Cloud Run services with auto-scaling (0-100 instances per service), 3 GKE clusters (up to 39 nodes, n2-standard-8 + n2-highmem-4), 17 Cloud SQL PostgreSQL 17 databases with Regional HA, 35 Pub/Sub topics with dead-letter queues, 12 Firestore databases, 55 GCS buckets, and Cloud Tasks for reliable async execution.
+
+Key services: Evaluation Engine (task lifecycle management), Auto-Rating Service (LLM output scoring via LiteLLM proxy), RAG Retrieval Service (pgvector similarity search), RL Training Arena (Gym-style reinforcement learning), Guard Service (Google OIDC, JWT, API keys), Notification Service (Cloud Tasks with exponential backoff), Workflow Orchestration (WebSocket HITL workflows).
+
+Key decision: Cloud Run for stateless request-response (scales to zero, bills per-request), GKE for stateful long-running workloads (persistent connections, GPU access). Both AlloyDB and Firestore used — AlloyDB for ACID transactions and complex JOINs, Firestore for real-time state and sub-second writes.
+
+Numbers: 161 PRs merged (94% merge rate), 92 code reviews, 156 issues filed (25 critical), 301 deployments, 1,007 contributions, 38 CI/CD workflows across 11 repos.
+
+Tech stack: Python (FastAPI, SQLAlchemy, Pydantic), TypeScript (React), GCP (Cloud Run, GKE, Cloud Tasks, Pub/Sub, AlloyDB, Firestore, Cloud Build, GCS, Cloud Scheduler, Secret Manager, Cloud Monitoring), PostgreSQL, Redis, Docker, GitHub Actions.
+
+---
+
+## Event-Driven Architecture on GCP: Pub/Sub, Cloud Tasks, and Cloud Scheduler
+
+URL: https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html
+
+The AI evaluation platform has a 6-phase pipeline where each evaluation takes 5-30 minutes and touches 6 different services. Synchronous HTTP would mean timeouts and retry nightmares. With events, each service subscribes independently and retries from its own checkpoint.
+
+Phases: Task Creation → Preprocessing → Agent Execution → Output Collection → Judging & Scoring → Aggregation & Learning. Each phase communicates via Pub/Sub topics.
+
+Key patterns: Fan-out (one topic, multiple subscriptions — adding a new consumer requires zero changes to the publisher), Dead-letter queues on every production topic (5-retry policy, weekly DLQ review caught 3 schema migration issues, 1 Firestore quota limit, 2 Cloud SQL connection failures), Cloud Scheduler for automation (scheduled jobs publish to Pub/Sub topics).
+
+Monitoring: Every Cloud Run service has an alert at >5% error rate. CPU utilization monitoring at <10% to auto-detect idle VMs saves ~40% on compute costs.
+
+Key lessons: Message ordering doesn't matter with proper design. Acknowledge after commit, not before. Schema evolution is inevitable — version your message schemas. Pub/Sub for events, Cloud Tasks for commands.
+
+---
+
+## Debugging AlloyDB SSL Connection Drops
+
+URL: https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html
+
+Random SSL connection failures causing 5% of AI evaluation tasks to fail. Root cause: AlloyDB silently drops idle SSL connections after ~10 minutes, but SQLAlchemy's connection pool (configured for 15-minute recycle) kept serving dead connections.
+
+Fix: Set pool_recycle=180 (recycle before AlloyDB kills them), pool_pre_ping=True (validate on checkout), pool_size=5 + max_overflow=10. Combined with idempotent writes for Cloud Tasks retry safety. Result: 5% failure rate → 0.01%.
+
+---
+
+## Idempotent Cloud Tasks Handlers in Python
+
+URL: https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html
+
+Cloud Tasks guarantees at-least-once delivery. The 3-step pattern: (1) Deterministic IDs from payload using SHA-256 hashing, (2) INSERT ... ON CONFLICT DO NOTHING, (3) Always return HTTP 200 (returning 409 causes infinite retries). Cap Cloud Run containerConcurrency to 10-20 (not 80) to prevent database connection exhaustion. This pattern handles thousands of tasks per day with zero duplicates.
+
+---
+
+## Zero-Downtime Embedding Migration in Production RAG System
+
+URL: https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html
+
+Embedding model got deprecated overnight. 48-hour migration plan: (1) Make model configurable via env vars, (2) Add new vector columns (don't replace — ALTER TABLE ADD COLUMN + CREATE INDEX CONCURRENTLY), (3) Batch re-embedding with progress tracking, (4) Feature flag switch (USE_V2_EMBEDDINGS), (5) Validation comparing old vs new search results (82% average overlap). 470 lines changed, 6 files, zero downtime, zero data loss.
+
+---
+
+## Open-Source AI Code Quality Tool (Rigour)
+
+URL: https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html
+
+Rigour is an open-source quality gate for AI-generated code. Features: Universal AST-based code analysis (TypeScript, Python, Go, Java, 10+ languages), security vulnerability detection (prototype pollution, SQLi, XSS, CSRF, hardcoded secrets), staleness detection, retry loop detection, Supervisor Mode. IDE-agnostic via MCP protocol: works with Cursor, Claude Code, Gemini, Codex/Aider, Windsurf. 38 releases in 5 weeks (v1.0.0 → v2.18.1). Published to MCP Registry.
+
+GitHub: https://github.com/rigour-labs/rigour
+
+---
+
+## RL Training Arena for AI Code Agents
+
+URL: https://humzakt.github.io/blog/rl-training-arena-code-agents.html
+
+Gym-style reinforcement learning environment for AI coding agents on GKE. Executor Service (2,800+ lines, 81% test coverage): create episodes, execute steps, compute rewards. Cloud Build integration for sandboxed code execution. Redis-based episode state. Firestore trajectory logging. Preprocessor Service (3,900+ lines): 15-step preprocessing, dynamic verifier generation, repository analysis. Hexagonal architecture for infrastructure portability. 55 GCS buckets, 3 GKE auto-scaling clusters.
+
+---
+
+## Security Audit: 25 Critical Issues Found
+
+URL: https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html
+
+Systematic audit of production AI evaluation platform. Critical findings: SQL injection (BigQuery f-strings), hardcoded credentials in alembic.ini, secrets in CI/CD logs, missing authentication on 3 internal endpoints, PII in plaintext logs. Architecture issues: 3,677-line God Class, V1/V2 dependency leakage, in-memory rate limiting (doesn't work across Cloud Run instances), CPU-bound algorithms blocking async event loop.
+
+Fixes: All secrets to GCP Secret Manager, parameterized queries, structured logging with PII stripping, authentication middleware on every endpoint, pre-commit hooks (ruff, type checking, security scanning). Broke God Class into 5 focused services. Built LLM Gateway abstraction. Moved rate limiting to Redis. 156 GitHub issues filed: 25 Critical, 50 High, 60 Medium, 21 Low.
+
+---
+
+## Contact
+
+- Email: humzakhawartareen@gmail.com
+- LinkedIn: https://www.linkedin.com/in/humzakt
+- GitHub: https://github.com/humzakt
+- Website: https://humzakt.github.io

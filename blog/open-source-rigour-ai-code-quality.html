@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks — Humza Tareen</title>
+  <meta name="description" content="How I built Rigour, an open-source quality gate for AI-generated code that supports 10+ languages and works with Cursor, Claude Code, Gemini, and more.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Open Source, AI, Code Quality, Developer Tools, TypeScript, MCP, Cursor, Claude Code">
+  <link rel="canonical" href="https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html">
+  <meta property="og:title" content="I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks">
+  <meta property="og:description" content="How I built Rigour, an open-source quality gate for AI-generated code that supports 10+ languages and works with Cursor, Claude Code, Gemini, and more.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-02-08T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Open Source">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Code Quality">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Developer Tools">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks">
+  <meta name="twitter:description" content="How I built Rigour, an open-source quality gate for AI-generated code that supports 10+ languages and works with Cursor, Claude Code, Gemini, and more.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks",
+    "description": "How I built Rigour, an open-source quality gate for AI-generated code that supports 10+ languages and works with Cursor, Claude Code, Gemini, and more.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-02-08",
+    "dateModified": "2026-02-08",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html" },
+    "keywords": ["Open Source", "AI", "Code Quality", "TypeScript", "Developer Tools"],
+    "articleSection": "Open Source"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">I Built an Open-Source AI Code Quality Tool — 38 Releases in 5 Weeks</h1>
+        <div class="blog-meta">
+          <time datetime="2026-02-08">Feb 8, 2026</time>
+          <span>&middot;</span>
+          <span>6 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Open Source</span>
+          <span class="blog-tag">AI</span>
+          <span class="blog-tag">Code Quality</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Developer Tools</span>
+        </div>
+      </header>
+      <div class="blog-content">
+        
+        <h2>The Problem</h2>
+        <p>AI coding assistants are powerful but messy. They skip tests, introduce security vulnerabilities, create retry loops, and ignore project conventions. I wanted a tool that catches these issues before they make it to production.</p>
+
+        <h2>What Rigour Does</h2>
+        <ul>
+          <li>Universal AST-based code analysis (TypeScript, Python, Go, Java, and more)</li>
+          <li>Security vulnerability detection (prototype pollution, SQLi, XSS, CSRF, hardcoded secrets)</li>
+          <li>Staleness detection (catches when AI uses deprecated patterns)</li>
+          <li>Retry loop detection (prevents AI from trying the same broken fix)</li>
+          <li>Supervisor Mode for iterative quality improvement</li>
+          <li>IDE-agnostic: Cursor, Claude Code, Gemini, Codex/Aider, Windsurf</li>
+        </ul>
+
+        <h2>The Release Velocity</h2>
+        <p>v1.0.0 → v2.18.1 in 5 weeks. 38 releases (25 features, 12 bug fixes). Published to MCP Registry. Semantic versioning with automated releases via GitHub Actions.</p>
+
+        <h2>Architecture Decisions</h2>
+        <ol>
+          <li><strong>Config-driven gates</strong> — <code>rigour.yml</code> defines what quality checks run. Teams customize without forking.</li>
+          <li><strong>MCP protocol support</strong> — works as a Model Context Protocol server, so any MCP-compatible IDE can use it.</li>
+          <li><strong>Fix packets</strong> — when Rigour finds an issue, it generates a structured "fix packet" the AI can consume and apply.</li>
+        </ol>
+
+        <h2>The Hardest Part</h2>
+        <p>It wasn't the code analysis — it was making the tool work across different AI agents. Each IDE/agent has its own way of handling instructions. Building a universal interface that works with all of them was a design challenge I didn't anticipate.</p>
+        <p>The project is open source at <a href="https://github.com/rigour-labs/rigour" target="_blank" rel="noopener">github.com/rigour-labs/rigour</a>.</p>
+        
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
