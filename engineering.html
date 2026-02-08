@@ -79,7 +79,8 @@
       <a href="#about" role="listitem"><span class="nav-number" aria-hidden="true">01.</span>About</a>
       <a href="#experience" role="listitem"><span class="nav-number" aria-hidden="true">02.</span>Experience</a>
       <a href="#skills" role="listitem"><span class="nav-number" aria-hidden="true">03.</span>Skills</a>
-      <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Education</a>
+      <a href="#articles" role="listitem"><span class="nav-number" aria-hidden="true">04.</span>Articles</a>
+      <a href="#education" role="listitem"><span class="nav-number" aria-hidden="true">05.</span>Education</a>
       <div class="resume-dropdown" role="listitem">
         <button class="nav-cta resume-toggle" aria-expanded="false" aria-haspopup="true">
           <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -108,7 +109,8 @@
     <a href="#about" class="mobile-link"><span class="nav-number" aria-hidden="true">01.</span> About</a>
     <a href="#experience" class="mobile-link"><span class="nav-number" aria-hidden="true">02.</span> Experience</a>
     <a href="#skills" class="mobile-link"><span class="nav-number" aria-hidden="true">03.</span> Skills</a>
-    <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Education</a>
+    <a href="#articles" class="mobile-link"><span class="nav-number" aria-hidden="true">04.</span> Articles</a>
+    <a href="#education" class="mobile-link"><span class="nav-number" aria-hidden="true">05.</span> Education</a>
     <div class="resume-dropdown">
       <button class="nav-cta mobile-link resume-toggle" aria-expanded="false" aria-haspopup="true">
         <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Resume <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -486,10 +488,35 @@
     </div>
   </section>
 
+  <!-- ===== FEATURED ARTICLES ===== -->
+  <section class="section" id="articles" aria-labelledby="articles-title">
+    <div class="section-header fade-in">
+      <span class="section-number">04.</span>
+      <h2 class="section-title" id="articles-title">Featured Articles</h2>
+      <span class="section-line" aria-hidden="true"></span>
+    </div>
+    <p class="section-subtitle fade-in">Technical deep-dives and lessons from production</p>
+
+    <!-- Filter tags -->
+    <div class="article-filters fade-in" role="tablist" aria-label="Filter articles by topic">
+      <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button class="filter-btn" data-filter="infrastructure" role="tab" aria-selected="false">Infrastructure</button>
+      <button class="filter-btn" data-filter="ml-ai" role="tab" aria-selected="false">ML/AI</button>
+      <button class="filter-btn" data-filter="devops" role="tab" aria-selected="false">DevOps</button>
+      <button class="filter-btn" data-filter="performance" role="tab" aria-selected="false">Performance</button>
+      <button class="filter-btn" data-filter="api-design" role="tab" aria-selected="false">API Design</button>
+    </div>
+
+    <!-- Article cards grid (populated dynamically from article-meta.json) -->
+    <div class="articles-grid" id="articles-grid">
+      <p class="articles-loading fade-in">Loading articles...</p>
+    </div>
+  </section>
+
   <!-- ===== EDUCATION & CERTIFICATIONS ===== -->
   <section class="section" id="education">
     <div class="section-header fade-in">
-      <span class="section-number">04.</span>
+      <span class="section-number">05.</span>
       <h2 class="section-title">Education &amp; Credentials</h2>
       <span class="section-line" aria-hidden="true"></span>
     </div>
@@ -543,7 +570,7 @@
 
   <!-- ===== CONTACT ===== -->
   <section class="contact-section" id="contact">
-    <p class="contact-number fade-in">05. What's Next?</p>
+    <p class="contact-number fade-in">06. What's Next?</p>
     <h2 class="contact-heading fade-in">Let's Ship Something Together</h2>
     <p class="contact-text fade-in">
       I'm actively looking for my next challenge &mdash; whether that's a GTM Engineering, Forward Deployed, Solutions Engineering, or full-stack AI role at a company that ships directly with customers. I bring the rare combination of deep AI engineering chops and hands-on enterprise client delivery experience. Based in Pakistan and ready to relocate worldwide.
@@ -774,6 +801,144 @@
         });
       }
     });
+  </script>
+
+  <!-- Articles section: load from article-meta.json or Hashnode API -->
+  <script>
+    (function() {
+      const grid = document.getElementById('articles-grid');
+      if (!grid) return;
+
+      const PLATFORM_ICONS = {
+        linkedin: 'fab fa-linkedin',
+        medium: 'fab fa-medium',
+        devto: 'fab fa-dev',
+        reddit: 'fab fa-reddit',
+        hashnode: 'fas fa-h-square',
+        twitter: 'fab fa-twitter',
+      };
+
+      // Try loading from local article-meta.json first
+      async function loadArticles() {
+        try {
+          const resp = await fetch('blog/article-meta.json');
+          if (resp.ok) {
+            const articles = await resp.json();
+            renderArticles(articles);
+            return;
+          }
+        } catch (e) { /* fallback below */ }
+
+        // Fallback: try Hashnode GraphQL API
+        try {
+          const query = `{
+            publication(host: "blog.humzakt.github.io") {
+              posts(first: 10) {
+                edges {
+                  node {
+                    title
+                    brief
+                    slug
+                    url
+                    publishedAt
+                    coverImage { url }
+                    tags { name slug }
+                  }
+                }
+              }
+            }
+          }`;
+          const resp = await fetch('https://gql.hashnode.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+          });
+          if (resp.ok) {
+            const { data } = await resp.json();
+            if (data?.publication?.posts?.edges?.length) {
+              const articles = data.publication.posts.edges.map(e => ({
+                id: e.node.slug,
+                title: e.node.title,
+                summary: e.node.brief,
+                date: e.node.publishedAt,
+                themes: (e.node.tags || []).map(t => t.slug),
+                platforms: { hashnode: e.node.url },
+                components: [],
+              }));
+              renderArticles(articles);
+              return;
+            }
+          }
+        } catch (e) { /* fallback below */ }
+
+        // No articles yet
+        grid.innerHTML = '<p class="articles-empty fade-in">Articles coming soon — stay tuned!</p>';
+      }
+
+      function renderArticles(articles) {
+        if (!articles.length) {
+          grid.innerHTML = '<p class="articles-empty fade-in">Articles coming soon — stay tuned!</p>';
+          return;
+        }
+        grid.innerHTML = '';
+        articles.forEach(function(article) {
+          const themes = (article.themes || []).join(' ');
+          const date = article.date ? new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+          const primaryPlatform = Object.keys(article.platforms || {})[0] || 'medium';
+          const platformUrl = article.platforms ? article.platforms[primaryPlatform] : '#';
+          const iconClass = PLATFORM_ICONS[primaryPlatform] || 'fas fa-external-link-alt';
+
+          const card = document.createElement('article');
+          card.className = 'article-card fade-in';
+          card.setAttribute('data-themes', themes);
+          card.innerHTML = `
+            <div class="article-card-content">
+              <div class="article-meta">
+                <time datetime="${article.date || ''}">${date}</time>
+                <span class="article-platform-badge"><i class="${iconClass}"></i> ${primaryPlatform}</span>
+              </div>
+              <h3 class="article-title">${article.title}</h3>
+              <p class="article-excerpt">${(article.summary || '').substring(0, 150)}${article.summary && article.summary.length > 150 ? '...' : ''}</p>
+              <div class="article-tags">
+                ${(article.components || []).slice(0, 4).map(function(c) { return '<span class="article-tag">' + c + '</span>'; }).join('')}
+              </div>
+              <a href="${platformUrl}" target="_blank" rel="noopener" class="article-link">
+                Read on ${primaryPlatform} <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        // Re-observe new cards for fade-in
+        if (typeof fadeObserver !== 'undefined') {
+          grid.querySelectorAll('.fade-in').forEach(function(el) { fadeObserver.observe(el); });
+        }
+      }
+
+      // Filter functionality
+      document.querySelectorAll('.filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.filter-btn').forEach(function(b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+
+          var filter = btn.getAttribute('data-filter');
+          document.querySelectorAll('.article-card').forEach(function(card) {
+            if (filter === 'all' || (card.getAttribute('data-themes') || '').includes(filter)) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      loadArticles();
+    })();
   </script>
 
 </body>
