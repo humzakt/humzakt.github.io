@@ -20,7 +20,7 @@
     </image>
 
     <item>
-      <title>Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System and Lessons Learned</title>
+      <title>Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System</title>
       <link>https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -33,7 +33,7 @@
     </item>
 
     <item>
-      <title>Event-Driven Architecture on GCP: Pub/Sub, Cloud Tasks, and Cloud Scheduler in Practice</title>
+      <title>Event-Driven Architecture on GCP: Pub/Sub, Cloud Tasks, and Cloud Scheduler</title>
       <link>https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -46,7 +46,7 @@
     </item>
 
     <item>
-      <title>The Database Bug That Took Down Our AI Pipeline: Debugging AlloyDB SSL Connection Drops</title>
+      <title>The Database Bug That Took Down Our AI Pipeline: Debugging AlloyDB SSL Drops</title>
       <link>https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -85,7 +85,7 @@
     </item>
 
     <item>
-      <title>I Built an Open-Source AI Code Quality Tool</title>
+      <title>Rigour: An Open-Source AI Code Quality Tool</title>
       <link>https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -111,7 +111,7 @@
     </item>
 
     <item>
-      <title>I Audited Our AI Platform and Found Critical Security Gaps</title>
+      <title>How I Audited Our AI Platform and Found Critical Security Gaps</title>
       <link>https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -123,7 +123,7 @@
       <description>A systematic security audit of a production AI evaluation platform revealed SQL injection, hardcoded credentials, and a monolithic God Class. Here's the methodology and fixes.</description>
     </item>
     <item>
-      <title>Building the Core AI Evaluation Engine: AlloyDB Fixes and a Headless API</title>
+      <title>Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API</title>
       <link>https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -135,7 +135,7 @@
     </item>
 
     <item>
-      <title>Building an Automated LLM Scoring Service: From v1 to Production</title>
+      <title>Building an Automated LLM Scoring Service: From Prototype to Production</title>
       <link>https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>

@@ -8,13 +8,13 @@
 
 URL: https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html
 
-How do you evaluate whether an AI coding agent is actually good at writing code? Over the past 6 months, Humza Tareen built a production AI evaluation platform on GCP. The architecture includes 35 Cloud Run services with auto-scaling (0-100 instances per service), 3 GKE clusters (up to 39 nodes, n2-standard-8 + n2-highmem-4), 17 Cloud SQL PostgreSQL 17 databases with Regional HA, 35 Pub/Sub topics with dead-letter queues, 12 Firestore databases, 55 GCS buckets, and Cloud Tasks for reliable async execution.
+How do you evaluate whether an AI coding agent is actually good at writing code? Over the past 6 months, Humza Tareen built a production AI evaluation platform on GCP. The architecture includes multiple Cloud Run services with auto-scaling (0-100 instances per service), multiple GKE clusters (up to 39 nodes, n2-standard-8 + n2-highmem-4), Cloud SQL PostgreSQL instances with Regional HA, dozens of Pub/Sub topics with dead-letter queues, multiple Firestore databases, GCS storage buckets, and Cloud Tasks for reliable async execution.
 
 Key services: Evaluation Engine (task lifecycle management), Auto-Rating Service (LLM output scoring via LiteLLM proxy), RAG Retrieval Service (pgvector similarity search), RL Training Arena (Gym-style reinforcement learning), Guard Service (Google OIDC, JWT, API keys), Notification Service (Cloud Tasks with exponential backoff), Workflow Orchestration (WebSocket HITL workflows).
 
 Key decision: Cloud Run for stateless request-response (scales to zero, bills per-request), GKE for stateful long-running workloads (persistent connections, GPU access). Both AlloyDB and Firestore used — AlloyDB for ACID transactions and complex JOINs, Firestore for real-time state and sub-second writes.
 
-Numbers: 161 PRs merged (94% merge rate), 92 code reviews, 156 issues filed (25 critical), 301 deployments, 1,007 contributions, 38 CI/CD workflows across 11 repos.
+Numbers: High merge rate, continuous deployment, hundreds of issues filed and resolved across severity levels.
 
 Tech stack: Python (FastAPI, SQLAlchemy, Pydantic), TypeScript (React), GCP (Cloud Run, GKE, Cloud Tasks, Pub/Sub, AlloyDB, Firestore, Cloud Build, GCS, Cloud Scheduler, Secret Manager, Cloud Monitoring), PostgreSQL, Redis, Docker, GitHub Actions.
 
@@ -58,7 +58,7 @@ Cloud Tasks guarantees at-least-once delivery. The 3-step pattern: (1) Determini
 
 URL: https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html
 
-Embedding model got deprecated overnight. 48-hour migration plan: (1) Make model configurable via env vars, (2) Add new vector columns (don't replace — ALTER TABLE ADD COLUMN + CREATE INDEX CONCURRENTLY), (3) Batch re-embedding with progress tracking, (4) Feature flag switch (USE_V2_EMBEDDINGS), (5) Validation comparing old vs new search results (82% average overlap). 470 lines changed, 6 files, zero downtime, zero data loss.
+Embedding model got deprecated overnight. 48-hour migration plan: (1) Make model configurable via env vars, (2) Add new vector columns (don't replace — ALTER TABLE ADD COLUMN + CREATE INDEX CONCURRENTLY), (3) Batch re-embedding with progress tracking, (4) Feature flag switch (USE_V2_EMBEDDINGS), (5) Validation comparing old vs new search results (82% average overlap). 48 hours, zero downtime, zero data loss.
 
 ---
 
@@ -66,7 +66,7 @@ Embedding model got deprecated overnight. 48-hour migration plan: (1) Make model
 
 URL: https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html
 
-Rigour is an open-source quality gate for AI-generated code. Features: Universal AST-based code analysis (TypeScript, Python, Go, Java, 10+ languages), security vulnerability detection (prototype pollution, SQLi, XSS, CSRF, hardcoded secrets), staleness detection, retry loop detection, Supervisor Mode. IDE-agnostic via MCP protocol: works with Cursor, Claude Code, Gemini, Codex/Aider, Windsurf. 38 releases in 5 weeks (v1.0.0 → v2.18.1). Published to MCP Registry.
+Rigour is an open-source quality gate for AI-generated code. Features: Universal AST-based code analysis (TypeScript, Python, Go, Java, 10+ languages), security vulnerability detection (prototype pollution, SQLi, XSS, CSRF, hardcoded secrets), staleness detection, retry loop detection, Supervisor Mode. IDE-agnostic via MCP protocol: works with Cursor, Claude Code, Gemini, Codex/Aider, Windsurf. Rapid iteration from initial release to mature product. Published to MCP Registry.
 
 GitHub: https://github.com/rigour-labs/rigour
 
@@ -87,6 +87,62 @@ URL: https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issue
 Systematic audit of production AI evaluation platform. Critical findings: SQL injection (BigQuery f-strings), hardcoded credentials in alembic.ini, secrets in CI/CD logs, missing authentication on 3 internal endpoints, PII in plaintext logs. Architecture issues: monolithic God Class, V1/V2 dependency leakage, in-memory rate limiting (doesn't work across Cloud Run instances), CPU-bound algorithms blocking async event loop.
 
 Fixes: All secrets to GCP Secret Manager, parameterized queries, structured logging with PII stripping, authentication middleware on every endpoint, pre-commit hooks (ruff, type checking, security scanning). Broke God Class into 5 focused services. Built LLM Gateway abstraction. Moved rate limiting to Redis. Hundreds of GitHub issues filed across severity levels.
+
+---
+
+## Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API
+
+URL: https://humzakt.github.io/blog/atlas-evaluations-core-engine.html
+
+Core evaluation engine with AlloyDB SSL connection pool fix, KEDA autoscaling on GKE, Firestore default database misrouting, continuous learning pipeline, headless REST API for external integrations.
+
+---
+
+## Building an Automated LLM Scoring Service: From Prototype to Production
+
+URL: https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html
+
+Automated LLM scoring with idempotent Cloud Tasks, structured logging overhaul replacing print statements, LiteLLM proxy for model-agnostic evaluation, VPC networking debugging (Connector vs Direct Egress conflict), Redis state management for real-time tracking.
+
+---
+
+## Building an Auth Gateway with Admin Dashboard: JWT, OIDC, and Notifications Admin
+
+URL: https://humzakt.github.io/blog/guard-service-auth-gateway.html
+
+Authentication gateway with Google OIDC, JWT validation, Kong integration, notifications admin dashboard with React frontend, route cache invalidation, security audit and remediation.
+
+---
+
+## Building a Notification Service: Cloud Tasks Delivery, Circuit Breakers, and Webhook Dispatch
+
+URL: https://humzakt.github.io/blog/notification-service-event-delivery.html
+
+Notification service with Cloud Tasks delivery pipelines, circuit breakers, dead-letter queues, subscription management, webhook dispatch, Alembic database migrations from scratch.
+
+---
+
+## Building a RAG Retrieval Service: pgvector, Embedding Migrations, and Provenance Tracking
+
+URL: https://humzakt.github.io/blog/rag-service-embedding-search.html
+
+RAG retrieval service with pgvector similarity search, emergency embedding model migration with zero downtime, provenance tracking for evaluation calibration.
+
+---
+
+## Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing
+
+URL: https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html
+
+RL training arena for AI coding agents with Gym-style API, Cloud Build sandboxing for code execution, Redis episode management, multi-step preprocessor pipeline, hexagonal architecture.
+
+---
+
+## Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals
+
+URL: https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html
+
+HITL workflow orchestrator, taxonomy classification engine, core platform service with auth and logging fixes, memory evaluation suite for context retention testing.
 
 ---
 

@@ -8,15 +8,15 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 ## Key Areas of Expertise
 
-- **Cloud Architecture**: 35+ Cloud Run microservices, 3 GKE clusters, 17 PostgreSQL databases on GCP
+- **Cloud Architecture**: Multiple Cloud Run microservices, GKE clusters, and managed databases on GCP
 - **AI/ML Infrastructure**: RAG systems with pgvector, LLM evaluation pipelines, reinforcement learning training arenas
 - **Event-Driven Systems**: Pub/Sub, Cloud Tasks, Cloud Scheduler, dead-letter queues
 - **DevOps & Security**: CI/CD with GitHub Actions, Cloud Build, security auditing, structured logging
-- **Open Source**: Created Rigour (AI code quality tool, 38 releases in 5 weeks)
+- **Open Source**: Created Rigour (AI code quality tool, rapid iteration and continuous delivery)
 
 ## Blog Articles
 
-- [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): Architecture deep-dive into 35 microservices, 3 K8s clusters, 17 databases
+- [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): Architecture deep-dive into multiple microservices, Kubernetes clusters, and managed databases
 - [Event-Driven Architecture on GCP](https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html): Pub/Sub, Cloud Tasks, Cloud Scheduler patterns for a 6-phase pipeline
 - [Debugging AlloyDB SSL Connection Drops](https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html): Root cause analysis of 5% task failure rate — fixed with 3 lines
 - [Idempotent Cloud Tasks Handlers in Python](https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html): The pattern that eliminated duplicate record bugs
@@ -29,7 +29,7 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 - [Core AI Evaluation Engine](https://humzakt.github.io/blog/atlas-evaluations-core-engine.html): AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, headless API
 - [Automated LLM Scoring Service](https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html): Idempotent Cloud Tasks, LiteLLM proxy, Redis state, VPC networking
-- [Auth Gateway & Admin Dashboard](https://humzakt.github.io/blog/guard-service-auth-gateway.html): JWT, OIDC, Kong, notifications admin, 22 security issues
+- [Auth Gateway & Admin Dashboard](https://humzakt.github.io/blog/guard-service-auth-gateway.html): JWT, OIDC, Kong, notifications admin, critical security vulnerabilities
 - [Notification Service](https://humzakt.github.io/blog/notification-service-event-delivery.html): Cloud Tasks delivery, circuit breakers, webhook dispatch
 - [RAG Retrieval Service](https://humzakt.github.io/blog/rag-service-embedding-search.html): pgvector, emergency embedding migration, provenance tracking
 - [RL Training Arena](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Gym-style API, Cloud Build sandboxing, comprehensive test coverage

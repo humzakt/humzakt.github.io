@@ -107,7 +107,7 @@
         <h2>What This Service Does</h2>
         <p>The Auto-Rater evaluates LLM outputs using configurable scoring criteria. It takes an agent's output, runs it through multiple evaluation strategies (direct scoring, debate, chain-of-thought), and produces structured quality assessments. I led the engineering effort taking it from prototype to production.</p>
         <h2>The v1 → v2 Migration</h2>
-        <p><strong>v1 Problems:</strong> Hardcoded model names, no idempotency (Cloud Tasks retries created duplicates), 4,270 lines of <code>print()</code> statements, Redis client with no timeouts, DB pool sized for dev.</p>
+        <p><strong>v1 Problems:</strong> Hardcoded model names, no idempotency (Cloud Tasks retries created duplicates), pervasive <code>print()</code> statements, Redis client with no timeouts, DB pool sized for dev.</p>
         <h2>Idempotent Cloud Tasks</h2>
         <p>Most impactful pattern. Cloud Tasks delivers at-least-once, so every handler must be idempotent. Added idempotent writes for COT generations, then extended to all evaluation writes with deterministic IDs from payload using <code>INSERT ... ON CONFLICT DO NOTHING</code>. Zero duplicate evaluations since deployment.</p>
         <h2>The Logging Overhaul</h2>
@@ -120,10 +120,10 @@
         <p>Evaluations take 1-30 min. Frontend polls Redis for progress. Discovered state updates logging "success" even when key didn't exist. Rewrote Redis state management to verify results and create recovery records.</p>
         <h2>Production Hardening</h2>
         <p>Cloud Run defaults to 80 concurrent requests. Each holds DB connection. 80 × 10 instances = 800 connections against Cloud SQL supporting ~100. Fix: <code>containerConcurrency=10</code>, <code>uvicorn workers=1</code>, <code>pool_size=5</code>, <code>max_overflow=10</code>.</p>
-        <h2>By the Numbers</h2>
+        <h2>Impact</h2>
         <table>
           <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Issues filed</td><td>71</td></tr>
+          <tr><td>Issues filed</td><td>Dozens of issues filed and resolved</td></tr>
           <tr><td>Timeframe</td><td>Aug 2025 — Feb 2026</td></tr>
           <tr><td>GCP services</td><td>Cloud Run, Cloud Tasks, Cloud SQL, Redis (Memorystore), GCS, Pub/Sub, Secret Manager</td></tr>
         </table>

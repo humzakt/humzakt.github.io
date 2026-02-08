@@ -220,14 +220,13 @@
         <p>Cloud Tasks delivers messages at-least-once. That means your handler WILL be called multiple times for the same task. Our pattern: compute a deterministic ID from the task payload, use <code>INSERT ... ON CONFLICT DO NOTHING</code>, return success even if the row already exists.</p>
         <p>This one pattern eliminated an entire category of bugs across the platform.</p>
 
-        <h2>Numbers</h2>
+        <h2>Impact</h2>
         <p>Over 6 months:</p>
         <ul>
-          <li>161 PRs merged (94% merge rate)</li>
+          <li>High merge rate across all contributions</li>
           <li>92 code reviews given</li>
-          <li>156 issues filed (25 critical, 50 high)</li>
-          <li>301 deployments</li>
-          <li>1,007 contributions</li>
+          <li>Hundreds of issues filed and resolved across severity levels</li>
+          <li>Continuous deployment pipeline</li>
           <li>38 CI/CD workflows across 11 repos</li>
         </ul>
         <p><strong>Tech stack:</strong> Python (FastAPI, SQLAlchemy, Pydantic), TypeScript (React), GCP (Cloud Run, GKE, Cloud Tasks, Pub/Sub, AlloyDB, Firestore, Cloud Build, GCS, Cloud Scheduler, Secret Manager, Cloud Monitoring), PostgreSQL, Redis, Docker, GitHub Actions.</p>
@@ -237,7 +236,7 @@
           <li><strong>Abstract the LLM provider from day one.</strong> We hardcoded model names in too many places.</li>
           <li><strong>Build migration tooling before you need it.</strong> Having a <code>--dry-run</code> flag on everything would've prevented at least 2 incidents.</li>
           <li><strong>Start with structured logging.</strong> We added correlation IDs and JSON logging after the fact.</li>
-          <li><strong>Schedule security audits.</strong> I found 25 critical issues in a 2-day audit.</li>
+          <li><strong>Schedule security audits.</strong> A 2-day audit uncovered critical vulnerabilities across the entire platform.</li>
         </ol>
       </div>
 

@@ -135,7 +135,7 @@ WITH (lists = 100);</code></pre>
         <p>Using <code>CONCURRENTLY</code> means the index builds without locking the table. Production reads continue uninterrupted.</p>
 
         <h2>Step 3: Batch Re-embedding</h2>
-        <p>Batch processing (don't embed one doc at a time), progress bar, rate limiting, commits per batch. Don't hold a transaction for 10K docs.</p>
+        <p>Batch processing (don't embed one doc at a time), progress bar, rate limiting, commits per batch. Don't hold a transaction for thousands of documents.</p>
 
         <h2>Step 4: Feature Flag Switch</h2>
         <p>Deploy with <code>USE_V2_EMBEDDINGS=false</code>. Verify everything works. Flip to <code>true</code>. If anything breaks, flip back instantly.</p>

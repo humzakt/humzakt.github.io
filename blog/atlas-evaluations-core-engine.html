@@ -115,7 +115,7 @@
 ├──────────────────────────────────────────────────┤
 │  AlloyDB (PostgreSQL 17)  │  Firestore (realtime) │
 │  Cloud Tasks              │  Pub/Sub (35 topics)  │
-│  Cloud Scheduler          │  GCS (55 buckets)     │
+│  Cloud Scheduler          │  GCS buckets          │
 └──────────────────────────────────────────────────┘</code></pre>
         <h2>The AlloyDB SSL Crisis</h2>
         <p>This was a multi-week battle. Our evaluation tasks — which run 5-30 minutes — were randomly failing at a 5% rate with <code>SSL connection has been closed unexpectedly</code>.</p>
@@ -139,16 +139,16 @@
         <h2>Headless API Mode</h2>
         <p>The final major feature: a headless API mode allowing external services to trigger evaluations programmatically without the web UI. Teams can now run agent evaluations as part of their CI/CD pipelines.</p>
         <h2>KEDA Autoscaling</h2>
-        <p>We use KEDA on GKE to scale agent execution pods based on Pub/Sub message backlog. Fixed an invalid <code>idleReplicaCount</code> setting preventing scale-to-zero, and warm replicas not being maintained. After the fix, the cluster properly scales 0→39 nodes based on evaluation queue depth.</p>
-        <h2>Security Audit (37 Issues Filed)</h2>
+        <p>We use KEDA on GKE to scale agent execution pods based on Pub/Sub message backlog. Fixed an invalid <code>idleReplicaCount</code> setting preventing scale-to-zero, and warm replicas not being maintained. After the fix, the cluster properly scales with elastic node scaling based on evaluation queue depth.</p>
+        <h2>Security Audit</h2>
         <ul>
           <li><strong>Critical:</strong> Firestore rules allowing unauthenticated read/write, production K8s using <code>:latest</code> tags, zero frontend test coverage, no React Error Boundaries</li>
           <li><strong>High:</strong> Excessive <code>any</code> type usage (60+ instances), no code splitting, conflicting HPA and KEDA autoscaling</li>
         </ul>
-        <h2>By the Numbers</h2>
+        <h2>Impact</h2>
         <table>
           <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Issues filed</td><td>37 (including 4 critical)</td></tr>
+          <tr><td>Issues identified and resolved</td><td>Multiple critical and high-priority issues addressed</td></tr>
           <tr><td>Timeframe</td><td>Nov 2025 — Feb 2026</td></tr>
           <tr><td>GCP services</td><td>Cloud Run, GKE, AlloyDB, Firestore, Cloud Tasks, Pub/Sub, Cloud Scheduler, GCS, Secret Manager</td></tr>
         </table>
