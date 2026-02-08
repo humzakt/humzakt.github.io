@@ -117,40 +117,56 @@
       </header>
       <div class="blog-content">
         
-        <h2>The Situation</h2>
-        <p>Our embedding model got deprecated overnight. Every RAG query in our AI evaluation platform started returning 404s. We had 48 hours to migrate to a new model, re-embed all documents, and not break a single production workflow.</p>
+        <p>Our embedding model got deprecated overnight. Every RAG query in our AI evaluation platform started returning 404s. This wasn't just a feature—it was the entire platform's learning system going down. The RAG service powers continuous learning from past evaluations, similarity search for task recommendations, and context retrieval for agent prompts. We had 48 hours to migrate to a new model, re-embed all documents, and not break a single production workflow.</p>
 
         <h2>Step 1: Make the Model Configurable</h2>
+        <p>Why environment variables matter: you ship the config change, not a code change. Two environment variables:</p>
+
 <pre><code>EMBED_MODEL = os.getenv("EMBED_MODEL", "text-embedding-3-large")
 EMBED_DIMENSIONS = int(os.getenv("EMBED_DIMENSIONS", "768"))</code></pre>
-        <p>Two environment variables. This is what makes the difference between a 2-day migration and a 2-week one.</p>
+
+        <p>This is what makes the difference between a 2-day migration and a 2-week one. If the model name was hardcoded in 20 files, we'd need to change code, test, deploy, and hope nothing broke. With env vars, we change the config, deploy once, and flip the switch. The code doesn't care which model it's using—it just reads the config.</p>
 
         <h2>Step 2: Add New Columns (Don't Replace)</h2>
+        <p>The <code>CONCURRENTLY</code> keyword is critical. Without it, PostgreSQL locks the table during index creation. With millions of documents, that lock could last hours—production reads would freeze. Here's what we ran:</p>
+
 <pre><code>ALTER TABLE documents
 ADD COLUMN embedding_v2 vector(768);
 
 CREATE INDEX CONCURRENTLY idx_documents_embedding_v2
 ON documents USING ivfflat (embedding_v2 vector_cosine_ops)
 WITH (lists = 100);</code></pre>
-        <p>Using <code>CONCURRENTLY</code> means the index builds without locking the table. Production reads continue uninterrupted.</p>
+
+        <p>What happens without <code>CONCURRENTLY</code>: table locks, production freeze, users see timeouts. With <code>CONCURRENTLY</code>: index builds in the background, production reads continue uninterrupted, zero downtime. The trade-off is that concurrent index creation takes longer and uses more resources, but it's worth it for production systems.</p>
 
         <h2>Step 3: Batch Re-embedding</h2>
-        <p>Batch processing (don't embed one doc at a time), progress bar, rate limiting, commits per batch. Don't hold a transaction for thousands of documents.</p>
+        <p>Batch processing is essential. Don't embed one document at a time—that's slow and hits rate limits. Don't embed all documents in one giant transaction—that holds locks for too long. We processed in batches of 1000 documents. Batch size selection matters: too small and you're making too many API calls. Too large and you're holding database transactions too long. We settled on 1000 as the sweet spot.</p>
+
+        <p>Rate limiting against the embedding API: we added exponential backoff when hitting rate limits. Progress tracking: we logged every 10,000 documents so we could monitor progress. Per-batch commits: each batch of 1000 documents was committed independently. If the process crashed at document 50,000, we didn't lose the first 49,000. We could resume from checkpoint 50,000.</p>
 
         <h2>Step 4: Feature Flag Switch</h2>
-        <p>Deploy with <code>USE_V2_EMBEDDINGS=false</code>. Verify everything works. Flip to <code>true</code>. If anything breaks, flip back instantly.</p>
+        <p>The feature flag pattern is what made zero-downtime possible. Deploy with <code>USE_V2_EMBEDDINGS=false</code>. The code checks the flag:</p>
+
+<pre><code>def get_embedding_column():
+    if os.getenv("USE_V2_EMBEDDINGS", "false").lower() == "true":
+        return "embedding_v2"
+    return "embedding"</code></pre>
+
+        <p>Verify everything works with v1 still active. Flip to <code>true</code>. If anything breaks, flip back instantly. No code deployment needed—just change the environment variable. This pattern is what separates production-ready migrations from risky ones.</p>
 
         <h2>Step 5: Validation</h2>
-        <p>We compared search results between old and new embeddings. Average overlap was 82% — different models produce different embeddings, but the top results were comparable.</p>
+        <p>We compared search results between old and new embeddings. Average overlap was 82%—different models produce different embeddings, but the top results were comparable. What 82% overlap means practically: for a given query, if the old model returned documents A, B, C, D, E as the top 5 results, the new model returned A, B, D, E, F. Four out of five results were the same. The fifth was different, but still relevant. This validation gave us confidence that the migration wouldn't break user workflows.</p>
 
         <h2>Lessons Learned</h2>
-        <ol>
-          <li><strong>Always abstract the embedding provider.</strong> Two env vars saved us from a multi-file refactor.</li>
-          <li><strong>Add model version tracking to stored vectors.</strong> We didn't. We should have.</li>
-          <li><strong>Side-by-side columns &gt; in-place replacement.</strong> The rollback story is instant.</li>
-          <li><strong>Dry-run everything.</strong> Our validation caught 3 queries with low overlap that needed investigation.</li>
-        </ol>
-        <p>Total impact: 48 hours, zero downtime, zero data loss.</p>
+        <p><strong>Always abstract the embedding provider.</strong> Two env vars saved us from a multi-file refactor. If we had hardcoded the model name in 20 files, we'd need to change code, test each change, deploy, and hope nothing broke. With abstraction, we change config and flip a switch.</p>
+
+        <p><strong>Add model version tracking to stored vectors.</strong> We didn't. We should have. If we had a <code>model_version</code> column, we could have queried "which documents were embedded with which model" and migrated selectively. Without it, we had to re-embed everything.</p>
+
+        <p><strong>Side-by-side columns &gt; in-place replacement.</strong> The rollback story is instant. If v2 embeddings cause issues, flip the feature flag back to v1. The old embeddings are still there, still indexed, still usable. In-place replacement would have required restoring from backup.</p>
+
+        <p><strong>Dry-run everything.</strong> Our validation caught 3 queries with low overlap that needed investigation. We ran the same queries against both embedding versions, compared results, and identified edge cases before flipping the switch. This proactive validation prevented production issues.</p>
+
+        <p>Total impact: 48 hours, zero downtime, zero data loss. The entire platform's learning system migrated to a new embedding model without breaking a single production workflow. The key was planning for failure: feature flags for instant rollback, concurrent index creation for zero downtime, batch processing with checkpoints for resilience, and validation to catch issues before they reach production.</p>
         
       </div>
       <footer class="blog-footer">

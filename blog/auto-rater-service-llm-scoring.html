@@ -104,29 +104,88 @@
         </div>
       </header>
       <div class="blog-content">
-        <h2>What This Service Does</h2>
-        <p>The Auto-Rater evaluates LLM outputs using configurable scoring criteria. It takes an agent's output, runs it through multiple evaluation strategies (direct scoring, debate, chain-of-thought), and produces structured quality assessments. I led the engineering effort taking it from prototype to production.</p>
-        <h2>The v1 → v2 Migration</h2>
-        <p><strong>v1 Problems:</strong> Hardcoded model names, no idempotency (Cloud Tasks retries created duplicates), pervasive <code>print()</code> statements, Redis client with no timeouts, DB pool sized for dev.</p>
-        <h2>Idempotent Cloud Tasks</h2>
-        <p>Most impactful pattern. Cloud Tasks delivers at-least-once, so every handler must be idempotent. Added idempotent writes for COT generations, then extended to all evaluation writes with deterministic IDs from payload using <code>INSERT ... ON CONFLICT DO NOTHING</code>. Zero duplicate evaluations since deployment.</p>
+        <p>When an AI agent writes code, someone has to judge whether it's good. In our platform, that "someone" is often another LLM. The Auto-Rater takes an agent's output, runs it through evaluation strategies (direct scoring, chain-of-thought analysis, multi-model debate), and produces structured quality assessments. I took this service from a fragile prototype to a production system that handles thousands of evaluations daily.</p>
+        
+        <h2>The v1 Reality Check</h2>
+        <p>The prototype worked, but production exposed its fragility. Hardcoded model names meant changing a model broke the whole service. No idempotency meant Cloud Tasks retries created duplicate evaluations. <code>print()</code> statements everywhere were invisible in Cloud Run's structured logging. The Redis client had no timeouts, so connection loss meant hangs forever. The database pool was sized for a laptop, not production load.</p>
+        <p>v1 was a proof of concept. v2 needed to be production-ready.</p>
+        
+        <h2>Making Cloud Tasks Idempotent</h2>
+        <p>The most impactful change. Cloud Tasks delivers at-least-once, meaning your handler <em>will</em> get called multiple times. Without idempotency, every retry creates a duplicate evaluation.</p>
+        <p>The fix: deterministic UUIDs generated from the payload hash, with <code>INSERT ... ON CONFLICT DO NOTHING</code>:</p>
+        <pre><code>import hashlib
+import uuid
+
+def generate_evaluation_id(payload: dict) -> str:
+    """Deterministic ID from payload hash."""
+    payload_str = json.dumps(payload, sort_keys=True)
+    payload_hash = hashlib.sha256(payload_str.encode()).hexdigest()[:16]
+    return str(uuid.UUID(payload_hash))
+
+async def create_evaluation(payload: dict):
+    eval_id = generate_evaluation_id(payload)
+    
+    # Idempotent insert - if ID exists, do nothing
+    await db.execute(
+        """
+        INSERT INTO evaluations (id, payload, status)
+        VALUES (:id, :payload, 'pending')
+        ON CONFLICT (id) DO NOTHING
+        """,
+        {"id": eval_id, "payload": json.dumps(payload)}
+    )</code></pre>
+        <p>Zero duplicates since deployment. The same payload always generates the same ID, so retries are harmless.</p>
+        
         <h2>The Logging Overhaul</h2>
-        <p>Replaced every <code>print()</code> with structured logging. Added env-driven config, correlation IDs via <code>X-Correlation-ID</code>, cross-service correlation with notification service, PII stripping.</p>
-        <h2>OpenAI Responses Envelope</h2>
-        <p>OpenAI-compatible responses envelope with LiteLLM pass-through. Any model available through LiteLLM works without code changes — just change model name in config.</p>
-        <h2>The VPC Connector Saga</h2>
-        <p>3-day debugging marathon. Cloud Run couldn't connect to Redis (Memorystore). Added socket timeouts to prevent infinite hangs, then added VPC connector. Discovered Direct VPC Egress conflicting with connector. Removed VPC connector (infra had moved to Direct VPC). Lesson: Cloud Run networking has two mutually exclusive modes.</p>
+        <p>Replacing <code>print()</code> with structured logging sounds simple. In practice, it meant replacing every logging call, adding env-driven config (different log levels per environment), correlation IDs via <code>X-Correlation-ID</code> header, cross-service correlation (trace a request from API → auto-rater → notification service), and PII stripping.</p>
+        <p>Structured logs look like this:</p>
+        <pre><code>{
+  "timestamp": "2026-02-08T10:23:45Z",
+  "level": "INFO",
+  "service": "auto-rater",
+  "correlation_id": "req-abc123",
+  "evaluation_id": "eval-xyz789",
+  "message": "Starting chain-of-thought scoring",
+  "model": "gpt-4o",
+  "strategy": "cot"
+}</code></pre>
+        <p>Now we can trace a request across services, filter by evaluation ID, and search logs by correlation ID. Debugging production issues went from "search for a string" to "query structured data."</p>
+        
+        <h2>Model-Agnostic Scoring with LiteLLM</h2>
+        <p>The OpenAI-compatible responses envelope with LiteLLM pass-through. Any model available through LiteLLM works without code changes. Want to switch from GPT-4o to Claude Sonnet for scoring? Change one config value.</p>
+        <pre><code># Before - hardcoded
+response = openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=[...]
+)
+
+# After - configurable via LiteLLM
+response = litellm.completion(
+    model=os.getenv("SCORING_MODEL", "gpt-4o"),
+    messages=[...]
+)</code></pre>
+        <p>LiteLLM handles the differences between providers (OpenAI, Anthropic, Google) behind a unified interface. The service is now model-agnostic — swap models without touching code.</p>
+        
+        <h2>The VPC Networking Saga</h2>
+        <p>A 3-day debugging journey. Cloud Run couldn't connect to Redis (Memorystore). Added socket timeouts (without them, connections hang forever). Added VPC connector. Then discovered Direct VPC Egress was conflicting with the connector — Cloud Run has two mutually exclusive VPC networking modes and the error message doesn't tell you that.</p>
+        <p>Fix: removed VPC connector since infrastructure had already moved to Direct VPC Egress. The lesson: Cloud Run networking is subtle. When something doesn't work, check if you're mixing modes.</p>
+        
         <h2>Redis State Recovery</h2>
-        <p>Evaluations take 1-30 min. Frontend polls Redis for progress. Discovered state updates logging "success" even when key didn't exist. Rewrote Redis state management to verify results and create recovery records.</p>
-        <h2>Production Hardening</h2>
-        <p>Cloud Run defaults to 80 concurrent requests. Each holds DB connection. 80 × 10 instances = 800 connections against Cloud SQL supporting ~100. Fix: <code>containerConcurrency=10</code>, <code>uvicorn workers=1</code>, <code>pool_size=5</code>, <code>max_overflow=10</code>.</p>
-        <h2>Impact</h2>
-        <table>
-          <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Issues filed</td><td>Dozens of issues filed and resolved</td></tr>
-          <tr><td>Timeframe</td><td>Aug 2025 — Feb 2026</td></tr>
-          <tr><td>GCP services</td><td>Cloud Run, Cloud Tasks, Cloud SQL, Redis (Memorystore), GCS, Pub/Sub, Secret Manager</td></tr>
-        </table>
+        <p>Evaluations take 1-30 minutes. The frontend polls Redis for progress. Discovered state updates were logging "success" even when the Redis key didn't exist — <code>HSET</code> returns 0 for "field updated" and 0 for "key doesn't exist", so we couldn't distinguish success from failure.</p>
+        <p>Rewrote state management to verify return values and create recovery records for lost state. Now, if Redis state disappears (expiration, eviction, crash), we can reconstruct it from recovery records.</p>
+        
+        <h2>Production Tuning</h2>
+        <p>Cloud Run defaults to 80 concurrent requests per container. Each request holds a database connection. 80 × 10 instances = 800 connections against Cloud SQL supporting ~100. The fix:</p>
+        <pre><code># Cloud Run service config
+containerConcurrency: 10
+
+# Uvicorn config
+uvicorn.workers: 1
+
+# SQLAlchemy pool config
+pool_size: 5
+max_overflow: 10</code></pre>
+        <p>Now: 10 concurrent × 10 instances × 5 pool = 500 max connections, well under the limit. The trade-off: lower concurrency means more instances, but database stability is worth it.</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

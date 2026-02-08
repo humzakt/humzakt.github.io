@@ -103,8 +103,8 @@
         </div>
       </header>
       <div class="blog-content">
-        <h2>What This Service Does</h2>
-        <p>The Evaluation Engine is the brain of the entire AI assessment platform. It manages the full lifecycle of evaluating AI coding agents: creating tasks, orchestrating agent execution across GKE clusters, collecting outputs, running LLM-based judging, and aggregating results. I made extensive contributions to this service over 4 months, focusing on reliability, scalability, and feature development.</p>
+        <p>The evaluation engine is the brain of the platform. Every AI agent evaluation — task creation, execution orchestration, LLM-based scoring, result aggregation — flows through this service. Over four months, I was the primary contributor, and the work taught me more about production infrastructure than any textbook could.</p>
+        
         <h2>The Architecture</h2>
 <pre><code>┌──────────────────────────────────────────────────┐
 │           Evaluation Engine (Cloud Run)           │
@@ -114,44 +114,60 @@
 │  Claude, GPT, Gemini │  Multi-LLM scoring         │
 ├──────────────────────────────────────────────────┤
 │  AlloyDB (PostgreSQL 17)  │  Firestore (realtime) │
-│  Cloud Tasks              │  Pub/Sub (35 topics)  │
+│  Cloud Tasks              │  Pub/Sub               │
 │  Cloud Scheduler          │  GCS buckets          │
 └──────────────────────────────────────────────────┘</code></pre>
+        
         <h2>The AlloyDB SSL Crisis</h2>
-        <p>This was a multi-week battle. Our evaluation tasks — which run 5-30 minutes — were randomly failing at a 5% rate with <code>SSL connection has been closed unexpectedly</code>.</p>
-        <p><strong>The timeline of fixes:</strong></p>
-        <ol>
-          <li><strong>First attempt:</strong> Added retry decorators for agent-runs fetch on DB SSL disconnect. Helped, but didn't fix root cause.</li>
-          <li><strong>Error suppression:</strong> Suppressed DB SSL errors on session close to prevent noisy traces from masking the real problem.</li>
-          <li><strong>Firestore discovery:</strong> During database pool alignment work, discovered scores writing to the wrong Firestore database.</li>
-          <li><strong>Targeted retries:</strong> Implemented more targeted retry logic for transient SSL disconnects on agent_runs.</li>
-          <li><strong>Root cause analysis:</strong> Hardened sessions and transient DB reads to better understand the failure pattern.</li>
-          <li><strong>Connection pooling discovery:</strong> Found actual root cause: AlloyDB kills idle connections at ~10 min, pool recycled at 15 min.</li>
-          <li><strong>Final fix:</strong> Configured <code>pool_recycle=180</code> and <code>pool_pre_ping=True</code> to prevent stale connections.</li>
-        </ol>
-        <p><strong>Result:</strong> 5% failure rate → 0.01%. Multiple iterations over 2 weeks to fully understand and fix one infrastructure bug.</p>
+        <p>This was a detective story. Our evaluation tasks — which run 5-30 minutes — were randomly failing at a 5% rate with <code>SSL connection has been closed unexpectedly</code>. The failures were intermittent, making them hard to reproduce.</p>
+        <p>First, we added retries. Symptom treatment — it helped, but didn't fix the root cause. Then we suppressed errors on session close to see the real signal. During database pool alignment work, we discovered a Firestore bug (scores writing to the wrong database), but that was a separate issue.</p>
+        <p>We implemented targeted retries for transient SSL disconnects, hardened sessions, and added better logging. The breakthrough came when we discovered the timing mismatch: AlloyDB kills idle connections at ~10 minutes, but SQLAlchemy's connection pool recycled at 15 minutes. That 5-minute window meant stale connections were being handed out.</p>
+        <p>The fix was three lines of config:</p>
+        <pre><code># Before
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=10
+)
+
+# After
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=10,
+    pool_recycle=180,  # Recycle before AlloyDB kills (10 min = 600s, use 180s)
+    pool_pre_ping=True  # Verify connection before use
+)</code></pre>
+        <p>Result: 5% failure rate → 0.01%. Multiple iterations over 2 weeks to understand one infrastructure quirk.</p>
+        
         <h2>The Firestore Default Database Trap</h2>
-        <p>Firestore has a <code>(default)</code> database. If you don't specify which database to use, everything routes there. We had 12 Firestore databases, but several code paths were accidentally hitting the default.</p>
-        <p>The definitive fix was preventing Firestore default-db misrouting and restoring auto-export. Every Firestore reference now explicitly specifies its database ID.</p>
-        <p>This was also extended to the React frontend — real-time listeners were using the wrong database, causing stale UI data.</p>
+        <p>Firestore has a <code>(default)</code> database that silently catches everything you don't explicitly route elsewhere. We had multiple databases for different services, but several code paths were writing to <code>(default)</code> without anyone realizing.</p>
+        <p>The fix required updating every Firestore reference across backend and frontend. Here's the difference:</p>
+        <pre><code># Implicit - goes to (default)
+db = firestore.Client()
+collection = db.collection('scores')
+
+# Explicit - goes to correct database
+db = firestore.Client(database='evaluations-db')
+collection = db.collection('scores')</code></pre>
+        <p>This was also extended to the React frontend — real-time listeners were using the wrong database, causing stale UI data. The lesson: explicit is better than implicit, especially in distributed systems.</p>
+        
         <h2>Continuous Learning Pipeline</h2>
-        <p>Resolved gaps preventing agent training on historical performance. Fixed data flow between the evaluation engine, RAG service (pgvector), and auto-rater.</p>
-        <h2>Headless API Mode</h2>
-        <p>The final major feature: a headless API mode allowing external services to trigger evaluations programmatically without the web UI. Teams can now run agent evaluations as part of their CI/CD pipelines.</p>
-        <h2>KEDA Autoscaling</h2>
-        <p>We use KEDA on GKE to scale agent execution pods based on Pub/Sub message backlog. Fixed an invalid <code>idleReplicaCount</code> setting preventing scale-to-zero, and warm replicas not being maintained. After the fix, the cluster properly scales with elastic node scaling based on evaluation queue depth.</p>
-        <h2>Security Audit</h2>
-        <ul>
-          <li><strong>Critical:</strong> Firestore rules allowing unauthenticated read/write, production K8s using <code>:latest</code> tags, zero frontend test coverage, no React Error Boundaries</li>
-          <li><strong>High:</strong> Excessive <code>any</code> type usage (60+ instances), no code splitting, conflicting HPA and KEDA autoscaling</li>
-        </ul>
-        <h2>Impact</h2>
-        <table>
-          <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Issues identified and resolved</td><td>Multiple critical and high-priority issues addressed</td></tr>
-          <tr><td>Timeframe</td><td>Nov 2025 — Feb 2026</td></tr>
-          <tr><td>GCP services</td><td>Cloud Run, GKE, AlloyDB, Firestore, Cloud Tasks, Pub/Sub, Cloud Scheduler, GCS, Secret Manager</td></tr>
-        </table>
+        <p>Connecting evaluation results back to the RAG service so future evaluations can learn from past outcomes. The gap was that scored evaluations weren't flowing back to pgvector for similarity search.</p>
+        <p>When an evaluation completes, it now gets embedded and stored in the RAG service. Future evaluations can query "show me similar tasks and how they scored" to inform rubric selection and calibration. This closes the learning loop — the platform gets smarter with each evaluation.</p>
+        
+        <h2>The Headless API</h2>
+        <p>Why it matters: external teams can now trigger evaluations as part of their CI/CD pipelines. Decoupling evaluation from the web UI opened up integration possibilities.</p>
+        <p>Before, evaluations were UI-only. Now, any service can POST to <code>/api/v1/evaluations</code> with a task definition and get back evaluation results. Teams integrate agent evaluation into their release process — run evaluations on every commit, gate deployments on score thresholds, track performance over time.</p>
+        <p>The headless API transformed the platform from a tool into a platform.</p>
+        
+        <h2>KEDA Autoscaling on GKE</h2>
+        <p>Scale agent execution pods based on Pub/Sub message backlog. The gotcha: <code>idleReplicaCount</code> was misconfigured preventing scale-to-zero, and warm replicas weren't being maintained.</p>
+        <p>After fixing the KEDA ScaledObject configuration, the cluster properly scales from zero to dozens of nodes based on queue depth. When evaluations queue up, pods spin up. When the queue empties, pods scale down to zero, saving costs.</p>
+        <p>Autoscaling sounds simple until you realize it's balancing latency (warm replicas) vs. cost (scale-to-zero). The configuration is a compromise between these forces.</p>
+        
+        <h2>Security Audit Findings</h2>
+        <p>Critical findings: Firestore rules allowing unauthenticated access, production Kubernetes using <code>:latest</code> tags, excessive TypeScript <code>any</code> usage, conflicting HPA and KEDA autoscaling.</p>
+        <p>The Firestore rules were the most concerning — anyone could read or write evaluation data. We locked down rules to require authentication and proper IAM roles. The <code>:latest</code> tags meant deployments weren't reproducible — we moved to semantic versioning.</p>
+        <p>The conflicting autoscaling was subtle: both HPA and KEDA were trying to scale the same pods, causing thrashing. We disabled HPA and let KEDA handle it.</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

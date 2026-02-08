@@ -117,41 +117,56 @@
       </header>
       <div class="blog-content">
         
-        <h2>The Problem</h2>
-        <p>We needed AI agents that could learn from their mistakes when solving coding tasks. Not just prompt engineering — actual reinforcement learning with structured rewards.</p>
+        <p>How do you teach an AI to get better at coding? Not with more training data — with structured feedback. Give it a task, let it try, measure the result, and let it learn. I built the environment that makes this possible.</p>
 
-        <h2>What I Built</h2>
-        <h3>Executor Service (81% test coverage)</h3>
-        <ul>
-          <li>Gym-style RL API: create episodes, execute steps, compute rewards</li>
-          <li>Cloud Build integration for sandboxed code execution</li>
-          <li>Redis-based episode state management</li>
-          <li>Firestore trajectory logging for training data</li>
-          <li>Custom exception hierarchy for proper error propagation</li>
-        </ul>
+        <h2>The Gym-Style API</h2>
+        <p>We modeled after OpenAI Gym because RL researchers already know this interface. Three endpoints capture the full RL loop: create episode, execute step, compute reward. The API abstracts away the complexity of code execution, sandboxing, and state management. Here's what it looks like:</p>
 
-        <h3>Preprocessor Service</h3>
-        <ul>
-          <li>15-step preprocessing workflow for coding tasks</li>
-          <li>Dynamic verifier and reward configuration generation</li>
-          <li>Repository analysis and baseline test execution</li>
-        </ul>
+<pre><code>POST /episodes
+{
+  "task_id": "fix-bug-in-sort-function",
+  "agent_id": "claude-sonnet-4"
+}
 
-        <h2>Architecture Decisions</h2>
-        <ol>
-          <li><strong>Hexagonal architecture</strong> — Domain logic is completely isolated from infrastructure. Switching from Cloud Build to local Docker? Change the adapter, not the domain.</li>
-          <li><strong>Redis for episode state</strong> — Episodes are short-lived but need fast read/write.</li>
-          <li><strong>Firestore for trajectories</strong> — Training data needs to persist long-term and be queryable.</li>
-          <li><strong>Cloud Build sandboxing</strong> — Each agent execution happens in an isolated Cloud Build step. No cross-contamination between evaluations.</li>
-        </ol>
+POST /episodes/{episode_id}/steps
+{
+  "action": "edit_file",
+  "file": "src/sort.py",
+  "code": "def sort(arr): ..."
+}
 
-        <h2>The Reward System</h2>
+GET /episodes/{episode_id}/reward
+{
+  "reward": 0.75,
+  "tests_passed": 3,
+  "total_tests": 4
+}</code></pre>
+
+        <p>This interface lets researchers focus on agent behavior, not infrastructure. They don't need to know about Cloud Build, Redis, or Firestore—they just need to understand episodes, steps, and rewards.</p>
+
+        <h2>Sandboxing Untrusted Code</h2>
+        <p>Agents execute arbitrary code. You need isolation. Cloud Build provides containers with no network, hard timeouts, resource limits, and read-only filesystems. The trade-off: roughly 10 seconds of startup latency per execution. Worth it for guaranteed isolation. Each agent execution happens in an isolated Cloud Build step. No cross-contamination between evaluations, no way for one agent's code to affect another's environment.</p>
+
+        <h2>State Management Tiers</h2>
+        <p>We use three storage tiers, each chosen for its access pattern. Redis holds ephemeral episode state—fast read/write, perfect for the active episode that needs sub-second updates. Episodes are short-lived, but they need to be fast. Firestore stores persistent trajectories—training data that needs to persist long-term and be queryable. Researchers need to analyze agent behavior over time, compare trajectories, and extract patterns. Cloud SQL holds task configuration—relational data that needs JOINs and complex queries. Task definitions, verifiers, baseline results—all structured data that belongs in a relational database.</p>
+
+        <p>Don't just list them—understand WHY each tier exists. Redis isn't just "fast"—it's for data that doesn't need to survive a restart. Firestore isn't just "persistent"—it's for data that needs real-time listeners and flexible schemas. Cloud SQL isn't just "relational"—it's for data that needs ACID guarantees and complex queries.</p>
+
+        <h2>The Preprocessor Pipeline</h2>
+        <p>Think of it as the task chef. Raw ingredients go in—a GitHub repository, a task description, maybe some baseline tests. A fully prepared training environment comes out. The 15-step preprocessing workflow analyzes repositories, generates verifiers, establishes baselines, creates test harnesses, and configures reward functions. Dynamic verifier and reward configuration generation means each task gets a custom evaluation setup. Repository analysis extracts dependencies, identifies test patterns, and builds execution contexts. Baseline test execution establishes ground truth—what should pass before the agent even starts.</p>
+
+        <h2>Reward Shaping</h2>
+        <p>Here's the reward formula:</p>
+
 <pre><code>reward = (tests_passed / total_tests) * base_reward
         + style_bonus
         - time_penalty
         - error_penalty</code></pre>
-        <p>Getting the reward shaping right took 3 iterations. Too sparse → agents don't learn. Too dense → agents game the metric.</p>
-        <p>Scale: 55 GCS buckets store task artifacts, results, and evaluation checkpoints. 3 GKE clusters with auto-scaling node pools handle the compute.</p>
+
+        <p>Getting the reward shaping right took three iterations. Too sparse—agents don't learn because they rarely get positive feedback. Too dense—agents game the metric, optimizing for the reward function instead of solving the task. Just right—balances test passage, style, time, and errors in a way that encourages genuine problem-solving.</p>
+
+        <h2>Architecture Choice: Hexagonal</h2>
+        <p>Domain logic is decoupled from GCP infrastructure. Switching Cloud Build for local Docker? Change the adapter, not the domain. This isn't academic—it made testing actually possible. We can run the entire RL loop locally without spinning up Cloud Build containers. The domain doesn't know about GCP. It knows about code execution, state management, and reward computation. The infrastructure adapters handle the details.</p>
         
       </div>
       <footer class="blog-footer">

@@ -122,6 +122,8 @@
         <p>With synchronous HTTP: timeouts, retries hitting already-completed work, and debugging nightmares. With events: each service subscribes independently. If one fails, it retries from its own checkpoint. Others don't even know.</p>
 
         <h2>The Pipeline Phases</h2>
+        <p>Six phases, each representing a handoff where the next service might fail independently. Phase A creates the task. Phase B preprocesses it. Phase C executes the agent. Phase D collects outputs. Phase E judges and scores. Phase F aggregates and learns. Each phase publishes to a Pub/Sub topic, and the next phase subscribes. If Phase C fails, Phase D doesn't even know a task was attempted. Phase C retries from its checkpoint, and when it succeeds, Phase D picks up the work. This independence is what makes event-driven architecture resilient.</p>
+
 <pre><code>Phase A: Task Creation → (Pub/Sub: task-events)
 Phase B: Preprocessing → (Pub/Sub: phase-b-batch-notifications)
 Phase C: Agent Execution → (Pub/Sub: phase-c-asset-feed)
@@ -131,24 +133,62 @@ Phase F: Aggregation &amp; Learning → (Pub/Sub: evaluation-events)
 Consumers: Notification, RAG Sync, Analytics</code></pre>
 
         <h2>Fan-Out Pattern</h2>
-        <p>Our most powerful pattern: one topic, multiple subscriptions. <code>evaluation-events</code> is published to once but consumed by notification service, RAG sync, analytics pipeline, and auto-eval scheduler. Adding a new consumer? Create a subscription. Zero changes to the publisher.</p>
+        <p>Our most powerful pattern: one topic, multiple subscriptions. <code>evaluation-events</code> is published to once but consumed by notification service, RAG sync, analytics pipeline, and auto-eval scheduler. Adding a new consumer? Create a subscription. Zero changes to the publisher. Here's how it works:</p>
+
+<pre><code># Publisher (evaluation engine)
+publisher = pubsub_v1.PublisherClient()
+topic_path = publisher.topic_path(project_id, "evaluation-events")
+publisher.publish(topic_path, json.dumps({
+    "evaluation_id": "eval_123",
+    "status": "completed",
+    "score": 0.85
+}).encode())
+
+# Multiple subscribers (each independent)
+# - notification-service subscribes to send emails
+# - rag-service subscribes to update embeddings
+# - analytics-service subscribes to update dashboards
+# - auto-eval-service subscribes to trigger next batch</code></pre>
+
+        <p>Each subscriber processes the message independently. If the notification service fails, the RAG service still processes the message. This decoupling is what makes fan-out so powerful.</p>
 
         <h2>Dead-Letter Queues</h2>
-        <p>Every production topic has a DLQ with a 5-retry policy. We have a weekly DLQ review. In 6 months, we caught 3 schema migration issues, 1 Firestore quota limit, and 2 transient Cloud SQL connection failures. Without DLQs, these would have been silent data loss.</p>
+        <p>Every production topic has a DLQ with a 5-retry policy. We have a weekly DLQ review. Dead-letter queues catch failures that aren't transient: schema migration issues where the message format changed but old messages are still in the queue, quota limits where Firestore rejects writes because we've hit the daily limit, transient Cloud SQL connection failures that become permanent if the database is actually down. Without DLQs, these would have been silent data loss. Messages would fail, get retried, fail again, and disappear. With DLQs, we see every failure, investigate the root cause, and fix it.</p>
 
         <h2>Cloud Scheduler for Automation</h2>
-        <p>Each scheduled job publishes a message to a Pub/Sub topic. The consuming service doesn't know if the message came from a schedule, a user action, or an API call. We could pause <code>auto-eval-daily</code> in production without touching any service code.</p>
+        <p>Each scheduled job publishes a message to a Pub/Sub topic. The consuming service doesn't know if the message came from a schedule, a user action, or an API call. We could pause <code>auto-eval-daily</code> in production without touching any service code. Here's the pattern:</p>
+
+<pre><code># Cloud Scheduler job
+gcloud scheduler jobs create pubsub auto-eval-daily \
+  --schedule="0 2 * * *" \
+  --topic=auto-eval-trigger \
+  --message-body='{"trigger": "daily", "batch_size": 100}'
+
+# Service handler (doesn't know the source)
+def handle_auto_eval(message):
+    data = json.loads(message.data)
+    # Process the batch - same code path whether
+    # triggered by schedule, API, or manual publish
+    process_evaluation_batch(data["batch_size"])</code></pre>
+
+        <p>This abstraction means we can test scheduled jobs by manually publishing to the topic, pause them by disabling the scheduler job, or change the schedule without deploying code.</p>
 
         <h2>Monitoring</h2>
-        <p>Every Cloud Run service has an alert at &gt;5% error rate. We also monitor CPU utilization &lt; 10% to auto-detect idle VMs — this saves ~40% on compute costs.</p>
+        <p>Every Cloud Run service has an alert at &gt;5% error rate. We also monitor CPU utilization &lt; 10% to auto-detect idle VMs—this saves significant compute costs. But the real value is in the alerting strategy: we alert on error rates, not individual errors. One failed message isn't a problem. A sustained error rate above 5% means something is wrong. We also monitor message age in DLQs—if messages are sitting in DLQs for more than an hour, we investigate. This proactive monitoring catches issues before they become incidents.</p>
+
+        <h2>Pub/Sub vs Cloud Tasks: When to Use Which</h2>
+        <p>Pub/Sub is for events—things that happened that other services might care about. An evaluation completed. A task was created. A user signed up. Multiple services might subscribe to the same event. Cloud Tasks is for commands—things you want done exactly once, with retries and deadlines. Send an email. Process a payment. Update a database record. One task, one handler, guaranteed delivery.</p>
+
+        <p>We use Pub/Sub for the evaluation pipeline because multiple services care about evaluation events. We use Cloud Tasks for notification delivery because each email should be sent exactly once, with retries if the email service is down. The distinction matters: Pub/Sub is fire-and-forget events. Cloud Tasks is reliable command execution.</p>
 
         <h2>Key Lessons</h2>
-        <ul>
-          <li><strong>Message ordering doesn't matter</strong> if you design correctly. Every message contains enough context to be processed independently.</li>
-          <li><strong>Acknowledge after commit, not before.</strong> Write first, ack second, always.</li>
-          <li><strong>Schema evolution is inevitable.</strong> Version your message schemas.</li>
-          <li><strong>Pub/Sub for events, Cloud Tasks for commands.</strong> Keep the distinction clear.</li>
-        </ul>
+        <p><strong>Message ordering doesn't matter</strong> if you design correctly. Every message contains enough context to be processed independently. If you need ordering, include a sequence number or timestamp in the message. Don't rely on Pub/Sub's ordering guarantees—they're best-effort and can break under load.</p>
+
+        <p><strong>Acknowledge after commit, not before.</strong> Write first, ack second, always. If you ack before writing to the database, and the write fails, the message is gone forever. If you write first, then ack, and the ack fails, the message will be redelivered—but your idempotency check will prevent duplicate processing.</p>
+
+        <p><strong>Schema evolution is inevitable.</strong> Version your message schemas. Include a <code>version</code> field in every message. When you need to change the schema, publish both old and new versions, update consumers gradually, then deprecate the old version. Don't break existing consumers with breaking changes.</p>
+
+        <p><strong>Pub/Sub for events, Cloud Tasks for commands.</strong> Keep the distinction clear. Events are "something happened." Commands are "do this thing." Mixing them leads to confusion about retry semantics, delivery guarantees, and error handling.</p>
         
       </div>
       <footer class="blog-footer">

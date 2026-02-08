@@ -103,18 +103,62 @@
         </div>
       </header>
       <div class="blog-content">
-        <h2>What This Service Does</h2>
-        <p>Handles all event-driven delivery. When evaluations complete, scores generate, or agents finish, this dispatches notifications via webhooks. Security audit findings identified and addressed.</p>
-        <h2>Architecture diagram</h2>
-<pre><code>Event Sources (Pub/Sub) → Notification Service (Cloud Run) → Subscription Registry → Delivery Pipeline (Cloud Tasks) → Webhook Dispatch (with retries) → Dead Letter Queue → Circuit Breaker → Observability (correlation IDs)</code></pre>
-        <h2>Validation Error Handling (PR #1)</h2>
-        <p>Pydantic v2 embeds original Python exception in validation errors. FastAPI crashed with <code>"ValueError is not JSON serializable"</code> turning 422 into 500. Fix: jsonable_encoder with custom Exception encoder.</p>
-        <h2>Alembic Migration System (PR #6)</h2>
-        <p>Complete DB migration system: Alembic config with PostgreSQL 17, full schema migration (subscriptions, notifications, delivery logs, DLQ), indexes, CI/CD integration.</p>
-        <h2>Cloud Tasks Production Delivery (PR #5)</h2>
-        <p>Draft PR (+921/-71). At-least-once delivery with idempotent handlers, exponential backoff, DLQ for permanent failures, per-subscriber circuit breakers.</p>
-        <h2>Audit Findings</h2>
-        <p>Race conditions in caching/dispatch/subscription services. Memory leaks from unbounded growth. No DB backup before migrations. No automated tests in CI/CD. Missing .dockerignore. Fire-and-forget event publisher. Overly permissive CORS.</p>
+        <p>When an AI evaluation completes, a score is generated, or an agent finishes a task, someone needs to know. The notification service is the event-driven delivery backbone—it ensures the right information reaches the right subscribers at the right time, even when things go wrong. This isn't just about sending webhooks—it's about building a system that can handle partial failures, network timeouts, and subscriber outages without losing messages or cascading failures across the platform.</p>
+
+        <h2>The Architecture</h2>
+        <p>The notification pipeline follows a clear flow: event sources publish messages to Pub/Sub, the notification service consumes those messages, matches them against a subscription registry, and dispatches them through a delivery pipeline built on Cloud Tasks. Each webhook dispatch is retried with exponential backoff, failed deliveries end up in a dead-letter queue, and circuit breakers prevent one failing subscriber from slowing down deliveries to everyone else.</p>
+        <pre><code>Event Sources (Pub/Sub)
+    ↓
+Notification Service (Cloud Run)
+    ↓
+Subscription Registry
+    ↓
+Delivery Pipeline (Cloud Tasks)
+    ↓
+Webhook Dispatch (with retries)
+    ↓
+Dead Letter Queue ← Circuit Breaker
+    ↓
+Observability (correlation IDs)</code></pre>
+        <p>Each component exists for a reason. Pub/Sub provides durable message storage and at-least-once delivery guarantees. The subscription registry lets subscribers express interest in specific event types. Cloud Tasks handles the heavy lifting of retries and backoff, ensuring that transient failures don't become permanent message loss. The dead-letter queue captures messages that can't be delivered after exhausting retries, allowing manual intervention and analysis. Circuit breakers prevent a single failing subscriber from consuming all retry capacity, ensuring that healthy subscribers continue to receive notifications even when others are down.</p>
+
+        <h2>The Pydantic v2 Serialization Bug</h2>
+        <p>Pydantic v2 changed how it handles validation errors. In v1, validation errors were simple dictionaries that FastAPI could serialize to JSON without issue. In v2, Pydantic embeds the original Python exception object inside validation errors, preserving more context for debugging. This is great for development, but it breaks FastAPI's JSON serialization.</p>
+        <p>When a request with invalid data arrived, Pydantic would raise a validation error containing a <code>ValueError</code> exception object. FastAPI tried to serialize this to JSON for the 422 response, but Python exceptions aren't JSON serializable. The serialization failed, FastAPI crashed, and users saw a 500 internal server error instead of the helpful 422 validation error they should have received.</p>
+        <p>The fix required a custom exception encoder that knows how to serialize exception objects. We extended FastAPI's <code>jsonable_encoder</code> to handle exceptions by converting them to strings:</p>
+        <pre><code># Before: Pydantic v2 wraps exceptions, FastAPI can't serialize them
+# -> 422 (validation error) becomes 500 (server error)
+
+# After: Custom exception encoder
+from fastapi.encoders import jsonable_encoder
+
+@app.exception_handler(RequestValidationError)
+async def validation_handler(request, exc):
+    return JSONResponse(
+        status_code=422,
+        content=jsonable_encoder({"detail": exc.errors()},
+                                  custom_encoder={Exception: str})
+    )</code></pre>
+        <p>Now validation errors serialize correctly, and users get the helpful error messages they need to fix their requests. It's a small change, but it transforms a confusing 500 error into a clear 422 validation error that guides users toward the correct input format.</p>
+
+        <h2>Building the Migration System from Scratch</h2>
+        <p>Reliable delivery requires reliable state tracking. You can't know if a notification was delivered without storing delivery attempts. You can't retry failed deliveries without a record of what failed. You can't implement circuit breakers without tracking per-subscriber failure rates. All of this requires a database schema that can evolve as the system grows.</p>
+        <p>We built the migration system using Alembic with PostgreSQL 17. The schema covers subscriptions (who wants to receive what), notifications (the events themselves), delivery logs (every delivery attempt with its outcome), and dead-letter queue tables (permanent failures that need manual intervention). Each table has proper indexes for the queries we need to run—finding subscriptions for an event type, retrieving delivery logs for a notification, checking circuit breaker state.</p>
+        <p>Schema-first development matters here. You can't retrofit reliable delivery onto a system that doesn't track state. The migration system lets us evolve the schema as we discover new requirements—adding fields for retry policies, circuit breaker state, or delivery metadata—without losing existing data or breaking running code.</p>
+
+        <h2>Cloud Tasks Delivery Pipeline</h2>
+        <p>The delivery pipeline is where reliability meets complexity. Cloud Tasks provides at-least-once delivery with automatic retries and exponential backoff, but building a production-ready system on top requires careful design.</p>
+        <p>Idempotent handlers are essential. Cloud Tasks may deliver the same task multiple times—network partitions, retries, or race conditions can cause duplicate deliveries. Each handler must check if it's already processed this notification before doing any work. A simple database check prevents duplicate webhook calls even when Cloud Tasks delivers the same task twice.</p>
+        <p>Exponential backoff handles transient failures gracefully. A webhook endpoint that's temporarily down gets retried with increasing delays—first after one second, then two, then four, then eight. This gives the endpoint time to recover without overwhelming it with rapid retries. Permanent failures—like 404 Not Found or 401 Unauthorized—are detected early and moved to the dead-letter queue without wasting retry capacity.</p>
+        <p>Per-subscriber circuit breakers are the hardest part. If one subscriber's webhook endpoint is down, you don't want its failures to slow down deliveries to all other subscribers. The circuit breaker tracks failure rates per subscriber—when failures exceed a threshold, that subscriber's circuit opens, and new deliveries are paused. After a cooldown period, the circuit half-opens, allowing a test delivery. If it succeeds, the circuit closes and normal delivery resumes. If it fails, the circuit opens again.</p>
+        <p>This isolation is critical. Without circuit breakers, a single failing subscriber can consume all retry capacity, delaying notifications to healthy subscribers. With circuit breakers, failing subscribers are isolated, and healthy subscribers continue to receive notifications without delay.</p>
+
+        <h2>What the Audit Revealed</h2>
+        <p>A production load test revealed issues that don't show up in development. Under concurrent load, race conditions appeared in the caching layer—multiple requests would check the cache simultaneously, find it empty, and all try to populate it at once. The fix required proper locking and atomic cache operations.</p>
+        <p>Unbounded memory growth came from the caching layer never evicting entries. As the system ran, the cache grew without bound, eventually consuming all available memory. Adding a TTL and LRU eviction policy kept memory usage bounded while maintaining cache performance.</p>
+        <p>The event publisher was fire-and-forget—events were published to Pub/Sub without waiting for acknowledgment. On transient Pub/Sub failures, events were silently dropped. Adding proper error handling and retry logic ensured that events weren't lost on transient failures.</p>
+        <p>Overly permissive CORS headers allowed any origin to make requests to the notification service. While the service still required authentication, the permissive CORS policy was unnecessary and increased the attack surface. Restricting CORS to known origins reduced risk without affecting legitimate clients.</p>
+        <p>These issues are lessons about what breaks under production load that you don't catch in development. Race conditions only appear with concurrent requests. Memory leaks only show up over time. Fire-and-forget patterns only fail when the external service has issues. The audit process—systematic load testing, code review, and security scanning—surfaced these issues before they became production incidents.</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

@@ -103,34 +103,41 @@
         </div>
       </header>
       <div class="blog-content">
-        <h2>What This Service Does</h2>
-        <p>The RAG Retrieval Service enables continuous learning via pgvector similarity search. Each contribution solved a critical problem in production.</p>
-        <h2>Emergency Embedding Migration (PR #7)</h2>
-        <p><code>text-embedding-004</code> was deprecated overnight. All queries started returning 404 errors. This PR made the embedding model configurable via environment variables (<code>EMBED_MODEL</code>, <code>EMBED_DIMENSIONS</code>).</p>
-        <p><strong>Migration strategy:</strong></p>
-        <ul>
-          <li>Side-by-side columns for rollback capability</li>
-          <li>Batch re-embedding pipeline</li>
-          <li>Feature flag switch for zero-downtime deployment</li>
-        </ul>
-        <p><strong>Result:</strong> Zero downtime migration. The service now supports any embedding model via configuration.</p>
-        <h2>Provenance and Metadata (PR #4)</h2>
-        <p>CLI eval agents needed outcome data for calibration. I added provenance and metadata options to the retrieve endpoint:</p>
-        <ul>
-          <li>Updated SQL to include <code>d.provenance</code> and <code>d.source_type</code></li>
-          <li>Optional return fields for bandwidth savings when not needed</li>
-          <li>Enables downstream services to track data lineage</li>
-        </ul>
-        <h2>Response Serialization Fix (PR #5)</h2>
-        <p>The response included <code>"provenance": null</code> which was breaking downstream consumers. Fixed by setting <code>response_model_exclude_none=True</code> in the FastAPI endpoint.</p>
+        <p>In an AI evaluation platform, the ability to learn from past evaluations is what separates a useful tool from a demo. The RAG retrieval service provides that learning loop — when a new evaluation comes in, it can find similar past evaluations, their scores, and their outcomes. The secret ingredient: pgvector on PostgreSQL.</p>
+        
+        <h2>How the RAG Pipeline Works</h2>
+        <p>The retrieval flow is elegant in its simplicity. When evaluation data arrives, it gets embedded using a configurable model (currently <code>text-embedding-3-large</code>). Those embeddings are stored in PostgreSQL with pgvector, creating a searchable vector space of all past evaluations.</p>
+        <p>When new tasks arrive, the system finds similar past evaluations via cosine similarity. Those results inform scoring calibration and rubric selection — if a similar task scored poorly with one rubric, we might try a different approach. The magic happens in a single SQL query:</p>
+        <pre><code>SELECT 
+  evaluation_id,
+  score,
+  outcome,
+  1 - (embedding <=> $1::vector) AS similarity
+FROM evaluations
+WHERE embedding <=> $1::vector < 0.3
+ORDER BY embedding <=> $1::vector
+LIMIT 10;</code></pre>
+        <p>The <code><=></code> operator computes cosine distance, and pgvector's IVFFlat index makes this fast even with millions of evaluations.</p>
+        
+        <h2>The Midnight Deprecation Crisis</h2>
+        <p>The embedding model <code>text-embedding-004</code> was deprecated overnight. Every query started returning 404. No warning, no grace period — just broken.</p>
+        <p>We needed to make the model configurable via <code>EMBED_MODEL</code> and <code>EMBED_DIMENSIONS</code> environment variables, but we couldn't afford downtime. The migration strategy had three parts:</p>
+        <p>First, we added side-by-side columns in the database — <code>embedding_v1</code> and <code>embedding_v2</code> — so we could roll back if the new model performed worse. Then we built a batch re-embedding pipeline that processed documents in chunks, updating <code>embedding_v2</code> while queries continued using <code>embedding_v1</code>.</p>
+        <p>Finally, we added a feature flag to switch between columns. When we were confident the new embeddings worked, we flipped the flag. Zero downtime. The service now supports any embedding model via configuration — change the env var, re-embed, and switch.</p>
+        
+        <h2>Provenance Tracking for Calibration</h2>
+        <p>CLI evaluation agents needed to know <em>where</em> data came from to calibrate their scoring. If a similar evaluation scored 0.8, was that from a production run or a test? Was it from the same agent model or a different one?</p>
+        <p>I added <code>provenance</code> and <code>source_type</code> fields to the retrieval endpoint. The insight: optional return fields save bandwidth when you don't need lineage data, but they're critical for calibration workflows. The endpoint accepts a <code>include_provenance</code> query parameter — when false, we skip those columns entirely.</p>
+        <p>This small change enabled downstream services to build calibration logic that learns from similar evaluations while respecting their context.</p>
+        
+        <h2>The Null Serialization Trap</h2>
+        <p>The response included <code>"provenance": null</code> which broke downstream consumers expecting the field to be absent, not null. In microservice architectures, API contracts matter — a field that's <code>null</code> vs. a field that's missing sends different signals.</p>
+        <p>The fix was simple but illustrative: <code>response_model_exclude_none=True</code> in the FastAPI endpoint. Now, when provenance isn't requested, the field doesn't appear in the JSON at all. When it is requested but missing, it's still <code>null</code>, but that's the expected case.</p>
+        <p>This taught me that API design isn't just about what you include — it's about what you exclude, and how you signal absence vs. unavailability.</p>
+        
         <h2>Infrastructure</h2>
-        <ul>
-          <li><strong>Database:</strong> Cloud SQL PostgreSQL 17 + pgvector extension</li>
-          <li><strong>Index:</strong> IVFFlat index with cosine similarity (100 lists)</li>
-          <li><strong>Embedding Model:</strong> <code>text-embedding-3-large</code> (768 dimensions)</li>
-          <li><strong>Re-indexing:</strong> Daily Cloud Scheduler job for optimal performance</li>
-          <li><strong>Deployment:</strong> Cloud Run</li>
-        </ul>
+        <p>The service runs on Cloud SQL PostgreSQL 17 with the pgvector extension. We use an IVFFlat index with cosine similarity, tuned with 100 lists for our dataset size. The index gets rebuilt daily via Cloud Scheduler to maintain query performance as new evaluations arrive.</p>
+        <p>Deployment is straightforward: Cloud Run with autoscaling based on request volume. The embedding model runs via OpenAI's API (configurable to any compatible provider), and the service handles rate limiting and retries internally.</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

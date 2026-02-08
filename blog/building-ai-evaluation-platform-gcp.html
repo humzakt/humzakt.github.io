@@ -220,24 +220,16 @@
         <p>Cloud Tasks delivers messages at-least-once. That means your handler WILL be called multiple times for the same task. Our pattern: compute a deterministic ID from the task payload, use <code>INSERT ... ON CONFLICT DO NOTHING</code>, return success even if the row already exists.</p>
         <p>This one pattern eliminated an entire category of bugs across the platform.</p>
 
-        <h2>Impact</h2>
-        <p>Over 6 months:</p>
-        <ul>
-          <li>High merge rate across all contributions</li>
-          <li>92 code reviews given</li>
-          <li>Hundreds of issues filed and resolved across severity levels</li>
-          <li>Continuous deployment pipeline</li>
-          <li>38 CI/CD workflows across 11 repos</li>
-        </ul>
-        <p><strong>Tech stack:</strong> Python (FastAPI, SQLAlchemy, Pydantic), TypeScript (React), GCP (Cloud Run, GKE, Cloud Tasks, Pub/Sub, AlloyDB, Firestore, Cloud Build, GCS, Cloud Scheduler, Secret Manager, Cloud Monitoring), PostgreSQL, Redis, Docker, GitHub Actions.</p>
-
         <h2>What I'd Do Differently</h2>
-        <ol>
-          <li><strong>Abstract the LLM provider from day one.</strong> We hardcoded model names in too many places.</li>
-          <li><strong>Build migration tooling before you need it.</strong> Having a <code>--dry-run</code> flag on everything would've prevented at least 2 incidents.</li>
-          <li><strong>Start with structured logging.</strong> We added correlation IDs and JSON logging after the fact.</li>
-          <li><strong>Schedule security audits.</strong> A 2-day audit uncovered critical vulnerabilities across the entire platform.</li>
-        </ol>
+        <p>Connection pooling from day one. Would have avoided the AlloyDB crisis entirely. We learned the hard way that managed databases have their own connection lifecycle, and if you don't configure your pool correctly, you'll hit SSL connection drops under load. Setting <code>pool_recycle</code> and <code>pool_pre_ping</code> from the start would have saved us weeks of debugging.</p>
+
+        <p>Explicit database references everywhere. Would have prevented the Firestore trap. Firestore has a <code>(default)</code> database that catches everything if you're not careful. We had evaluation data routing to the default database instead of the tenant-specific one. The fix was simple—explicit database references everywhere, never rely on defaults—but we should have done it from the beginning.</p>
+
+        <p>Security audit earlier, not after 6 months of shipping. We accumulated security debt silently. SQL injection vulnerabilities, hardcoded credentials, PII in logs—all things that would have been caught in a systematic audit. The two-day audit we did eventually uncovered critical vulnerabilities across the entire platform. Doing it at month 2 instead of month 6 would have saved us from potential production incidents.</p>
+
+        <p>Event-driven first, REST as the exception. We retrofitted events onto some services that should have been event-driven from the start. The notification service started as a REST API, then we added Pub/Sub subscribers. The RAG service started synchronous, then we added async processing. Starting with events would have made the architecture cleaner and more scalable from day one.</p>
+
+        <p><strong>Tech stack:</strong> Python (FastAPI, SQLAlchemy, Pydantic), TypeScript (React), GCP (Cloud Run, GKE, Cloud Tasks, Pub/Sub, AlloyDB, Firestore, Cloud Build, GCS, Cloud Scheduler, Secret Manager, Cloud Monitoring), PostgreSQL, Redis, Docker, GitHub Actions.</p>
       </div>
 
       <footer class="blog-footer">

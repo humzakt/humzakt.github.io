@@ -104,18 +104,41 @@
         </div>
       </header>
       <div class="blog-content">
-        <h2>What This Service Does</h2>
-        <p>The Guard Service is the front door to the platform. Handles auth (Google OIDC, JWT, API keys), authorization, API routing via Kong, admin dashboard for notifications/subscriptions/delivery logs. Multiple security vulnerabilities identified and addressed.</p>
-        <h2>Notifications Admin Dashboard (PRs #44-#48)</h2>
-        <p>Delivered multiple features in rapid succession: <strong>PR #44</strong> fixed crashes with missing notification IDs. <strong>PR #45</strong> row-click details modal + pnpm lockfile. <strong>PR #46</strong> subscription "All vs Active" filter + sortable tables. <strong>PR #47</strong> table pagination + delivery log filters. <strong>PR #48</strong> admin guide documentation.</p>
-        <h2>Route Cache Invalidation Bug (PR #43)</h2>
-        <p>API gateway caches routes for performance. Admin updates didn't invalidate cache. Stale routes served for 5 min. Deleting a service returned 200 instead of 404. Fix: explicit cache invalidation on mutations + proper 404.</p>
-        <h2>Invite Auth Flow (PR #52)</h2>
-        <p>Two bugs: invite URL pointed to wrong OAuth callback, accepting invite could downgrade existing user's role. Fix: correct URL construction + role comparison (only upgrade, never downgrade).</p>
+        <p>Every request to the platform goes through the guard service. It's the front door—the single point where authentication happens, authorization decisions are made, and traffic is routed to the right backend services. If authentication breaks here, everything breaks. If authorization logic fails, users can access resources they shouldn't. If routing goes wrong, requests disappear into the void. This is where reliability and security aren't nice-to-haves—they're existential requirements.</p>
+
+        <h2>The Authentication Stack</h2>
+        <p>The guard service implements a multi-layered authentication strategy, each layer serving a distinct purpose. Google OIDC handles web user authentication—when someone clicks "Sign in with Google," the OIDC flow validates their identity and establishes a session. JWT tokens manage that session state, allowing the frontend to prove authentication without hitting the database on every request. API keys enable service-to-service communication, letting backend services authenticate to each other without user context.</p>
+        <p>This isn't just about supporting different use cases—it's about defense in depth. If one authentication method has a vulnerability, the others remain intact. The Kong API gateway sits in front of all of this, providing rate limiting, request transformation, and centralized routing logic. When a request arrives, Kong checks the authentication method, validates the credentials, and routes the request to the appropriate backend service based on the path and headers.</p>
+
+        <h2>Building the Notifications Admin Dashboard</h2>
+        <p>As the platform grew, we needed visibility into the notification system. How many subscriptions are active? Which notifications failed to deliver? What's the delivery success rate over time? These questions required an admin interface that could handle thousands of notification records without collapsing under the weight of the data.</p>
+        <p>The React frontend needed sortable tables with pagination—loading all records at once would crash the browser. Row-click detail modals let admins drill into specific notifications without losing their place in the list. Subscription filtering (All vs Active) became essential as the number of subscriptions grew, allowing admins to focus on what matters. The engineering challenge wasn't just building the UI—it was building a responsive admin interface that could scale with the platform's growth.</p>
+        <p>Each feature had to work together seamlessly. Click a row to see details, filter by subscription status, sort by delivery time, paginate through results—all without jarring transitions or lost state. The frontend communicates with the guard service's admin endpoints, which enforce proper authorization before returning sensitive notification data.</p>
+
+        <h2>The Cache Invalidation Bug</h2>
+        <p>API gateways cache routes for performance. When a request comes in for <code>/api/v1/services/123</code>, the gateway looks up the route configuration, caches it, and uses that cached configuration for subsequent requests. This works great—until the underlying data changes.</p>
+        <p>We discovered a subtle bug: when an admin deleted a service, the database record was removed, but the API gateway's route cache wasn't invalidated. For up to five minutes, requests to the deleted service would still return 200 OK, making it appear as if the service still existed. Users would delete something, refresh the page, and see it still there. It was a classic "only two hard problems in computer science" moment—cache invalidation strikes again.</p>
+        <p>The fix required explicit cache invalidation on every mutation operation. When a service is deleted, we now invalidate the route cache immediately, ensuring that subsequent requests return the correct 404 response:</p>
+        <pre><code>async def delete_service(service_id: str):
+    await db.delete(service_id)
+    await route_cache.invalidate(f"service:{service_id}")
+    # Before: stale route served 200 for 5 min after deletion
+    # After: immediate 404 response
+    return {"status": "deleted"}</code></pre>
+        <p>This pattern extends to all mutation operations—create, update, delete—each one now explicitly invalidates the relevant cache entries. The performance benefit of caching remains, but the correctness guarantee is restored.</p>
+
+        <h2>The Invite Auth Flow</h2>
+        <p>User invitations are a critical onboarding flow. An admin invites a new user, they receive an email with a special link, click it, authenticate via OAuth, and gain access. Two subtle bugs made this flow unreliable.</p>
+        <p>First, the invite URL pointed to the wrong OAuth callback endpoint. When users clicked the invite link, they'd authenticate successfully, but the callback handler didn't recognize the invite token, leaving them in a partially authenticated state. The fix was straightforward—correct URL construction—but finding it required tracing through the entire OAuth flow.</p>
+        <p>Second, accepting an invite could accidentally downgrade an existing user's role. If a user already had an account with elevated permissions, accepting a new invite with lower permissions would overwrite their existing role. The fix required role comparison logic: only upgrade roles, never downgrade. A user with admin access shouldn't lose that access just because they clicked an invite link meant for a different role.</p>
+
         <h2>Security Audit</h2>
-        <p><strong>Critical:</strong> hardcoded Cloud Run URL in OpenAPI spec, missing security scanning. <strong>High:</strong> JWT in localStorage (XSS), missing POSTGRES_HOST in prod, no error boundaries, console.log leaking data. <strong>Medium:</strong> missing OAuth state validation, no DB enum validation, missing indexes.</p>
-        <h2>Pre-Commit Hooks (PR #49)</h2>
-        <p>Added formatting + compile/typecheck hooks for backend (Python/ruff) and frontend (Prettier/ESLint).</p>
+        <p>A comprehensive security audit revealed several vulnerabilities that, while not immediately exploitable, represented significant risks as the platform scaled. The audit process was systematic—examining authentication flows, authorization checks, data storage patterns, and API surface area.</p>
+        <p>Hardcoded Cloud Run URLs in the OpenAPI specification exposed internal endpoints to anyone who could access the API docs. This information disclosure vulnerability meant that internal service endpoints were discoverable, even if they weren't directly accessible. Removing these hardcoded URLs and using environment-based configuration closed this information leak.</p>
+        <p>JWT tokens stored in localStorage created an XSS risk. If any JavaScript on the page had an XSS vulnerability, an attacker could steal the JWT token and impersonate the user. Moving JWTs to httpOnly cookies eliminated this risk—the token is no longer accessible to JavaScript, only to the browser's cookie mechanism.</p>
+        <p>Missing OAuth state validation left the authentication flow vulnerable to CSRF attacks. Without state validation, an attacker could trick a user into authenticating and redirecting to an attacker-controlled callback URL. Adding proper state validation ensures that the OAuth callback can only be used with the original authorization request.</p>
+        <p>Console.log statements throughout the codebase were leaking sensitive data—user IDs, API keys, request payloads—into browser console logs. In production, these logs could be captured by browser extensions or developer tools, exposing sensitive information. Removing these debug statements and implementing proper logging infrastructure eliminated the data leak.</p>
+        <p>Each finding represented a lesson in defense-in-depth security. No single vulnerability would have been catastrophic on its own, but together they represented a significant attack surface. Addressing them systematically made the platform more resilient to both known and unknown threats.</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

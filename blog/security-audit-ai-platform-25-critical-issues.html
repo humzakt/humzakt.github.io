@@ -117,47 +117,54 @@
       </header>
       <div class="blog-content">
         
-        <h2>The Motivation</h2>
-        <p>When you're shipping fast, security debt accumulates silently. I decided to audit our entire AI evaluation platform systematically across 10+ services.</p>
+        <p>Six months of shipping fast had created something nobody wanted to talk about: security debt. I decided to spend two days auditing the entire platform systematically. What I found was sobering.</p>
 
-        <h2>Critical Findings</h2>
-        <ol>
-          <li><strong>SQL injection</strong> — BigQuery queries using f-strings instead of parameterized queries</li>
-          <li><strong>Hardcoded credentials</strong> in alembic.ini (database migration tool)</li>
-          <li><strong>Secrets in CI/CD logs</strong> — API keys printed during build steps</li>
-          <li><strong>Missing authentication</strong> on 3 internal endpoints (assumed "internal = safe")</li>
-          <li><strong>PII in application logs</strong> — user emails and evaluation data in plaintext logs</li>
-        </ol>
+        <h2>The Audit Methodology</h2>
+        <p>I approached it service by service, starting with the most exposed: the API gateway and evaluation engine. For each service, I examined five categories: input validation, authentication, secrets management, logging hygiene, and architecture boundaries. I wasn't looking for perfection—I was looking for production incidents waiting to happen.</p>
 
-        <h2>Architecture Issues</h2>
-        <ul>
-          <li>A monolithic ParallelOrchestrator class (textbook God Class)</li>
-          <li>V1 dependencies leaking into V2 code (architecture boundary violation)</li>
-          <li>In-memory rate limiting (doesn't work across Cloud Run instances)</li>
-          <li>CPU-bound algorithms blocking the async event loop</li>
-        </ul>
+        <h2>What I Found</h2>
+        <p>The BigQuery f-string SQL injection was the first red flag. A developer had used f-strings for dynamic table names, which works fine in development but is catastrophic in production. The query looked innocent: <code>f"SELECT * FROM {table_name}"</code>. But table_name came from user input, and BigQuery doesn't sanitize f-strings. One malicious payload could have exposed our entire evaluation dataset.</p>
 
-        <h2>The Fixes</h2>
-        <h3>Security</h3>
-        <ul>
-          <li>Moved all secrets to GCP Secret Manager</li>
-          <li>Parameterized every database query</li>
-          <li>Added structured logging with PII stripping</li>
-          <li>Implemented authentication middleware on every endpoint</li>
-          <li>Added pre-commit hooks: ruff, type checking, security scanning</li>
-        </ul>
+        <p>Then I found the alembic.ini credentials. Database migration config committed with hardcoded passwords. Anyone with repository access had production database credentials. This wasn't a theoretical risk—it was a live vulnerability sitting in our git history.</p>
 
-        <h3>Architecture</h3>
-        <ul>
-          <li>Broke the God Class into 5 focused services</li>
-          <li>Built an LLM Gateway abstraction (swap providers without code changes)</li>
-          <li>Moved rate limiting to Redis (shared across instances)</li>
-          <li>Wrapped CPU-bound work in thread pools</li>
-        </ul>
+        <p>The CI/CD log leak was subtler. API keys were being printed during build steps, visible to anyone with repo access. The logs weren't public, but they didn't need to be. Internal access was enough.</p>
 
-        <h2>The Filing System</h2>
-        <p>156 GitHub issues with severity labels: Critical, High, Medium, and Low. Systematic issue tracking meant nothing fell through the cracks.</p>
-        <p>The takeaway: schedule security audits. Don't wait for an incident. The 2 days I spent auditing saved us from at least 3 potential production incidents.</p>
+        <p>Three endpoints had no authentication because they were "only called by other services." The "internal = safe" assumption. In a microservices architecture, internal doesn't mean secure. It means accessible to any compromised service or misconfigured network policy.</p>
+
+        <p>PII in logs was the compliance nightmare. User emails and evaluation data in plaintext application logs. GDPR violations waiting to happen, and we were generating them by the thousands.</p>
+
+        <h2>The Monolithic God Class</h2>
+        <p>Beyond security, there was architecture debt. A monolithic ParallelOrchestrator handling evaluation logic, API routing, state management, and error handling. V1/V2 code boundaries leaked into each other. In-memory rate limiting that doesn't work across Cloud Run instances—each instance had its own counter, so rate limits were effectively divided by instance count. CPU-bound algorithms blocking the async event loop, turning our FastAPI app into a synchronous bottleneck.</p>
+
+        <h2>The Remediation</h2>
+        <p>All secrets moved to GCP Secret Manager. Here's what changed:</p>
+
+<pre><code># Before
+DATABASE_PASSWORD = "hardcoded_password_123"
+
+# After
+from google.cloud import secretmanager
+client = secretmanager.SecretManagerServiceClient()
+secret = client.access_secret_version(
+    name="projects/my-project/secrets/db-password/versions/latest"
+)
+DATABASE_PASSWORD = secret.payload.data.decode("UTF-8")</code></pre>
+
+        <p>Parameterized queries everywhere. No more f-strings in SQL. Here's the pattern we enforced:</p>
+
+<pre><code># Before (vulnerable)
+query = f"SELECT * FROM {table_name} WHERE id = {user_id}"
+
+# After (safe)
+query = "SELECT * FROM %s WHERE id = %s"
+cursor.execute(query, (table_name, user_id))</code></pre>
+
+        <p>Structured logging with PII stripping middleware. Every log entry goes through a sanitizer that removes emails, API keys, and user identifiers before writing to disk. Authentication middleware on every endpoint—no exceptions. Pre-commit hooks: ruff for linting, type checking, security scanning with bandit.</p>
+
+        <p>We broke the God Class into focused services: EvaluationService, RoutingService, StateService, ErrorHandler. Built an LLM Gateway abstraction so we could swap providers without touching business logic. Moved rate limiting to Redis so it works across instances. Wrapped CPU-bound work in thread pools so the event loop stays responsive.</p>
+
+        <h2>The Takeaway</h2>
+        <p>The two days I spent auditing saved us from at least three potential production incidents. Schedule security audits. Don't wait for an incident. Security debt compounds silently, and the longer you ignore it, the more expensive it becomes to fix.</p>
         
       </div>
       <footer class="blog-footer">

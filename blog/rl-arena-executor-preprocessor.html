@@ -103,65 +103,63 @@
         </div>
       </header>
       <div class="blog-content">
-        <h2>What it does</h2>
-        <p>This is a Gym-style RL environment for training AI coding agents. I built it from the ground up as a production-ready system.</p>
-        <h2>Executor Service (PRs #31, #32)</h2>
-        <p>Production-ready executor service with comprehensive test coverage.</p>
-        <h3>Gym-Style API</h3>
-        <ul>
-          <li><code>POST /episodes</code> — Create a new training episode</li>
-          <li><code>POST /episodes/{id}/steps</code> — Execute an action step</li>
-          <li><code>GET /episodes/{id}/reward</code> — Retrieve reward signal</li>
-        </ul>
-        <h3>Cloud Build Sandboxing</h3>
-        <p>Isolated execution environment with:</p>
-        <ul>
-          <li>Isolated containers with no network access</li>
-          <li>Hard timeout enforcement</li>
-          <li>Resource limits (CPU, memory)</li>
-          <li>Read-only filesystem except for scratch space</li>
-        </ul>
-        <h3>State Management</h3>
-        <ul>
-          <li><strong>Redis:</strong> Episode state (fast, ephemeral)</li>
-          <li><strong>Firestore:</strong> Trajectories (persistent, queryable)</li>
-          <li><strong>Cloud SQL:</strong> Task configuration</li>
-        </ul>
-        <h3>Custom Exception Hierarchy</h3>
-        <ul>
-          <li><code>EpisodeNotFoundError</code></li>
-          <li><code>ExecutionTimeoutError</code></li>
-          <li><code>SandboxViolationError</code></li>
-          <li>And more for comprehensive error handling</li>
-        </ul>
-        <h2>Preprocessor Service (PR #28)</h2>
-        <p>"The Task Chef" — transforms raw repositories into training-ready tasks.</p>
-        <h3>15-Step Pipeline</h3>
-        <ol>
-          <li><strong>Repo cloning:</strong> Fetch source code from Git</li>
-          <li><strong>Language detection:</strong> Identify primary programming language</li>
-          <li><strong>Dependency resolution:</strong> Parse package files, build dependency graph</li>
-          <li><strong>Test discovery:</strong> Find all test files and test cases</li>
-          <li><strong>Baseline execution:</strong> Run tests to establish ground truth</li>
-          <li><strong>Verifier generation:</strong> Create test verification logic</li>
-          <li><strong>Reward config:</strong> Define reward function parameters</li>
-          <li><strong>Task decomposition:</strong> Break complex tasks into subtasks</li>
-          <li><strong>Difficulty estimation:</strong> Score task complexity</li>
-          <li><strong>Resource calculation:</strong> Estimate CPU/memory/time requirements</li>
-          <li><strong>Sandbox config:</strong> Generate Cloud Build configuration</li>
-          <li><strong>Prompt generation:</strong> Create agent instruction prompts</li>
-          <li><strong>Validation rules:</strong> Define success/failure criteria</li>
-          <li><strong>Artifact packaging:</strong> Bundle all assets</li>
-          <li><strong>GCS upload:</strong> Store in Google Cloud Storage</li>
-        </ol>
-        <h2>Architecture</h2>
-        <p>Hexagonal architecture for infrastructure portability. The core domain logic is decoupled from GCP-specific implementations, making it easier to test and potentially migrate to other cloud providers.</p>
-        <h2>Impact</h2>
-        <table>
-          <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>GKE clusters</td><td>Multiple auto-scaling clusters</td></tr>
-          <tr><td>GCS buckets</td><td>Multiple buckets for artifact storage</td></tr>
-        </table>
+        <p>How do you train an AI coding agent to get better at writing code? Not with fine-tuning on more data — with reinforcement learning. Give it a coding task, let it try, measure whether the code passes tests, and use that signal to improve. The RL Training Arena provides this environment — a Gym-style RL system built on GCP that lets agents learn from structured feedback.</p>
+        
+        <h2>The Executor: A Gym for Code Agents</h2>
+        <p>The executor service exposes a Gym-style API that RL researchers already understand. Create an episode, execute steps, compute rewards. The API shape follows OpenAI Gym conventions:</p>
+        <pre><code># Create a new training episode
+POST /episodes
+{
+  "task_id": "task-123",
+  "agent_config": {...}
+}
+→ { "episode_id": "ep-456" }
+
+# Execute an action step
+POST /episodes/ep-456/steps
+{
+  "action": "write_file('src/main.py', '...')"
+}
+→ { "observation": "...", "done": false }
+
+# Get reward signal
+GET /episodes/ep-456/reward
+→ { "reward": 0.75, "metrics": {...} }</code></pre>
+        <p>Why this API shape? RL researchers already know how to use Gym environments. We're not reinventing the wheel — we're adapting it for code execution in the cloud.</p>
+        
+        <h2>Sandboxed Execution with Cloud Build</h2>
+        <p>Agents run untrusted code. You can't let them touch the network, read other evaluations, or consume unbounded resources. Cloud Build provides isolated containers with no network access, hard timeouts, resource limits, and read-only filesystems.</p>
+        <p>The trade-off: Cloud Build adds latency (~10s container startup) but guarantees isolation. Each agent execution runs in a fresh container that can't see anything outside its sandbox. If an agent tries to make a network request, it fails. If it tries to read files outside its workspace, it fails. If it runs too long, Cloud Build kills it.</p>
+        <p>This isolation is non-negotiable. Without it, one malicious or buggy agent could corrupt the entire training environment.</p>
+        
+        <h2>Three-Tier State Management</h2>
+        <p>State management follows a three-tier architecture, each tier chosen for its access pattern:</p>
+        <p><strong>Redis</strong> holds episode state — fast, ephemeral. Episodes last minutes to hours, and we need sub-second lookups for reward computation. Redis fits perfectly.</p>
+        <p><strong>Firestore</strong> stores trajectories — persistent, queryable. Training data lives forever. Researchers need to query "all episodes where reward > 0.8" or "episodes from agent X in the last week." Firestore's query engine handles this.</p>
+        <p><strong>Cloud SQL</strong> manages task configuration — relational, schema-managed. Tasks have complex relationships (dependencies, prerequisites, difficulty tiers), and SQL's relational model makes these queries natural.</p>
+        <p>Each tier does what it's best at. Redis for speed, Firestore for queries, SQL for relationships.</p>
+        
+        <h2>The Preprocessor: Turning Repos into Training Tasks</h2>
+        <p>The preprocessor is a multi-step pipeline that takes a raw GitHub repository and produces a complete RL training task. Why this complexity? Each step reduces the manual work a researcher would otherwise do to set up a single training task.</p>
+        <p>The flow: clone the repo → detect the primary language → resolve dependencies → discover all tests → run baseline to establish ground truth → generate verifiers → configure rewards → estimate difficulty → set resource limits → generate sandbox config → create prompts → define validation rules → package artifacts → upload to GCS.</p>
+        <p>Without the preprocessor, setting up one training task would take hours. With it, a researcher points at a GitHub repo and gets a fully configured task in minutes. The preprocessor handles edge cases — missing dependencies, flaky tests, unclear success criteria — that would otherwise require manual intervention.</p>
+        
+        <h2>Getting the Reward Function Right</h2>
+        <p>The reward function is where RL theory meets engineering reality. Too sparse rewards and agents don't learn. Too dense and they game the metric. The final formula balances test passage, code style, time efficiency, and error penalties:</p>
+        <pre><code>def compute_reward(episode):
+    base_reward = 1.0 if episode.tests_passed else 0.0
+    style_bonus = compute_style_score(episode.code)
+    time_penalty = max(0, 1.0 - episode.duration / episode.max_duration)
+    error_penalty = -0.1 * episode.error_count
+    
+    return base_reward + 0.2 * style_bonus + 0.1 * time_penalty + error_penalty</code></pre>
+        <p>This formula went through multiple iterations. Early versions rewarded test passage only, and agents learned to write code that passed tests but was unreadable. Adding style bonuses fixed that. Then agents learned to finish instantly with trivial solutions — the time penalty encourages exploration. The error penalty discourages random code generation.</p>
+        <p>Reward engineering is an art. The formula looks simple, but each coefficient was tuned through experimentation.</p>
+        
+        <h2>Hexagonal Architecture</h2>
+        <p>The core RL domain logic is decoupled from GCP infrastructure. Why? Switching from Cloud Build to local Docker for development means changing an adapter, not rewriting domain logic.</p>
+        <p>The executor defines interfaces: <code>SandboxExecutor</code>, <code>StateStore</code>, <code>RewardComputer</code>. Concrete implementations — <code>CloudBuildExecutor</code>, <code>RedisStateStore</code>, <code>FirestoreTrajectoryStore</code> — live in adapter layers.</p>
+        <p>This architecture makes testing easier (mock the adapters), development faster (run locally with Docker), and migration possible (swap Cloud Build for another sandbox without touching domain code).</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

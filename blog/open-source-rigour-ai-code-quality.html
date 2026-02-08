@@ -117,31 +117,41 @@
       </header>
       <div class="blog-content">
         
-        <h2>The Problem</h2>
-        <p>AI coding assistants are powerful but messy. They skip tests, introduce security vulnerabilities, create retry loops, and ignore project conventions. I wanted a tool that catches these issues before they make it to production.</p>
+        <p>AI coding assistants write code fast. They also write code that skips tests, introduces security vulnerabilities, creates infinite retry loops, and cheerfully ignores your project's conventions. I built Rigour to catch these problems before they reach production.</p>
 
         <h2>What Rigour Does</h2>
-        <ul>
-          <li>Universal AST-based code analysis (TypeScript, Python, Go, Java, and more)</li>
-          <li>Security vulnerability detection (prototype pollution, SQLi, XSS, CSRF, hardcoded secrets)</li>
-          <li>Staleness detection (catches when AI uses deprecated patterns)</li>
-          <li>Retry loop detection (prevents AI from trying the same broken fix)</li>
-          <li>Supervisor Mode for iterative quality improvement</li>
-          <li>IDE-agnostic: Cursor, Claude Code, Gemini, Codex/Aider, Windsurf</li>
-        </ul>
+        <p>Universal AST analysis because AI writes in multiple languages in one session. A single code review might include TypeScript, Python, Go, and Java. Rigour parses them all, understands the structure, and applies language-specific rules.</p>
 
-        <h2>The Release Velocity</h2>
-        <p>Rapid iteration from v1.0.0 to v2.18.1 with continuous feature development and bug fixes. Published to MCP Registry. Semantic versioning with automated releases via GitHub Actions.</p>
+        <p>Security detection because AI happily generates SQL injection. It doesn't know that f-strings in SQL queries are dangerous—it just sees a pattern and replicates it. Rigour catches prototype pollution, SQLi, XSS, CSRF, and hardcoded secrets before they make it to your codebase.</p>
 
-        <h2>Architecture Decisions</h2>
-        <ol>
-          <li><strong>Config-driven gates</strong> — <code>rigour.yml</code> defines what quality checks run. Teams customize without forking.</li>
-          <li><strong>MCP protocol support</strong> — works as a Model Context Protocol server, so any MCP-compatible IDE can use it.</li>
-          <li><strong>Fix packets</strong> — when Rigour finds an issue, it generates a structured "fix packet" the AI can consume and apply.</li>
-        </ol>
+        <p>Staleness detection because AI uses deprecated APIs from its training data. Your codebase might use React 18, but the AI's training data includes React 16 patterns. Rigour flags deprecated patterns and suggests modern alternatives.</p>
 
-        <h2>The Hardest Part</h2>
-        <p>It wasn't the code analysis — it was making the tool work across different AI agents. Each IDE/agent has its own way of handling instructions. Building a universal interface that works with all of them was a design challenge I didn't anticipate.</p>
+        <p>Retry loop detection because AI tries the same broken fix repeatedly. It doesn't learn from its mistakes—it just retries with slight variations. Rigour identifies when the AI is stuck in a loop and suggests breaking the pattern.</p>
+
+        <p>Supervisor mode because one pass isn't enough. AI generates code, Rigour finds issues, AI fixes them, Rigour checks again. Iterate until quality passes. This closes the feedback loop that makes AI-assisted development actually work.</p>
+
+        <h2>The MCP Protocol Decision</h2>
+        <p>This is the key architectural choice. MCP (Model Context Protocol) makes Rigour IDE-agnostic. Cursor, Claude Code, Gemini, Codex, Windsurf all speak MCP. One implementation, every IDE. Here's how it works:</p>
+
+<pre><code># rigour.yml
+quality_gates:
+  - name: security
+    rules:
+      - no_sql_injection
+      - no_hardcoded_secrets
+  - name: style
+    rules:
+      - consistent_naming
+      - no_deprecated_apis</code></pre>
+
+        <p>The IDE connects to Rigour via MCP, sends code changes, and receives quality feedback. The IDE doesn't need to know about AST parsing, security rules, or code analysis—it just needs to speak MCP. This abstraction is what makes Rigour universal.</p>
+
+        <h2>Fix Packets: Teaching AI to Fix Itself</h2>
+        <p>When Rigour finds an issue, it doesn't just report it—it generates a structured "fix packet" that the AI can consume and apply. This closes the loop: AI writes code → Rigour catches issue → fix packet tells AI exactly what to change → AI fixes it. The fix packet includes the file path, line numbers, the problematic code, the issue type, and a suggested fix. The AI doesn't need to interpret vague error messages—it gets a structured instruction it can follow.</p>
+
+        <h2>The Real Challenge: Cross-Agent Compatibility</h2>
+        <p>Making the tool work with one AI agent is straightforward. Making it work with all of them—each with different instruction-following behaviors, different context window management, different tool-use patterns—was the design challenge I didn't anticipate. Cursor expects structured JSON responses. Claude Code prefers natural language with code examples. Gemini needs explicit step-by-step instructions. Windsurf has its own tool-calling conventions. Building a universal interface that works with all of them required abstracting away agent-specific details and focusing on the common pattern: code in, quality feedback out.</p>
+
         <p>The project is open source at <a href="https://github.com/rigour-labs/rigour" target="_blank" rel="noopener">github.com/rigour-labs/rigour</a>.</p>
         
       </div>
