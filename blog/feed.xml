@@ -195,7 +195,7 @@
     </item>
 
     <item>
-      <title>Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals</title>
+      <title>The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory</title>
       <link>https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html</guid>
       <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
@@ -203,7 +203,7 @@
       <category>Microservices</category>
       <category>HITL</category>
       <category>WebSocket</category>
-      <description>Four additional services: HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.</description>
+      <description>The services that turned a collection of microservices into a platform: HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth fixes, and LLM memory evaluation.</description>
     </item>
   </channel>
 </rss>

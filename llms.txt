@@ -33,7 +33,7 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 - [Notification Service](https://humzakt.github.io/blog/notification-service-event-delivery.html): Cloud Tasks delivery, circuit breakers, webhook dispatch
 - [RAG Retrieval Service](https://humzakt.github.io/blog/rag-service-embedding-search.html): pgvector, emergency embedding migration, provenance tracking
 - [RL Training Arena](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Gym-style API, Cloud Build sandboxing, comprehensive test coverage
-- [Workflow, Taxonomy, Platform, Memory Evals](https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html): Four services roundup
+- [The Connective Tissue of an AI Platform](https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html): HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth, LLM memory evaluation
 
 ## Links
 

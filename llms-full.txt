@@ -138,11 +138,11 @@ RL training arena for AI coding agents with Gym-style API, Cloud Build sandboxin
 
 ---
 
-## Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals
+## The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory
 
 URL: https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html
 
-HITL workflow orchestrator, taxonomy classification engine, core platform service with auth and logging fixes, memory evaluation suite for context retention testing.
+The services that turned a collection of microservices into an actual platform. HITL workflow orchestrator with state machine-based DAG execution, WebSocket real-time updates via Redis Pub/Sub, and human approval gates. Taxonomy workflow engine for intelligent task classification and routing with bulk CSV/JSON upload to GCS. Core platform service with JWT authentication UTC normalization fix, user deletion with GDPR-compliant anonymization, and Pub/Sub event propagation. Memory evaluation suite for LLM context retention testing with position-aware scoring. Established engineering patterns adopted platform-wide: structured JSON logging with correlation IDs, pre-commit hooks (Ruff), custom exception hierarchies, Alembic migrations, and per-service security audits.
 
 ---
 

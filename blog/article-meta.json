@@ -155,8 +155,8 @@
   },
   {
     "id": "workflow-taxonomy-platform-services",
-    "title": "Four More Services: Workflow Orchestration, Taxonomy Engine, Platform Core, and Memory Evals",
-    "summary": "A roundup of four additional services: HITL workflow orchestrator, taxonomy workflow engine, core platform service with auth fixes, and memory evaluation suite.",
+    "title": "The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory",
+    "summary": "The services that turned a collection of microservices into a platform: HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth fixes, and LLM memory evaluation.",
     "date": "2026-02-08",
     "themes": ["infrastructure", "devops"],
     "components": ["Microservices", "HITL", "WebSocket", "Python", "FastAPI"],
