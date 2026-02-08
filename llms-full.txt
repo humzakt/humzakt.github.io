@@ -24,15 +24,7 @@ Tech stack: Python (FastAPI, SQLAlchemy, Pydantic), TypeScript (React), GCP (Clo
 
 URL: https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html
 
-The AI evaluation platform has a 6-phase pipeline where each evaluation takes 5-30 minutes and touches 6 different services. Synchronous HTTP would mean timeouts and retry nightmares. With events, each service subscribes independently and retries from its own checkpoint.
-
-Phases: Task Creation → Preprocessing → Agent Execution → Output Collection → Judging & Scoring → Aggregation & Learning. Each phase communicates via Pub/Sub topics.
-
-Key patterns: Fan-out (one topic, multiple subscriptions — adding a new consumer requires zero changes to the publisher), Dead-letter queues on every production topic (5-retry policy, weekly DLQ review caught 3 schema migration issues, 1 Firestore quota limit, 2 Cloud SQL connection failures), Cloud Scheduler for automation (scheduled jobs publish to Pub/Sub topics).
-
-Monitoring: Every Cloud Run service has an alert at >5% error rate. CPU utilization monitoring at <10% to auto-detect idle VMs saves ~40% on compute costs.
-
-Key lessons: Message ordering doesn't matter with proper design. Acknowledge after commit, not before. Schema evolution is inevitable — version your message schemas. Pub/Sub for events, Cloud Tasks for commands.
+I learned the hard way that synchronous HTTP calls don't work when your pipeline takes 30 minutes and touches 6 different services. Timeouts, retry nightmares, and cascading failures — I'd been there. That's when I rebuilt everything around events, and it changed how I think about distributed systems. Each service now subscribes independently, retries from its own checkpoint, and doesn't care if another service is down. The pipeline flows through six phases: Task Creation → Preprocessing → Agent Execution → Output Collection → Judging & Scoring → Aggregation & Learning, all orchestrated via Pub/Sub topics. I discovered patterns that saved me countless hours: fan-out subscriptions that let me add new consumers without touching publishers, dead-letter queues that caught 6 production issues before they became outages, and Cloud Scheduler automating everything. But the real win was learning when to use Pub/Sub (events) versus Cloud Tasks (commands), and why acknowledging after commit — not before — prevents data loss. Here's how event-driven architecture transformed a fragile system into something that actually works in production.
 
 ---
 
@@ -40,9 +32,7 @@ Key lessons: Message ordering doesn't matter with proper design. Acknowledge aft
 
 URL: https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html
 
-Random SSL connection failures causing 5% of AI evaluation tasks to fail. Root cause: AlloyDB silently drops idle SSL connections after ~10 minutes, but SQLAlchemy's connection pool (configured for 15-minute recycle) kept serving dead connections.
-
-Fix: Set pool_recycle=180 (recycle before AlloyDB kills them), pool_pre_ping=True (validate on checkout), pool_size=5 + max_overflow=10. Combined with idempotent writes for Cloud Tasks retry safety. Result: 5% failure rate → 0.01%.
+For two weeks, 5% of our evaluation tasks were failing with cryptic SSL errors. No pattern, no logs, just random failures that made debugging feel impossible. I checked connection pools, retry logic, network timeouts — nothing made sense. Then I discovered the culprit: AlloyDB was silently dropping idle SSL connections after 10 minutes, but SQLAlchemy's connection pool was configured to recycle after 15 minutes. Dead connections were being handed out to new requests, and they'd fail the moment they tried to execute a query. The fix was just 3 lines — setting pool_recycle to 180 seconds and enabling pool_pre_ping — but finding it took two weeks of detective work. Combined with idempotent writes for Cloud Tasks retry safety, we went from a 5% failure rate to 0.01%. This is the story of how a silent connection drop turned into a production incident, and what I learned about debugging distributed systems when nothing makes sense.
 
 ---
 
@@ -50,7 +40,7 @@ Fix: Set pool_recycle=180 (recycle before AlloyDB kills them), pool_pre_ping=Tru
 
 URL: https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html
 
-Cloud Tasks guarantees at-least-once delivery. The 3-step pattern: (1) Deterministic IDs from payload using SHA-256 hashing, (2) INSERT ... ON CONFLICT DO NOTHING, (3) Always return HTTP 200 (returning 409 causes infinite retries). Cap Cloud Run containerConcurrency to 10-20 (not 80) to prevent database connection exhaustion. This pattern handles thousands of tasks per day with zero duplicates.
+Cloud Tasks promises at-least-once delivery, which sounds great until you realize "at least once" means "maybe twice, or three times, or more." I learned this the hard way when duplicate records started appearing in our database — same task, executed multiple times, creating the same data over and over. That's when I built a simple 3-step pattern that made Cloud Tasks retries safe: generate deterministic IDs from payloads using SHA-256 hashing, use PostgreSQL's INSERT ... ON CONFLICT DO NOTHING to silently ignore duplicates, and always return HTTP 200 (returning 409 causes infinite retry loops). I also learned to cap Cloud Run's containerConcurrency to 10-20 instead of the default 80, preventing database connection exhaustion under load. This pattern now handles thousands of tasks per day with zero duplicates, and it's saved me from countless production bugs. Here's how to make Cloud Tasks idempotent, and why it matters more than you think.
 
 ---
 
@@ -58,7 +48,7 @@ Cloud Tasks guarantees at-least-once delivery. The 3-step pattern: (1) Determini
 
 URL: https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html
 
-Embedding model got deprecated overnight. 48-hour migration plan: (1) Make model configurable via env vars, (2) Add new vector columns (don't replace — ALTER TABLE ADD COLUMN + CREATE INDEX CONCURRENTLY), (3) Batch re-embedding with progress tracking, (4) Feature flag switch (USE_V2_EMBEDDINGS), (5) Validation comparing old vs new search results (82% average overlap). 48 hours, zero downtime, zero data loss.
+The email came on a Friday afternoon: our embedding model was being deprecated in 48 hours. No warning, no migration path, just "you have two days to replace everything." Our RAG system depended on those embeddings for every search query, and we had millions of vectors stored in pgvector. I couldn't take the system down — production workloads were running 24/7. So I built a migration plan that would let us switch models without a single second of downtime: make the model configurable via environment variables, add new vector columns alongside the old ones (never replace — ALTER TABLE ADD COLUMN with CREATE INDEX CONCURRENTLY), run batch re-embedding with progress tracking, flip a feature flag to switch traffic, and validate by comparing search results (82% average overlap between old and new). Forty-eight hours later, we'd migrated everything with zero downtime and zero data loss. This is how I learned that the best migrations are the ones users never notice.
 
 ---
 
@@ -66,7 +56,7 @@ Embedding model got deprecated overnight. 48-hour migration plan: (1) Make model
 
 URL: https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html
 
-Rigour is an open-source quality gate for AI-generated code. Features: Universal AST-based code analysis (TypeScript, Python, Go, Java, 10+ languages), security vulnerability detection (prototype pollution, SQLi, XSS, CSRF, hardcoded secrets), staleness detection, retry loop detection, Supervisor Mode. IDE-agnostic via MCP protocol: works with Cursor, Claude Code, Gemini, Codex/Aider, Windsurf. Rapid iteration from initial release to mature product. Published to MCP Registry.
+I was tired of AI code generators producing code that looked right but failed in subtle ways — security vulnerabilities, infinite retry loops, stale dependencies. So I built Rigour, an open-source quality gate that catches what AI models miss. It uses universal AST-based analysis to work across 10+ languages (TypeScript, Python, Go, Java, and more), detecting everything from prototype pollution to SQL injection, XSS, CSRF, and hardcoded secrets. But the real breakthrough was making it IDE-agnostic via the MCP protocol — it works with Cursor, Claude Code, Gemini, Codex/Aider, Windsurf, and any tool that supports MCP. What started as a weekend project became a mature product through rapid iteration, and it's now published to the MCP Registry. This is the story of building a tool that makes AI-generated code actually production-ready, and why universal code analysis matters more than you think.
 
 GitHub: https://github.com/rigour-labs/rigour
 
@@ -76,7 +66,7 @@ GitHub: https://github.com/rigour-labs/rigour
 
 URL: https://humzakt.github.io/blog/rl-training-arena-code-agents.html
 
-Gym-style reinforcement learning environment for AI coding agents on GKE. Executor Service (comprehensive test coverage): create episodes, execute steps, compute rewards. Cloud Build integration for sandboxed code execution. Redis-based episode state. Firestore trajectory logging. Preprocessor Service: multi-step preprocessing, dynamic verifier generation, repository analysis. Hexagonal architecture for infrastructure portability. GCS buckets, multiple GKE auto-scaling clusters.
+I wanted to train AI coding agents using reinforcement learning, but I needed a safe way to execute untrusted code at scale. That's how I ended up building a Gym-style RL environment on GKE, where agents learn to write code by actually running it — and failing safely. The Executor Service creates episodes, executes steps, and computes rewards, but the real challenge was sandboxing: how do you run arbitrary code from AI agents without compromising your infrastructure? Cloud Build became the answer — it gave me isolated, ephemeral execution environments that could scale to hundreds of concurrent episodes. I built Redis-based episode state management, Firestore trajectory logging, and a Preprocessor Service that generates dynamic verifiers and analyzes repositories. Using hexagonal architecture made everything portable, and multiple GKE auto-scaling clusters handle the load. This is how I learned that training AI agents requires infrastructure that can fail safely, and why Cloud Build's sandboxing was the key to making it work.
 
 ---
 
@@ -84,9 +74,7 @@ Gym-style reinforcement learning environment for AI coding agents on GKE. Execut
 
 URL: https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html
 
-Systematic audit of production AI evaluation platform. Critical findings: SQL injection (BigQuery f-strings), hardcoded credentials in alembic.ini, secrets in CI/CD logs, missing authentication on 3 internal endpoints, PII in plaintext logs. Architecture issues: monolithic God Class, V1/V2 dependency leakage, in-memory rate limiting (doesn't work across Cloud Run instances), CPU-bound algorithms blocking async event loop.
-
-Fixes: All secrets to GCP Secret Manager, parameterized queries, structured logging with PII stripping, authentication middleware on every endpoint, pre-commit hooks (ruff, type checking, security scanning). Broke God Class into 5 focused services. Built LLM Gateway abstraction. Moved rate limiting to Redis. Hundreds of GitHub issues filed across severity levels.
+I decided to audit my own production platform, thinking I'd find a few minor issues. Instead, I discovered 25 critical security vulnerabilities that could have compromised everything. SQL injection through BigQuery f-strings, hardcoded credentials in alembic.ini, secrets leaking in CI/CD logs, missing authentication on internal endpoints, PII stored in plaintext logs — the list went on. But the architecture issues were just as bad: a monolithic God Class that violated every principle of clean code, V1/V2 dependency leakage causing unpredictable behavior, in-memory rate limiting that didn't work across Cloud Run instances, and CPU-bound algorithms blocking the async event loop. I spent weeks fixing everything: moving all secrets to GCP Secret Manager, switching to parameterized queries, implementing structured logging with PII stripping, adding authentication middleware to every endpoint, and setting up pre-commit hooks for security scanning. I broke the God Class into 5 focused services, built an LLM Gateway abstraction, moved rate limiting to Redis, and filed hundreds of GitHub issues to track it all. This is what happens when you audit your own code — and why it's the most important thing you can do.
 
 ---
 
@@ -94,7 +82,7 @@ Fixes: All secrets to GCP Secret Manager, parameterized queries, structured logg
 
 URL: https://humzakt.github.io/blog/atlas-evaluations-core-engine.html
 
-Core evaluation engine with AlloyDB SSL connection pool fix, KEDA autoscaling on GKE, Firestore default database misrouting, continuous learning pipeline, headless REST API for external integrations.
+The evaluation engine is the heart of the platform — it's what makes everything else possible. But building it meant solving problems I didn't see coming: AlloyDB SSL connection pools that silently failed, Firestore default database misrouting that broke queries, and autoscaling that didn't scale when we needed it most. I fixed the AlloyDB connection pool issues that were causing 5% task failures, implemented KEDA autoscaling on GKE so we could handle traffic spikes, and debugged Firestore routing to ensure queries hit the right database. Along the way, I built a continuous learning pipeline that improves over time and a headless REST API that lets external systems integrate seamlessly. This is the story of building the service that orchestrates everything, and why getting the foundation right matters more than you think.
 
 ---
 
@@ -102,7 +90,7 @@ Core evaluation engine with AlloyDB SSL connection pool fix, KEDA autoscaling on
 
 URL: https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html
 
-Automated LLM scoring with idempotent Cloud Tasks, structured logging overhaul replacing print statements, LiteLLM proxy for model-agnostic evaluation, VPC networking debugging (Connector vs Direct Egress conflict), Redis state management for real-time tracking.
+I needed a service that could score AI outputs automatically, but building it meant solving problems I didn't expect. The prototype worked fine, but production revealed everything that was wrong: print statements instead of structured logging, non-idempotent Cloud Tasks that created duplicate scores, and VPC networking that mysteriously failed when I switched from Direct Egress to Serverless VPC Connector. I rebuilt everything with idempotent Cloud Tasks handlers, overhauled logging to use structured JSON with correlation IDs, integrated LiteLLM proxy for model-agnostic evaluation, and debugged the VPC networking conflict that was breaking API calls. I added Redis state management for real-time tracking so we could monitor scoring progress. This is how a prototype became a production service, and why the gap between "it works" and "it works in production" is bigger than you think.
 
 ---
 
@@ -110,7 +98,7 @@ Automated LLM scoring with idempotent Cloud Tasks, structured logging overhaul r
 
 URL: https://humzakt.github.io/blog/guard-service-auth-gateway.html
 
-Authentication gateway with Google OIDC, JWT validation, Kong integration, notifications admin dashboard with React frontend, route cache invalidation, security audit and remediation.
+Every platform needs authentication, but building it right means more than just checking tokens. I built Guard Service as the single entry point for all authentication — Google OIDC for user login, JWT validation for API requests, Kong integration for API gateway functionality. But the real challenge was building an admin dashboard that let us manage notifications, invalidate route caches, and monitor authentication flows. I built a React frontend that integrated seamlessly with the backend, implemented route cache invalidation so changes took effect immediately, and ran a security audit that found critical vulnerabilities we fixed before they became incidents. This is the story of building the service that protects everything else, and why authentication is infrastructure, not a feature.
 
 ---
 
@@ -118,7 +106,7 @@ Authentication gateway with Google OIDC, JWT validation, Kong integration, notif
 
 URL: https://humzakt.github.io/blog/notification-service-event-delivery.html
 
-Notification service with Cloud Tasks delivery pipelines, circuit breakers, dead-letter queues, subscription management, webhook dispatch, Alembic database migrations from scratch.
+Notifications seem simple until you try to build them at scale. I needed a service that could deliver notifications reliably, handle webhook failures gracefully, and scale to thousands of deliveries per day. I built Cloud Tasks delivery pipelines that retry automatically, implemented circuit breakers that prevent cascading failures when webhook endpoints go down, added dead-letter queues so we could debug failed deliveries, and created subscription management that lets users control what they receive. Webhook dispatch was the hardest part — external APIs fail unpredictably, and I needed exponential backoff, retry logic, and proper error handling. I also built Alembic database migrations from scratch, learning how to version schemas properly. This is how I learned that reliable notification delivery requires thinking about failure modes from day one, and why circuit breakers are essential for production systems.
 
 ---
 
@@ -126,7 +114,7 @@ Notification service with Cloud Tasks delivery pipelines, circuit breakers, dead
 
 URL: https://humzakt.github.io/blog/rag-service-embedding-search.html
 
-RAG retrieval service with pgvector similarity search, emergency embedding model migration with zero downtime, provenance tracking for evaluation calibration.
+RAG systems live and die by their retrieval — get it wrong, and your AI answers are useless. I built a retrieval service using pgvector for similarity search, but the real challenge came when our embedding model got deprecated overnight. I executed an emergency migration with zero downtime, learning how to add new vector columns, re-embed millions of documents, and switch traffic without breaking production. Along the way, I added provenance tracking so we could calibrate evaluations and understand why certain documents were retrieved. This is the story of building a service that finds the right context for AI answers, and why embedding migrations are harder than they look — but possible if you plan for them.
 
 ---
 
@@ -134,7 +122,7 @@ RAG retrieval service with pgvector similarity search, emergency embedding model
 
 URL: https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html
 
-RL training arena for AI coding agents with Gym-style API, Cloud Build sandboxing for code execution, Redis episode management, multi-step preprocessor pipeline, hexagonal architecture.
+Training AI coding agents with reinforcement learning means letting them write code — and that code needs to run somewhere safe. I built a Gym-style RL arena where agents learn by executing code in isolated environments, but the challenge was sandboxing: how do you run untrusted code from AI agents without compromising your infrastructure? Cloud Build became the answer — it gave me ephemeral execution environments that could scale to hundreds of concurrent episodes. I built Redis-based episode management for state tracking, a multi-step preprocessor pipeline that generates dynamic verifiers and analyzes repositories, and used hexagonal architecture to keep everything portable. This is how I learned that training AI agents requires infrastructure that can fail safely, and why Cloud Build's sandboxing was the key to making it work at scale.
 
 ---
 
@@ -142,7 +130,7 @@ RL training arena for AI coding agents with Gym-style API, Cloud Build sandboxin
 
 URL: https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html
 
-The services that turned a collection of microservices into an actual platform. HITL workflow orchestrator with state machine-based DAG execution, WebSocket real-time updates via Redis Pub/Sub, and human approval gates. Taxonomy workflow engine for intelligent task classification and routing with bulk CSV/JSON upload to GCS. Core platform service with JWT authentication UTC normalization fix, user deletion with GDPR-compliant anonymization, and Pub/Sub event propagation. Memory evaluation suite for LLM context retention testing with position-aware scoring. Established engineering patterns adopted platform-wide: structured JSON logging with correlation IDs, pre-commit hooks (Ruff), custom exception hierarchies, Alembic migrations, and per-service security audits.
+A collection of microservices isn't a platform — it's just a bunch of services. I learned this when I realized we needed services that connected everything together, turning isolated functionality into something cohesive. I built a HITL workflow orchestrator with state machine-based DAG execution, WebSocket real-time updates via Redis Pub/Sub, and human approval gates that let users intervene when needed. The taxonomy workflow engine classifies and routes tasks intelligently, with bulk CSV/JSON upload to GCS for batch operations. The core platform service handles JWT authentication (including a UTC normalization bug that broke everything), user deletion with GDPR-compliant anonymization, and Pub/Sub event propagation. I also built a memory evaluation suite for testing LLM context retention with position-aware scoring. But the real win was establishing engineering patterns that spread platform-wide: structured JSON logging with correlation IDs, pre-commit hooks with Ruff, custom exception hierarchies, Alembic migrations, and per-service security audits. This is the story of how I turned microservices into a platform, and why the connective tissue matters more than the individual services.
 
 ---
 

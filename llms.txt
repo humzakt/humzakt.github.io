@@ -16,14 +16,14 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 ## Blog Articles
 
-- [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): Architecture deep-dive into multiple microservices, Kubernetes clusters, and managed databases
-- [Event-Driven Architecture on GCP](https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html): Pub/Sub, Cloud Tasks, Cloud Scheduler patterns for a 6-phase pipeline
-- [Debugging AlloyDB SSL Connection Drops](https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html): Root cause analysis of 5% task failure rate — fixed with 3 lines
-- [Idempotent Cloud Tasks Handlers in Python](https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html): The pattern that eliminated duplicate record bugs
-- [Zero-Downtime Embedding Migration](https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html): Switching RAG embedding models in production with pgvector
-- [Open-Source AI Code Quality Tool](https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html): Rigour — quality gate for AI-generated code
-- [RL Training Arena for Code Agents](https://humzakt.github.io/blog/rl-training-arena-code-agents.html): Reinforcement learning on GKE with Cloud Build sandboxing
-- [Security Audit: Critical Gaps Found](https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html): SQL injection, hardcoded credentials, and a monolithic God Class
+- [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): How I built an AI evaluation platform from scratch on GCP — architecture decisions, production incidents, and lessons learned
+- [Event-Driven Architecture on GCP](https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html): Why I chose events over HTTP for a 6-phase pipeline that runs for 30 minutes — and how it saved us from retry hell
+- [Debugging AlloyDB SSL Connection Drops](https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html): The two-week detective story of an AlloyDB SSL bug that was silently failing 5% of our evaluation tasks
+- [Idempotent Cloud Tasks Handlers in Python](https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html): How a simple 3-step pattern eliminated duplicate records and made Cloud Tasks retries safe
+- [Zero-Downtime Embedding Migration](https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html): When our embedding model got deprecated overnight, here's how we migrated 48 hours of production data without a single outage
+- [Open-Source AI Code Quality Tool](https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html): Why I built Rigour — the open-source quality gate that caught security vulnerabilities AI code generators missed
+- [RL Training Arena for Code Agents](https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html): Building a Gym-style reinforcement learning environment on GKE — and why Cloud Build sandboxing was the key to safe code execution
+- [Security Audit: Critical Gaps Found](https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html): What I found when I audited my own production platform — SQL injection, hardcoded secrets, and a monolithic God Class that nearly broke everything
 
 ## Service Deep-Dives
 
