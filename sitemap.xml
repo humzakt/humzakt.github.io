@@ -123,10 +123,29 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://humzakt.github.io/blog/incident-response-iflow-debugging.html</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/production-bug-hunting-33-issues.html</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- RSS Feed -->
   <url>
     <loc>https://humzakt.github.io/blog/feed.xml</loc>
-    <lastmod>2026-02-08</lastmod>
+    <lastmod>2026-02-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

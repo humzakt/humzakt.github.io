@@ -134,6 +134,30 @@ A collection of microservices isn't a platform — it's just a bunch of services
 
 ---
 
+### Article 16: Incident Response & iFlow Debugging
+URL: https://humzakt.github.io/blog/incident-response-iflow-debugging.html
+Published: 2026-02-12
+
+When you're running an AI evaluation platform that orchestrates agent execution across GKE clusters, "something broke" isn't useful. This week I built incident response infrastructure — a runbook with 70+ diagnostic commands — and debugged a chain of silent failures. CLI tools that exit code 0 on API errors. Shallow git clones breaking PR diff analysis. Case-sensitive agent keys in PostgreSQL causing config changes to silently target the wrong row. Each fix was small; diagnosing each required tracing through three layers. The lesson: invest in observability before you need it.
+
+---
+
+### Article 17: Systematic Service Hardening
+URL: https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html
+Published: 2026-02-12
+
+One week, three production services, zero downtime. I hardened the auth gateway (N+1 queries turning 50-team listings into 100+ DB calls, non-atomic counter increments losing data, SSRF via route URL injection, tokens in localStorage), the notification service (race conditions in 4 subsystems, in-memory-only DLQ, fire-and-forget event publishing), and the auto-rater (no mathematical correctness tests for scoring algorithms, missing database indexes). Plus 124 unit tests where there were zero, Trivy scanning, rate limiting, and enum validation at the database level. Not glamorous, but production systems that don't get hardened become production incidents.
+
+---
+
+### Article 18: How I Find Bugs in Production Code
+URL: https://humzakt.github.io/blog/production-bug-hunting-33-issues.html
+Published: 2026-02-12
+
+I filed 33 issues in one week across four production services using a 5-layer audit methodology. Layer 1 (API Surface): limit=-1 returning entire datasets. Layer 2 (Auth): any authenticated user reading any other user's tasks. Layer 3 (Data Integrity): same PR URL creating unlimited concurrent tasks. Layer 4 (Error Handling): analytics loading unbounded result sets. Layer 5 (Security): path traversal in file content endpoints, CORS reflecting any origin with credentials, 128 API paths exposed publicly. The bugs that surprised me: 145 uses of deprecated datetime.utcnow(), OpenAPI docs exposing internal endpoints, webhook secrets not enforced in dev. 11 of 33 issues closed within 3 days.
+
+---
+
 ## Contact
 
 - Email: humzakhawartareen@gmail.com

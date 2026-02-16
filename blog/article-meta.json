@@ -163,5 +163,38 @@
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html"
     }
+  },
+  {
+    "id": "incident-response-iflow-debugging",
+    "title": "Incident Response & iFlow Debugging: Runbooks, Silent Failures, and Sandbox Fixes",
+    "summary": "Building incident runbooks with 70+ diagnostic commands, debugging silent agent failures where exit code 0 hid API errors, and fixing sandbox environment gaps.",
+    "date": "2026-02-12",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Incident Response", "GKE", "Python", "CLI Debugging", "FastAPI"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/incident-response-iflow-debugging.html"
+    }
+  },
+  {
+    "id": "systematic-service-hardening-guard-notification",
+    "title": "Systematic Service Hardening: Security, Performance, and Reliability",
+    "summary": "One week, three services: fixed N+1 queries, race conditions, SSRF vulnerabilities, non-atomic counters, and wrote 124 tests where there were zero.",
+    "date": "2026-02-12",
+    "themes": ["devops", "infrastructure", "performance"],
+    "components": ["Security", "Python", "FastAPI", "PostgreSQL", "asyncio"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html"
+    }
+  },
+  {
+    "id": "production-bug-hunting-33-issues",
+    "title": "How I Find Bugs in Production Code: Filing 33 Issues in One Week",
+    "summary": "A 5-layer audit methodology for production codebases — from API surface validation to security vulnerabilities. Path traversal, datetime bugs, and CORS misconfigurations.",
+    "date": "2026-02-12",
+    "themes": ["devops", "infrastructure"],
+    "components": ["Code Audit", "Security", "Python", "GCP", "FastAPI"],
+    "platforms": {
+      "devto": "https://humzakt.github.io/blog/production-bug-hunting-33-issues.html"
+    }
   }
 ]

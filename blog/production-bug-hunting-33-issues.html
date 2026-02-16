@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How I Find Bugs in Production Code — Humza Tareen</title>
+  <meta name="description" content="I filed 33 issues in one week across four services. Here's the systematic approach I use to audit production codebases and prioritize fixes.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Bug Hunting, Code Audit, Production Debugging, Security Audit, Python, FastAPI, GCP">
+  <link rel="canonical" href="https://humzakt.github.io/blog/production-bug-hunting-33-issues.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="How I Find Bugs: Filing 33 Issues in One Week">
+  <meta property="og:description" content="I filed 33 issues in one week across four services. Here's the systematic approach I use to audit production codebases and prioritize fixes.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/production-bug-hunting-33-issues.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-02-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Code Audit">
+  <meta property="article:tag" content="Debugging">
+  <meta property="article:tag" content="Security">
+  <meta property="article:tag" content="Python">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How I Find Bugs in Production Code">
+  <meta name="twitter:description" content="I filed 33 issues in one week across four services. Here's the systematic approach I use to audit production codebases and prioritize fixes.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How I Find Bugs: Filing 33 Issues in One Week",
+    "description": "I filed 33 issues in one week across four services. Here's the systematic approach I use to audit production codebases and prioritize fixes.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-02-12",
+    "dateModified": "2026-02-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/production-bug-hunting-33-issues.html" },
+    "keywords": ["Bug Hunting", "Code Audit", "Production Debugging", "Security Audit", "Python", "FastAPI", "GCP"],
+    "articleSection": "Code Quality"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher"><a href="../engineering.html">Engineering</a><a href="../research.html">Research</a></div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">How I Find Bugs: Filing 33 Issues in One Week</h1>
+        <div class="blog-meta"><time datetime="2026-02-12">Feb 12, 2026</time><span>&middot;</span><span>8 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
+        <div class="blog-tags">
+          <span class="blog-tag">Code Audit</span><span class="blog-tag">Debugging</span><span class="blog-tag">Security</span><span class="blog-tag">Python</span>
+        </div>
+      </header>
+      <div class="blog-content">
+        <h2>The Art of Systematic Bug Hunting</h2>
+        <p>I filed 33 issues in one week across four production services. Not because the code was terrible — it wasn't. But production codebases accumulate subtle bugs that only surface under specific conditions: race conditions under load, timezone mismatches in cron jobs, unbounded queries on large datasets, security assumptions that don't hold.</p>
+        <p>Here's the systematic approach I use to find them.</p>
+
+        <h2>The Methodology</h2>
+        <p>I audit in layers, starting from the outside and working inward:</p>
+        <p><strong>Layer 1: API Surface.</strong> Every public endpoint gets scrutinized. Does it validate input? Does it check authorization? Can I pass unexpected values (negative pagination limits, empty arrays, duplicate entries)? I found that one API accepted <code>limit=0</code> and <code>limit=-1</code>, both returning the entire dataset — an OOM risk on large tables.</p>
+        <p><strong>Layer 2: Authentication & Authorization.</strong> Are admin endpoints actually protected? Can an authenticated user access another user's resources? I found task endpoints with no ownership checks — any authenticated user could read, update, or cancel any task in the system.</p>
+        <p><strong>Layer 3: Data Integrity.</strong> Are there unique constraints where there should be? Can the same input create duplicate records? I found that the same PR URL could create unlimited concurrent evaluation tasks with no deduplication.</p>
+        <p><strong>Layer 4: Error Handling.</strong> What happens when dependencies fail? When the database is slow? When an external API returns unexpected responses? I found analytics endpoints that loaded unbounded result sets with no pagination — fine with 100 records, catastrophic with 100,000.</p>
+        <p><strong>Layer 5: Security.</strong> SSRF vectors, path traversal, CORS misconfigurations, secrets in logs. I found a path traversal vulnerability in a file content endpoint — the <code>file_path</code> parameter wasn't validated against the repository root, allowing <code>../../etc/passwd</code> style attacks.</p>
+
+        <h2>The Bugs That Surprised Me</h2>
+        <p><strong>145 uses of deprecated <code>datetime.utcnow()</code>.</strong> Every single one was a potential timezone bug. Python's <code>datetime.utcnow()</code> returns a naive datetime (no timezone info). When compared with timezone-aware datetimes from the database, it either crashes or produces wrong results. The orphan cleanup job was failing silently because of exactly this mismatch.</p>
+        <p><strong>OpenAPI docs exposing 128 API paths publicly.</strong> Including internal endpoints, admin endpoints, and cron job triggers. An attacker with the docs URL could see the entire API surface and target internal-only endpoints.</p>
+        <p><strong>Webhook secrets not enforced in development.</strong> The secret validation was behind an environment check, meaning anyone who discovered the webhook URL in a non-production environment could trigger arbitrary trainer and reviewer workflows.</p>
+
+        <h2>The Prioritization Framework</h2>
+        <p>Not all bugs are equal. I classify by blast radius and exploitability:</p>
+        <p><strong>Critical:</strong> Actively exploitable security vulnerabilities (SSRF, path traversal, missing auth checks). These get fixed first, often same-day.</p>
+        <p><strong>High:</strong> Data integrity risks and reliability issues (race conditions, missing constraints, unbounded queries). These get fixed within the week.</p>
+        <p><strong>Medium:</strong> Performance issues and code quality gaps (N+1 queries, deprecated APIs, missing indexes). These get scheduled into the next sprint.</p>
+        <p><strong>Low:</strong> Hardening improvements (stricter CORS, security headers, input validation edge cases). These get batched into hardening PRs.</p>
+
+        <h2>The Output</h2>
+        <p>Of the 33 issues filed, 11 were closed within 3 days — either by me or triggered by the fixes. The rest are tracked with clear reproduction steps, expected behavior, and severity classification. Every issue links to the specific code path, making the fix straightforward for whoever picks it up.</p>
+        <p>The pattern works because it's repeatable. I've used the same layered approach on every service I've touched — and it consistently surfaces bugs that were hiding in plain sight.</p>
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
+        <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

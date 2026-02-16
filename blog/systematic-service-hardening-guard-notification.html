@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Systematic Service Hardening — Humza Tareen</title>
+  <meta name="description" content="How I hardened three production services in one week: N+1 queries, race conditions, SSRF protection, atomic counters, and 124 new tests.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Service Hardening, Security, N+1 Queries, Race Conditions, SSRF, Rate Limiting, Python, FastAPI">
+  <link rel="canonical" href="https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Systematic Service Hardening: Security, Performance, and Reliability">
+  <meta property="og:description" content="How I hardened three production services in one week: N+1 queries, race conditions, SSRF protection, atomic counters, and 124 new tests.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-02-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Security">
+  <meta property="article:tag" content="Performance">
+  <meta property="article:tag" content="Python">
+  <meta property="article:tag" content="FastAPI">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Systematic Service Hardening">
+  <meta name="twitter:description" content="How I hardened three production services in one week: N+1 queries, race conditions, SSRF protection, atomic counters, and 124 new tests.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Systematic Service Hardening: Security, Performance, and Reliability",
+    "description": "How I hardened three production services in one week: N+1 queries, race conditions, SSRF protection, atomic counters, and 124 new tests.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-02-12",
+    "dateModified": "2026-02-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html" },
+    "keywords": ["Service Hardening", "Security", "N+1 Queries", "Race Conditions", "SSRF", "Python", "FastAPI"],
+    "articleSection": "Service Hardening"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher"><a href="../engineering.html">Engineering</a><a href="../research.html">Research</a></div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Systematic Service Hardening: Security, Performance, and Reliability</h1>
+        <div class="blog-meta"><time datetime="2026-02-12">Feb 12, 2026</time><span>&middot;</span><span>12 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
+        <div class="blog-tags">
+          <span class="blog-tag">Security</span><span class="blog-tag">Performance</span><span class="blog-tag">Python</span><span class="blog-tag">FastAPI</span>
+        </div>
+      </header>
+      <div class="blog-content">
+        <h2>One Week, Three Services, Zero Downtime</h2>
+        <p>I spent a week methodically hardening three production services — the auth gateway, the notification service, and the auto-rater. Not feature work. Not refactoring for aesthetics. Targeted fixes for real vulnerabilities, performance bottlenecks, and reliability gaps that I'd been cataloging during months of development.</p>
+
+        <h2>The Auth Gateway: Death by a Thousand Queries</h2>
+        <p>The Guard service had a classic N+1 query problem. Listing 50 teams triggered 100+ individual database queries — two per team (member count + project count). At scale, page loads were painfully slow.</p>
+
+        <pre><code class="language-python"># Before: N+1 queries
+teams = await session.execute(select(Team).filter_by(org_id=org_id))
+for team in teams:
+    team.member_count = await count_members(team.id)  # Query per team
+    team.project_count = await count_projects(team.id)  # Another query per team
+
+# After: Single query with subquery aggregation
+teams = await session.execute(
+    select(
+        Team,
+        func.count(distinct(TeamMember.id)).label("member_count"),
+        func.count(distinct(Project.id)).label("project_count"),
+    )
+    .outerjoin(TeamMember)
+    .outerjoin(Project)
+    .filter(Team.org_id == org_id)
+    .group_by(Team.id)
+)</code></pre>
+
+        <p>The same service had non-atomic counter operations. Incrementing a team's member count used read-then-write: load the object, increment in Python, save. Under concurrent requests, two users joining simultaneously would both read count=5, both write count=6, losing one increment.</p>
+
+        <pre><code class="language-python"># Before: non-atomic (race condition)
+team = await get_team(team_id)
+team.member_count += 1
+await session.commit()
+
+# After: atomic SQL UPDATE
+await session.execute(
+    update(Team)
+    .where(Team.id == team_id)
+    .values(member_count=Team.member_count + 1)
+)</code></pre>
+
+        <h2>Security: SSRF, XSS, and CORS</h2>
+        <p>The auth gateway accepted route URLs without validation — a server-side request forgery (SSRF) vector. An attacker could register a route pointing to <code>http://169.254.169.254/</code> (the cloud metadata endpoint) and have the gateway proxy requests to it.</p>
+        <p>I added URL validation: HTTPS-only, blocked internal hosts (localhost, 127.0.0.1, cloud metadata IPs), and rejected private/loopback address ranges.</p>
+        <p>The frontend stored auth tokens in <code>localStorage</code> — accessible to any XSS attack. Switched to <code>sessionStorage</code> with a safe storage wrapper, so tokens die with the browser tab. Added OAuth state parameter validation for CSRF protection, and fixed a CORS misconfiguration that was reflecting any origin with credentials.</p>
+
+        <h2>The Notification Service: Race Conditions Everywhere</h2>
+        <p>The notification service had race conditions in four subsystems: caching stats, notification dispatch, subscription management, and the dead-letter queue. Each shared mutable state across async tasks without proper locking.</p>
+        <p>The fixes were surgical: dedicated <code>asyncio.Lock</code> instances for each critical section, atomic operations where possible, and a complete rewrite of the DLQ from in-memory-only to file-based persistence so messages survive process restarts.</p>
+        <p>The delivery services (SendGrid, Slack, webhooks) had no retry logic and accepted narrow success codes. I expanded the retry strategies with exponential backoff, added input validation (email format, URL scheme), and made the event publisher reliable — it now awaits Pub/Sub acknowledgment instead of fire-and-forget.</p>
+
+        <h2>Auto-Rater: Scoring Integrity</h2>
+        <p>The auto-rater needed mathematical correctness guarantees. I wrote 24 tests with known inputs and analytically verified expected outputs for the Borda Count and Bradley-Terry scoring algorithms. These aren't "does it return 200" tests — they verify that the ranking math is correct.</p>
+        <p>I also added missing database indexes for common query patterns, startup configuration validation (fail fast on misconfiguration), and deployment concurrency controls to prevent race conditions during Cloud Run deploys.</p>
+
+        <h2>The Test Suite</h2>
+        <p>The Guard service had zero automated tests. I wrote 124 unit tests covering all critical backend services, models, and infrastructure. The test suite runs on every PR with coverage reporting, alongside Trivy vulnerability scanning on the Docker image.</p>
+
+        <h2>The Pattern</h2>
+        <p>Every service got the same treatment: identify the vulnerability class, write the fix, add tests proving it works, and verify no regressions. Rate limiting on admin endpoints. Enum validation at the database level. Pagination on all list endpoints. Soft delete support. Consistent error responses. Security headers. Request body size limits.</p>
+        <p>It's not glamorous work. But production systems that don't get hardened eventually become production incidents.</p>
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
+        <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incident Response & iFlow Debugging — Humza Tareen</title>
+  <meta name="description" content="Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Incident Response, Runbooks, iFlow, CLI Debugging, Sandbox, GKE, Python, FastAPI">
+  <link rel="canonical" href="https://humzakt.github.io/blog/incident-response-iflow-debugging.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Incident Response: Runbooks, iFlow Debugging, and Sandbox Fixes">
+  <meta property="og:description" content="Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/incident-response-iflow-debugging.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-02-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Incident Response">
+  <meta property="article:tag" content="GKE">
+  <meta property="article:tag" content="Python">
+  <meta property="article:tag" content="CLI Debugging">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Incident Response & iFlow Debugging">
+  <meta name="twitter:description" content="Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Incident Response: Runbooks, iFlow Debugging, and Sandbox Fixes",
+    "description": "Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-02-12",
+    "dateModified": "2026-02-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/incident-response-iflow-debugging.html" },
+    "keywords": ["Incident Response", "Runbooks", "iFlow", "CLI Debugging", "Sandbox", "GKE", "Python", "FastAPI"],
+    "articleSection": "Incident Response"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher"><a href="../engineering.html">Engineering</a><a href="../research.html">Research</a></div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Incident Response: Runbooks, iFlow Debugging, and Sandbox Fixes</h1>
+        <div class="blog-meta"><time datetime="2026-02-12">Feb 12, 2026</time><span>&middot;</span><span>10 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
+        <div class="blog-tags">
+          <span class="blog-tag">Incident Response</span><span class="blog-tag">GKE</span><span class="blog-tag">Python</span><span class="blog-tag">CLI Debugging</span>
+        </div>
+      </header>
+      <div class="blog-content">
+        <h2>When Production Breaks at Scale</h2>
+        <p>When you're running an AI evaluation platform that orchestrates agent execution across GKE clusters, "something broke" isn't a useful statement. You need structured response playbooks, diagnostic tools, and — most importantly — the discipline to investigate before guessing.</p>
+        <p>This week I built the incident response infrastructure and debugged a chain of silent failures that were causing agents to fail in production without any useful error signals.</p>
+
+        <h2>The Incident Runbook</h2>
+        <p>I wrote a comprehensive incident runbook with severity classification, triage checklists, and over 70 diagnostic commands tailored to our GCP stack. Not generic "check the logs" advice — specific <code>gcloud</code> and <code>kubectl</code> commands that tell you exactly where to look.</p>
+        <p>The runbook covers five severity levels, each with a decision tree: Is it a single task failure? A cluster-wide issue? A database connectivity problem? The goal was to make incident response reproducible — any engineer on the team can follow the same diagnostic path and reach the same conclusion.</p>
+        <p>Alongside the runbook, I added GitHub issue templates for bug reports and RCA (root cause analysis) prompts. Every incident now generates a structured post-mortem that feeds back into the runbook.</p>
+
+        <h2>The Silent Agent Failures</h2>
+        <p>The platform supports multiple AI agent frameworks — including iFlow, a CLI-based tool that wraps LLM API calls. Agents started failing in production, but the failures were invisible. Here's why:</p>
+        <p>The CLI tools exit with code 0 even when the upstream LLM API returns a 4xx or 5xx error. Our evaluation engine checked the exit code, saw "success," and moved on. But the output contained error messages that should have failed the task.</p>
+
+        <pre><code class="language-python"># Before: trusting exit codes
+if process.returncode == 0:
+    return TaskResult(status="passed", output=stdout)
+
+# After: inspecting output for API errors
+ERROR_PATTERNS = [
+    r"HTTP \d{3}",
+    r"rate.?limit",
+    r"APIError",
+    r"quota exceeded",
+]
+if process.returncode == 0 and has_error_patterns(stdout):
+    return TaskResult(status="failed", output=stdout, 
+                      reason="API error detected in output")</code></pre>
+
+        <h2>The Sandbox Environment Gap</h2>
+        <p>Agent execution happens in sandboxed containers on GKE. The sandbox had two problems: missing development tools and shallow git clones that broke diff operations.</p>
+        <p>Agents that needed to analyze pull request diffs couldn't — because <code>git clone --depth 1</code> doesn't fetch PR refs. When the GitHub API returned 404 for a PR's files endpoint, the fallback was supposed to clone and diff locally, but the shallow clone didn't have the commits to diff against.</p>
+        <p>The fix was straightforward: fetch the specific PR refs and ensure the sandbox environment included the tools agents actually needed. But diagnosing it required tracing through three layers — the evaluation engine, the sandbox provisioner, and the git clone logic.</p>
+
+        <h2>Case-Insensitive Key Normalization</h2>
+        <p>One of the subtler bugs: agent configuration keys were case-sensitive in PostgreSQL. The admin UI stored <code>iFlow-glm-4p7</code> while the worker loaded <code>iflow-glm-4p7</code>. Config changes made through the UI silently targeted a different row than the one the worker was reading.</p>
+        <p>The fix normalized all agent keys to lowercase on write and on read, with a migration to deduplicate any existing mismatches.</p>
+
+        <h2>The Streaming Flag Discovery</h2>
+        <p>iFlow agents needed a <code>--stream</code> CLI flag, but we were passing it as an environment variable <code>IFLOW_STREAM=true</code>. The variable reached the subprocess, but iFlow doesn't read environment variables for API request parameters — it only accepts CLI flags.</p>
+        <p>This required a broader fix: a model-agnostic <code>extra_params</code> system that could pass arbitrary parameters to any agent framework, with per-framework normalization logic to convert them into the right format (CLI flags, env vars, or JSON config).</p>
+
+        <h2>What I'd Do Differently</h2>
+        <p>The incident runbook should have existed from day one. We spent two weeks debugging issues that structured diagnostic commands would have identified in minutes. The lesson: invest in observability infrastructure before you need it, not after production is on fire.</p>
+        <p>Silent failures — exit code 0 with error output — are more dangerous than loud crashes. Every external tool integration should validate output content, not just return codes.</p>
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
+        <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
