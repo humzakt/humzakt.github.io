@@ -52,16 +52,6 @@ The email came on a Friday afternoon: our embedding model was being deprecated i
 
 ---
 
-## Open-Source AI Code Quality Tool (Rigour)
-
-URL: https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html
-
-I was tired of AI code generators producing code that looked right but failed in subtle ways — security vulnerabilities, infinite retry loops, stale dependencies. So I built Rigour, an open-source quality gate that catches what AI models miss. It uses universal AST-based analysis to work across 10+ languages (TypeScript, Python, Go, Java, and more), detecting everything from prototype pollution to SQL injection, XSS, CSRF, and hardcoded secrets. But the real breakthrough was making it IDE-agnostic via the MCP protocol — it works with Cursor, Claude Code, Gemini, Codex/Aider, Windsurf, and any tool that supports MCP. What started as a weekend project became a mature product through rapid iteration, and it's now published to the MCP Registry. This is the story of building a tool that makes AI-generated code actually production-ready, and why universal code analysis matters more than you think.
-
-GitHub: https://github.com/rigour-labs/rigour
-
----
-
 ## RL Training Arena for AI Code Agents
 
 URL: https://humzakt.github.io/blog/rl-training-arena-code-agents.html

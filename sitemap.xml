@@ -61,12 +61,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</loc>
-    <lastmod>2026-02-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://humzakt.github.io/blog/rl-training-arena-code-agents.html</loc>
     <lastmod>2026-02-08</lastmod>
     <changefreq>monthly</changefreq>

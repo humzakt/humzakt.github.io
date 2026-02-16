@@ -85,19 +85,6 @@
     </item>
 
     <item>
-      <title>Rigour: An Open-Source AI Code Quality Tool</title>
-      <link>https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</link>
-      <guid isPermaLink="true">https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html</guid>
-      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
-      <dc:creator>Humza Tareen</dc:creator>
-      <category>Open Source</category>
-      <category>AI</category>
-      <category>Developer Tools</category>
-      <category>TypeScript</category>
-      <description>How I built Rigour, an open-source quality gate for AI-generated code that supports 10+ languages and works with Cursor, Claude Code, Gemini, and more.</description>
-    </item>
-
-    <item>
       <title>Building an RL Training Arena for AI Code Agents on GCP</title>
       <link>https://humzakt.github.io/blog/rl-training-arena-code-agents.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/rl-training-arena-code-agents.html</guid>

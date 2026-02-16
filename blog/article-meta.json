@@ -55,17 +55,6 @@
     }
   },
   {
-    "id": "open-source-rigour-ai-code-quality",
-    "title": "Rigour: An Open-Source AI Code Quality Tool",
-    "summary": "An open-source quality gate for AI-generated code supporting multiple languages, security vulnerability detection, and MCP protocol for IDE integration.",
-    "date": "2026-02-08",
-    "themes": ["devops", "ml-ai"],
-    "components": ["Open Source", "TypeScript", "AI", "MCP", "Developer Tools"],
-    "platforms": {
-      "linkedin": "https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html"
-    }
-  },
-  {
     "id": "rl-training-arena-code-agents",
     "title": "Building an RL Training Arena for AI Code Agents on GCP",
     "summary": "A reinforcement learning environment for training AI coding agents. Gym-style API, Cloud Build sandboxing, Redis episode state, and Firestore trajectory recording.",

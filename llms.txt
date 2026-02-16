@@ -12,9 +12,7 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 - **AI/ML Infrastructure**: RAG systems with pgvector, LLM evaluation pipelines, reinforcement learning training arenas
 - **Event-Driven Systems**: Pub/Sub, Cloud Tasks, Cloud Scheduler, dead-letter queues
 - **DevOps & Security**: CI/CD with GitHub Actions, Cloud Build, security auditing, structured logging
-- **Open Source**: Created Rigour (AI code quality tool, rapid iteration and continuous delivery)
-
-## Blog Articles (18)
+## Blog Articles (17)
 
 - [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): How I built an AI evaluation platform from scratch on GCP — architecture decisions, production incidents, and lessons learned
 - [Core AI Evaluation Engine](https://humzakt.github.io/blog/atlas-evaluations-core-engine.html): The two-week AlloyDB SSL detective story, a Firestore default database trap, and why KEDA autoscaling needed careful tuning
@@ -29,7 +27,6 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 - [Debugging AlloyDB SSL Connection Drops](https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html): The two-week detective story of an AlloyDB SSL bug that was silently failing 5% of our evaluation tasks
 - [Idempotent Cloud Tasks Handlers in Python](https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html): How a simple 3-step pattern eliminated duplicate records and made Cloud Tasks retries safe
 - [Zero-Downtime Embedding Migration](https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html): When our embedding model got deprecated overnight, here's how we migrated production data without a single outage
-- [Open-Source AI Code Quality Tool](https://humzakt.github.io/blog/open-source-rigour-ai-code-quality.html): Why I built Rigour — the open-source quality gate that caught security vulnerabilities AI code generators missed
 - [Security Audit: Critical Gaps Found](https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html): What I found when I audited my own production platform — SQL injection, hardcoded secrets, and a monolithic God Class that nearly broke everything
 - [Incident Response & iFlow Debugging](https://humzakt.github.io/blog/incident-response-iflow-debugging.html): Building incident runbooks, debugging silent agent failures where exit code 0 hid API errors, and fixing sandbox environment gaps
 - [Systematic Service Hardening](https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html): One week, three services — fixing N+1 queries, race conditions, SSRF vulnerabilities, non-atomic counters, and writing 124 tests from scratch
