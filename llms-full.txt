@@ -124,7 +124,7 @@ A collection of microservices isn't a platform — it's just a bunch of services
 
 ---
 
-### Article 16: Incident Response & iFlow Debugging
+### Article 16: Incident Response & CLI Agent Debugging
 URL: https://humzakt.github.io/blog/incident-response-iflow-debugging.html
 Published: 2026-02-12
 

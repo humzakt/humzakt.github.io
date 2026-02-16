@@ -109,7 +109,7 @@
         <p>I spent a week methodically hardening three production services — the auth gateway, the notification service, and the auto-rater. Not feature work. Not refactoring for aesthetics. Targeted fixes for real vulnerabilities, performance bottlenecks, and reliability gaps that I'd been cataloging during months of development.</p>
 
         <h2>The Auth Gateway: Death by a Thousand Queries</h2>
-        <p>The Guard service had a classic N+1 query problem. Listing 50 teams triggered 100+ individual database queries — two per team (member count + project count). At scale, page loads were painfully slow.</p>
+        <p>The auth gateway had a classic N+1 query problem. Listing 50 teams triggered 100+ individual database queries — two per team (member count + project count). At scale, page loads were painfully slow.</p>
 
         <pre><code class="language-python"># Before: N+1 queries
 teams = await session.execute(select(Team).filter_by(org_id=org_id))
@@ -159,7 +159,7 @@ await session.execute(
         <p>I also added missing database indexes for common query patterns, startup configuration validation (fail fast on misconfiguration), and deployment concurrency controls to prevent race conditions during Cloud Run deploys.</p>
 
         <h2>The Test Suite</h2>
-        <p>The Guard service had zero automated tests. I wrote 124 unit tests covering all critical backend services, models, and infrastructure. The test suite runs on every PR with coverage reporting, alongside Trivy vulnerability scanning on the Docker image.</p>
+        <p>The auth gateway had zero automated tests. I wrote 124 unit tests covering all critical backend services, models, and infrastructure. The test suite runs on every PR with coverage reporting, alongside Trivy vulnerability scanning on the Docker image.</p>
 
         <h2>The Pattern</h2>
         <p>Every service got the same treatment: identify the vulnerability class, write the fix, add tests proving it works, and verify no regressions. Rate limiting on admin endpoints. Enum validation at the database level. Pagination on all list endpoints. Soft delete support. Consistent error responses. Security headers. Request body size limits.</p>

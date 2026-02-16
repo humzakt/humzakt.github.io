@@ -193,7 +193,7 @@
       <description>The services that turned a collection of microservices into a platform: HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth fixes, and LLM memory evaluation.</description>
     </item>
     <item>
-      <title>Incident Response &amp; iFlow Debugging: Runbooks, Silent Failures, and Sandbox Fixes</title>
+      <title>Incident Response &amp; CLI Agent Debugging: Runbooks, Silent Failures, and Sandbox Fixes</title>
       <link>https://humzakt.github.io/blog/incident-response-iflow-debugging.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/incident-response-iflow-debugging.html</guid>
       <pubDate>Thu, 12 Feb 2026 00:00:00 +0000</pubDate>

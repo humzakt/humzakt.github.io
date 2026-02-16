@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Incident Response & iFlow Debugging — Humza Tareen</title>
+  <title>Incident Response & CLI Agent Debugging — Humza Tareen</title>
   <meta name="description" content="Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.">
   <meta name="author" content="Humza Tareen">
-  <meta name="keywords" content="Incident Response, Runbooks, iFlow, CLI Debugging, Sandbox, GKE, Python, FastAPI">
+  <meta name="keywords" content="Incident Response, Runbooks, CLI Agent, CLI Debugging, Sandbox, GKE, Python, FastAPI">
   <link rel="canonical" href="https://humzakt.github.io/blog/incident-response-iflow-debugging.html">
   <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
-  <meta property="og:title" content="Incident Response: Runbooks, iFlow Debugging, and Sandbox Fixes">
+  <meta property="og:title" content="Incident Response: Runbooks, CLI Agent Debugging, and Sandbox Fixes">
   <meta property="og:description" content="Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://humzakt.github.io/blog/incident-response-iflow-debugging.html">
@@ -24,14 +24,14 @@
   <meta property="article:tag" content="Python">
   <meta property="article:tag" content="CLI Debugging">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Incident Response & iFlow Debugging">
+  <meta name="twitter:title" content="Incident Response & CLI Agent Debugging">
   <meta name="twitter:description" content="Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Incident Response: Runbooks, iFlow Debugging, and Sandbox Fixes",
+    "headline": "Incident Response: Runbooks, CLI Agent Debugging, and Sandbox Fixes",
     "description": "Building incident runbooks, debugging silent agent failures, and fixing sandbox environment issues in a production AI evaluation platform.",
     "image": "https://humzakt.github.io/suit-blue-bg.jpg",
     "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
@@ -39,7 +39,7 @@
     "datePublished": "2026-02-12",
     "dateModified": "2026-02-12",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/incident-response-iflow-debugging.html" },
-    "keywords": ["Incident Response", "Runbooks", "iFlow", "CLI Debugging", "Sandbox", "GKE", "Python", "FastAPI"],
+    "keywords": ["Incident Response", "Runbooks", "CLI Agent", "CLI Debugging", "Sandbox", "GKE", "Python", "FastAPI"],
     "articleSection": "Incident Response"
   }
   </script>
@@ -98,7 +98,7 @@
     <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
     <article>
       <header class="blog-header">
-        <h1 class="blog-title">Incident Response: Runbooks, iFlow Debugging, and Sandbox Fixes</h1>
+        <h1 class="blog-title">Incident Response: Runbooks, CLI Agent Debugging, and Sandbox Fixes</h1>
         <div class="blog-meta"><time datetime="2026-02-12">Feb 12, 2026</time><span>&middot;</span><span>10 min read</span><span>&middot;</span><span>Humza Tareen</span></div>
         <div class="blog-tags">
           <span class="blog-tag">Incident Response</span><span class="blog-tag">GKE</span><span class="blog-tag">Python</span><span class="blog-tag">CLI Debugging</span>
@@ -115,7 +115,7 @@
         <p>Alongside the runbook, I added GitHub issue templates for bug reports and RCA (root cause analysis) prompts. Every incident now generates a structured post-mortem that feeds back into the runbook.</p>
 
         <h2>The Silent Agent Failures</h2>
-        <p>The platform supports multiple AI agent frameworks — including iFlow, a CLI-based tool that wraps LLM API calls. Agents started failing in production, but the failures were invisible. Here's why:</p>
+        <p>The platform supports multiple AI agent frameworks — including the CLI agent framework, a CLI-based tool that wraps LLM API calls. Agents started failing in production, but the failures were invisible. Here's why:</p>
         <p>The CLI tools exit with code 0 even when the upstream LLM API returns a 4xx or 5xx error. Our evaluation engine checked the exit code, saw "success," and moved on. But the output contained error messages that should have failed the task.</p>
 
         <pre><code class="language-python"># Before: trusting exit codes
@@ -139,11 +139,11 @@ if process.returncode == 0 and has_error_patterns(stdout):
         <p>The fix was straightforward: fetch the specific PR refs and ensure the sandbox environment included the tools agents actually needed. But diagnosing it required tracing through three layers — the evaluation engine, the sandbox provisioner, and the git clone logic.</p>
 
         <h2>Case-Insensitive Key Normalization</h2>
-        <p>One of the subtler bugs: agent configuration keys were case-sensitive in PostgreSQL. The admin UI stored <code>iFlow-glm-4p7</code> while the worker loaded <code>iflow-glm-4p7</code>. Config changes made through the UI silently targeted a different row than the one the worker was reading.</p>
+        <p>One of the subtler bugs: agent configuration keys were case-sensitive in PostgreSQL. The admin UI stored <code>AgentCLI-model-v1</code> while the worker loaded <code>agent-cli-model-v1</code>. Config changes made through the UI silently targeted a different row than the one the worker was reading.</p>
         <p>The fix normalized all agent keys to lowercase on write and on read, with a migration to deduplicate any existing mismatches.</p>
 
         <h2>The Streaming Flag Discovery</h2>
-        <p>iFlow agents needed a <code>--stream</code> CLI flag, but we were passing it as an environment variable <code>IFLOW_STREAM=true</code>. The variable reached the subprocess, but iFlow doesn't read environment variables for API request parameters — it only accepts CLI flags.</p>
+        <p>CLI agents needed a <code>--stream</code> CLI flag, but we were passing it as an environment variable <code>AGENT_STREAM=true</code>. The variable reached the subprocess, but the CLI framework doesn't read environment variables for API request parameters — it only accepts CLI flags.</p>
         <p>This required a broader fix: a model-agnostic <code>extra_params</code> system that could pass arbitrary parameters to any agent framework, with per-framework normalization logic to convert them into the right format (CLI flags, env vars, or JSON config).</p>
 
         <h2>What I'd Do Differently</h2>

@@ -155,7 +155,7 @@
   },
   {
     "id": "incident-response-iflow-debugging",
-    "title": "Incident Response & iFlow Debugging: Runbooks, Silent Failures, and Sandbox Fixes",
+    "title": "Incident Response & CLI Agent Debugging: Runbooks, Silent Failures, and Sandbox Fixes",
     "summary": "Building incident runbooks with 70+ diagnostic commands, debugging silent agent failures where exit code 0 hid API errors, and fixing sandbox environment gaps.",
     "date": "2026-02-12",
     "themes": ["infrastructure", "devops"],
