@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <!-- Main pages -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://humzakt.github.io/</loc>
-    <lastmod>2026-02-08</lastmod>
+    <lastmod>2026-02-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://humzakt.github.io/engineering.html</loc>
-    <lastmod>2026-02-08</lastmod>
+    <lastmod>2026-02-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -21,15 +18,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-
   <url>
     <loc>https://humzakt.github.io/blog.html</loc>
-    <lastmod>2026-02-08</lastmod>
+    <lastmod>2026-02-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
-
-  <!-- Blog posts -->
   <url>
     <loc>https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html</loc>
     <lastmod>2026-02-08</lastmod>
@@ -72,8 +66,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Service deep-dive blog posts -->
   <url>
     <loc>https://humzakt.github.io/blog/atlas-evaluations-core-engine.html</loc>
     <lastmod>2026-02-08</lastmod>
@@ -116,7 +108,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://humzakt.github.io/blog/incident-response-iflow-debugging.html</loc>
     <lastmod>2026-02-12</lastmod>
@@ -134,13 +125,5 @@
     <lastmod>2026-02-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-
-  <!-- RSS Feed -->
-  <url>
-    <loc>https://humzakt.github.io/blog/feed.xml</loc>
-    <lastmod>2026-02-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
 </urlset>
