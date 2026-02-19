@@ -39,5 +39,7 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 - Research Profile: https://humzakt.github.io/research.html
 - LinkedIn: https://www.linkedin.com/in/humzakt
 - GitHub: https://github.com/humzakt
+- Medium: https://medium.com/@humzakt
+- DEV Community: https://dev.to/humzakt
 - RSS Feed: https://humzakt.github.io/blog/feed.xml
 - Email: humzakhawartareen@gmail.com

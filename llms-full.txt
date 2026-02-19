@@ -153,4 +153,6 @@ I filed 33 issues in one week across four production services using a 5-layer au
 - Email: humzakhawartareen@gmail.com
 - LinkedIn: https://www.linkedin.com/in/humzakt
 - GitHub: https://github.com/humzakt
+- Medium: https://medium.com/@humzakt
+- DEV Community: https://dev.to/humzakt
 - Website: https://humzakt.github.io
