@@ -189,15 +189,8 @@
       <p>Technical deep-dives and lessons from building production systems on GCP</p>
     </div>
 
-    <!-- Filter buttons -->
-    <div class="blog-filters" role="tablist" aria-label="Filter articles by topic">
-      <button class="blog-filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
-      <button class="blog-filter-btn" data-filter="infrastructure" role="tab" aria-selected="false">Infrastructure</button>
-      <button class="blog-filter-btn" data-filter="ml-ai" role="tab" aria-selected="false">ML / AI</button>
-      <button class="blog-filter-btn" data-filter="devops" role="tab" aria-selected="false">DevOps</button>
-      <button class="blog-filter-btn" data-filter="api-design" role="tab" aria-selected="false">API Design</button>
-      <button class="blog-filter-btn" data-filter="performance" role="tab" aria-selected="false">Performance</button>
-    </div>
+    <!-- Filter buttons (generated dynamically from article themes) -->
+    <div class="blog-filters" id="blog-filters" role="tablist" aria-label="Filter articles by topic"></div>
 
     <!-- Article grid -->
     <div class="blog-grid" id="blog-grid">
@@ -220,17 +213,82 @@
   <script>
   (function() {
     var grid = document.getElementById('blog-grid');
+    var filtersContainer = document.getElementById('blog-filters');
+
+    var themeLabels = {
+      'infrastructure': 'Infrastructure',
+      'ml-ai': 'ML / AI',
+      'devops': 'DevOps',
+      'api-design': 'API Design',
+      'performance': 'Performance',
+      'security': 'Security'
+    };
 
     async function loadArticles() {
       try {
         var resp = await fetch('blog/article-meta.json');
         if (resp.ok) {
           var articles = await resp.json();
+          buildFilters(articles);
           renderArticles(articles);
           return;
         }
-      } catch (e) { /* fallback */ }
+      } catch (e) { console.error('Failed to load articles:', e); }
       grid.innerHTML = '<p class="blog-empty">Articles coming soon — stay tuned!</p>';
+    }
+
+    function buildFilters(articles) {
+      var counts = {};
+      articles.forEach(function(a) {
+        (a.themes || []).forEach(function(t) {
+          counts[t] = (counts[t] || 0) + 1;
+        });
+      });
+
+      var sorted = Object.keys(counts).sort(function(a, b) {
+        return counts[b] - counts[a];
+      });
+
+      filtersContainer.innerHTML = '';
+
+      var allBtn = document.createElement('button');
+      allBtn.className = 'blog-filter-btn active';
+      allBtn.setAttribute('data-filter', 'all');
+      allBtn.setAttribute('role', 'tab');
+      allBtn.setAttribute('aria-selected', 'true');
+      allBtn.textContent = 'All (' + articles.length + ')';
+      filtersContainer.appendChild(allBtn);
+
+      sorted.forEach(function(theme) {
+        var label = themeLabels[theme] || theme.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+        var btn = document.createElement('button');
+        btn.className = 'blog-filter-btn';
+        btn.setAttribute('data-filter', theme);
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', 'false');
+        btn.textContent = label + ' (' + counts[theme] + ')';
+        filtersContainer.appendChild(btn);
+      });
+
+      filtersContainer.querySelectorAll('.blog-filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filtersContainer.querySelectorAll('.blog-filter-btn').forEach(function(b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+
+          var filter = btn.getAttribute('data-filter');
+          document.querySelectorAll('.blog-card').forEach(function(card) {
+            if (filter === 'all' || (card.getAttribute('data-themes') || '').includes(filter)) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
     }
 
     function renderArticles(articles) {
@@ -281,27 +339,6 @@
         grid.appendChild(card);
       });
     }
-
-    // Filter functionality
-    document.querySelectorAll('.blog-filter-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.blog-filter-btn').forEach(function(b) {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-
-        var filter = btn.getAttribute('data-filter');
-        document.querySelectorAll('.blog-card').forEach(function(card) {
-          if (filter === 'all' || (card.getAttribute('data-themes') || '').includes(filter)) {
-            card.style.display = '';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    });
 
     loadArticles();
   })();
