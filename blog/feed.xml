@@ -225,5 +225,45 @@
       <category>Python</category>
       <description>A 5-layer audit methodology for production codebases — from API surface validation to security vulnerabilities. Path traversal, datetime bugs, and CORS misconfigurations.</description>
     </item>
+    <item>
+      <title>Building CI/CD Quality Gates That Actually Catch Bugs</title>
+      <link>https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html</guid>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>CI/CD</category>
+      <category>Testing</category>
+      <category>Python</category>
+      <category>GitHub Actions</category>
+      <category>FastAPI</category>
+      <description>How I built test coverage enforcement, dynamic test discovery, and CI gates that caught invisible test files and prevented broken code from reaching production.</description>
+    </item>
+    <item>
+      <title>When Your Logging Framework Crashes Production</title>
+      <link>https://humzakt.github.io/blog/production-logging-safe-debugging.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/production-logging-safe-debugging.html</guid>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Logging</category>
+      <category>Python</category>
+      <category>Production</category>
+      <category>Debugging</category>
+      <category>FastAPI</category>
+      <description>A logging adapter collision was crashing agent sessions. Here's how I built crash-proof logging infrastructure with safe_log_extra helpers and structured error recovery.</description>
+    </item>
+    <item>
+      <title>Hardening a Headless API for Production CI/CD Integration</title>
+      <link>https://humzakt.github.io/blog/headless-api-hardening-production-stability.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/headless-api-hardening-production-stability.html</guid>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>FastAPI</category>
+      <category>API Design</category>
+      <category>Firestore</category>
+      <category>Security</category>
+      <category>Python</category>
+      <category>GCP</category>
+      <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
+    </item>
   </channel>
 </rss>

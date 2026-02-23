@@ -148,6 +148,30 @@ I filed 33 issues in one week across four production services using a 5-layer au
 
 ---
 
+### Article 19: Building CI/CD Quality Gates That Actually Catch Bugs
+URL: https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html
+Published: 2026-02-20
+
+How I built test coverage enforcement, dynamic test discovery, and CI gates that actually catch bugs before they reach production. The gates caught invisible test files that weren't being run and prevented broken code from shipping. Covers GitHub Actions, Python, FastAPI, and practical patterns for making CI/CD quality gates effective rather than ceremonial.
+
+---
+
+### Article 20: When Your Logging Framework Crashes Production
+URL: https://humzakt.github.io/blog/production-logging-safe-debugging.html
+Published: 2026-02-20
+
+A logging adapter collision was crashing agent sessions in production. Here's how I built crash-proof logging infrastructure with safe_log_extra helpers and structured error recovery. The lesson: your observability stack can become a single point of failure if it isn't designed to fail gracefully.
+
+---
+
+### Article 21: Hardening a Headless API for Production CI/CD Integration
+URL: https://humzakt.github.io/blog/headless-api-hardening-production-stability.html
+Published: 2026-02-20
+
+Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines. Covers the full hardening journey from prototype to production-ready API that external systems can depend on.
+
+---
+
 ## Contact
 
 - Email: humzakhawartareen@gmail.com

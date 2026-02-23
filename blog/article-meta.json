@@ -185,5 +185,38 @@
     "platforms": {
       "devto": "https://humzakt.github.io/blog/production-bug-hunting-33-issues.html"
     }
+  },
+  {
+    "id": "ci-cd-quality-gates-test-infrastructure",
+    "title": "Building CI/CD Quality Gates That Actually Catch Bugs",
+    "summary": "How I built test coverage enforcement, dynamic test discovery, and CI gates that caught invisible test files and prevented broken code from reaching production.",
+    "date": "2026-02-20",
+    "themes": ["devops", "infrastructure"],
+    "components": ["GitHub Actions", "CI/CD", "Python", "FastAPI", "Testing"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html"
+    }
+  },
+  {
+    "id": "production-logging-safe-debugging",
+    "title": "When Your Logging Framework Crashes Production",
+    "summary": "A logging adapter collision was crashing agent sessions. Here's how I built crash-proof logging infrastructure with safe_log_extra helpers and structured error recovery.",
+    "date": "2026-02-20",
+    "themes": ["devops", "infrastructure"],
+    "components": ["Logging", "Python", "FastAPI", "Production"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/production-logging-safe-debugging.html"
+    }
+  },
+  {
+    "id": "headless-api-hardening-production-stability",
+    "title": "Hardening a Headless API for Production CI/CD Integration",
+    "summary": "Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.",
+    "date": "2026-02-20",
+    "themes": ["infrastructure", "security", "api-design"],
+    "components": ["FastAPI", "Firestore", "GCP", "Python", "API Design"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/headless-api-hardening-production-stability.html"
+    }
   }
 ]

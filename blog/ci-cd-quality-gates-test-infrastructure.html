@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building CI/CD Quality Gates That Actually Catch Bugs — Humza Tareen</title>
+  <meta name="description" content="How I built test coverage enforcement, dynamic test discovery, and CI gates that caught 12 invisible test files and prevented broken code from reaching production.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="CI/CD, Testing, Python, GitHub Actions, FastAPI">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building CI/CD Quality Gates That Actually Catch Bugs">
+  <meta property="og:description" content="How I built test coverage enforcement, dynamic test discovery, and CI gates that caught 12 invisible test files and prevented broken code from reaching production.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-02-20T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="CI/CD">
+  <meta property="article:tag" content="Testing">
+  <meta property="article:tag" content="Python">
+  <meta property="article:tag" content="GitHub Actions">
+  <meta property="article:tag" content="FastAPI">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building CI/CD Quality Gates That Actually Catch Bugs">
+  <meta name="twitter:description" content="How I built test coverage enforcement, dynamic test discovery, and CI gates that caught 12 invisible test files and prevented broken code from reaching production.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building CI/CD Quality Gates That Actually Catch Bugs",
+    "description": "How I built test coverage enforcement, dynamic test discovery, and CI gates that caught 12 invisible test files and prevented broken code from reaching production.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-02-20",
+    "dateModified": "2026-02-20",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html" },
+    "keywords": ["CI/CD", "Testing", "Python", "GitHub Actions", "FastAPI"],
+    "articleSection": "DevOps"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Building CI/CD Quality Gates That Actually Catch Bugs</h1>
+        <div class="blog-meta">
+          <time datetime="2026-02-20">Feb 20, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">CI/CD</span>
+          <span class="blog-tag">Testing</span>
+          <span class="blog-tag">Python</span>
+          <span class="blog-tag">GitHub Actions</span>
+          <span class="blog-tag">FastAPI</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>A green checkmark on your CI pipeline means nothing if you're not actually running all your tests. I've seen pipelines that pass every time — and still let broken code reach production. The problem isn't that tests fail; it's that some tests never run at all.</p>
+
+        <h2>The Invisible Tests</h2>
+        <p>The test infrastructure was using static test group lists. When new test files were added to the codebase, they weren't included in CI runs. The pipeline would pass, the coverage report would look fine, and nobody would notice that entire test modules were sitting in the repository, never executed.</p>
+        <p>I built dynamic auto-discovery that scans the test directory at runtime and includes every test file automatically. No more silent test gaps. The implementation:</p>
+<pre><code class="language-python">import pathlib
+
+def discover_test_groups(test_dir: str = "tests") -> list[str]:
+    test_path = pathlib.Path(test_dir)
+    return sorted([
+        str(f.relative_to(test_path))
+        for f in test_path.rglob("test_*.py")
+    ])</code></pre>
+        <p>Simple, but it changed everything. Every <code>test_*.py</code> file gets picked up. Add a new test file tomorrow — it runs in CI without touching any configuration.</p>
+
+        <h2>Test Coverage Enforcement</h2>
+        <p>Coverage reports are useful for visibility. Coverage gates are what actually prevent regressions. I added coverage enforcement to PR checks: every PR now shows exactly which files were touched and their coverage. PRs that decrease coverage below the threshold get blocked. Not just a report — an actual gate.</p>
+
+        <h2>Fixing What The Tests Found</h2>
+        <p>Once the invisible tests ran, they exposed real bugs. A <code>NoneType</code> crash in question guidelines processing — an optional field accessed without a null check. A timezone-naive vs timezone-aware datetime comparison crash in the task detail endpoint — Python's <code>datetime.utcnow()</code> compared against database <code>TIMESTAMPTZ</code>. And four failing tests that had been silently skipped.</p>
+        <p>The timezone fix is worth calling out. Naive datetimes are a common footgun:</p>
+<pre><code class="language-python"># Before: naive datetime (no timezone info)
+from datetime import datetime
+created = datetime.utcnow()
+
+# After: timezone-aware
+from datetime import datetime, timezone
+created = datetime.now(timezone.utc)</code></pre>
+        <p>When your database stores <code>TIMESTAMPTZ</code>, your Python code needs to speak the same language.</p>
+
+        <h2>The CI Pipeline</h2>
+        <p>The GitHub Actions workflow runs on every PR: lint, type check, security scan, test suite with coverage, and a coverage diff report posted as a PR comment. Fail-fast on any quality gate. If any step fails, the pipeline stops. No merging broken code.</p>
+
+        <h2>What I'd Do Differently</h2>
+        <p>Start with dynamic test discovery from day one. Static test lists are a maintenance burden that silently rots. Coverage enforcement should be a week-one decision, not a month-six retrofit. The earlier you treat quality gates as infrastructure, the less technical debt you accumulate.</p>
+
+        <p>Quality gates are infrastructure, not overhead. Build them like you'd build any other critical system.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
