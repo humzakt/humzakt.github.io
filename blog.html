@@ -189,8 +189,16 @@
       <p>Technical deep-dives and lessons from building production systems on GCP</p>
     </div>
 
-    <!-- Filter buttons (generated dynamically from article themes) -->
-    <div class="blog-filters" id="blog-filters" role="tablist" aria-label="Filter articles by topic"></div>
+    <!-- Filter buttons: hardcoded fallback, replaced dynamically with counts -->
+    <div class="blog-filters" id="blog-filters" role="tablist" aria-label="Filter articles by topic">
+      <button class="blog-filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button class="blog-filter-btn" data-filter="infrastructure" role="tab" aria-selected="false">Infrastructure</button>
+      <button class="blog-filter-btn" data-filter="devops" role="tab" aria-selected="false">DevOps</button>
+      <button class="blog-filter-btn" data-filter="ml-ai" role="tab" aria-selected="false">ML / AI</button>
+      <button class="blog-filter-btn" data-filter="api-design" role="tab" aria-selected="false">API Design</button>
+      <button class="blog-filter-btn" data-filter="performance" role="tab" aria-selected="false">Performance</button>
+      <button class="blog-filter-btn" data-filter="security" role="tab" aria-selected="false">Security</button>
+    </div>
 
     <!-- Article grid -->
     <div class="blog-grid" id="blog-grid">
@@ -224,12 +232,36 @@
       'security': 'Security'
     };
 
+    function wireFilterButtons() {
+      filtersContainer.querySelectorAll('.blog-filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filtersContainer.querySelectorAll('.blog-filter-btn').forEach(function(b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+
+          var filter = btn.getAttribute('data-filter');
+          document.querySelectorAll('.blog-card').forEach(function(card) {
+            if (filter === 'all' || (card.getAttribute('data-themes') || '').includes(filter)) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    }
+
+    wireFilterButtons();
+
     async function loadArticles() {
       try {
         var resp = await fetch('blog/article-meta.json');
         if (resp.ok) {
           var articles = await resp.json();
-          buildFilters(articles);
+          upgradeFilters(articles);
           renderArticles(articles);
           return;
         }
@@ -237,7 +269,7 @@
       grid.innerHTML = '<p class="blog-empty">Articles coming soon — stay tuned!</p>';
     }
 
-    function buildFilters(articles) {
+    function upgradeFilters(articles) {
       var counts = {};
       articles.forEach(function(a) {
         (a.themes || []).forEach(function(t) {
@@ -270,25 +302,7 @@
         filtersContainer.appendChild(btn);
       });
 
-      filtersContainer.querySelectorAll('.blog-filter-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          filtersContainer.querySelectorAll('.blog-filter-btn').forEach(function(b) {
-            b.classList.remove('active');
-            b.setAttribute('aria-selected', 'false');
-          });
-          btn.classList.add('active');
-          btn.setAttribute('aria-selected', 'true');
-
-          var filter = btn.getAttribute('data-filter');
-          document.querySelectorAll('.blog-card').forEach(function(card) {
-            if (filter === 'all' || (card.getAttribute('data-themes') || '').includes(filter)) {
-              card.style.display = '';
-            } else {
-              card.style.display = 'none';
-            }
-          });
-        });
-      });
+      wireFilterButtons();
     }
 
     function renderArticles(articles) {
