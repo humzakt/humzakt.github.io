@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers — Humza Tareen</title>
+  <meta name="description" content="An open-source starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, and pre-configured instructions for Cursor, Claude Code, Codex, and Copilot.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI coding tools, Cursor, Claude Code, Codex, Copilot, GitHub Actions, CI/CD, pre-commit, ruff, pytest, developer experience, starter template, AGENTS.md, CLAUDE.md">
+  <link rel="canonical" href="https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <!-- Open Graph -->
+  <meta property="og:title" content="I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers">
+  <meta property="og:description" content="Open-source starter repo with CI/CD, testing enforcement, and AI coding tool configurations for Cursor, Claude Code, Codex, and Copilot.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-03-04T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Coding Tools">
+  <meta property="article:tag" content="CI/CD">
+  <meta property="article:tag" content="Developer Experience">
+  <meta property="article:tag" content="GitHub Actions">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers">
+  <meta name="twitter:description" content="Open-source starter repo with CI/CD, testing enforcement, and AI coding tool configurations.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <!-- JSON-LD BlogPosting -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers",
+    "description": "An open-source starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, and pre-configured instructions for Cursor, Claude Code, Codex, and Copilot.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": {
+      "@type": "Person",
+      "name": "Humza Tareen",
+      "url": "https://humzakt.github.io"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Humza Tareen"
+    },
+    "datePublished": "2026-03-04",
+    "dateModified": "2026-03-04",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html"
+    },
+    "keywords": ["AI coding tools", "Cursor", "Claude Code", "Codex", "Copilot", "GitHub Actions", "CI/CD", "pre-commit", "ruff", "pytest", "developer experience"],
+    "wordCount": 3200,
+    "articleSection": "Developer Experience"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content blockquote { border-left: 3px solid var(--accent); padding-left: 20px; margin: 24px 0; color: var(--text); font-style: italic; }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="../index.html" class="nav-logo">HT</a>
+      <div class="nav-links">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+        <a href="../blog.html" class="active">Blog</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers</h1>
+        <div class="blog-meta">
+          <time datetime="2026-03-04">March 4, 2026</time>
+          <span>&middot;</span>
+          <span>12 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">AI Coding Tools</span>
+          <span class="blog-tag">CI/CD</span>
+          <span class="blog-tag">Developer Experience</span>
+          <span class="blog-tag">GitHub Actions</span>
+          <span class="blog-tag">Open Source</span>
+        </div>
+      </header>
+
+      <div class="blog-content">
+        <p>Every new project starts the same way: create a repo, write some code, realize you have no CI, no linting, no test enforcement, no issue templates. Three weeks in, you're debugging a production issue with no runbook, your AI coding assistant is generating code that doesn't follow your conventions, and half the team is committing directly to main.</p>
+
+        <p>I've set up development practices across multiple production projects&mdash;from a multi-cluster AI evaluation platform on GCP to Python evaluation pipelines. The same patterns kept working: Ruff for linting with auto-fix in CI, pre-commit hooks that catch problems before they reach the remote, test coverage enforcement that posts PR comments telling you exactly which test files to create, and incident runbooks that turn 2-hour debugging sessions into 15-minute triage flows.</p>
+
+        <p>So I extracted all of it into a single, clone-and-go starter repo. But I added something the original projects didn't have: <strong>instruction files for every major AI coding tool</strong>&mdash;Cursor, Claude Code, Codex, and GitHub Copilot&mdash;configured to follow the same practices the CI enforces.</p>
+
+        <p><strong>The repo:</strong> <a href="https://github.com/humzakt/dev-starter-kit">github.com/humzakt/dev-starter-kit</a></p>
+
+        <h2>The Problem: AI Tools Without Context Are Junior Developers</h2>
+
+        <p>AI coding tools are powerful, but out of the box they don't know your project's conventions. They'll use single quotes when your linter expects double quotes. They'll skip tests. They'll commit to main. They'll generate 200-character lines when your config says 120. They'll catch generic exceptions when your style guide says to be specific.</p>
+
+        <p>The fix isn't to stop using AI tools&mdash;it's to give them the same onboarding document you'd give a new team member. That's what <code>AGENTS.md</code>, <code>CLAUDE.md</code>, and <code>.cursor/rules/</code> files are for. They turn your AI assistant from a context-free code generator into something that understands your project's architecture, follows your conventions, and runs the right commands after every change.</p>
+
+        <h2>What's in the Repo</h2>
+
+        <p>The starter kit covers three categories: <strong>CI/CD and quality gates</strong>, <strong>operational readiness</strong>, and <strong>AI tool configuration</strong>.</p>
+
+        <h3>CI/CD Workflows</h3>
+
+        <p>Three GitHub Actions workflows that work together:</p>
+
+        <p><strong>PR Checks</strong> (<code>pr-checks.yml</code>) is the main quality gate. When you open a PR, it runs Ruff with <code>--fix</code>, commits any auto-fixes back to your branch, then verifies the code is clean. After linting passes, it runs pytest. The interesting part is the test coverage enforcement job: it detects which Python source files you changed, checks whether you also added or updated the corresponding test files, and if you didn't, it fails the check and posts a PR comment with the exact test file names, class names, and method signatures you need to write.</p>
+
+        <pre><code># The CI posts comments like this on your PR:
+#
+# Test Coverage Required
+#
+# Source: src/services/auth.py
+# Test file to create/update: tests/test_auth.py
+# Test class: TestAuth
+# Required test methods:
+#     def test_validate_token(self):  ...
+#     def test_refresh_session(self):  ...</code></pre>
+
+        <p>This isn't a coverage percentage check&mdash;it's a structural check that ensures you're at least thinking about tests for the code you changed. You can bypass it with a <code>skip-test-check</code> label for config-only PRs.</p>
+
+        <p><strong>Lint &amp; Format</strong> (<code>lint.yml</code>) runs on both pushes and PRs, but only checks files that actually changed. It validates YAML files too (excluding workflow files, which have their own validation).</p>
+
+        <p><strong>Merge Readiness</strong> (<code>merge-ready.yml</code>) is the final gate. It runs strict lint (no auto-fix), Python syntax compilation, YAML validation, and tests. All checks must pass before the merge button lights up. Skipped checks (because no relevant files changed) count as passing.</p>
+
+        <h3>Pre-commit Hooks</h3>
+
+        <p>The <code>.pre-commit-config.yaml</code> catches problems before they even reach CI:</p>
+
+        <ul>
+          <li><strong>Ruff</strong> lint and format on every commit</li>
+          <li><strong>Syntax checks</strong>&mdash;Python AST verification, YAML, JSON, TOML validation</li>
+          <li><strong>Hygiene</strong>&mdash;trailing whitespace, line endings, end-of-file fixers</li>
+          <li><strong>Security</strong>&mdash;private key detection, large file prevention</li>
+          <li><strong>Branch protection</strong>&mdash;blocks direct commits to <code>main</code></li>
+        </ul>
+
+        <h3>Issue Templates</h3>
+
+        <p>Three structured templates that guide reporters through providing the right information:</p>
+
+        <ul>
+          <li><strong>Bug Report</strong>&mdash;component dropdown, priority, reproduction steps, error output, environment info</li>
+          <li><strong>Incident Report</strong>&mdash;SEV-1 through SEV-4 severity, affected components checklist, triage checklist, timeline table, root cause, action items</li>
+          <li><strong>Infrastructure Issue</strong>&mdash;CI/CD failures, dependency issues, environment config, investigation checklist</li>
+        </ul>
+
+        <h3>Incident Runbook</h3>
+
+        <p>The <code>docs/INCIDENT_RUNBOOK.md</code> is a structured playbook for when things go wrong:</p>
+
+        <ul>
+          <li>Severity classification table with response time targets</li>
+          <li>3-phase triage checklist (Identify Scope, Gather Evidence, Communicate)</li>
+          <li>Component-specific diagnostic commands you can copy-paste</li>
+          <li>CI/CD troubleshooting section</li>
+          <li>4 common failure scenarios with diagnosis and fixes</li>
+          <li>Post-incident review template</li>
+        </ul>
+
+        <h2>The AI Tool Configuration Layer</h2>
+
+        <p>This is the part that makes the starter kit different from other project templates. Every major AI coding tool reads a different file format for project instructions. The starter kit includes all of them:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Tool</th>
+              <th>Format</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>AGENTS.md</code></td>
+              <td>Codex, Cursor, Claude Code, Windsurf</td>
+              <td>Markdown</td>
+            </tr>
+            <tr>
+              <td><code>CLAUDE.md</code></td>
+              <td>Claude Code</td>
+              <td>Markdown</td>
+            </tr>
+            <tr>
+              <td><code>.cursor/rules/*.mdc</code></td>
+              <td>Cursor IDE</td>
+              <td>MDC with YAML frontmatter</td>
+            </tr>
+            <tr>
+              <td><code>.claude/rules/*.md</code></td>
+              <td>Claude Code</td>
+              <td>Markdown with YAML frontmatter</td>
+            </tr>
+            <tr>
+              <td><code>.github/copilot-instructions.md</code></td>
+              <td>GitHub Copilot</td>
+              <td>Markdown</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>AGENTS.md: The Universal Standard</h3>
+
+        <p><code>AGENTS.md</code> is the broadest-reaching file. It's read by Codex, Cursor, Claude Code, and other AI agents. According to recent evaluations, AGENTS.md achieves a 100% pass rate for providing AI agents with project context. It includes:</p>
+
+        <ul>
+          <li>Build and run commands</li>
+          <li>Code style conventions</li>
+          <li>Testing rules and patterns</li>
+          <li>Git and PR workflow</li>
+          <li>Project architecture</li>
+          <li>The development loop AI agents should follow (understand &rarr; edit &rarr; lint &rarr; test &rarr; verify &rarr; commit)</li>
+        </ul>
+
+        <h3>CLAUDE.md: Session-Persistent Instructions</h3>
+
+        <p>Claude Code reads <code>CLAUDE.md</code> at the start of every session. It's kept intentionally concise&mdash;under 100 lines&mdash;because Claude Code already has a large system prompt, and every line competes for attention. It focuses on the commands to run and the rules to follow, without the explanatory context that AGENTS.md provides.</p>
+
+        <h3>Cursor Rules: Modular and Scoped</h3>
+
+        <p>Cursor uses <code>.cursor/rules/*.mdc</code> files with YAML frontmatter that controls when each rule applies:</p>
+
+        <ul>
+          <li><code>general.mdc</code> (<code>alwaysApply: true</code>)&mdash;project conventions that apply everywhere</li>
+          <li><code>python.mdc</code> (glob: <code>**/*.py</code>)&mdash;Python-specific rules: import ordering, type hints, error handling patterns</li>
+          <li><code>testing.mdc</code> (glob: <code>tests/**/*.py</code>)&mdash;test structure, what to test vs. what not to test, running commands</li>
+        </ul>
+
+        <p>This modular approach means the AI only gets the relevant rules for the file it's editing, keeping the context window focused.</p>
+
+        <h3>What the Instructions Actually Teach</h3>
+
+        <p>All instruction files converge on the same core behaviors:</p>
+
+        <ol>
+          <li><strong>Read before editing</strong>&mdash;understand the existing code and its tests before making changes</li>
+          <li><strong>Run lint after every edit</strong>&mdash;<code>ruff check --fix . &amp;&amp; ruff format .</code></li>
+          <li><strong>Run tests after every edit</strong>&mdash;<code>pytest tests/ -v</code></li>
+          <li><strong>Fix failures before moving on</strong>&mdash;don't leave broken tests or lint errors</li>
+          <li><strong>Write tests for new code</strong>&mdash;the CI will enforce this anyway</li>
+          <li><strong>Use conventional commits</strong>&mdash;<code>feat:</code>, <code>fix:</code>, <code>chore:</code>, etc.</li>
+          <li><strong>Never commit secrets</strong>&mdash;use environment variables</li>
+        </ol>
+
+        <p>The result: your AI coding tool follows the same development loop a senior engineer would. It doesn't just generate code&mdash;it generates code that passes your CI.</p>
+
+        <h2>How to Use It</h2>
+
+        <p>Clone, delete the git history, and start fresh:</p>
+
+        <pre><code>git clone https://github.com/humzakt/dev-starter-kit.git my-project
+cd my-project
+rm -rf .git
+git init &amp;&amp; git checkout -b main
+
+# Set up dev environment
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+pre-commit install
+
+# Start building
+# Write code in src/, tests in tests/
+# Push and open PRs -- CI handles the rest</code></pre>
+
+        <p>Customize by updating:</p>
+
+        <ul>
+          <li><code>pyproject.toml</code>&mdash;project name, Python version, lint rules</li>
+          <li>Issue templates&mdash;component dropdowns for your specific project</li>
+          <li>AI tool files&mdash;architecture section, project-specific commands</li>
+          <li><code>requirements.txt</code>&mdash;your actual dependencies</li>
+        </ul>
+
+        <h2>Design Decisions</h2>
+
+        <h3>Why Multiple AI Tool Files Instead of Just AGENTS.md?</h3>
+
+        <p>AGENTS.md is the most broadly compatible, but each tool has its own file format with unique capabilities. Cursor's <code>.mdc</code> files support glob-based scoping, so the AI only loads Python rules when editing Python files. Claude Code's hierarchical system supports user-level, project-level, and file-level overrides. GitHub Copilot reads from <code>.github/copilot-instructions.md</code> specifically. By including all formats, the starter kit works regardless of which tool your team uses.</p>
+
+        <h3>Why Test Coverage Enforcement Instead of Coverage Percentage?</h3>
+
+        <p>Coverage percentage (e.g., "maintain 80% coverage") creates perverse incentives. Developers write trivial tests to hit the number, or they argue about what counts. The structural check is simpler: if you changed source files, did you also change test files? It doesn't check that the tests are good&mdash;that's what code review is for. It checks that you at least thought about testing.</p>
+
+        <h3>Why Auto-fix in CI?</h3>
+
+        <p>The alternative is rejecting PRs for formatting issues, which wastes everyone's time. The CI fixes formatting and commits it back. The developer pulls and continues working. The tradeoff is extra commits in the PR history, but squash merging eliminates that.</p>
+
+        <h3>Why Pre-commit AND CI?</h3>
+
+        <p>Pre-commit catches issues locally before they're pushed. CI catches issues for developers who haven't installed pre-commit, or when pre-commit is bypassed. Belt and suspenders.</p>
+
+        <h2>What I Learned Building This Across Multiple Projects</h2>
+
+        <p>After implementing these practices in a multi-service GCP platform (Cloud Run, GKE, AlloyDB, Pub/Sub) and a Python evaluation pipeline, a few patterns emerged:</p>
+
+        <p><strong>Auto-fix is worth the complexity.</strong> The Ruff auto-fix + commit-back pattern in CI eliminated 90% of "fix formatting" follow-up commits. Developers focus on logic, CI handles style.</p>
+
+        <p><strong>Test coverage comments are more effective than failed checks alone.</strong> A red X on a check tells you something failed. A PR comment that says "create <code>tests/test_auth.py</code> with class <code>TestAuth</code> and method <code>test_validate_token</code>" tells you exactly what to do. The Python script in the workflow parses the git diff to extract changed function names and generates these suggestions automatically.</p>
+
+        <p><strong>Incident runbooks save more time than you think.</strong> The first time someone uses the triage checklist during an actual incident, it pays for the time spent writing it. The structured format prevents the "random debugging" pattern where people try things without system.</p>
+
+        <p><strong>AI tool instructions compound.</strong> Every session where the AI follows your conventions instead of its defaults saves a few minutes of correction. Over hundreds of interactions, that's hours of saved time and fewer lint failures in CI.</p>
+
+        <h2>The Full File Tree</h2>
+
+        <pre><code>.
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug-report.yml
+│   │   ├── incident-report.yml
+│   │   ├── infrastructure-issue.yml
+│   │   └── config.yml
+│   ├── workflows/
+│   │   ├── pr-checks.yml
+│   │   ├── lint.yml
+│   │   ├── merge-ready.yml
+│   │   └── README.md
+│   └── copilot-instructions.md
+├── .cursor/rules/
+│   ├── general.mdc
+│   ├── python.mdc
+│   └── testing.mdc
+├── .claude/rules/
+│   └── development.md
+├── docs/
+│   └── INCIDENT_RUNBOOK.md
+├── src/
+├── tests/
+├── AGENTS.md
+├── CLAUDE.md
+├── .pre-commit-config.yaml
+├── .gitignore
+├── pyproject.toml
+├── requirements.txt
+├── LICENSE
+└── README.md</code></pre>
+
+        <p><strong>Repo:</strong> <a href="https://github.com/humzakt/dev-starter-kit">github.com/humzakt/dev-starter-kit</a>. MIT licensed. Clone it, customize it, ship it.</p>
+      </div>
+
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+
+</body>
+</html>

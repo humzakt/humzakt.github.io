@@ -1,5 +1,17 @@
 [
   {
+    "id": "dev-starter-kit-ai-coding-tools",
+    "title": "I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers",
+    "summary": "An open-source starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, and pre-configured instructions for Cursor, Claude Code, Codex, and Copilot.",
+    "date": "2026-03-04",
+    "themes": ["devops", "ml-ai", "infrastructure"],
+    "components": ["GitHub Actions", "Ruff", "pytest", "Cursor", "Claude Code", "Codex", "Copilot", "Python"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html",
+      "linkedin": "https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html"
+    }
+  },
+  {
     "id": "building-ai-evaluation-platform-gcp",
     "title": "Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System",
     "summary": "A deep dive into the architecture behind a production-grade AI agent evaluation system spanning multiple Cloud Run services, GKE clusters, and managed databases with event-driven orchestration.",

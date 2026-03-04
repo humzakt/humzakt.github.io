@@ -4,6 +4,22 @@
 
 ---
 
+## I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers
+
+URL: https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html
+
+Every new project starts the same way: no CI, no linting, no test enforcement, no issue templates. Humza Tareen extracted development practices from multiple production projects — a multi-cluster AI evaluation platform on GCP and Python evaluation pipelines — into a single, clone-and-go open-source starter repo.
+
+The repo includes: three GitHub Actions workflows (PR checks with Ruff auto-fix and commit-back, test coverage enforcement that posts PR comments with exact test file/class/method names, incremental linting, merge readiness gates), pre-commit hooks (Ruff, syntax checks, YAML/JSON/TOML validation, private key detection, branch protection), structured issue templates (bug reports, incident reports, infrastructure issues), and an incident runbook with severity classification, triage checklists, and diagnostic commands.
+
+The differentiator: instruction files for every major AI coding tool — AGENTS.md (Codex, Cursor, Claude Code, Windsurf), CLAUDE.md (Claude Code sessions), .cursor/rules/*.mdc (modular glob-scoped Cursor rules), .claude/rules/*.md (Claude Code scoped rules), and .github/copilot-instructions.md (GitHub Copilot). These files teach AI tools to follow the same development loop a senior engineer would: read before editing, lint after every change, test after every change, write tests for new code, use conventional commits, never commit secrets.
+
+Key design decisions: structural test coverage enforcement (did you change test files alongside source files?) over coverage percentage, auto-fix in CI to eliminate formatting follow-up commits, multiple AI tool formats for maximum compatibility, pre-commit AND CI for defense in depth.
+
+Repo: https://github.com/humzakt/dev-starter-kit — MIT licensed.
+
+---
+
 ## Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System
 
 URL: https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html
