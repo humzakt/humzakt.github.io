@@ -188,6 +188,24 @@ Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firest
 
 ---
 
+### Multi-Turn Agent Evaluation at Scale
+URL: https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html
+Published: 2026-03-13
+Tags: AI Agents, Docker, Python, Evaluation, Multi-Turn
+Summary: Single-turn AI agent evaluation runs each attempt independently — no conversation memory, fresh Docker containers, hints concatenated into growing prompts. The result: zero successful patches. This post covers building a multi-turn runner that maintains persistent Docker environments, preserves conversation history and code edits across turns, and injects progressive hints naturally. It also covers the config discovery where a call limit of 60 caused 100% budget exhaustion, and how raising it to 300 (validated in production) produced successful patches across multiple programming languages.
+
+### Docker Image Hardening for AI Benchmarks
+URL: https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html
+Published: 2026-03-13
+Tags: Docker, Infrastructure, Python, CI/CD, AI Benchmarks
+Summary: Multi-language AI coding benchmarks use Docker images with repo snapshots for each task. Many images lack Python, have broken git repos, or missing dependencies — causing agents to explore indefinitely and exhaust budgets. This post covers injecting miniconda + agent runtime layers into arbitrary language images, pre-flight validation that checks Docker images before expensive evaluations run, skip lists for known-broken images, and completion detection to avoid repeating work on reruns.
+
+### Adding Responses API Support to an Agent Framework
+URL: https://humzakt.github.io/blog/responses-api-support-agent-framework.html
+Published: 2026-03-13
+Tags: OpenAI, Responses API, Python, LLM, Agent Framework
+Summary: When codex-family models required the Responses API instead of Chat Completions, the agent framework needed a new code path. This post covers auto-detecting which API to use, converting Chat Completions messages (system → developer role, content blocks), flattening nested tool schemas to the Responses API format, and normalizing polymorphic response output back to the standard format. All without touching the existing Chat Completions path — validated by 64 unit tests.
+
 ## Contact
 
 - Email: humzakhawartareen@gmail.com

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Adding Responses API to an Agent Framework — Humza Tareen</title>
+  <meta name="description" content="How we added OpenAI Responses API support to an agent framework: auto-detection, input conversion, tool schema flattening, and response normalization without touching the Chat Completions path.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Responses API, OpenAI, LLM, Agent Framework, Python">
+  <link rel="canonical" href="https://humzakt.github.io/blog/responses-api-support-agent-framework.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Adding Responses API to an Agent Framework">
+  <meta property="og:description" content="How we added OpenAI Responses API support to an agent framework: auto-detection, input conversion, tool schema flattening, and response normalization without touching the Chat Completions path.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/responses-api-support-agent-framework.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-03-13T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:section" content="ML / AI">
+  <meta property="article:tag" content="Responses API">
+  <meta property="article:tag" content="OpenAI">
+  <meta property="article:tag" content="LLM">
+  <meta property="article:tag" content="Agent Framework">
+  <meta property="article:tag" content="Python">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Adding Responses API to an Agent Framework">
+  <meta name="twitter:description" content="How we added OpenAI Responses API support to an agent framework: auto-detection, input conversion, tool schema flattening, and response normalization without touching the Chat Completions path.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <!-- JSON-LD BlogPosting -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Adding Responses API to an Agent Framework",
+    "description": "How we added OpenAI Responses API support to an agent framework: auto-detection, input conversion, tool schema flattening, and response normalization without touching the Chat Completions path.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": {
+      "@type": "Person",
+      "name": "Humza Tareen",
+      "url": "https://humzakt.github.io"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Humza Tareen"
+    },
+    "datePublished": "2026-03-13",
+    "dateModified": "2026-03-13",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://humzakt.github.io/blog/responses-api-support-agent-framework.html"
+    },
+    "keywords": ["Responses API", "OpenAI", "LLM", "Agent Framework", "Python"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); }
+    .blog-author-info p:first-child { color: var(--heading); font-weight: 600; }
+    .blog-author-info p:last-child { color: var(--text); font-size: 14px; }
+    .blog-social { display: flex; gap: 16px; margin-top: 20px; }
+    .blog-social a { color: var(--accent); font-size: 18px; transition: color 0.2s; }
+    .blog-social a:hover { color: var(--heading); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+
+  <main class="blog-post">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Adding Responses API to an Agent Framework</h1>
+        <div class="blog-meta">
+          <time datetime="2026-03-13">Mar 13, 2026</time>
+          <span>·</span>
+          <span>9 min read</span>
+          <span>·</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Responses API</span>
+          <span class="blog-tag">OpenAI</span>
+          <span class="blog-tag">LLM</span>
+          <span class="blog-tag">Agent Framework</span>
+          <span class="blog-tag">Python</span>
+        </div>
+      </header>
+
+      <div class="blog-content">
+        <p>An open-source agent framework we use relies on LiteLLM's Chat Completions API for all model calls. That design worked well until newer models arrived that only support the Responses API—a different endpoint with a different message format, tool schema shape, and response structure. Running those models failed silently or threw opaque errors. The framework had no way to know which API a given model required; it assumed a single contract. Adding Responses API support without breaking the existing path required careful translation at every boundary: input, tools, and output. This post walks through the engineering decisions that made it work.</p>
+
+        <h2>The Problem: Two APIs, One Framework</h2>
+        <p>The framework was built around the Chat Completions contract. Messages have <code>role</code> and <code>content</code>. System prompts live in a dedicated <code>system</code> message. Tool definitions use a nested wrapper: <code>{"type": "function", "function": {"name": "...", "description": "...", "parameters": {...}}}</code>. The response is a single message with optional <code>tool_calls</code>. The rest of the platform—orchestration, tool execution, conversation history—expects that shape.</p>
+        <p>The Responses API changes all of it. System content becomes a <code>developer</code> role. Content blocks have a different structure. Tool schemas are flat: <code>{"name": "...", "description": "...", "parameters": {...}}</code> without the <code>function</code> wrapper. The response is a polymorphic stream of items—message items, function_call items—that must be reassembled into the format the framework expects. Sending Chat Completions–shaped payloads to the Responses endpoint produced 400s or malformed responses. Sending Responses-shaped payloads to Chat Completions broke everything. We needed a routing layer that chose the right API and translated both ways.</p>
+
+        <h2>Auto-Detection and Routing</h2>
+        <p>Models that require the Responses API are identified by name. We added auto-detection: any model whose name contains <code>codex</code> routes to the Responses API. We also exposed a <code>use_responses_api</code> flag in the YAML config so users can override when needed—for example, if a future model uses a different naming convention.</p>
+
+<pre><code>def should_use_responses_api(model: str, config: AgentConfig) -> bool:
+    """Route to Responses API for codex-family models or explicit config."""
+    if config.use_responses_api is not None:
+        return config.use_responses_api
+    return "codex" in model.lower()</code></pre>
+
+        <p>The routing happens at the call site. Before invoking LiteLLM, we check <code>should_use_responses_api</code>. If true, we convert the input, call the Responses endpoint, and normalize the response. If false, we use the existing Chat Completions path unchanged. Zero regression for non-codex models.</p>
+
+        <h2>Input Conversion: Chat Completions → Responses</h2>
+        <p>The hardest part was converting messages losslessly. The agent's conversation history, tool calls, and tool results all flow through this pipeline. A mistranslation would corrupt context or drop tool invocations.</p>
+        <p>The <code>system</code> role maps to <code>developer</code>. Content must be wrapped in the Responses format: <code>{"type": "input_text", "text": "..."}</code> for simple text, or the appropriate block type for multimodal content. Assistant messages with <code>tool_calls</code> become separate items. Tool results from the user become <code>function_call_output</code> blocks. The converter walks the message list and emits the correct shape for each role and content type.</p>
+
+<pre><code>def convert_messages_to_responses(messages: list[dict]) -> list[dict]:
+    """Translate Chat Completions messages to Responses API format."""
+    out = []
+    for msg in messages:
+        role = msg["role"]
+        if role == "system":
+            out.append({
+                "role": "developer",
+                "content": [{"type": "input_text", "text": msg["content"]}]
+            })
+        elif role == "user":
+            content = msg.get("content", "")
+            if isinstance(content, str):
+                blocks = [{"type": "input_text", "text": content}]
+            else:
+                blocks = [{"type": "input_text", "text": b.get("text", "")} for b in content if b.get("type") == "text"]
+            out.append({"role": "user", "content": blocks})
+        elif role == "assistant":
+            # Handle text + tool_calls; split into appropriate blocks
+            blocks = []
+            if msg.get("content"):
+                blocks.append({"type": "output_text", "text": msg["content"]})
+            for tc in msg.get("tool_calls", []):
+                blocks.append({
+                    "type": "function_call",
+                    "call_id": tc["id"],
+                    "name": tc["function"]["name"],
+                    "arguments": tc["function"].get("arguments", "{}")
+                })
+            out.append({"role": "assistant", "content": blocks})
+        elif role == "tool":
+            out.append({
+                "role": "user",
+                "content": [{
+                    "type": "function_call_output",
+                    "call_id": msg["tool_call_id"],
+                    "output": msg["content"]
+                }]
+            })
+    return out</code></pre>
+
+        <p>Edge cases matter: empty content, missing <code>tool_calls</code>, malformed <code>arguments</code>. The converter handles each and preserves the order the API expects. We also handle assistant messages that are only tool calls with no text—a common pattern in multi-turn tool use. One subtlety: the Responses API expects tool results to appear as user messages with <code>function_call_output</code> blocks, interleaved with the assistant's function_call blocks. The Chat Completions format uses a separate <code>tool</code> role. Mapping tool messages to user messages with the right block type preserves the turn structure the model expects. Getting that ordering wrong—for example, batching all tool results at the end—breaks the conversation flow.</p>
+
+        <h2>Tool Schema Conversion</h2>
+        <p>Function tools in Chat Completions use a nested format. The Responses API expects a flat format. The converter strips the <code>function</code> wrapper and passes through <code>name</code>, <code>description</code>, and <code>parameters</code>. Descriptions can be missing; we default to an empty string. Nested objects in <code>parameters</code> are preserved as-is—the Responses API accepts the same JSON Schema structure.</p>
+
+<pre><code>def flatten_tool_schema(tools: list[dict]) -> list[dict]:
+    """Convert Chat Completions function tools to Responses API format."""
+    out = []
+    for t in tools:
+        if t.get("type") != "function":
+            continue
+        fn = t.get("function", {})
+        out.append({
+            "type": "function",
+            "name": fn.get("name", ""),
+            "description": fn.get("description") or "",
+            "parameters": fn.get("parameters", {})
+        })
+    return out</code></pre>
+
+        <p>We validate that <code>name</code> is present before adding to the output. Tools without a <code>function</code> key are skipped. The rest of the framework continues to define tools in the Chat Completions shape; the conversion is transparent at the call site. Nested objects in <code>parameters</code>—for example, a <code>properties</code> object with <code>required</code> arrays—pass through unchanged. The Responses API accepts standard JSON Schema, so we don't need to transform the structure, only unwrap the outer <code>function</code> layer.</p>
+
+        <h2>Response Normalization</h2>
+        <p>The Responses API returns a stream or list of items. Each item can be a message (with content blocks) or a function call. We need to extract the final text and all tool calls into the single-message format the framework expects: <code>{"role": "assistant", "content": "...", "tool_calls": [...]}</code>.</p>
+        <p>The normalizer iterates over the response items. For message items, it accumulates text from <code>output_text</code> blocks. For function_call items, it appends to a list of tool calls with the correct ID, name, and arguments. The result is a single assistant message that the agent loop can process like any other.</p>
+
+<pre><code>def normalize_responses_output(items: list[dict]) -> dict:
+    """Normalize Responses API output to Chat Completions shape."""
+    content_parts = []
+    tool_calls = []
+    for item in items:
+        if item.get("type") == "message":
+            for block in item.get("content", []):
+                if block.get("type") == "output_text":
+                    content_parts.append(block.get("text", ""))
+        elif item.get("type") == "function_call":
+            tool_calls.append({
+                "id": item.get("call_id", ""),
+                "type": "function",
+                "function": {
+                    "name": item.get("name", ""),
+                    "arguments": item.get("arguments", "{}")
+                }
+            })
+    return {
+        "role": "assistant",
+        "content": "\n".join(content_parts) if content_parts else "",
+        "tool_calls": tool_calls
+    }</code></pre>
+
+        <p>Empty content and empty tool_calls are valid. The agent loop handles both. The key is that the output shape is identical to what Chat Completions returns, so no downstream code needs to change.</p>
+
+        <h2>Zero Regression</h2>
+        <p>The existing Chat Completions path is completely untouched. For models that don't use the Responses API, the request flows through the original code path. No conversion, no normalization. We added a thin wrapper at the call site that branches on <code>should_use_responses_api</code> and only runs the conversion pipeline when needed.</p>
+        <p>We covered the new path with 64 unit tests. Config validation tests ensure the flag is parsed correctly and auto-detection works for codex and non-codex model names. Content conversion tests verify system→developer, user→user, assistant→assistant with tool calls, and tool→function_call_output. Tool schema tests cover the flattening logic, including edge cases like missing descriptions and empty parameters. Response normalization tests use mocked API responses with mixed message and function_call items. End-to-end tests run a minimal agent loop with a mocked Responses API to confirm the full pipeline works.</p>
+        <p>Adding a new API surface to an existing framework is always risky. By keeping the conversion at the boundary and preserving the internal contract, we avoided touching the orchestration logic. The agent framework still thinks in Chat Completions. The Responses API is an implementation detail behind the same interface.</p>
+        <p>The takeaway: when a provider introduces a new API that overlaps in purpose but differs in shape, the right approach is to build a translation layer at the call boundary rather than refactoring the entire stack. Auto-detection keeps the default behavior correct for new models. Explicit config overrides give users control when naming conventions change. And comprehensive tests—config, conversion, normalization, and end-to-end—ensure that the translation is correct and that the old path remains untouched. The framework now supports both APIs without the rest of the platform needing to know which one is in use.</p>
+
+        <p><strong>Tech stack:</strong> Python, LiteLLM, YAML configs, pytest for unit and integration tests.</p>
+      </div>
+
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen">
+          <div class="blog-author-info">
+            <p>Humza Tareen</p>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-social">
+          <a href="https://github.com/humzakt" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="https://www.linkedin.com/in/humzakt" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="https://medium.com/@humzakt" target="_blank" rel="noopener noreferrer" aria-label="Medium"><i class="fa-brands fa-medium"></i></a>
+          <a href="https://dev.to/humzakt" target="_blank" rel="noopener noreferrer" aria-label="Dev.to"><i class="fa-brands fa-dev"></i></a>
+          <a href="mailto:humzakhawartareen@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+      </footer>
+    </article>
+  </main>
+
+</body>
+</html>

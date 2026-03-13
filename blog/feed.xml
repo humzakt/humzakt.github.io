@@ -279,5 +279,41 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>Multi-Turn Agent Evaluation at Scale</title>
+      <link>https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html</guid>
+      <pubDate>Fri, 13 Mar 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>AI Agents</category>
+      <category>Docker</category>
+      <category>Python</category>
+      <category>Evaluation</category>
+      <description>Single-turn evaluation produced zero patches. Building a multi-turn runner with persistent Docker environments, conversation memory, and progressive hint injection changed everything.</description>
+    </item>
+    <item>
+      <title>Docker Image Hardening for AI Benchmarks</title>
+      <link>https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html</guid>
+      <pubDate>Fri, 13 Mar 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Docker</category>
+      <category>Infrastructure</category>
+      <category>Python</category>
+      <category>CI/CD</category>
+      <description>Pre-flight validation, runtime layer injection, and skip lists for Docker images spanning dozens of languages. How we stopped broken containers from wasting evaluation compute.</description>
+    </item>
+    <item>
+      <title>Adding Responses API Support to an Agent Framework</title>
+      <link>https://humzakt.github.io/blog/responses-api-support-agent-framework.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/responses-api-support-agent-framework.html</guid>
+      <pubDate>Fri, 13 Mar 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>OpenAI</category>
+      <category>Responses API</category>
+      <category>Python</category>
+      <category>LLM</category>
+      <description>When codex models required a different API, I added auto-detection, input conversion, tool schema flattening, and response normalization — with zero regression to existing models.</description>
+    </item>
   </channel>
 </rss>

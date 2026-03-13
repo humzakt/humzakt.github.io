@@ -18,8 +18,11 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 - [dev-starter-kit](https://github.com/humzakt/dev-starter-kit): Production-ready starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, pre-commit hooks, and AI coding tool configurations (Cursor, Claude Code, Codex, Copilot)
 
-## Blog Articles (21)
+## Blog Articles (24)
 
+- [Multi-Turn Agent Evaluation at Scale](https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html): Why stateless single-turn evaluation produced zero patches, and how persistent Docker environments with conversation memory and progressive hint injection fixed it
+- [Docker Image Hardening for AI Benchmarks](https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html): Pre-flight validation, runtime layer injection, and skip lists that stopped broken containers from wasting evaluation compute across multi-language benchmarks
+- [Adding Responses API Support to an Agent Framework](https://humzakt.github.io/blog/responses-api-support-agent-framework.html): Auto-detecting codex models, converting Chat Completions to Responses API format, flattening tool schemas, and normalizing polymorphic outputs — all with zero regression
 - [I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers](https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html): Open-source starter repo with CI/CD, test coverage enforcement, incident runbooks, and AI coding tool configurations for Cursor, Claude Code, Codex, and Copilot
 - [Building an AI Evaluation Platform on GCP](https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html): How I built an AI evaluation platform from scratch on GCP — architecture decisions, production incidents, and lessons learned
 - [Core AI Evaluation Engine](https://humzakt.github.io/blog/atlas-evaluations-core-engine.html): The two-week AlloyDB SSL detective story, a Firestore default database trap, and why KEDA autoscaling needed careful tuning

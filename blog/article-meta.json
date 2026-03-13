@@ -1,5 +1,38 @@
 [
   {
+    "id": "multi-turn-agent-evaluation-persistent-state",
+    "title": "Multi-Turn Agent Evaluation: Why Stateless Turns Failed and Persistent State Fixed It",
+    "summary": "Single-turn evaluation produced zero patches. Building a multi-turn runner with persistent Docker environments, conversation memory, and progressive hint injection changed everything.",
+    "date": "2026-03-13",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["AI Agents", "Docker", "Python", "Evaluation", "Multi-Turn"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html"
+    }
+  },
+  {
+    "id": "docker-image-hardening-ai-benchmarks",
+    "title": "Docker Image Hardening for Multi-Language AI Benchmarks",
+    "summary": "Pre-flight validation, runtime layer injection, and skip lists for Docker images spanning dozens of languages. How we stopped broken containers from wasting evaluation compute.",
+    "date": "2026-03-13",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Docker", "Python", "CI/CD", "AI Benchmarks", "Bash"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html"
+    }
+  },
+  {
+    "id": "responses-api-support-agent-framework",
+    "title": "Adding Responses API Support to an Agent Framework",
+    "summary": "When codex models required a different API, I added auto-detection, input conversion, tool schema flattening, and response normalization — with zero regression to existing models.",
+    "date": "2026-03-13",
+    "themes": ["ml-ai", "api-design"],
+    "components": ["OpenAI", "Responses API", "Python", "LLM", "Agent Framework"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/responses-api-support-agent-framework.html"
+    }
+  },
+  {
     "id": "dev-starter-kit-ai-coding-tools",
     "title": "I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers",
     "summary": "An open-source starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, and pre-configured instructions for Cursor, Claude Code, Codex, and Copilot.",
