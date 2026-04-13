@@ -18,8 +18,11 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 - [dev-starter-kit](https://github.com/humzakt/dev-starter-kit): Production-ready starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, pre-commit hooks, and AI coding tool configurations (Cursor, Claude Code, Codex, Copilot)
 
-## Blog Articles (24)
+## Blog Articles (27)
 
+- [Production-Ready Multi-Turn Evaluation](https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html): Hardening a multi-turn evaluator with per-turn harness testing, codebase snapshots via base64 transfer, artifact retry, resume state, and completeness reporting
+- [Reverse-Engineering a Codebase Into Architecture Docs](https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html): Systematically documenting 14 modules of an enterprise app with Mermaid diagrams, conditional logic tables, and three verification passes against source code
+- [Audit-Safe Admin Tools with Event Sourcing](https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html): Building bulk admin operations with atomic Prisma transactions, event sourcing for full audit trails, preview mode before execution, and Firebase RBAC
 - [Multi-Turn Agent Evaluation at Scale](https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html): Why stateless single-turn evaluation produced zero patches, and how persistent Docker environments with conversation memory and progressive hint injection fixed it
 - [Docker Image Hardening for AI Benchmarks](https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html): Pre-flight validation, runtime layer injection, and skip lists that stopped broken containers from wasting evaluation compute across multi-language benchmarks
 - [Adding Responses API Support to an Agent Framework](https://humzakt.github.io/blog/responses-api-support-agent-framework.html): Auto-detecting codex models, converting Chat Completions to Responses API format, flattening tool schemas, and normalizing polymorphic outputs — all with zero regression

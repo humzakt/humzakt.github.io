@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Production-Ready Multi-Turn Evaluation — Humza Tareen</title>
+  <meta name="description" content="Hardening multi-turn eval: per-turn harness in Docker, snapshots, artifact retry &amp; resume, completeness reports, incremental JSONL.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Multi-Turn Evaluation, SWE-bench Harness, Codebase Snapshots, Python, AI Agents">
+  <link rel="canonical" href="https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Production-Ready Multi-Turn Evaluation">
+  <meta property="og:description" content="Hardening multi-turn eval: per-turn harness in Docker, snapshots, artifact retry &amp; resume, completeness reports, incremental JSONL.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-04-13T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:section" content="ML / AI">
+  <meta property="article:tag" content="Multi-Turn">
+  <meta property="article:tag" content="Evaluation">
+  <meta property="article:tag" content="Python">
+  <meta property="article:tag" content="Docker">
+  <meta property="article:tag" content="AI Agents">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Production-Ready Multi-Turn Evaluation">
+  <meta name="twitter:description" content="Hardening multi-turn eval: per-turn harness in Docker, snapshots, artifact retry &amp; resume, completeness reports, incremental JSONL.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <!-- JSON-LD BlogPosting -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Production-Ready Multi-Turn Evaluation",
+    "description": "Hardening multi-turn eval: per-turn harness in Docker, snapshots, artifact retry and resume, completeness reports, incremental JSONL.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": {
+      "@type": "Person",
+      "name": "Humza Tareen",
+      "url": "https://humzakt.github.io"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Humza Tareen"
+    },
+    "datePublished": "2026-04-13",
+    "dateModified": "2026-04-13",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html"
+    },
+    "keywords": ["Multi-Turn Evaluation", "SWE-bench Harness", "Codebase Snapshots", "Python", "AI Agents"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content blockquote { border-left: 3px solid var(--accent); padding-left: 20px; margin: 24px 0; color: var(--text); font-style: italic; }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Production-Ready Multi-Turn Evaluation</h1>
+        <div class="blog-meta">
+          <time datetime="2026-04-13">Apr 13, 2026</time>
+          <span>·</span>
+          <span>9 min read</span>
+          <span>·</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Multi-Turn</span>
+          <span class="blog-tag">Evaluation</span>
+          <span class="blog-tag">Python</span>
+          <span class="blog-tag">Docker</span>
+          <span class="blog-tag">AI Agents</span>
+        </div>
+      </header>
+
+      <div class="blog-content">
+        <p>In an earlier post I walked through building a basic multi-turn runner for the evaluation platform: persistent Docker state, conversational hint injection, and a loop that keeps one environment alive across turns. That system worked well enough to prove the idea. It was not, however, production-ready. A working demo and a system you can run overnight on hundreds of tasks are different animals. This post is about hardening that runner: verifying patches with a real test harness, freezing the filesystem for debugging, surviving flaky infrastructure, resuming after crashes, and ending every run with an honest accounting of what actually completed.</p>
+
+        <h2>The Problem: Success Without Evidence</h2>
+        <p>The naive multi-turn loop answered a narrow question: did the agent framework produce a patch file this turn? That is a weak signal. You can have a non-empty diff that breaks the build, or an empty trajectory because the container glitched on write. You cannot tell whether a turn moved the task toward resolution without running the benchmark suite against the tree inside the container. You also cannot debug a bad turn days later if you never captured what the tree looked like after that turn.</p>
+        <p>Worse, long runs fail in the middle. A host reboot, an out-of-memory kill, or a transient Docker error would leave you with partial output and no map of which tasks had already finished. Re-running everything from scratch is expensive and skews comparisons if the model or platform changes between attempts. We needed four things: <strong>per-turn verification</strong> against the official harness, <strong>snapshots</strong> of the workspace after each turn, <strong>retry</strong> when artifacts failed validation, and <strong>resume</strong> so a restarted process could skip completed work. On top of that, we needed <strong>completeness reporting</strong> so stakeholders could open one JSON file and see per-task, per-turn status instead of grepping logs.</p>
+
+        <blockquote>Production readiness here means: every turn is test-backed, inspectable, retriable, and accounted for.</blockquote>
+
+        <h2>Per-Turn Harness Evaluation</h2>
+        <p>After each turn, once the agent has written its patch into the persistent container, we invoke the same style of test harness the benchmark suite uses for single-turn runs. The harness runs inside the container against the current tree (with the patch applied). Configuration points at a harness directory and a dataset file so the evaluation platform stays decoupled from any one benchmark layout. The outcome we care about is not “patch exists” but “tests relevant to this instance pass or fail in a defined way.”</p>
+        <p>Doing this <em>per turn</em> changes how you interpret a run. You can plot pass/fail over turns for a single task and see whether later hints correlate with improved harness results. You also catch regressions early: if turn two’s patch breaks tests that passed after turn one, you see it immediately instead of discovering it when aggregating final patches at the end of the job.</p>
+
+<pre><code>def run_harness_after_turn(container_id: str, cfg: HarnessConfig) -&gt; HarnessResult:
+    """Run the benchmark harness inside the container against the current tree."""
+    cmd = [
+        "docker", "exec", container_id,
+        cfg.harness_entrypoint,
+        "--dataset", cfg.dataset_file,
+        "--instance", cfg.instance_id,
+        "--repo-root", cfg.workdir_in_container,
+    ]
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=cfg.timeout_s)
+    return HarnessResult(
+        exit_code=proc.returncode,
+        stdout=proc.stdout,
+        stderr=proc.stderr,
+    )</code></pre>
+
+        <p>In practice the entrypoint and flags match what your benchmark suite documents; the important part is that the harness runs in the same filesystem context the agent used, so you are not evaluating a stale checkout on the host.</p>
+
+        <h2>Codebase Snapshots for Post-Hoc Debugging</h2>
+        <p>Logs and diffs are not always enough. When a turn behaves oddly, you want the full tree: dependencies, generated files, and exact line endings as the agent left them. We capture a compressed archive of the workspace from inside the container after each successful turn boundary (after the patch is applied and before the next hint). The archive is streamed out via base64 over <code>docker exec</code> so we do not depend on bind mounts or shared volumes that might differ between dev and batch environments.</p>
+        <p>The snapshot is stored alongside the trajectory and patch for that turn. Months later, you can unpack the tarball and run local tools, a linter, or the harness manually without re-running the model. That single habit turned “we cannot reproduce this” into “here is the exact tree at turn two.”</p>
+
+<pre><code>def snapshot_workspace_b64(container_id: str, workdir: str) -&gt; bytes:
+    """Tar.gz the workspace in-container and return bytes (stdout is base64)."""
+    inner = (
+        f"cd {shlex.quote(workdir)} && "
+        "tar czf - . | base64 -w0"
+    )
+    proc = subprocess.run(
+        ["docker", "exec", container_id, "bash", "-lc", inner],
+        capture_output=True,
+        check=True,
+    )
+    return base64.standard_b64decode(proc.stdout)</code></pre>
+
+        <p>On macOS, <code>base64</code> may not support <code>-w0</code>; you can use <code>base64 | tr -d '\n'</code> or write to a temp file inside the container and <code>docker cp</code> if you prefer. The pattern—archive in the container, encode for a single stdout pipe—stays the same.</p>
+
+        <h2>Artifact Validation With Retry</h2>
+        <p>Each turn should materialize three artifacts: a trajectory file (for example <code>.traj</code>), a unified diff (<code>.patch</code>), and <code>codebase_snapshot.tar.gz</code>. After the turn completes, a validator checks that each path exists, is readable, and has non-zero size. If any check fails, we treat the turn as failed-for-persistence rather than failed-for-quality: the model may have done fine work, but we do not have a trustworthy record.</p>
+        <p>We retry the turn up to a configurable maximum. Transient Docker I/O errors, racey flush behavior, or a short-lived exec timeout should not permanently lose a turn. Only after exhausting retries do we mark the turn failed and record the error in the completeness ledger. This dramatically reduced “empty patch but the log looked fine” incidents in long jobs.</p>
+
+        <h2>Resume State Management</h2>
+        <p>Batch evaluation is a graph of tasks and turns. We persist a small JSON file—call it <code>.resume_state.json</code>—that lists completed task identifiers (and optionally per-task turn completion). On startup, the runner loads this file and skips any task that is already marked complete. If you use finer granularity, you can store the last successfully validated turn per task and continue mid-task; we started with task-level resume and extended to turn-level where the harness and snapshots made partial replay safe.</p>
+        <p>The state file is updated atomically: write to a temporary path, then replace the canonical file, so a crash during write does not corrupt the resume index. That detail matters when your job runs for twelve hours and the laptop sleeps once.</p>
+
+<pre><code>def should_skip_task(task_id: str, resume_path: Path) -&gt; bool:
+    if not resume_path.is_file():
+        return False
+    state = json.loads(resume_path.read_text())
+    done = set(state.get("completed_tasks", []))
+    return task_id in done
+
+def mark_task_complete(task_id: str, resume_path: Path) -&gt; None:
+    state = {"completed_tasks": []}
+    if resume_path.is_file():
+        state = json.loads(resume_path.read_text())
+    tasks = set(state.get("completed_tasks", []))
+    tasks.add(task_id)
+    state["completed_tasks"] = sorted(tasks)
+    tmp = resume_path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(state, indent=2))
+    tmp.replace(resume_path)</code></pre>
+
+        <h2>Completeness Reports</h2>
+        <p>At the end of a run—or incrementally if you want live dashboards—the runner emits <code>completeness_report.json</code>. The structure is deliberately flat to read: per task, per turn, you get harness outcome, artifact validation status, retry counts, and error strings. Aggregates at the top level answer “how many tasks fully completed,” “how many turns failed validation,” and “where did harnesses start passing.”</p>
+        <p>This file became the contract between the evaluation platform and downstream analytics. Instead of parsing thousands of log lines, a notebook or internal tool loads one JSON document. It is also how we proved to ourselves that a run was “done”: not when the process exited zero, but when every expected turn row existed with <code>artifacts_ok: true</code> or a documented failure reason.</p>
+
+<pre><code>def append_turn_report(
+    report: dict,
+    task_id: str,
+    turn: int,
+    harness: HarnessResult,
+    artifacts_ok: bool,
+    error: str | None,
+) -&gt; None:
+    report.setdefault("tasks", {})
+    report["tasks"].setdefault(task_id, {"turns": []})
+    report["tasks"][task_id]["turns"].append({
+        "turn": turn,
+        "harness_exit_code": harness.exit_code,
+        "artifacts_ok": artifacts_ok,
+        "error": error,
+    })
+
+def write_completeness_report(path: Path, report: dict) -&gt; None:
+    path.write_text(json.dumps(report, indent=2))</code></pre>
+
+        <h2>Resolution Summaries</h2>
+        <p>With per-turn harness results, you can post-process a run to find the <strong>resolution turn</strong>: the first turn index at which the harness reports success for that instance (according to whatever predicate your benchmark defines). A small script walks the completeness report or the per-turn harness logs, orders turns, and emits a summary map from task id to resolution turn, or <code>null</code> if the task never reached passing tests within the turn budget.</p>
+        <p>That summary is invaluable for comparing hint strategies or model versions. Two agents might both “solve” a task by the last turn, but the one that resolves on turn one is a different product story than the one that needs three nudges. Resolution turn is a simple metric, but it only exists if you recorded harness output every turn.</p>
+
+        <h2>Incremental JSONL for Downstream Tools</h2>
+        <p>Downstream pipelines often expect one JSON object per line, per turn, with fields that mirror how hints and patches are consumed in training or analysis—not a single giant transcript with cumulative text. We write a per-turn JSONL file where each record contains only the <strong>incremental</strong> hint for that turn (not the full concatenated history) and the model’s patch for that turn, plus identifiers and harness metadata. That matches what many evaluation and distillation tools expect and keeps each line self-contained for parallel processing.</p>
+        <p>Keeping “incremental only” in the JSONL avoids accidental duplication when someone joins records: the conversation history lives in the trajectory artifact; the JSONL row is the delta the business logic cares about for that step.</p>
+
+        <h2>What Changed and Why It Matters</h2>
+        <p>The basic multi-turn runner was the right foundation: persistent Docker state and conversational hints are prerequisites for measuring iterative repair. Production hardening adds the evidence layer—harness, snapshots, validation, resume, completeness—and the analytics layer—resolution summaries and incremental JSONL. Together, they turn a clever loop into something you can run at scale, defend in a meeting, and debug months later without rerunning GPUs.</p>
+
+        <p><strong>Tech stack:</strong> Python, Docker, JSON state and reports, tarball snapshots via base64 transfer, pytest for validators and resume logic where it pays off.</p>
+
+        <p><em>This post follows <a href="multi-turn-agent-evaluation-persistent-state.html">Multi-Turn Agent Evaluation at Scale</a>, which covers the core runner, hint injection, and persistent environments.</em></p>
+      </div>
+
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+
+</body>
+</html>

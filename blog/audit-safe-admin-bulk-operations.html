@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Audit-Safe Admin Tools with Event Sourcing — Humza Tareen</title>
+  <meta name="description" content="Bulk admin ops with atomic transactions, event sourcing, preview mode, and Firebase RBAC—replacing risky ad-hoc production SQL for delivery teams.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Event Sourcing, Admin Tools, TypeScript, Prisma, Firebase">
+  <link rel="canonical" href="https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Audit-Safe Admin Tools with Event Sourcing">
+  <meta property="og:description" content="Bulk admin ops with atomic transactions, event sourcing, preview mode, and Firebase RBAC—replacing risky ad-hoc production SQL for delivery teams.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-04-13T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Event Sourcing">
+  <meta property="article:tag" content="Admin Panel">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Prisma">
+  <meta property="article:tag" content="Firebase">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Audit-Safe Admin Tools with Event Sourcing">
+  <meta name="twitter:description" content="Bulk admin ops with atomic transactions, event sourcing, preview mode, and Firebase RBAC—replacing risky ad-hoc production SQL for delivery teams.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Audit-Safe Admin Tools with Event Sourcing",
+    "description": "Bulk admin ops with atomic transactions, event sourcing, preview mode, and Firebase RBAC—replacing risky ad-hoc production SQL for delivery teams.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-04-13",
+    "dateModified": "2026-04-13",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html" },
+    "keywords": ["Event Sourcing", "Admin Tools", "TypeScript", "Prisma", "Firebase"],
+    "articleSection": "API Design"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Audit-Safe Admin Tools with Event Sourcing</h1>
+        <div class="blog-meta">
+          <time datetime="2026-04-13">Apr 13, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Event Sourcing</span>
+          <span class="blog-tag">Admin Panel</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Prisma</span>
+          <span class="blog-tag">Firebase</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>On the workflow platform I work on, the delivery team often needs to move many tasks through the same gate at once—marking batches as passed, failed, or sent back for review. For a long time, the practical answer was to ask an engineer to run ad-hoc SQL against production. That pattern is fast until it is not: there is no durable audit trail tied to a human decision, no shared validation of whether a transition is even legal for each row, and no structured way to explain <em>why</em> something changed. When something looks wrong later, you are left grepping logs and guessing. Worse, every bulk change becomes an engineering bottleneck, because only people with database access can safely touch the data.</p>
+
+        <p>This post is about replacing that with a single admin API: preview first, execute second, each task updated inside an atomic database transaction alongside an append-only event, identity and authorization enforced with Firebase, and an admin panel UI that makes the operation legible before anyone commits.</p>
+
+        <h2>The problem in one sentence</h2>
+        <p>Bulk state changes are a product need; raw production SQL is the wrong abstraction for them because it skips validation, authorization, and auditability by default.</p>
+
+        <h2>One endpoint, two modes</h2>
+        <p>The fix is not “more discipline around scripts.” It is to give operators a first-class tool that behaves like production software. The API exposes one route with an explicit mode flag—typically <code>preview</code> or <code>execute</code>—and both paths run the <em>same</em> validation pipeline.</p>
+
+        <p>In preview mode, the handler loads the candidate tasks, checks inputs and state-machine rules, and returns a structured summary of what <em>would</em> happen: current status, proposed status, per-task errors or warnings, and counts. It does not open a write transaction for the actual updates. In execute mode, after the identical validation passes, the server performs the writes. If validation fails, neither mode mutates task rows.</p>
+
+        <p>The important invariant is symmetry: preview is not a toy path that drifts from execute. If preview says a task is eligible, execute should accept it under the same code; if preview rejects a task, execute must reject it for the same reason. That is how you earn trust from the delivery team and from future you reading incident notes.</p>
+
+<pre><code class="language-typescript">type BulkMode = "preview" | "execute";
+
+async function bulkTaskStatusChange(
+  body: BulkTaskStatusBody,
+  mode: BulkMode,
+  ctx: RequestContext
+) {
+  const validation = await validateBulkPayload(body, ctx);
+  if (!validation.ok) return validation.errorResponse();
+
+  if (mode === "preview") {
+    return { mode, dryRun: true, plan: validation.plan };
+  }
+
+  const results = [];
+  for (const item of validation.plan.items) {
+    results.push(await applyTaskChangeInTransaction(prisma, item, ctx));
+  }
+  return { mode, dryRun: false, results };
+}</code></pre>
+
+        <p>In practice you may batch internal transaction scope differently depending on load and lock characteristics; the conceptual split—shared validation, conditional commit—stays the same.</p>
+
+        <h2>Atomic per-task transactions</h2>
+        <p>The scariest failure mode for bulk tools is partial success: half the tasks show a new status in the UI while the other half failed mid-flight, or worse, a row updates but the audit row never lands. Operators cannot reason about that state without deep database forensics.</p>
+
+        <p>Each logical unit of work should be atomic: updating the task’s status and inserting the corresponding event succeed together or not at all. With Prisma, wrapping the pair in <code>$transaction</code> gives you that guarantee at the database level for each task.</p>
+
+<pre><code class="language-typescript">async function applyTaskChangeInTransaction(
+  prisma: PrismaClient,
+  item: PlannedTaskChange,
+  ctx: RequestContext
+) {
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.task.update({
+      where: { id: item.taskId },
+      data: { status: item.nextStatus, updatedAt: new Date() },
+    });
+
+    await tx.taskEvent.create({
+      data: buildTaskEventRecord({
+        taskId: item.taskId,
+        previousStatus: item.previousStatus,
+        newStatus: item.nextStatus,
+        actor: ctx.actor,
+        reason: item.reason,
+        metadata: item.mergedMetadata,
+        source: "admin_bulk_status_change",
+      }),
+    });
+
+    return updated;
+  });
+}</code></pre>
+
+        <p>If the event insert fails, the status update rolls back for that task. If the update fails, no orphan event appears. That property is what makes the event log trustworthy as a history—not a best-effort side channel.</p>
+
+        <h2>Event sourcing the task lifecycle</h2>
+        <p>Rather than treating the task row as the only source of truth, every meaningful transition appends a row to <code>task_events</code> (names vary, the shape matters). The event captures enough context to reconstruct narrative and to support compliance-style questions later: who did it, from where in the product, what changed, and why.</p>
+
+        <p>Each record includes a stable <code>source</code> string—for bulk admin work, something like <code>admin_bulk_status_change</code>—so analytics and support can filter noise from migrations or system jobs. It stores <code>previousStatus</code> and <code>newStatus</code>, the authenticated actor identity resolved from Firebase (see below), the admin’s free-text reason, and <code>metadata</code> merged from prior events so contextual fields—review identifiers, feedback snippets, routing hints—are not lost when status moves again.</p>
+
+<pre><code class="language-typescript">type TaskEventPayload = {
+  taskId: string;
+  source: string;
+  previousStatus: TaskStatus;
+  newStatus: TaskStatus;
+  actorUid: string;
+  actorEmail?: string;
+  reason: string;
+  metadata: Record&lt;string, unknown&gt;;
+  createdAt: Date;
+};
+
+function buildTaskEventRecord(input: {
+  taskId: string;
+  previousStatus: TaskStatus;
+  newStatus: TaskStatus;
+  actor: ActorClaims;
+  reason: string;
+  metadata: Record&lt;string, unknown&gt;;
+  source: string;
+}): TaskEventPayload {
+  return {
+    taskId: input.taskId,
+    source: input.source,
+    previousStatus: input.previousStatus,
+    newStatus: input.newStatus,
+    actorUid: input.actor.uid,
+    actorEmail: input.actor.email,
+    reason: input.reason,
+    metadata: mergeMetadataPreservingHistory(input.metadata),
+    createdAt: new Date(),
+  };
+}</code></pre>
+
+        <p>With that append-only stream you can rebuild the full history of any task for debugging, for operator training, or for product analytics on where work gets stuck—without depending on a single mutable column that only shows the latest snapshot.</p>
+
+        <h2>Firebase RBAC and automatic identity capture</h2>
+        <p>Technical correctness does not matter if the endpoint is world-writable. The route is wrapped in middleware—call it <code>withAudit</code>—that verifies a Firebase ID token, loads custom claims, and requires an admin role (or equivalent) before the handler runs.</p>
+
+        <p>Production writes can be gated further: environment checks, allowlists, or feature flags that only enable execute mode where policy says so. The middleware attaches a normalized <code>actor</code> object to the request context so every downstream layer records the same identity in events without each function re-parsing headers.</p>
+
+<pre><code class="language-typescript">type Handler = (req: AuthenticatedRequest, res: Response) =&gt; Promise&lt;void&gt;;
+
+export function withAudit(requireAdmin: boolean): (handler: Handler) =&gt; Handler {
+  return (handler) =&gt; async (req, res) =&gt; {
+    const decoded = await verifyFirebaseIdToken(req.headers.authorization);
+    if (!decoded) return res.status(401).json({ error: "unauthorized" });
+
+    const actor = claimsToActor(decoded);
+    if (requireAdmin &amp;&amp; !actor.isAdmin) {
+      return res.status(403).json({ error: "forbidden" });
+    }
+
+    if (isProductionWrite(req) &amp;&amp; !passesProductionGuard(req, actor)) {
+      return res.status(403).json({ error: "production_writes_disabled" });
+    }
+
+    Object.assign(req, { actor });
+    await handler(req as AuthenticatedRequest, res);
+  };
+}</code></pre>
+
+        <p>Because the actor is established once at the edge, your event builder always sees a consistent UID and optional email, and you avoid the class of bugs where “we forgot to thread the user through this code path.”</p>
+
+        <h2>Input validation before any database work</h2>
+        <p>Bulk endpoints are magnets for accidental footguns. The validation layer should run before you touch the database for planning: cap the batch size so a single request cannot enqueue thousands of rows (for example, max fifty tasks per call), restrict status values to a typed enum on both client and server, and bound the reason field—4096 characters is plenty for human context while blocking abuse.</p>
+
+        <p>Enum-checked statuses mean you never persist a typo that turns into a silent logic bug in downstream automation. The batch limit gives operators a predictable UX and protects the database from long transactions. Returning clear per-task errors in preview lets the delivery team fix selection issues without opening a ticket.</p>
+
+        <h2>The admin panel: preview as the primary interface</h2>
+        <p>API design only wins if people use it. The admin panel wraps the flow in a slide-over panel: a status selector, optional structured failure context where your domain needs it, a required or strongly encouraged reason text area, a live preview table fed by the preview mode response, and a visible indicator of how many tasks are in scope versus the batch limit.</p>
+
+        <p>Row selection is keyed by stable task IDs and kept in client state that survives refetches, filter changes, sorting, and pagination. That sounds like a small front-end detail; it is what prevents the all-too-familiar “I selected twenty rows, changed the sort, and three disappeared from the bulk action” failure mode. The preview call always sends the explicit ID list so the server does not guess from volatile page state.</p>
+
+        <h2>What I would ship earlier next time</h2>
+        <p>I would stand up preview and execute together from day one rather than bolting preview on after the first production scare. I would also document the state machine as data—allowed transitions as a table or graph—so validation code and product copy stay aligned. Event sourcing pays off fastest when every entry point that mutates status goes through the same pipeline; exceptions become obvious in code review.</p>
+
+        <p>Bulk admin work is not a database chore. It is a product surface. Treat it like one—with validation, authorization, atomic writes, and an append-only history—and you replace fear and bottlenecks with something operators can trust.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

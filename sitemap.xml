@@ -151,6 +151,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html</loc>
+    <lastmod>2026-04-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html</loc>
+    <lastmod>2026-04-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html</loc>
+    <lastmod>2026-04-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html</loc>
     <lastmod>2026-03-13</lastmod>
     <changefreq>monthly</changefreq>

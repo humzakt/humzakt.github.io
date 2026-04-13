@@ -4,6 +4,30 @@
 
 ---
 
+## Production-Ready Multi-Turn Evaluation
+
+URL: https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html
+
+The basic multi-turn runner worked but wasn't production-ready. Humza Tareen hardened it with per-turn harness evaluation (invoking the test suite against the agent's patch inside Docker after each turn to determine if a fix is valid, not just that a patch exists), codebase snapshots (capturing tar.gz via base64 transfer from Docker containers for post-hoc debugging), artifact validation with retry (checking .traj, .patch, and snapshot files exist and are non-empty, retrying on transient Docker failures), resume state management (tracking completed tasks in .resume_state.json for crash recovery without re-running everything), completeness reports (per-task/per-turn completion stats and error details), and resolution summaries (identifying the first turn where a test started passing). Each turn writes incremental JSONL files matching the deliverable structure expected by downstream tools.
+
+---
+
+## Reverse-Engineering a Codebase Into Architecture Docs
+
+URL: https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html
+
+When joining an enterprise project with no architecture documentation, Humza Tareen reverse-engineered the full system by auditing source code line-by-line. The methodology: extract data flows, build Mermaid diagrams, create conditional logic tables, compile file inventories, and write behavioral notes — module by module across 14 areas: system overview and state machine, authentication, submit/upload, pre-QA quality gates, pipeline/output generation, expert review, post-QA scoring, recovery and self-healing, admin panel, dashboard, notifications, payments and exports, database schema, and shared platform utilities. Three verification passes cross-checked every claim against source code. The result: new team members can understand the full system in hours instead of weeks.
+
+---
+
+## Audit-Safe Admin Tools with Event Sourcing
+
+URL: https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html
+
+The delivery team needed to change task statuses in bulk, but this required engineers to run ad-hoc SQL scripts against production — no audit trail, no validation, no rollback context. Humza Tareen built a single API endpoint with preview and execute modes: preview validates all inputs and shows what would happen; execute performs the changes. Each task update is wrapped in a Prisma $transaction — status update and event creation happen atomically. Event sourcing creates task_events records with source, previous/new state, actor identity from Firebase auth, reason text, and merged metadata from previous events. The endpoint is wrapped with withAudit middleware requiring Firebase admin claims. Input validation caps batches at 50 tasks, enum-checks statuses, and limits reason text to 4096 characters. A slide-over UI component provides status selection, live preview, and persistent row selection across data refreshes.
+
+---
+
 ## I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers
 
 URL: https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html

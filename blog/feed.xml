@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 13 Apr 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -279,6 +279,45 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>Production-Ready Multi-Turn Evaluation</title>
+      <link>https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html</guid>
+      <pubDate>Sun, 13 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>AI Agents</category>
+      <category>Multi-Turn Evaluation</category>
+      <category>Python</category>
+      <category>Docker</category>
+      <description>Hardening a multi-turn AI agent evaluator with per-turn harness testing, codebase snapshots, artifact retry, resume state, and completeness reporting.</description>
+    </item>
+
+    <item>
+      <title>Reverse-Engineering a Codebase Into Architecture Docs</title>
+      <link>https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html</guid>
+      <pubDate>Sun, 13 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Architecture</category>
+      <category>Documentation</category>
+      <category>Enterprise</category>
+      <category>Mermaid</category>
+      <description>Systematically documenting 14 modules of an enterprise app with Mermaid diagrams, conditional logic tables, file inventories, and three verification passes.</description>
+    </item>
+
+    <item>
+      <title>Audit-Safe Admin Tools with Event Sourcing</title>
+      <link>https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html</guid>
+      <pubDate>Sun, 13 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Event Sourcing</category>
+      <category>Admin Tools</category>
+      <category>TypeScript</category>
+      <category>Prisma</category>
+      <description>Building bulk admin operations with atomic transactions, event sourcing for audit trails, preview mode, and Firebase RBAC — replacing ad-hoc SQL scripts.</description>
+    </item>
+
     <item>
       <title>Multi-Turn Agent Evaluation at Scale</title>
       <link>https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html</link>

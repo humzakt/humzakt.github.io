@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Reverse-Engineering a Codebase Into Docs — Humza Tareen</title>
+  <meta name="description" content="How I documented 14 enterprise modules from source: Mermaid flows, logic tables, inventories, and three-pass verification so the team could onboard in hours.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Architecture Documentation, Codebase Audit, Mermaid, Enterprise, Software Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Reverse-Engineering a Codebase Into Docs">
+  <meta property="og:description" content="How I documented 14 enterprise modules from source: Mermaid flows, logic tables, inventories, and three-pass verification so the team could onboard in hours.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-04-13T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Documentation">
+  <meta property="article:tag" content="Architecture">
+  <meta property="article:tag" content="Enterprise">
+  <meta property="article:tag" content="Mermaid">
+  <meta property="article:tag" content="Codebase Audit">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Reverse-Engineering a Codebase Into Docs">
+  <meta name="twitter:description" content="How I documented 14 enterprise modules from source: Mermaid flows, logic tables, inventories, and three-pass verification so the team could onboard in hours.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Reverse-Engineering a Codebase Into Docs",
+    "description": "How I documented 14 enterprise modules from source: Mermaid flows, logic tables, inventories, and three-pass verification so the team could onboard in hours.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-04-13",
+    "dateModified": "2026-04-13",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html" },
+    "keywords": ["Architecture Documentation", "Codebase Audit", "Mermaid", "Enterprise", "Software Engineering"],
+    "articleSection": "DevOps"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Reverse-Engineering a Codebase Into Docs</h1>
+        <div class="blog-meta">
+          <time datetime="2026-04-13">Apr 13, 2026</time>
+          <span>&middot;</span>
+          <span>9 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Documentation</span>
+          <span class="blog-tag">Architecture</span>
+          <span class="blog-tag">Enterprise</span>
+          <span class="blog-tag">Mermaid</span>
+          <span class="blog-tag">Codebase Audit</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>When you land on a large enterprise codebase you have never touched, the default path is slow: read random files, ask whoever is awake in another time zone, and hope tribal knowledge eventually sticks. I took a different path. I reverse-engineered the workflow application from source and turned it into fourteen focused architecture documents so the delivery team could reason about the whole system without living inside every pull request.</p>
+
+        <h2>The Situation</h2>
+        <p>The enterprise platform was a familiar modern stack on paper: Next.js and TypeScript on the front, Prisma talking to a relational database, dozens of API routes, background workers for long-running jobs, separate surfaces for administrators and end-user dashboards. What was missing was any single place that explained how those pieces actually cooperated. There was no architecture documentation worth the name. The team was distributed across time zones, which meant “quick questions” were rarely quick.</p>
+        <p>I needed to understand the full system fast enough to contribute safely and to help others do the same. That meant treating documentation not as prose marketing but as an engineering artifact derived from the same source of truth as production: the code itself.</p>
+        <p>The constraint was familiar to anyone who has joined mid-flight: pull requests tell you what changed recently, not why the system exists in its current shape. API reference generators list endpoints but rarely explain ordering guarantees, failure modes, or which worker actually finishes a job. I assumed nothing from folder names alone; if a directory was called <code>services</code> but contained orchestration plus HTTP clients plus email templating, the doc said so explicitly.</p>
+
+        <h2>The Methodology</h2>
+        <p>I worked module by module, in a repeatable loop. First, a line-by-line audit of the relevant source: route handlers, services, workers, and anything that touched persistence. I traced imports both downward into implementations and upward into callers so I did not mistake a leaf utility for an entry point. From that pass I extracted explicit data flows: who calls whom, which tables or queues are read or written, and where side effects escape the request lifecycle. Those flows became Mermaid diagrams so readers could see movement at a glance instead of reconstructing it from fifty imports.</p>
+        <p>Where branching got dense, I captured it as conditional logic tables: input, condition, outcome. I compiled file inventories with a one-line description per file so newcomers could navigate without opening every tab. For behavior that is easy to misread from static code—retries, idempotency keys, race-prone updates—I added short behavioral notes. Every document ended with cross-references to sibling modules so nobody treated a slice of the system as if it lived in isolation.</p>
+        <p>Order mattered. I started with system overview and authentication because almost every other flow assumes those invariants. Pipeline and worker docs came before dashboards so readers understood what data existed before they read how it was surfaced. Payments and notifications referenced the same job identifiers the pipeline used, which prevented duplicate definitions of “done” across the enterprise platform.</p>
+
+        <h2>Fourteen Modules, Fourteen Documents</h2>
+        <p>I split the platform into fourteen coherent slices, each with its own markdown-style living doc checked into the repository alongside the code:</p>
+        <ol>
+          <li><strong>System overview and state machine</strong> — high-level lifecycle of a work item and how global states relate.</li>
+          <li><strong>Authentication and access control</strong> — sessions, roles, route guards, and server-side enforcement.</li>
+          <li><strong>Submit and upload flow</strong> — how clients send payloads, validation, storage, and enqueueing.</li>
+          <li><strong>Pre-QA quality gates</strong> — automated checks before deeper processing.</li>
+          <li><strong>Pipeline and output generation</strong> — workers, orchestration, and artifacts.</li>
+          <li><strong>Expert review</strong> — human-in-the-loop steps and assignment.</li>
+          <li><strong>Post-QA scoring</strong> — metrics, aggregation, and persistence of results.</li>
+          <li><strong>Recovery and self-healing</strong> — retries, dead-letter behavior, reconciliation jobs.</li>
+          <li><strong>Admin panel</strong> — operational UI and privileged APIs.</li>
+          <li><strong>Dashboard</strong> — user-facing summaries and filters.</li>
+          <li><strong>Notifications</strong> — email, in-app, or webhook paths and templates.</li>
+          <li><strong>Payments and exports</strong> — billing hooks and downloadable deliverables.</li>
+          <li><strong>Database schema</strong> — Prisma models, critical indexes, and migration caveats.</li>
+          <li><strong>Observability and shared platform</strong> — structured logging, metrics, tracing, feature flags, and internal libraries used across routes and workers.</li>
+        </ol>
+        <p>Fourteen documents only works if they connect: the overview and schema act as spine documents, while observability explains how you prove what you think is true when something misbehaves in production. Cross-links between modules turned the set into a single navigable map instead of isolated essays.</p>
+
+        <h2>What Each Document Contains</h2>
+        <p>Every module doc followed the same skeleton so reviewers knew where to look. At the top, one or two Mermaid diagrams showing how a typical request or job traverses API routes, services, workers, and the database. Below that, conditional logic tables for the gnarliest branches—especially where business rules had evolved in code comments instead of product specs. A file inventory section listed paths under that module with a single sentence each: what the file owns and what it must not do. Behavioral notes called out non-obvious patterns: optimistic locking that can fail under concurrency, background jobs that assume at-least-once delivery, or endpoints that look idempotent but are not. Finally, explicit “see also” links pointed to authentication, notifications, or schema docs so readers did not duplicate wrong mental models.</p>
+
+        <h3>Example: Submit and upload flow (Mermaid)</h3>
+        <p>Here is a generic sketch of how a submit path might look after reading the handlers and workers. Names are illustrative, not tied to any single product:</p>
+<pre><code class="language-mermaid">flowchart LR
+  A[Client: multipart upload] --> B[API route: validate schema]
+  B -->|valid| C[Service: persist draft row]
+  B -->|invalid| Z[4xx response]
+  C --> D[Object storage: put blob]
+  D --> E[Queue: enqueue process job]
+  E --> F[Worker: virus scan optional]
+  F --> G[Worker: promote draft to active]
+  G --> H[(Database: update status)]
+  H --> I[Notification: job accepted]</code></pre>
+        <p>The point of the diagram is not beauty; it is agreement. Once this picture existed, debates about “where does validation live?” took minutes instead of days.</p>
+
+        <h3>Example: Conditional logic for a pre-quality gate</h3>
+        <p>Automated gates are where implicit rules hide. A table forces them into the open:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Input</th>
+              <th>Condition</th>
+              <th>Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Artifact size</td>
+              <td>Exceeds configured maximum</td>
+              <td>Reject with user-visible error; no enqueue</td>
+            </tr>
+            <tr>
+              <td>MIME type</td>
+              <td>Not in allowlist</td>
+              <td>Reject; log security event</td>
+            </tr>
+            <tr>
+              <td>Duplicate content hash</td>
+              <td>Matches existing completed job</td>
+              <td>Short-circuit to existing result reference</td>
+            </tr>
+            <tr>
+              <td>Rate limit key</td>
+              <td>Over threshold</td>
+              <td>Return 429; worker untouched</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>When product or compliance asks “what exactly happens if…?” the answer is a row, not a archaeology session in Git blame.</p>
+
+        <h3>Example: File inventory excerpt</h3>
+        <p>Inventories are boring by design. Boring is searchable:</p>
+<pre><code>app/api/submit/route.ts          — HTTP entry; schema validation only
+lib/services/upload-service.ts   — Orchestrates storage + DB transaction
+lib/workers/process-upload.ts    — Consumes queue; calls downstream pipeline
+prisma/schema.prisma (section X) — Draft vs active enums and indexes</code></pre>
+        <p>If a file appears in the inventory, it has a stated responsibility. If responsibility drifts, the inventory is the first thing that looks wrong during review.</p>
+
+        <h2>Verification: Three Passes</h2>
+        <p>Documentation that lies is worse than none. I used three explicit passes.</p>
+        <p><strong>First pass — write from source.</strong> I drafted each section only after reading the implementation, not from memory or old slides. If I could not point to a function or route for a claim, the claim did not ship.</p>
+        <p><strong>Second pass — cross-check every claim.</strong> For each bullet, diagram edge, and table row, I reopened the code path and confirmed the behavior still matched. This is tedious and exactly where most informal docs fail.</p>
+        <p><strong>Third pass — fix discrepancies.</strong> I logged mismatches in a simple checklist: statement, expected per doc, actual per code, resolution (doc update vs bug filed). We found several cases where the code had drifted from the original intent—features that had been “fixed” in production without updating comments or shared understanding. Fixing the docs surfaced those gaps for the delivery team to prioritize.</p>
+        <p>When a diagram and the implementation disagreed, I treated the code as authoritative for “what runs today” and the doc as authoritative for “what we want maintainers to believe”—then reconciled the two. That sometimes meant correcting the diagram; other times it meant opening a defect because the running behavior was unsafe or inconsistent with adjacent modules.</p>
+        <p>The checklist itself stayed lightweight—something any engineer can reuse:</p>
+        <ul>
+          <li>Claim quoted verbatim from the doc</li>
+          <li>File and symbol that justify the claim</li>
+          <li>Pass / fail</li>
+          <li>If fail: update doc, open issue, or both</li>
+        </ul>
+        <p>Treating verification as a repeatable procedure meant new contributors could extend the docs without inheriting my mistakes.</p>
+
+        <h2>The Impact</h2>
+        <p>The practical effect was speed with less chaos. New team members could walk the full system in hours instead of weeks because they had a guided path through fourteen bounded contexts instead of an infinite tree of repositories. Code reviews accelerated: reviewers could anchor comments in shared diagrams (“this changes the transition from state B to C”) instead of guessing side effects. Production incidents shortened because on-call engineers could identify which module owned a symptom—worker backlog versus API validation versus notification fan-out—and open the right runbook first.</p>
+        <p>None of this replaced the need to read code when changing behavior. It reduced the cost of getting to the right code the first time. For a distributed team on an enterprise platform, that is the difference between shipping and thrashing.</p>
+        <p>The workflow application kept evolving after the first publish. I encouraged the team to treat a doc change as part of the same change set when behavior moved: if you alter a state transition or a gate, you update the diagram or table in the same pull request. That habit is what keeps reverse-engineered docs from rotting into wallpaper.</p>
+        <p>Architecture documentation is not a one-time brochure. It is a maintained map. If you treat it as an output of the same discipline you use for tests and types—clear contracts, verified against source—it pays back in every timezone.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

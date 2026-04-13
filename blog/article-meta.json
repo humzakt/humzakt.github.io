@@ -1,5 +1,38 @@
 [
   {
+    "id": "production-ready-multi-turn-evaluation",
+    "title": "Production-Ready Multi-Turn Evaluation: Harness Testing, Snapshots, and Resume",
+    "summary": "Hardening a multi-turn AI agent evaluator with per-turn harness testing, codebase snapshots via base64 transfer, artifact retry, crash-resilient resume state, and completeness reporting.",
+    "date": "2026-04-13",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["AI Agents", "Docker", "Python", "Evaluation", "Multi-Turn"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html"
+    }
+  },
+  {
+    "id": "reverse-engineering-codebase-architecture-docs",
+    "title": "Reverse-Engineering a Codebase Into Architecture Docs for 14 Modules",
+    "summary": "Systematically documenting an enterprise application with Mermaid data flow diagrams, conditional logic tables, file inventories, and three verification passes against source code.",
+    "date": "2026-04-13",
+    "themes": ["devops", "infrastructure"],
+    "components": ["Documentation", "Architecture", "Mermaid", "Enterprise", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html"
+    }
+  },
+  {
+    "id": "audit-safe-admin-bulk-operations",
+    "title": "Audit-Safe Admin Tools: Bulk Operations with Event Sourcing",
+    "summary": "Building bulk admin operations with atomic Prisma transactions, event sourcing for full audit trails, preview mode before execution, and Firebase RBAC protection.",
+    "date": "2026-04-13",
+    "themes": ["api-design", "infrastructure"],
+    "components": ["Event Sourcing", "TypeScript", "Prisma", "Firebase", "Admin Panel"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html"
+    }
+  },
+  {
     "id": "multi-turn-agent-evaluation-persistent-state",
     "title": "Multi-Turn Agent Evaluation: Why Stateless Turns Failed and Persistent State Fixed It",
     "summary": "Single-turn evaluation produced zero patches. Building a multi-turn runner with persistent Docker environments, conversation memory, and progressive hint injection changed everything.",
