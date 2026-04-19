@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Engineering Standards on a Legacy Codebase — Humza Tareen</title>
+  <meta name="description" content="AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — bootstrapping standards on an active codebase.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Engineering Standards, CI/CD, TypeScript, Testing, Developer Experience">
+  <link rel="canonical" href="https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Engineering Standards on a Legacy Codebase">
+  <meta property="og:description" content="AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — bootstrapping standards on an active codebase.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-04-19T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Engineering Standards">
+  <meta property="article:tag" content="CI/CD">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Testing">
+  <meta property="article:tag" content="DX">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Engineering Standards on a Legacy Codebase">
+  <meta name="twitter:description" content="AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — bootstrapping standards on an active codebase.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Engineering Standards on a Legacy Codebase",
+    "description": "AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — bootstrapping standards on an active codebase.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-04-19",
+    "dateModified": "2026-04-19",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html" },
+    "keywords": ["Engineering Standards", "CI/CD", "TypeScript", "Testing", "Developer Experience"],
+    "articleSection": "DevOps"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Engineering Standards on a Legacy Codebase</h1>
+        <div class="blog-meta">
+          <time datetime="2026-04-19">Apr 19, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Engineering Standards</span>
+          <span class="blog-tag">CI/CD</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Testing</span>
+          <span class="blog-tag">DX</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>You join an active team on the workflow platform’s admin panel: features ship every week, stakeholders expect velocity, and the codebase has already absorbed years of pragmatic decisions. What you do <em>not</em> find is a crisp engineering envelope—no pull request template, no issue templates, no explicit testing bar, and no shared configuration telling AI coding assistants how this repository actually works. Meanwhile, quality signals are uneven: CSV exports show raw UTC ISO strings like <code>2026-03-31T16:29:00.000Z</code> while tables in the UI show friendly localized dates like “Mar 31, 2026.” A multi-tab payments area exists in the admin UI—Overview, pay rates, user adjustments, payment records—but the backend wiring is only half complete, which is a liability if anyone mistakes it for production-ready. CI is green, yet several GitHub Actions are pinned to versions that trail the current Node.js support window, meaning deprecation warnings are not theoretical; they are calendar events.</p>
+
+        <p>The wrong move is to declare a “standards sprint,” freeze feature work, and attempt a big-bang refactor. The team is not broken; it is busy. The right move is to layer standards in thin, reviewable slices—each change small enough to merge without drama, each change reinforcing the next. This post walks through how we did that: AI tool rules, PR and issue templates with a testing mandate, shared date formatting utilities, a feature lockdown instead of a destructive rollback, and a proactive GitHub Actions refresh for Node.js 24 compatibility.</p>
+
+        <h2>The starting point: shipping without guardrails</h2>
+        <p>When standards are implicit, they drift by person and by week. One engineer runs Vitest locally out of habit; another relies on CI only. One patch formats dates with <code>toLocaleDateString</code>; another serializes <code>Date</code> straight into CSV cells. AI assistants, left unconstrained, invent folder patterns and testing commands that do not match the stack. None of that is malice; it is the predictable outcome of an active codebase without scaffolding.</p>
+
+        <p>The constraint is social as much as technical. You cannot halt the roadmap to “fix engineering.” You can, however, make the <em>easy path</em> the <em>correct path</em>: templates that ask for evidence, rules files that teach tools the repo’s conventions, utilities that remove one-off fixes, and guardrails that make half-built features obviously inert. The theme is incremental leverage—each PR should leave the system slightly harder to misuse than before.</p>
+
+        <h2>AI tool rules: teach assistants the same loop as a senior engineer</h2>
+        <p>We added project-specific rules in three places: Cursor (<code>.cursor/rules/</code>), Claude Code (<code>.claude/rules/</code>), and Copilot instructions updated to match. The content is not novel philosophy; it is operational context—Next.js and TypeScript for the web app, Prisma for persistence, Vitest for unit tests, Cloud Run and background jobs where relevant—so generated edits land in the right directories with the right import style.</p>
+
+        <p>The highest-leverage section is the testing mandate. Tools default to “edit and hope.” We inverted that default: read surrounding code before changing it, run the linter after edits, run targeted tests after substantive changes, and add or update tests whenever behavior changes. That mirrors what a careful human reviewer expects, but it is encoded where the assistant reads it every session.</p>
+
+<pre><code class="language-markdown">## Testing mandate
+
+- Before editing: open the nearest existing tests and note coverage for the module.
+- After editing: run `pnpm lint` (or the repo’s equivalent) on touched packages.
+- After behavioral changes: run `pnpm vitest run &lt;path-to-nearest-spec&gt;`.
+- For new features or bug fixes: add focused unit tests; do not merge without a failing test that proves the fix.
+- Prefer small, deterministic tests over broad snapshots unless the UI contract truly requires them.</code></pre>
+
+        <p>Rules are not magic; they are guardrails on autopilot. The win is fewer drive-by edits that skip tests because “it was a small change,” and fewer invented scripts that do not exist in <code>package.json</code>.</p>
+
+        <h2>PR template, issue templates, and operational clarity</h2>
+        <p>Culture follows structure. We introduced a pull request template with an explicit testing section: what unit tests were added or updated, paste or summarize local Vitest output for the relevant package, and a short manual validation checklist for anything that touches the admin panel or async workers. The goal is not bureaucracy; it is to make “I verified this” legible to reviewers who cannot inhabit every feature area.</p>
+
+        <p>Alongside that, we added GitHub issue templates tailored to the stack—bug report, incident report, and infrastructure issue—so triage captures service boundaries (Cloud Run revisions, Prisma migrations, Cloud Tasks queues) without free-form essays. A lightweight incident response runbook links from the incident template so on-call steps are consistent even when sleep-deprived. These documents do not replace judgment, but they reduce the activation energy of doing the right thing when production misbehaves.</p>
+
+<pre><code class="language-markdown">## Testing
+
+- [ ] Unit tests added/updated for changed behavior (Vitest).
+- [ ] `pnpm vitest run &lt;relevant-path&gt;` passes locally (paste summary).
+- [ ] Manual checks (if UI/workers): …
+
+## Risk &amp; rollout
+
+- Data migrations: none / forward-only / requires backfill
+- Feature flags: …</code></pre>
+
+        <p>Within days of merging the template, pull requests started carrying test notes without nagging. That is the quiet power of defaults: when the empty box is visible, people fill it.</p>
+
+        <p>Reviewers benefited too. Instead of guessing whether a change was exercised, they could scan a predictable section for commands and outcomes. When a regression slipped through, the postmortem could compare what the template asked for against what was merged—useful without turning code review into a courtroom. The templates did not replace conversation; they anchored it.</p>
+
+        <h2>Date formatting consistency: one bug class, one utility layer</h2>
+        <p>QA filed a classic inconsistency: CSV exports exposed raw ISO timestamps in UTC while on-screen tables showed localized short dates. Users reconciling spreadsheets against the admin panel assumed the product was wrong somewhere; in truth, two presentation paths diverged. The fix is not to patch the one export that triggered the ticket—it is to centralize formatting and apply it everywhere dates cross a boundary (tables, detail drawers, CSV, and any PDFs if you add them later).</p>
+
+        <p>We introduced three shared functions: <code>formatDateShort</code> for dense tables, <code>formatDateFull</code> for detail views where context matters, and <code>formatDateCsv</code> for exports where we want a stable, human-readable string without surprising timezone shifts. Each function documents its timezone policy in one place so future contributors do not reintroduce drift.</p>
+
+<pre><code class="language-typescript">const LOCALE = "en-US";
+const TZ = "America/New_York"; // example: pick the org’s reporting timezone
+
+export function formatDateShort(d: Date): string {
+  return new Intl.DateTimeFormat(LOCALE, {
+    timeZone: TZ, month: "short", day: "numeric", year: "numeric",
+  }).format(d);
+}
+
+export function formatDateFull(d: Date): string {
+  return new Intl.DateTimeFormat(LOCALE, {
+    timeZone: TZ, dateStyle: "medium", timeStyle: "short",
+  }).format(d);
+}
+
+/** CSV-safe, fixed-width style; avoids raw ISO Z unless explicitly desired */
+export function formatDateCsv(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+  }).format(d);
+}</code></pre>
+
+        <p>After wiring these through tables and export builders, the product speaks one temporal language. The meta-lesson: inconsistencies are often symptoms of missing shared primitives, not of “one bad line.” Extract the primitive, then sweep call sites.</p>
+
+        <h2>Feature lockdown: preserve work, remove ambiguity</h2>
+        <p>The payments feature shipped as a polished four-tab interface—overview, pay rates, user adjustments, payment records—but server routes and configuration were not ready for production traffic. Deleting the UI would have wasted design and front-end effort and confused stakeholders who knew the capability was “almost there.” Instead, we implemented a lockdown pattern: the backend guard forces safe defaults on every read/write of configuration, the settings page shows an amber “Feature under development” banner with controls disabled, and the payments page is replaced by a static explanation while navigation keeps the entry visible so admins know the surface exists but is intentionally inactive.</p>
+
+        <p>This is strictly better than a silent half-feature: operators see honesty instead of fragile controls. We added seven focused unit tests on the guard so refactors cannot accidentally re-enable risky flags.</p>
+
+<pre><code class="language-typescript">type PaymentsConfig = {
+  enabled: boolean;
+  autoCalculate: boolean;
+  // …other fields preserved for forward compatibility
+};
+
+/** Ensures incomplete payments cannot be toggled on via API/UI drift */
+export function buildPaymentsValue(input: PaymentsConfig): PaymentsConfig {
+  return {
+    ...input,
+    enabled: false,
+    autoCalculate: false,
+  };
+}</code></pre>
+
+        <p>When the backend and product are ready, you flip the guard behind a feature flag or remove it in a single, auditable change—rather than resurrecting deleted routes from memory.</p>
+
+        <h2>GitHub Actions and Node.js 24: proactive maintenance</h2>
+        <p>Deprecation notices for Actions runtimes are easy to ignore until they become hard failures. We audited five workflow files and bumped first-party actions to current majors—<code>actions/checkout</code> v4 to v5, <code>actions/setup-node</code> v4 to v5, and refreshed Google Cloud auth actions to their latest compatible major—then validated builds, tests, and deploy hooks on a branch. No semantic surprises surfaced because the upgrades were mechanical; the value is runway: CI stays compatible with the Node.js 24 toolchain the application targets, and we avoid emergency upgrades during a release week.</p>
+
+        <p>Treating CI like product code—periodic hygiene PRs, changelog scanning, pinned majors you understand—pays dividends that rarely make flashy blog titles but absolutely prevent weekend pages.</p>
+
+        <p>We also smoke-tested the workflows on a forked branch with representative secrets stubbed, so we were not learning about YAML edge cases during a deploy freeze. That extra hour of verification is cheaper than a broken pipeline when someone urgently needs a hotfix.</p>
+
+        <h2>The incremental approach: many small wins beat one freeze</h2>
+        <p>None of the changes above required a migration weekend. Each landed as its own pull request: rules files, templates, date utilities, payments lockdown with tests, Actions bumps. Reviewers could reason about them independently, and rollbacks were trivial if something surprised us. The testing section in the PR template turned out to be the highest-impact nudge; once the path of least resistance included “show your Vitest run,” tests became part of the normal conversation instead of a special-occasion chore.</p>
+
+        <p>If you are staring at a legacy-adjacent codebase with an active team, start where friction is loudest—dates, half-features, CI warnings—and encode standards as tooling and templates rather than lectures. Standards that ship quietly, week after week, compound into a culture that looks inevitable in hindsight.</p>
+
+        <p>The sequence matters less than the cadence: pick one credible improvement, merge it, measure whether review comments and incidents get easier, then stack the next change. Momentum is the standard.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

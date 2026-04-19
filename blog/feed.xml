@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Sun, 13 Apr 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 19 Apr 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -279,6 +279,45 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>Taming a State Machine: Bulk Admin Ops</title>
+      <link>https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html</guid>
+      <pubDate>Sat, 19 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>State Machine</category>
+      <category>Admin Tools</category>
+      <category>TypeScript</category>
+      <category>Next.js</category>
+      <description>How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, and unified status resolution.</description>
+    </item>
+
+    <item>
+      <title>Decoupling Claim Timeouts from Feature Flags</title>
+      <link>https://humzakt.github.io/blog/claim-timeout-decoupling-expert-review-ux.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/claim-timeout-decoupling-expert-review-ux.html</guid>
+      <pubDate>Sat, 19 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Feature Flags</category>
+      <category>React</category>
+      <category>TypeScript</category>
+      <category>UX</category>
+      <description>When disabling the expert review pool killed timeout enforcement, I decoupled the countdown, added three-phase UX, and blocked expired uploads.</description>
+    </item>
+
+    <item>
+      <title>Engineering Standards on a Legacy Codebase</title>
+      <link>https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html</guid>
+      <pubDate>Sat, 19 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Engineering Standards</category>
+      <category>CI/CD</category>
+      <category>TypeScript</category>
+      <category>Testing</category>
+      <description>AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — bootstrapping standards incrementally on an active codebase.</description>
+    </item>
+
     <item>
       <title>Production-Ready Multi-Turn Evaluation</title>
       <link>https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html</link>

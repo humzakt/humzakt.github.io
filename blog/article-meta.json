@@ -1,5 +1,38 @@
 [
   {
+    "id": "enterprise-state-machine-bulk-admin-ops",
+    "title": "Taming a State Machine: Iterating Bulk Admin Ops Through 13 Commits",
+    "summary": "How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, unified status resolution, and JSON upload.",
+    "date": "2026-04-19",
+    "themes": ["api-design", "infrastructure"],
+    "components": ["State Machine", "TypeScript", "Next.js", "Prisma", "Admin Panel"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html"
+    }
+  },
+  {
+    "id": "claim-timeout-decoupling-expert-review-ux",
+    "title": "Decoupling Claim Timeouts from Feature Flags: Three-Phase Countdown UX",
+    "summary": "When disabling the expert review pool killed timeout enforcement, I decoupled the countdown, added three-phase UX with urgent and expired states, and blocked expired uploads.",
+    "date": "2026-04-19",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Feature Flags", "React", "TypeScript", "UX", "Countdown Timer"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/claim-timeout-decoupling-expert-review-ux.html"
+    }
+  },
+  {
+    "id": "bootstrapping-engineering-standards-legacy-codebase",
+    "title": "Bootstrapping Engineering Standards on a Legacy Codebase",
+    "summary": "AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — layering standards incrementally on an active codebase without disrupting the team.",
+    "date": "2026-04-19",
+    "themes": ["devops", "infrastructure"],
+    "components": ["CI/CD", "TypeScript", "Testing", "GitHub Actions", "Developer Experience"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html"
+    }
+  },
+  {
     "id": "production-ready-multi-turn-evaluation",
     "title": "Production-Ready Multi-Turn Evaluation: Harness Testing, Snapshots, and Resume",
     "summary": "Hardening a multi-turn AI agent evaluator with per-turn harness testing, codebase snapshots via base64 transfer, artifact retry, crash-resilient resume state, and completeness reporting.",

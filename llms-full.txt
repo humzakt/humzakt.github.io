@@ -4,6 +4,30 @@
 
 ---
 
+## Taming a State Machine: Bulk Admin Ops
+
+URL: https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html
+
+The initial bulk status change API was clean in theory — atomic transactions, event sourcing, preview mode. Then it hit real users and QA. The state machine had 13+ source statuses with different valid transition targets. Humza Tareen spent 13 commits over 4 days hardening it: building a transition rule matrix (13x6 grid) to prevent invalid admin moves, fixing a subtle where-clause bug in "Quality Check Failed" that matched any failed review even when a later review passed, decoupling workflow dispatch to default-OFF so admins don't accidentally trigger expensive pipelines, fixing unified status resolution bugs where output generation and expert quality check worker types were filtered out of the query (extracted STATUS_RELEVANT_WORKER_TYPES as a shared constant), adding JSON file upload with persistent row selection across filter/sort/pagination changes, capping unified sort at 5,000 rows with a truncation header, and adding an isTerminalStatus() guard to prevent analytics inflation from non-terminal status changes.
+
+---
+
+## Decoupling Claim Timeouts from Feature Flags
+
+URL: https://humzakt.github.io/blog/claim-timeout-decoupling-expert-review-ux.html
+
+The expert review pool had a feature toggle. Disabling it to stop new claims also killed the countdown timer for already-claimed tasks, giving reviewers infinite time. Humza Tareen decoupled the timeout configuration from the pool toggle so admins can set claim timeouts even when the pool is disabled. The cron job releasing stale claims was gated by expertPoolEnabled — widened to also fire when expert review is active. Redesigned the countdown into three phases: normal display, urgent amber warning below 15 minutes, and expired red state with pulsing animation. After expiry, upload and submit buttons are disabled with contextual reason text. A hidden 5-minute grace period in the cron job was documented in admin UI hints. New tests cover pool enabled + timeout, pool disabled + timeout, expired claims with pending uploads, and the grace period boundary.
+
+---
+
+## Engineering Standards on a Legacy Codebase
+
+URL: https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html
+
+Joining an active codebase with no PR templates, no testing requirements, no AI tool configurations, inconsistent date formatting, a half-built payments feature, and CI actions about to hit Node.js deprecation. Humza Tareen layered in standards incrementally: Cursor IDE rules, Claude Code rules, and Copilot instructions teaching AI tools the stack and testing mandate. A PR template enforcing unit tests, vitest output, and manual validation checklists. Issue templates for bugs, incidents, and infrastructure. Three shared date formatters (formatDateShort, formatDateFull, formatDateCsv) replacing inconsistent formats across all tables and exports. A feature lockdown pattern for the payments feature — backend guard forcing enabled:false, config page with amber banner and greyed controls, payments page replaced with lockdown page, sidebar link preserved. GitHub Actions bumped to Node.js 24-compatible versions across 5 workflow files. Each change was a single reviewable PR.
+
+---
+
 ## Production-Ready Multi-Turn Evaluation
 
 URL: https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html

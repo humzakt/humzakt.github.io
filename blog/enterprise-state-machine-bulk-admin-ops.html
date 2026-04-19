@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Taming a State Machine: Bulk Admin Ops — Humza Tareen</title>
+  <meta name="description" content="How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, and status resolution.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="State Machine, Admin Tools, TypeScript, Next.js, Event Sourcing">
+  <link rel="canonical" href="https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Taming a State Machine: Bulk Admin Ops">
+  <meta property="og:description" content="How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, and status resolution.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-04-19T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="State Machine">
+  <meta property="article:tag" content="Admin Panel">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Next.js">
+  <meta property="article:tag" content="Prisma">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Taming a State Machine: Bulk Admin Ops">
+  <meta name="twitter:description" content="How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, and status resolution.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Taming a State Machine: Bulk Admin Ops",
+    "description": "How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, and status resolution.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-04-19",
+    "dateModified": "2026-04-19",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html" },
+    "keywords": ["State Machine", "Admin Tools", "TypeScript", "Next.js", "Event Sourcing"],
+    "articleSection": "API Design"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Taming a State Machine: Bulk Admin Ops</h1>
+        <div class="blog-meta">
+          <time datetime="2026-04-19">Apr 19, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">State Machine</span>
+          <span class="blog-tag">Admin Panel</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Next.js</span>
+          <span class="blog-tag">Prisma</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>In an earlier post I walked through the first cut of audit-safe bulk status changes on the workflow platform: preview and execute modes, atomic per-task transactions, append-only events, and an admin panel that made intent legible before anyone committed. That design was sound in the abstract. Then real users, real QA, and a thirteen-state source machine walked into the room. What followed was not a rewrite—it was iteration. Thirteen commits across four days, spread over more than ten pull requests, each closing a gap the spreadsheet-friendly architecture had politely hidden until someone clicked the wrong combination.</p>
+
+        <p>This post is the continuation: what happens after “works in dev” when the feature meets the state machine as it actually exists—transition matrices, worker runs, downstream pipelines, and the admin grid’s need for a single human-readable label.</p>
+
+        <h2>The problem deepens</h2>
+        <p>The initial bulk endpoint accepted a target status and validated that each task’s row could be updated. That was necessary but not sufficient. The domain exposes more than thirteen distinct <em>source</em> unified statuses, each with its own small set of legal <em>targets</em>. Allowing an admin to bulk-move early work—Draft, Checking Quality, Ready to Submit—into terminal outcomes is not just wrong product-wise; it breaks trust with the delivery team, who suddenly see tasks jump past gates they were still coordinating.</p>
+
+        <p>Worse, some intermediate states are asymmetric. For example, a failure after automated review should only be bulk-routable toward outcomes like Rejected or Duplicate, not toward “passed” style targets that downstream billing or scoring would misread. The mental model is a sparse matrix: roughly thirteen sources by six high-level targets, mostly empty cells. The product work was to encode that matrix as data the server enforces, not tribal knowledge in a wiki.</p>
+
+        <h2>Transition rules and the quality-check edge case</h2>
+        <p>We centralized allowed transitions in a registry keyed by unified source status. Empty arrays mean “no bulk transitions from here.” Narrow arrays encode domain-specific escape hatches. The preview path consults the same registry as execute so operators never see a plan the server would refuse.</p>
+
+<pre><code class="language-typescript">type UnifiedStatus =
+  | "DRAFT"
+  | "CHECKING_QUALITY"
+  | "READY_TO_SUBMIT"
+  | "QUALITY_CHECK_FAILED"
+  | "PASSED"
+  | "REJECTED"
+  | "DUPLICATE";
+
+/** Sparse bulk-transition matrix: only listed targets are legal. */
+const BULK_ALLOWED_TARGETS: Record&lt;UnifiedStatus, UnifiedStatus[]&gt; = {
+  DRAFT: [],
+  CHECKING_QUALITY: [],
+  READY_TO_SUBMIT: [],
+  QUALITY_CHECK_FAILED: ["REJECTED", "DUPLICATE"],
+  PASSED: ["REJECTED", "DUPLICATE"],
+  // …remaining sources mapped to their allowed targets
+};
+
+function canBulkTransition(from: UnifiedStatus, to: UnifiedStatus): boolean {
+  return BULK_ALLOWED_TARGETS[from]?.includes(to) ?? false;
+}</code></pre>
+
+        <p>One subtle bug surfaced in QA: the query that selected “quality check failed” tasks matched <em>any</em> failed review on a task, even when a later review passed. Operators would see rows labeled as failed in the grid, run a bulk fix, and the API would reject them—or worse, the inverse mismatch would confuse support. The fix was a guard in the where-clause path: include failed reviews <em>and</em> assert that no passing review exists for the same task at a later timestamp (or higher sequence, depending on your schema). That single predicate turned a noisy boolean into a stateful predicate aligned with how humans read the timeline.</p>
+
+        <h2>Workflow dispatch decoupling</h2>
+        <p>Originally, changing status implicitly scheduled the same side effects the product triggers on single-task flows: output generation, post-QA scoring hooks, payment-related jobs. For an admin acting on dozens of rows, that coupling was dangerous. A mistaken target status could enqueue expensive pipelines across the cluster. The delivery team needed the ability to correct labels without becoming accidental batch orchestrators.</p>
+
+        <p>The solution was default-off workflow dispatch for bulk operations. The preview response lists which pipelines <em>would</em> run for the proposed transition. The admin panel renders that list beside an explicit opt-in checkbox. The primary button label reflects the choice: either change status only for the selected count, or change status and run pipelines. Server-side, the execute handler reads the same flag; absent opt-in, only the transactional status update and event append run.</p>
+
+<pre><code class="language-typescript">type BulkExecuteBody = {
+  taskIds: string[];
+  targetStatus: UnifiedStatus;
+  reason: string;
+  /** When false, status/events update only—no workflow enqueue. */
+  runAttachedWorkflows: boolean;
+};
+
+function bulkPrimaryLabel(
+  selectedCount: number,
+  runWorkflows: boolean,
+  eligiblePipelineCount: number
+): string {
+  const n = selectedCount;
+  if (!runWorkflows || eligiblePipelineCount === 0) {
+    return `Change Status Only (${n})`;
+  }
+  return `Change Status &amp; Run Pipeline (${n})`;
+}</code></pre>
+
+        <p>Copy changes matter here: the button text is the last guardrail when someone is tired and working through a long checklist.</p>
+
+        <h2>Unified status resolution and invisible rows</h2>
+        <p>The admin grid does not show raw enum tuples; it shows a unified label derived from stage, persisted status, and recent worker activity. A task can sit in a pre-submit stage with an “active” worker flag yet present as either “Checking Quality” or “Quality Check Failed” depending on review rows. The resolver therefore needs worker run types and outcomes in the same Prisma query that feeds the table—omitting them produced labels that disagreed with the detail drawer and with bulk validation.</p>
+
+        <p>A second bug was operational: two worker types (output generation and expert quality review) were filtered out of the list query for performance reasons in an older code path. Tasks dominated by those workers disappeared from the admin table entirely while still existing in search-by-id flows. The fix was to extract a shared constant—call it <code>STATUS_RELEVANT_WORKER_TYPES</code>—used by both the list loader and the resolver so “performance tuning” could not drift from “correctness.”</p>
+
+<pre><code class="language-typescript">const STATUS_RELEVANT_WORKER_TYPES = [
+  "QUALITY_AUTOMATION",
+  "EXPERT_REVIEW",
+  "OUTPUT_GENERATION",
+] as const;
+
+function resolveUnifiedLabel(task: TaskWithRuns): UnifiedStatus {
+  const runs = task.workerRuns.filter((r) =&gt;
+    STATUS_RELEVANT_WORKER_TYPES.includes(r.type as (typeof STATUS_RELEVANT_WORKER_TYPES)[number])
+  );
+  if (task.stage === "PRE_QA" &amp;&amp; hasFailedReviewWithoutLaterPass(task.reviews)) {
+    return "QUALITY_CHECK_FAILED";
+  }
+  if (runs.some((r) =&gt; r.state === "RUNNING" &amp;&amp; r.type === "QUALITY_AUTOMATION")) {
+    return "CHECKING_QUALITY";
+  }
+  // …map remaining combinations to a single admin-facing label
+  return mapPersistedStatusToUnified(task.status);
+}</code></pre>
+
+        <h2>JSON upload and selection that survives the table</h2>
+        <p>Operators often receive identifiers from external spreadsheets or partner exports. We added JSON file upload to the admin panel: parse an array of task IDs, fetch matching rows from the API, merge them into the current selection set, and surface any IDs that did not resolve. Selection is keyed by stable task ID in client state so filters, sorts, and pagination cannot silently drop bulk intent—when the user changes the view, checked IDs remain checked because the key is identity, not row index.</p>
+
+        <p>That behavior matches what I described in the first post, but the iteration pass hardened it: the upload path shares the same selection reducer as click-to-toggle, so there is one code path for “what is in scope for the next preview call.”</p>
+
+        <h2>Analytics and sort safety</h2>
+        <p>Review feedback caught two sharp edges. First, analytics events for bulk transitions were firing even when the target status was non-terminal, which inflated funnel metrics and made week-over-week dashboards noisy. We introduced an explicit terminal check and only emit the “bulk transition completed” product event when the target is terminal—passed, rejected, duplicate, or whatever your enum defines as end-of-line.</p>
+
+<pre><code class="language-typescript">const TERMINAL_UNIFIED: ReadonlySet&lt;UnifiedStatus&gt; = new Set([
+  "PASSED",
+  "REJECTED",
+  "DUPLICATE",
+]);
+
+export function isTerminalStatus(status: UnifiedStatus): boolean {
+  return TERMINAL_UNIFIED.has(status);
+}
+
+async function recordBulkAnalyticsIfNeeded(
+  target: UnifiedStatus,
+  payload: BulkAnalyticsPayload
+) {
+  if (!isTerminalStatus(target)) return;
+  await analytics.track("admin_bulk_status_terminal", payload);
+}</code></pre>
+
+        <p>Second, sorting the visible table by unified label required computing that label for many rows. An early implementation loaded the full candidate set into memory to sort client-side. That worked until it did not. We capped unified-status sorting at five thousand rows for a single request and set a response header—<code>X-Unified-Sort-Truncated: true</code>—when truncation occurs so the UI can show a banner. The long-term fix may be database-side materialization; the short-term fix was honesty about limits.</p>
+
+        <p>Together, those two fixes illustrate a recurring theme: derived state is easy to display and dangerously easy to misuse for side effects. Terminal-only analytics keep dashboards aligned with business outcomes. Bounded sorting keeps latency predictable and gives operators a clear signal when they need to narrow filters instead of widening scope.</p>
+
+        <h2>The iteration pattern</h2>
+        <p>Thirteen commits in four days is not heroics; it is evidence of tight feedback loops. Each QA pass surfaced an edge case the whiteboard state machine had not enumerated: a review ordering bug, a missing include in Prisma, a default-on workflow assumption left over from single-task UX. The pattern that worked was deliberately boring—ship the narrow core, let QA stress the combinatorics, fix fast with small diffs, keep preview and execute symmetric the whole time. Most pull requests were reviewable in minutes because they targeted one invariant at a time.</p>
+
+        <p>If you are building similar tooling, treat the transition matrix and the resolver as first-class modules tested on their own. Keep workflow dispatch behind explicit consent in bulk flows. And when analytics or sorting touches derived state, ask whether you are measuring reality or measuring whatever was cheap to query on the first try.</p>
+
+        <p>For the foundational architecture—preview, execute, transactions, events—see <a href="audit-safe-admin-bulk-operations.html">Audit-Safe Admin Tools with Event Sourcing</a>. This installment is the story of what came after: the state machine pushing back, and the small, precise commits that pushed back harder.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
