@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building an SFT Recording Pipeline — Humza Tareen</title>
+  <meta name="description" content="Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, and rework flow — with 1,096 passing tests.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="SFT Pipeline, Docker, VNC, TypeScript, Trajectory Recording">
+  <link rel="canonical" href="https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building an SFT Recording Pipeline">
+  <meta property="og:description" content="Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, and rework flow — with 1,096 passing tests.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-02T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="SFT Pipeline">
+  <meta property="article:tag" content="Docker">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="Recording">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building an SFT Recording Pipeline">
+  <meta name="twitter:description" content="Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, and rework flow — with 1,096 passing tests.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building an SFT Recording Pipeline",
+    "description": "Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, and rework flow — with 1,096 passing tests.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-02",
+    "dateModified": "2026-05-02",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html" },
+    "keywords": ["SFT Pipeline", "Docker", "VNC", "TypeScript", "Trajectory Recording"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Building an SFT Recording Pipeline</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-02">May 2, 2026</time>
+          <span>&middot;</span>
+          <span>9 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">SFT Pipeline</span>
+          <span class="blog-tag">Docker</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">React</span>
+          <span class="blog-tag">Recording</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>Supervised fine-tuning (SFT) only works when you have high-quality demonstration data: real people completing real tasks in environments that look like production, with every interaction captured faithfully enough that a model can learn from it. On the recording platform I helped build, that requirement forced a full vertical slice—sandboxed desktop sessions experts could drive remotely, client-side capture of fine-grained interaction traces, parallel video, a backend that could ingest large artifacts safely, and a review pipeline that could reject bad work without losing the story of <em>why</em> it failed.</p>
+
+        <p>This post walks that system end to end: Docker sandboxes with VNC, trajectory and media capture in the browser, eighteen HTTP routes that hold the lifecycle together, rubric-based review with rework, a twelve-page admin surface, observability hooks, and a test suite that held the whole thing accountable as it grew.</p>
+
+        <h2>The problem</h2>
+        <p>SFT needs human demonstrations: recordings of experts finishing tasks correctly and consistently. The product had to provision isolated desktop environments so experts never touched customer data directly, expose those environments through the browser (VNC), record not just pixels but <em>semantics</em>—mouse movement, clicks, keyboard input, scrolling, copy and paste, window resizes, focus and visibility changes—and pair that with a video stream reviewers could skim. Operators needed to score quality against rubrics, approve or push back, and route failed attempts into rework with clear feedback. None of that is a single feature; it is a pipeline where every stage can fail independently, and failures have to be recoverable without silent data loss.</p>
+
+        <h2>Sandbox infrastructure</h2>
+        <p>The core isolation story is Docker: each expert session runs in a container that presents a full desktop stack, reachable over VNC from a client embedded in the admin and worker UIs. Provisioning is not fire-and-forget. The platform tracks status from “requested” through “running” and “terminating,” with health checks and automatic retry when a container exits unexpectedly or fails its readiness probe. That matters because flaky sandboxes destroy trust faster than almost any UI bug—if experts lose ten minutes to a dead session, they stop trusting the task system entirely.</p>
+
+        <p>Lifecycle management is explicit: provision with a deterministic image and configuration bundle, monitor resource and connectivity signals, terminate cleanly when the recording ends or policy requires it. Before tear-down in debug-friendly environments, operators can optionally snapshot the filesystem state so incidents are reproducible without holding expensive capacity open forever. Every transition is observable in the task model so support and engineers can answer “where is this sandbox <em>right now</em>?” without SSH archeology.</p>
+
+        <h2>Client-side recording</h2>
+        <p>The browser cannot see the remote desktop’s OS events directly; what it <em>can</em> do is instrument the viewer surface and surrounding application chrome with consistent DOM listeners, normalize differences across browsers, and timestamp everything against a monotonic clock aligned to the server at session start. Trajectory capture therefore centers on a small set of event families: pointer movement and buttons, keyboard down/up, scroll, clipboard read and write where policy allows, window and element resize, and visibility changes that flag when the expert looked away or the tab slept.</p>
+
+        <p>Events are buffered, chunked by time or byte budget, and tagged with sequence metadata so the server can reorder and gap-detect after upload. Video uses the same mental model as screen sharing: <code>HTMLCanvasElement.captureStream</code> fed into <code>MediaRecorder</code>, with codec choices constrained to what target browsers reliably support. The two streams—trajectory JSON and encoded video—share a session identifier and version counter so ingest can correlate partial failures.</p>
+
+        <p>The highest-leverage reliability feature is chunked upload. Waiting until the end of a thirty-minute task to POST a single blob guarantees data loss on any disconnect, browser crash, or laptop sleep. Instead, the client flushes chunks on a timer and on boundary events (pause, network recovery, explicit checkpoint), each chunk carrying an index and rolling hash or length check the API validates before appending. That design trades a bit of backend complexity for a massive reduction in “we lost the whole recording” incidents.</p>
+
+<pre><code class="language-typescript">function useTrajectoryCapture(sessionId: string, onChunk: (chunk: TrajectoryChunk) =&gt; void) {
+  const bufferRef = useRef&lt;TrajectoryEvent[]&gt;([]);
+  const seqRef = useRef(0);
+  const startedAt = useRef&lt;number&gt;(performance.now());
+
+  const flush = useCallback(() =&gt; {
+    if (bufferRef.current.length === 0) return;
+    const chunk: TrajectoryChunk = {
+      sessionId,
+      seq: seqRef.current++,
+      events: bufferRef.current.splice(0, bufferRef.current.length),
+      t0: startedAt.current,
+    };
+    onChunk(chunk);
+  }, [sessionId, onChunk]);
+
+  useEffect(() =&gt; {
+    const push = (ev: TrajectoryEvent) =&gt; {
+      bufferRef.current.push(ev);
+      if (shouldFlushChunk(bufferRef.current)) flush();
+    };
+
+    const subs = [
+      listenPointer(push),
+      listenKeyboard(push),
+      listenScroll(push),
+      listenClipboard(push),
+      listenResize(push),
+      listenVisibility(push),
+    ];
+
+    const id = window.setInterval(flush, CHUNK_INTERVAL_MS);
+    return () =&gt; {
+      window.clearInterval(id);
+      subs.forEach((u) =&gt; u());
+      flush();
+    };
+  }, [flush]);
+
+  return { flush };
+}</code></pre>
+
+<pre><code class="language-typescript">async function uploadRecordingChunks(
+  recordingId: string,
+  stream: AsyncIterable&lt;Blob&gt;,
+  opts: { signal?: AbortSignal }
+) {
+  let index = 0;
+  for await (const blob of stream) {
+    const res = await fetch(`/api/recordings/${recordingId}/parts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-Part-Index": String(index++),
+        "X-Part-Bytes": String(blob.size),
+      },
+      body: blob,
+      signal: opts.signal,
+    });
+    if (!res.ok) throw new UploadError("chunk_rejected", await res.text());
+  }
+  await fetch(`/api/recordings/${recordingId}/complete`, {
+    method: "POST",
+    signal: opts.signal,
+  });
+}</code></pre>
+
+        <p>DOM normalization lives in thin adapter layers so Safari, Chromium, and Firefox disagree on event fields in one place instead of across every call site. That is the kind of boring glue that keeps trajectory analytics trustworthy when you later train on the JSON, not just watch the video.</p>
+
+        <h2>The API layer: eighteen routes</h2>
+        <p>The HTTP surface is intentionally bounded: eighteen routes cover the whole lifecycle without sprouting duplicate “almost the same” endpoints. Workers pull from a queue with an atomic claim operation so two tabs cannot mutate the same task. Sandbox routes provision and terminate instances, expose status for polling and webhooks where needed, and accept optional snapshot requests. Recording routes implement start, pause, resume, complete, and rework entry points—each validating state transitions so illegal combinations return explicit errors instead of corrupt rows.</p>
+
+        <p>Trajectory ingestion accepts chunked POST bodies with session and sequence headers; the server stitches streams idempotently when the client retries a failed chunk. File routes handle artifact metadata, content types, and cleanup policies. Admin routes back the dashboard: queue depth, stuck sandboxes, reviewer assignments, and read-only inspection of trajectories for dispute resolution. Keeping the count stable was a forcing function: every new idea had to justify itself as an extension of an existing resource rather than a one-off script.</p>
+
+        <p>Duplicate chunk delivery is inevitable on flaky networks, so ingest handlers treat part index and content hash as idempotency keys: a repeat upload with the same metadata short-circuits to success without doubling storage, while a conflicting index surfaces a hard error instead of silently corrupting the timeline. Recording and trajectory resources share consistent versioning on the entity so optimistic UI updates cannot race ahead of completed uploads.</p>
+
+<pre><code class="language-typescript">type SandboxPhase = "pending" | "provisioning" | "running" | "draining" | "terminated" | "failed";
+
+class SandboxLifecycleManager {
+  constructor(private readonly docker: DockerClient, private readonly store: SandboxStore) {}
+
+  async provision(taskId: string, spec: SandboxSpec): Promise&lt;SandboxHandle&gt; {
+    await this.store.transition(taskId, "pending", "provisioning");
+    try {
+      const containerId = await this.docker.run(spec);
+      await this.store.attachContainer(taskId, containerId);
+      await this.waitUntilReady(containerId, spec.healthcheck);
+      await this.store.transition(taskId, "provisioning", "running");
+      return { taskId, containerId, phase: "running" };
+    } catch (err) {
+      await this.store.transition(taskId, "provisioning", "failed", { error: String(err) });
+      if (spec.retryPolicy?.shouldRetry(err)) return this.provision(taskId, spec);
+      throw err;
+    }
+  }
+
+  async terminate(taskId: string, opts?: { snapshot?: boolean }) {
+    const row = await this.store.require(taskId);
+    if (opts?.snapshot) await this.docker.snapshot(row.containerId);
+    await this.docker.stop(row.containerId);
+    await this.store.transition(taskId, row.phase, "terminated");
+  }
+}</code></pre>
+
+        <h2>Review and rework</h2>
+        <p>Raw recordings are not automatically training data. The review pipeline attaches each submission to a rubric: dimensions like task completion, efficiency, clarity of reasoning, and adherence to policy. Reviewers score against typed criteria, leave free-text notes, and choose one of three outcomes—approve, reject, or changes requested. Approve moves the artifact downstream; reject closes the attempt with reasons; changes requested opens a rework path where the expert sees reviewer feedback and starts a new attempt linked to the same task.</p>
+
+        <p>Rework is not a second random queue entry. It preserves lineage so analytics can compare attempts, and it triggers worker notifications through a real-time channel: when a reviewer selects changes requested, the review pipeline writes a durable document in Firestore and fans out through Firebase Cloud Messaging (FCM) so the assigned worker gets a push on lock screen or in-app—the same path used for other task updates, so notifications stay consistent instead of bolting on a second alert system.</p>
+
+<pre><code class="language-typescript">type RubricDimensionId = "correctness" | "efficiency" | "communication" | "policy";
+
+type RubricScore = {
+  dimension: RubricDimensionId;
+  value: 1 | 2 | 3 | 4 | 5;
+  comment?: string;
+};
+
+type ReviewDecision = "approve" | "reject" | "changes_requested";
+
+type RubricReviewPayload = {
+  recordingId: string;
+  reviewerId: string;
+  scores: RubricScore[];
+  decision: ReviewDecision;
+  summary: string;
+  feedbackForWorker?: string;
+};</code></pre>
+
+        <h2>The admin surface: twelve pages</h2>
+        <p>Operators live in the admin app. Twelve pages cover the operational surface without duplicating the worker client: queue management and fair pulling rules, task detail with an embedded sandbox viewer so engineers can see exactly what the expert saw, sandbox screens for provision, monitor, and terminate, the review queue with the rubric UI, bulk CSV import for seeding tasks at scale, and analytics views for throughput, rejection reasons, and sandbox failure rates. The goal is that a single on-call person can trace a bad recording from intake to decision without opening five tools.</p>
+
+        <h2>Observability</h2>
+        <p>When dozens of containers and simultaneous uploads collide, grep stops scaling. The service emits structured JSON logs with stable component tags—sandbox, ingest, auth, review—so dashboards and alerts can filter meaningfully. <code>AsyncLocalStorage</code> carries a request identifier from the edge middleware through async handlers; the browser includes the same identifier on chunk uploads where possible so support can correlate a failed part POST with the server trace that rejected it.</p>
+
+        <p>Beyond logs, every meaningful task transition appends to a TaskEvent audit trail: recording started, paused, resumed, sandbox recycled, review submitted, rework issued. That trail is what makes arguments about “what happened to this submission?” factual instead of folklore.</p>
+
+        <h2>Testing</h2>
+        <p>This system is too large to hold in your head alone. The repository now runs <strong>1,096 tests</strong> across <strong>56</strong> test files using Vitest, plus <strong>eight</strong> Playwright end-to-end specs that walk the golden path—claim a task, open a sandbox, record, upload chunks, submit for review, receive a decision—from the same surfaces users touch. Thirty-one newer unit tests target the brittle edges: MediaRecorder wrappers, chunked upload coordinators, DOM event adapters, HTTP handlers for each lifecycle transition, sandbox state machine transitions, and schema validation for rubric payloads.</p>
+
+        <p>Those tests paid for themselves every time someone refactored ingest to add compression or changed the retry policy on Docker provision. E2E caught integration assumptions—CORS on part uploads, cookie timing, VNC iframe focus—that unit tests alone will never see.</p>
+
+        <h2>Closing thoughts</h2>
+        <p>An SFT recording pipeline is infrastructure, product, and risk management at once. The pieces that look glamorous—VNC in the browser, slick review UIs—only matter if sandboxes are dependable, uploads survive real networks, and operators can explain outcomes from data. Shipping that combination required discipline in route design, obsessive client reliability, and tests that treated the pipeline as a single system. If you are building something similar, invest early in chunked ingest and explicit sandbox state machines; everything else stacks on top more safely once those two are solid.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

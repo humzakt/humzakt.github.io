@@ -1,5 +1,38 @@
 [
   {
+    "id": "task-lifecycle-v1-schema-api-design",
+    "title": "Designing a Task Lifecycle V1 from Scratch: 10-Table Schema and 40+ API Routes",
+    "summary": "10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs with 176+ tests.",
+    "date": "2026-05-02",
+    "themes": ["api-design", "infrastructure"],
+    "components": ["Schema Design", "TypeScript", "Prisma", "REST API", "State Machine"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html"
+    }
+  },
+  {
+    "id": "sft-recording-pipeline-docker-sandboxes",
+    "title": "Building an SFT Recording Pipeline: Docker Sandboxes, Trajectory Capture, and Review Workflows",
+    "summary": "Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, rework flow, and 1,096 passing tests across 56 files.",
+    "date": "2026-05-02",
+    "themes": ["infrastructure", "ml-ai"],
+    "components": ["Docker", "VNC", "TypeScript", "React", "Recording"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html"
+    }
+  },
+  {
+    "id": "unified-status-sort-display-labels",
+    "title": "When Display Labels Break Sorting: Three Bugs in One Column",
+    "summary": "The unified status column looked correct but sorted wrong — three bugs in rank computation, date tiebreakers, and deterministic windowing, fixed with 78 new tests.",
+    "date": "2026-05-02",
+    "themes": ["performance", "devops"],
+    "components": ["Sorting", "TypeScript", "Prisma", "Admin UI", "Data Tables"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/unified-status-sort-display-labels.html"
+    }
+  },
+  {
     "id": "enterprise-state-machine-bulk-admin-ops",
     "title": "Taming a State Machine: Iterating Bulk Admin Ops Through 13 Commits",
     "summary": "How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, unified status resolution, and JSON upload.",

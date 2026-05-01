@@ -151,6 +151,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html</loc>
+    <lastmod>2026-05-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html</loc>
+    <lastmod>2026-05-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/unified-status-sort-display-labels.html</loc>
+    <lastmod>2026-05-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Designing a Task Lifecycle V1 from Scratch — Humza Tareen</title>
+  <meta name="description" content="10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Schema Design, TypeScript, Prisma, REST API, State Machine">
+  <link rel="canonical" href="https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Designing a Task Lifecycle V1 from Scratch">
+  <meta property="og:description" content="10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-02T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Schema Design">
+  <meta property="article:tag" content="API Design">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Prisma">
+  <meta property="article:tag" content="State Machine">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Designing a Task Lifecycle V1 from Scratch">
+  <meta name="twitter:description" content="10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Designing a Task Lifecycle V1 from Scratch",
+    "description": "10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-02",
+    "dateModified": "2026-05-02",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html" },
+    "keywords": ["Schema Design", "TypeScript", "Prisma", "REST API", "State Machine"],
+    "articleSection": "API Design"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Designing a Task Lifecycle V1 from Scratch</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-02">May 2, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Schema Design</span>
+          <span class="blog-tag">API Design</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Prisma</span>
+          <span class="blog-tag">State Machine</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>On the workflow platform I contribute to, tasks used to live in a flat mental model: a single status column, metadata scattered across ad-hoc fields, and no durable notion of pipeline stages beyond whatever the UI happened to imply. Evaluations kicked off scripts and dashboards reacted, but the database could not answer simple forensic questions—which model revision produced which artifact, at what point in the lifecycle, with what lineage through each gate. Operators and engineers shared the burden of Slack archaeology and spreadsheet glue.</p>
+
+        <p>This post is about designing and shipping a replacement from the ground up: a ten-table relational schema keyed around immutable versions, dual append-only event streams, explicit step-level state machines, and a typed REST surface—landed not as one heroic diff but as six stacked pull requests so each layer stayed reviewable and test-backed.</p>
+
+        <h2>The problem in practice</h2>
+        <p>The legacy task system modeled “where is this?” as a lone enum-ish string plus timestamps. Version history lived in brittle copies or nowhere. When an evaluation pipeline ran, there was no first-class structure for recording trials, models, or per-stage outcomes in a queryable shape. Debugging meant inferring causality from logs and praying the deploy tag matched reality.</p>
+
+        <p>The goal for V1 was deliberately narrow but strict: persist a task’s lifecycle as data you can traverse, correlate prompts and payloads to specific steps and evaluations, separate linear task progression from parallel eval work, and expose every mutation path through validators and handlers that behave the same whether called from cron, admin tools, or a future dashboard.</p>
+
+        <h2>Ten tables, one coherent story</h2>
+        <p>At the root sits <strong>TaskV1</strong>, the outward-facing aggregate. Rather than caching a duplicated status enum on the row, the task holds a foreign key pointer <code>currentStepId</code> to whichever <strong>StepV1</strong> represents the active stage. “Status” becomes a projection: read the attached step’s state machine value, optionally join for display—but never drift from truth by forgetting to update two places.</p>
+
+        <p><strong>TaskVersionV1</strong> is the authoritative snapshot envelope. Writes that mean “the task advanced” mutate the active version inside a transaction—always paired with events—so dashboards can diff “what changed between version <em>n</em> and <em>n + 1</em>?” without relying on brittle before/after JSON blobs scattered in application memory.</p>
+
+        <p>Within a version, <strong>StepV1</strong> rows implement a thirteen-state lifecycle (ordering enforced in TypeScript constants, no fragile <code>position</code> columns that invite reordering accidents). Events land in <strong>StepEventV1</strong>: append-only, ordered, representing the linear task pipeline—the constraint that exactly one operational step dominates at a time maps naturally to sequential history.</p>
+
+        <p>Prompt payloads and lineage need fast listing without exploding joins. <strong>PromptV1</strong> carries the text-ish content alongside denormalized <code>model</code> / <code>agent</code> identifiers so dashboards can filter and sort without parsing JSON blobs. Artifact storage stays out of Postgres except for pointers: <strong>DataV1</strong> unifies golden, source-side, calibrated, generated, and delivery-shaped blobs behind a typed discriminator and <code>filePath</code> into object storage.</p>
+
+        <p>Evaluation crosses a separate axis. <strong>EvalV1</strong> anchors a run with trial count <em>k</em> and timestamps. Each concrete attempt is <strong>TrialV1</strong>, with a composite uniqueness rule on <code>(evalId, k, model)</code> so parallel model entries cannot collide silently. Trials emit into <strong>EvalStepEventV1</strong>—structurally akin to StepEvent—but owned by the eval subgraph so churn in one pipeline never poisons timelines meant for the other.</p>
+
+        <p>Finally, long-running inference style jobs persist as <strong>InsightV1</strong>: model, agent, provider as first-class varchar columns again (not tucked into JSON), surviving even when a downstream trial row is retracted—so cancellations and rework do not erase the record that work was attempted.</p>
+
+        <h2>Relationships in Prisma (excerpt)</h2>
+        <p>The centerpiece relationship is triangular: Task points at the live step and “hangs off” exactly one conceptual version envelope; steps belong to versions but carry duplicated <code>taskId</code> for hot paths.</p>
+
+<pre><code class="language-prisma">model TaskV1 {
+  id               String           @id @default(cuid())
+  currentStepId    String?          @unique
+  activeVersionId  String           @unique
+  activeVersion    TaskVersionV1    @relation("ActiveEnvelope", fields: [activeVersionId], references: [id])
+  currentStep      StepV1?          @relation("TaskCurrentStep", fields: [currentStepId], references: [id])
+  ownedVersions    TaskVersionV1[]  @relation("TaskVersions")
+  steps            StepV1[]        @relation("StepOwnership")
+}
+
+model TaskVersionV1 {
+  id                 String    @id @default(cuid())
+  taskId             String
+  task               TaskV1    @relation("TaskVersions", fields: [taskId], references: [id])
+  activeForTask      TaskV1?   @relation("ActiveEnvelope")
+  steps              StepV1[]
+}
+
+model StepV1 {
+  id                     String           @id @default(cuid())
+  taskId                 String
+  versionId              String
+  task                   TaskV1           @relation("StepOwnership", fields: [taskId], references: [id])
+  version                TaskVersionV1    @relation(fields: [versionId], references: [id])
+  pinnedAsCurrentForTask TaskV1?         @relation("TaskCurrentStep")
+  status                 String           // thirteen-state lifecycle, varchar deliberately
+}</code></pre>
+
+        <p>Prisma receives string fields instead of enums at the persistence layer—we traded compile-time tightening for velocity while the ontology still moved weekly.</p>
+
+        <h2>Key design decisions</h2>
+        <p><strong>Separate event pipelines.</strong> Task steps admit a single authoritative timeline; evaluations fan out concurrent trials with their own branching. Merging both into one <code>*_events</code> table would have forced awkward polymorphism and invited cross-namespace bugs. Parallel eval noise stays out of operational step history.</p>
+
+        <p><strong>Transactional write order.</strong> On a validated transition we always append history first—only then mutate <code>TaskVersionV1.currentStepId</code> (conceptually aligning the envelope) and finally repoint <code>TaskV1.currentStepId</code>. If any leg fails, the database rolls back; there is never a task pointing at a step whose transition never logged.</p>
+
+        <p><strong>Denormalization for read paths.</strong> <code>taskId</code> repeats on Step, StepEvent, Prompt, and Data so common API responses avoid mandatory hops through versions for OLTP workloads that only care “what belongs to this task.”</p>
+
+        <p><strong>Queryable columns instead of blobs.</strong> Model, agent, provider live as discrete columns—the extra width pays for indexing, equality filters, and human-readable CSV exports without brittle JSON path queries.</p>
+
+        <h2>Transition validation before touch</h2>
+        <p>Every PATCH-style route resolves the targeted step’s current status through a centralized map keyed by semantic step kind. Invalid attempts return HTTP 409 with the list of permissible next tokens so clients can recover without scraping error strings.</p>
+
+<pre><code class="language-typescript">const STEP_TRANSITIONS: Record&lt;StepKind, Partial&lt;Record&lt;StepStatus, StepStatus[]&gt;&gt;&gt; = {
+  ingestion: {
+    queued: ["running", "failed"],
+    running: ["awaiting_review", "failed"],
+    awaiting_review: ["approved", "rejected"],
+    // ...
+  },
+  // ...
+};
+
+export function isValidTransition(
+  kind: StepKind,
+  from: StepStatus,
+  to: StepStatus
+): boolean {
+  return STEP_TRANSITIONS[kind]?.[from]?.includes(to) ?? false;
+}
+
+export function allowedNextStates(kind: StepKind, from: StepStatus): StepStatus[] {
+  return STEP_TRANSITIONS[kind]?.[from] ?? [];
+}</code></pre>
+
+        <p>Handlers call <code>isValidTransition</code> before opening side effects; the 409 body serializes <code>{ error: "invalid_transition", allowed: allowedNextStates(...) }</code> for predictable tooling.</p>
+
+        <h2>Transactional choreography</h2>
+        <p>The following sketch mirrors production shape: nested inside <code>$transaction</code>, inserts and pointer updates succeed atomically.</p>
+
+<pre><code class="language-typescript">async function advanceStep(
+  prisma: PrismaClient,
+  input: { taskId: string; versionId: string; nextStepId: string; payload: Record&lt;string, unknown&gt; }
+) {
+  return prisma.$transaction(async (tx) => {
+    await tx.stepEventV1.create({
+      data: {
+        taskId: input.taskId,
+        type: "step_transition_requested",
+        payload: input.payload,
+      },
+    });
+
+    await tx.taskVersionV1.update({
+      where: { id: input.versionId },
+      data: { currentStepId: input.nextStepId },
+    });
+
+    return tx.taskV1.update({
+      where: { id: input.taskId },
+      data: { currentStepId: input.nextStepId },
+    });
+  });
+}</code></pre>
+
+        <p>In the shipped code the active version resolves from the task envelope before the transaction; the salient guarantee is ordering and single-transaction scope.</p>
+
+        <h2>Handler template pattern</h2>
+        <p>Repeated CRUD-ish routes funnel through <code>createHandler</code>: Zod parses, domain checks run, then Prisma executes. Middleware injects tenancy and actor context uniformly.</p>
+
+<pre><code class="language-typescript">import { z } from "zod";
+
+type HandlerCtx = { prisma: PrismaClient; actor: Actor };
+
+export function createHandler&lt;T extends z.ZodType&gt;(opts: {
+  schema: T;
+  run: (args: z.infer&lt;T&gt;, ctx: HandlerCtx) =&gt; Promise&lt;unknown&gt;;
+}) {
+  return async (rawBody: unknown, ctx: HandlerCtx) =&gt; {
+    const parsed = opts.schema.safeParse(rawBody);
+    if (!parsed.success) return { ok: false, status: 400, body: parsed.error.flatten() };
+
+    try {
+      const result = await opts.run(parsed.data, ctx);
+      return { ok: true, status: 200, body: result };
+    } catch (err) {
+      if (err instanceof ConflictError)
+        return { ok: false, status: 409, body: { error: err.message, allowed: err.meta?.allowed } };
+      throw err;
+    }
+  };
+}</code></pre>
+
+        <p>Golden tests instantiate handlers with ephemeral databases; the schema layer stays the choke point for regressions when new endpoints appear.</p>
+
+        <h2>Six stacked PRs, forty-plus routes</h2>
+        <p>Rather than one eighteen-thousand-line branch, implementation landed mechanically:</p>
+        <ol>
+          <li><strong>PR 1 — Pipeline infrastructure:</strong> registries for thirteen step states and ten gate states, typed transition matrices, shared Zod building blocks, the <code>createHandler</code> scaffolding, plus 119 harness tests guarding invariants.</li>
+          <li><strong>PR 2 — Tasks + Versions:</strong> seven REST routes spanning create/read/update patterns for aggregates, nineteen tests.</li>
+          <li><strong>PR 3 — Steps + Events:</strong> six routes with transition gates returning 409 when maps disagree, fourteen tests validating edge cases.</li>
+          <li><strong>PR 4 — Prompts + Data:</strong> four routes for payload CRUD wired to typed paths, nine tests.</li>
+          <li><strong>PR 5 — Evals + Trials + Insights:</strong> ten routes covering orchestration subgraph concerns, fifteen tests.</li>
+          <li><strong>PR 6 — Auto-seed API:</strong> six routes bridging demo environments: taxonomy tables, guarded object-storage stubs, and runtime simulation clocks so integration tests approximate production cadence.</li>
+        </ol>
+
+        <p>Combined: more than forty public routes and north of 176 automated tests—not counting migrations and fixtures. Each PR depended only on predecessors, enabling parallel review chatter even when sequencing merged strictly linearly.</p>
+
+        <h2>Why stacking beat the mega-merge</h2>
+        <p>A single rollout would have mixed foundational mistakes with superficial handler typos—reviewers skim, critical feedback arrives late. Small PRs anchored discussion: infra first (wrong map shapes break everything downstream), CRUD afterward (mostly boring once patterns exist). Blocking on PR 3 did not prevent colleagues from commenting on schema docs introduced in PR 1. Automated suites stayed green per slice, shrinking bisection pain when regressions surfaced.</p>
+
+        <h2>Auto-seed integration</h2>
+        <p>Demo tenants needed believable timelines without manual click-through. Auto-seed registers stage identifiers mapping to canned object-storage prefixes, upload ceilings, and legacy alias strings left over from early pilots. Runtime simulation jitter adds realistic pacing for dashboards; optimistic review semantics include an explicit rework path so “accepted then revised” narratives remain consistent with transactional rules.</p>
+
+        <p>The registry plugs into the same transition validators as production—demo data is not a special code path bolted sideways.</p>
+
+        <h2>Closing</h2>
+        <p>Good lifecycle design is boring on paper and dramatic in hindsight: immutable versions explain the past, FK-derived status avoids double-bookkeeping, split event logs respect genuinely different concurrency modes, and a thin REST layer enforces discipline at the boundary. Breaking delivery into stacked PRs cost a little upfront planning and saved weeks of rework when reviews caught mismatched assumptions early.</p>
+
+        <p>If you are contemplating a similar reset, sketch the timelines you need separately for linear workflows versus parallel experimentation first—the shape of your event tables—and only then chase CRUD ergonomics. Once the narratives fit the schema, handlers become assembly.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

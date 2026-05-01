@@ -4,6 +4,30 @@
 
 ---
 
+## Designing a Task Lifecycle V1 from Scratch
+
+URL: https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html
+
+The existing system tracked tasks with a flat status column and scattered metadata — no version history, no step tracking, no structured audit trail. Humza Tareen designed and implemented a complete task lifecycle system: 10 Prisma tables with composite keys and immutable versioning. TaskV1 with status derived from a currentStepId FK pointer (no separate status column). TaskVersionV1 as immutable snapshots updated first in transactions. StepV1 with a 13-status state machine. Separate event tables for task pipeline (linear) and eval pipeline (parallel trials) to prevent cross-contamination. PromptV1 and DataV1 with model/agent/provider as dedicated columns for search. EvalV1/TrialV1 with composite unique constraints. Transactional write order: insert event, update version pointer, update task pointer — all in one Prisma transaction. The API layer was delivered in 6 stacked PRs: pipeline infrastructure with registries (119 tests), tasks/versions CRUD (7 routes, 19 tests), steps/events with transition validation returning 409 on invalid moves (6 routes, 14 tests), prompts/data CRUD (4 routes, 9 tests), evals/trials/insights (10 routes, 15 tests), and auto-seed API with GCS stubs. Total: 40+ routes, 176+ tests.
+
+---
+
+## Building an SFT Recording Pipeline
+
+URL: https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html
+
+End-to-end SFT (Supervised Fine-Tuning) recording pipeline for capturing human demonstration data. Docker-based desktop environments with VNC access, auto-retry on container failures, lifecycle management, optional snapshot before termination. Client-side trajectory capture (mouse, keyboard, scroll, paste, copy, resize, visibility events) with chunked upload to prevent data loss on disconnection. Video recording via canvas captureStream and MediaRecorder. 18 API routes covering worker task queue, sandbox provisioning/termination, recording lifecycle (start/pause/resume/complete/rework), trajectory ingestion, and file upload. Rubric-based review with approve/reject/changes-requested outcomes, rework flow with reviewer feedback, worker notifications via Firestore and FCM. 12 admin pages: worker queue, task detail with embedded VNC sandbox viewer, sandbox management, review queue, bulk CSV import, stats dashboards. Structured JSON logging with AsyncLocalStorage tracing and client-server trace correlation. 1,096 tests across 56 Vitest files plus 8 Playwright E2E specs.
+
+---
+
+## When Display Labels Break Sorting
+
+URL: https://humzakt.github.io/blog/unified-status-sort-display-labels.html
+
+The admin submissions page had a Status column that looked correct but sorted wrong. Three interacting bugs: (1) computeUnifiedRank took (stage, status, failureReason) but the same database stage/status mapped to different display labels depending on review results and worker runs — PRE_QA:ACTIVE could be "Checking Quality", "Quality Check Failed", or "Quality Check Passed", all with the same rank. Fixed by adding reviewPassed and workerRuns parameters, assigning unique ranks 0-13 for all 14 pipeline statuses. (2) Tiebreaker within same rank was CUID string comparison with no date correlation — rows appeared in random order within a status group. Fixed with date (newest first) as secondary key plus task ID as stable tiebreaker. (3) The 5,000-row window query had no orderBy clause, returning arbitrary rows when total exceeded the cap. Fixed with deterministic ordering. The Prisma select had to expand to include reviews and workerRuns for accurate rank computation. 78 new tests covering rank splits, backward compatibility, uniqueness, sort direction, date sub-sort, and null handling.
+
+---
+
 ## Taming a State Machine: Bulk Admin Ops
 
 URL: https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html

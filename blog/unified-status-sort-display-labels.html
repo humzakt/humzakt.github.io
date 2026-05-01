@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>When Display Labels Break Sorting — Humza Tareen</title>
+  <meta name="description" content="The unified status column looked correct but sorted wrong — three bugs in rank computation, date tiebreakers, and deterministic windowing, plus 78 new tests.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Sorting Algorithms, TypeScript, Prisma, Admin UI, Data Tables">
+  <link rel="canonical" href="https://humzakt.github.io/blog/unified-status-sort-display-labels.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="When Display Labels Break Sorting">
+  <meta property="og:description" content="The unified status column looked correct but sorted wrong — three bugs in rank computation, date tiebreakers, and deterministic windowing, plus 78 new tests.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/unified-status-sort-display-labels.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-02T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Sorting">
+  <meta property="article:tag" content="Admin UI">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Prisma">
+  <meta property="article:tag" content="Data Tables">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="When Display Labels Break Sorting">
+  <meta name="twitter:description" content="The unified status column looked correct but sorted wrong — three bugs in rank computation, date tiebreakers, and deterministic windowing, plus 78 new tests.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "When Display Labels Break Sorting",
+    "description": "The unified status column looked correct but sorted wrong — three bugs in rank computation, date tiebreakers, and deterministic windowing, plus 78 new tests.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-02",
+    "dateModified": "2026-05-02",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/unified-status-sort-display-labels.html" },
+    "keywords": ["Sorting Algorithms", "TypeScript", "Prisma", "Admin UI", "Data Tables"],
+    "articleSection": "Performance"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">When Display Labels Break Sorting</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-02">May 2, 2026</time>
+          <span>&middot;</span>
+          <span>7 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Sorting</span>
+          <span class="blog-tag">Admin UI</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Prisma</span>
+          <span class="blog-tag">Data Tables</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>On the submissions page in the admin panel, operators see a unified “Status” column. Instead of exposing raw pipeline stage codes, the UI shows human-readable labels—“Checking Quality,” “Quality Check Failed,” “Generating Output,” “Expert Review Active,” and so on—so reviewers can scan the table quickly. Sorting seemed like an obvious enhancement: click the header, group rows by that same notion of progress. What shipped first looked plausible: each cell showed the right label. The sort arrow toggled. And yet the rows did not stabilize into meaningful bands. Identical-looking statuses interleaved. Newest tasks did not float to the top within a band. Occasionally, refreshing the page reshuffled who appeared in the viewport at all. This post walks through three separate bugs that compounded into that behavior—and how seventy-eight new tests and a tight set of code changes unwound it.</p>
+
+        <h2>The symptom: a column that “worked” but did not sort</h2>
+        <p>The task system persists canonical <code>stage</code> and <code>status</code> fields (plus optional failure metadata). Presentation maps those primitives into unified labels shared between list views and detail screens. Separately, sort mode for the status column derives a numeric <em>rank</em> per row so the table can order consistently in memory without pushing presentation strings into SQL. On paper that split is sound: keep storage normalized, keep display friendly, keep sort keys comparable. In practice the rank function and the label function diverged. The label path consulted review outcomes and background job state; the rank path did not. Users experienced the worst possible failure mode: every affordance suggested the feature worked until someone actually tried to use sort to triage work.</p>
+
+        <h2>Root cause one: rank ignored derived state</h2>
+        <p>The original <code>computeUnifiedRank</code> accepted <code>(stage, status, failureReason)</code>. That is sufficient only if each <code>(stage, status)</code> pair maps to exactly one user-visible status. It does not. The same database tuple can mean different things depending on whether an automated review passed, failed, or is still running, and on whether worker runs exist for output generation or expert-quality checks. For example, a pre-quality-assurance stage marked <code>ACTIVE</code> might display as “Checking Quality” while a review is in flight, “Quality Check Failed” after a failed check, or “Quality Check Passed” once the gate clears. All three rows shared one rank, so when sorted they collided and interleaved arbitrarily relative to one another—exactly the shuffle operators reported.</p>
+
+        <p>The fix was to thread the same derived inputs the label layer already used. <code>computeUnifiedRank</code> now takes <code>reviewPassed</code> (a boolean or tri-state derived from review records) and <code>workerRuns</code> (minimal info about active or completed background runs). With those in place we assigned <strong>fourteen</strong> distinct ranks, <code>0</code> through <code>13</code>, so every pipeline status the UI can show maps to a unique ordering key. Pre-QA splits into three separate ranks instead of one. Output generation and expert-quality review each get dedicated ranks driven by whether relevant worker runs are present, so “waiting on automation” and “idle at the same stage” no longer compare equal.</p>
+
+<pre><code class="language-typescript">// Before: same rank for every variant of a stage/status pair
+function computeUnifiedRankBroken(
+  stage: PipelineStage,
+  status: TaskStatus,
+  failureReason: string | null
+): number {
+  // ...
+  // PRE_QA + ACTIVE always returned one rank, regardless of review outcome
+}
+
+// After: rank matches the same derived state as the display label
+function computeUnifiedRank(
+  stage: PipelineStage,
+  status: TaskStatus,
+  failureReason: string | null,
+  reviewPassed: boolean | null,
+  workerRuns: { hasOutputJob: boolean; hasExpertCheckJob: boolean }
+): number {
+  // ...
+  // PRE_QA + ACTIVE branches on reviewPassed → three distinct ranks
+  // Output generation vs idle uses workerRuns.hasOutputJob
+}</code></pre>
+
+        <p>Backward compatibility mattered: internal scripts and older API layers still call the rank helper without the new parameters. Optional arguments with conservative defaults preserve reasonable ordering for those callers while the submissions page passes the full derived context.</p>
+
+        <h2>Root cause two: the tiebreaker was a CUID</h2>
+        <p>After ranks separate coarse buckets, rows in the same bucket should sub-sort by recency—typically newest task first, matching how operators scan “what just moved.” The comparator’s secondary key was accidentally the string task primary key. Those identifiers are opaque CUIDs: lexicographic order has no relationship to creation time. Within a status group, the table looked random even when rank was finally unique. The fix keeps rank as the primary key, uses the task’s <code>createdAt</code> (or domain-equivalent timestamp) as the secondary key—newest first—and falls back to task id only as a <em>stable</em> tiebreaker when two rows share an identical timestamp.</p>
+
+<pre><code class="language-typescript">function compareByUnifiedStatus(
+  a: TaskSortRow,
+  b: TaskSortRow,
+  direction: "asc" | "desc"
+): number {
+  const ra = computeUnifiedRank(
+    a.stage,
+    a.status,
+    a.failureReason,
+    a.reviewPassed,
+    a.workerRuns
+  );
+  const rb = computeUnifiedRank(
+    b.stage,
+    b.status,
+    b.failureReason,
+    b.reviewPassed,
+    b.workerRuns
+  );
+  const rankCmp = direction === "asc" ? ra - rb : rb - ra;
+  if (rankCmp !== 0) return rankCmp;
+
+  const da = a.createdAt?.getTime() ?? 0;
+  const db = b.createdAt?.getTime() ?? 0;
+  const dateCmp = direction === "asc" ? da - db : db - da;
+  if (dateCmp !== 0) return dateCmp;
+
+  return a.id.localeCompare(b.id);
+}</code></pre>
+
+        <p>Null-dated rows need an explicit policy: we treat missing timestamps as <code>0</code> so they sort predictably to one end of the list and tests lock that behavior in.</p>
+
+        <h2>Root cause three: non-deterministic windowing</h2>
+        <p>Unified status sort is applied in memory with a hard cap—five thousand rows fetched from the database before ranking. That keeps admin queries bounded. The subtle bug was the initial window query: without an <code>orderBy</code>, the database is free to return any five thousand rows when the table is larger than the cap. Different plans, cache pressure, or concurrent writes could change which slice you see, so two refreshes of the same filter produced different apparent orderings at the tail. Adding a deterministic <code>orderBy</code> to the window query—aligned with the product’s default list ordering—makes the cap honest: you always process the same prefix of rows for a given filter, then sort that fixed set by unified status.</p>
+
+        <h2>Feeding the rank: a targeted Prisma select</h2>
+        <p>Correct ranks require data that was not on the original DTO. We expanded the Prisma <code>select</code> for the admin list load to pull only what rank computation needs: a narrow shape on related reviews (enough to derive <code>reviewPassed</code>) and a lightweight list of <code>workerRuns</code> flags or counts—not full relation graphs, not heavy JSON blobs. That keeps the query cheap while making the sort key honest. The rule is simple: if the label can branch on a field, the rank function must see it or intentionally document a different ordering contract.</p>
+
+<pre><code class="language-typescript">const rows = await prisma.task.findMany({
+  where: listWhere,
+  take: 5000,
+  orderBy: { createdAt: "desc" },
+  select: {
+    id: true,
+    stage: true,
+    status: true,
+    failureReason: true,
+    createdAt: true,
+    reviews: {
+      select: { passed: true, completedAt: true },
+      orderBy: { completedAt: "desc" },
+      take: 1,
+    },
+    workerRuns: {
+      select: { kind: true, state: true },
+      where: { state: { in: ["PENDING", "RUNNING", "SUCCEEDED"] } },
+    },
+  },
+});</code></pre>
+
+        <p>Application code maps <code>reviews</code> and <code>workerRuns</code> into the compact <code>reviewPassed</code> and <code>workerRuns</code> struct the rank helper expects, mirroring the label pipeline so the two cannot drift silently.</p>
+
+        <h2>Tests: seventy-eight new guards</h2>
+        <p>Regressions in sort logic are easy to reintroduce because they look like small refactors. The test suite now covers: rank splits for all fourteen unified statuses; backward compatibility for callers that omit new parameters; an invariant that no two distinct visible statuses share a rank; ascending and descending direction; date sub-sort within the same rank; and null handling for missing dates and missing reviews. One representative case encodes the pre-QA split explicitly—two tasks with identical <code>stage</code> and <code>status</code> but opposite review outcomes must produce different ranks and order predictably under the date tiebreaker. Property-style checks iterate every enumerated pair of unified labels to prove the rank injective for display purposes—if two ranks match, they must correspond to the same user-visible bucket. Separate cases flip sort direction end to end so we never regress to “works only descending.” Snapshot tests stayed deliberately out of scope: numeric ranks and comparator outputs are asserted directly so refactors rename strings without rewriting brittle golden files.</p>
+
+<pre><code class="language-typescript">it("splits PRE_QA ACTIVE by review outcome", () => {
+  const base = {
+    stage: "PRE_QA" as const,
+    status: "ACTIVE" as const,
+    failureReason: null,
+    createdAt: new Date("2026-05-01T12:00:00Z"),
+    workerRuns: { hasOutputJob: false, hasExpertCheckJob: false },
+  };
+
+  const inProgress = {
+    ...base,
+    id: "task_in_progress",
+    reviewPassed: null,
+  };
+  const failed = {
+    ...base,
+    id: "task_failed",
+    reviewPassed: false,
+  };
+
+  expect(computeUnifiedRankForRow(inProgress)).not.toBe(
+    computeUnifiedRankForRow(failed)
+  );
+});</code></pre>
+
+        <p>After deploy, we asked operators to spot-check a few saved filters; no schema migration was required because the fix is read-path only. Going forward, any pull request that changes how a unified label reads should show the matching diff to <code>computeUnifiedRank</code> or an explicit note that sort semantics are intentionally unchanged—that cheap review habit keeps presentation and ordering from drifting apart again.</p>
+
+        <h2>The lesson</h2>
+        <p>Display labels and sort order are separate concerns, but they must consume the <em>same</em> facts whenever a label is computed from derived state. If the UI shows “Quality Check Failed” because a review row says so, the sort key must consult that same review signal. When it does not, you get the most insidious class of bug: the feature appears implemented—headers click, arrows flip, cells read well—while the ordering is meaningless. Investing in deterministic data windows, intentional tiebreakers, and exhaustive tests turns that ambiguity into ordinary, reviewable correctness work.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

@@ -18,8 +18,11 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 - [dev-starter-kit](https://github.com/humzakt/dev-starter-kit): Production-ready starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, pre-commit hooks, and AI coding tool configurations (Cursor, Claude Code, Codex, Copilot)
 
-## Blog Articles (30)
+## Blog Articles (33)
 
+- [Designing a Task Lifecycle V1 from Scratch](https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html): 10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API in 6 stacked PRs with 176+ tests
+- [Building an SFT Recording Pipeline](https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html): Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, rework flow, and 1,096 passing tests
+- [When Display Labels Break Sorting](https://humzakt.github.io/blog/unified-status-sort-display-labels.html): Three bugs in rank computation, date tiebreakers, and query windowing — the unified status column looked correct but sorted wrong, fixed with 78 new tests
 - [Taming a State Machine: Bulk Admin Ops](https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html): 13 commits over 4 days iterating bulk admin operations — transition matrices, workflow dispatch decoupling, unified status resolution, JSON upload, and analytics safety
 - [Decoupling Claim Timeouts from Feature Flags](https://humzakt.github.io/blog/claim-timeout-decoupling-expert-review-ux.html): When disabling the expert review pool killed timeout enforcement — decoupling the countdown, three-phase UX with urgent and expired states, blocking expired uploads
 - [Engineering Standards on a Legacy Codebase](https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html): AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — layering standards incrementally without disruption

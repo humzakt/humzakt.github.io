@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Sat, 19 Apr 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 02 May 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -279,6 +279,45 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>Designing a Task Lifecycle V1 from Scratch</title>
+      <link>https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html</guid>
+      <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Schema Design</category>
+      <category>API Design</category>
+      <category>TypeScript</category>
+      <category>Prisma</category>
+      <description>10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs.</description>
+    </item>
+
+    <item>
+      <title>Building an SFT Recording Pipeline</title>
+      <link>https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html</guid>
+      <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>SFT Pipeline</category>
+      <category>Docker</category>
+      <category>TypeScript</category>
+      <category>Recording</category>
+      <description>Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, and rework flow — with 1,096 passing tests.</description>
+    </item>
+
+    <item>
+      <title>When Display Labels Break Sorting</title>
+      <link>https://humzakt.github.io/blog/unified-status-sort-display-labels.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/unified-status-sort-display-labels.html</guid>
+      <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Sorting</category>
+      <category>Admin UI</category>
+      <category>TypeScript</category>
+      <category>Prisma</category>
+      <description>Three interacting bugs in rank computation, date tiebreakers, and query windowing — the unified status column looked correct but sorted wrong.</description>
+    </item>
+
     <item>
       <title>Taming a State Machine: Bulk Admin Ops</title>
       <link>https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html</link>
