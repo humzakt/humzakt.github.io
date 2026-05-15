@@ -4,6 +4,30 @@
 
 ---
 
+## Building a GCS-Backed Auto-Seeder Platform
+
+URL: https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html
+
+Replacing a desktop tool with a web-based task seeding platform while avoiding throwaway code. Humza Tareen built a three-layer provider-service-route architecture where services depend on a provider interface, not a concrete storage backend. The GcsProvider stores run metadata as .manifest.json files in GCS. When Prisma is ready, a PrismaProvider implements the same interface with zero changes to services or routes. A client-side V1 adapter transforms between GCS API types and frontend types, isolating the UI from backend changes. An artifact kind registry infers file types from extension, MIME, and path patterns. A step registry handles step ID disambiguation. The pipeline was expanded from 11 flat steps to 13 nodes (10 steps + 3 gates) with a centralized status registry as single source of truth for all status definitions, labels, icons, colors, and sort order. The task detail page was unified to a single API call (from 3 parallel fetches), with model output and golden data viewers matching desktop terminology for zero user retraining.
+
+---
+
+## When 57K Lines Get Rolled Back
+
+URL: https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html
+
+A 57,000-line auto-seeder feature across 334 files was split into 11 stacked PRs (schema, Zod schemas, DB layer, API routes, agent engine, pipeline steps, services, lib layer, UI, dashboard, K8s infrastructure). Each got reviewed independently (2-4 approvals). But cross-dependencies meant individual PRs couldn't merge cleanly — test failures cascaded. All 11 merged into an integration branch and shipped as a single squashed commit. The next day it was rolled back — too large to confidently debug in production. The reconsolidation used the rollback as an opportunity: merged two overlapping directories (auto-seed/ and auto-seeder/) into a single src/lib/v1/ with strict provider → service → route layering. A single GcsRepository class became the only GCS touchpoint. Pure domain logic separated into domain/. Business logic into services/. Worker engine into pipeline/. Net result: -9,685 lines from the original. Database migrations were split to a separate PR. Lesson: split PRs are great for review but terrible for integration with cross-dependencies; the rollback forced a better architecture than the original.
+
+---
+
+## Invisible Bugs: File Type Bypass and Missing Worker Runs
+
+URL: https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html
+
+Two production bugs invisible during development. Bug 1: Expert review file uploads validated against a global extension allowlist (.docx, .xlsx, .pdf), but a reviewer could upload a .pdf to replace a .docx — the allowlist accepted PDFs even though the downstream pipeline expected matching types. Fixed with two-layer validation: server-side validateFileTypeMatch() rejects extension mismatches, client-side dropzone restricts accept to the original file's extension. 10 unit tests. Bug 2: Admin bulk-approve changed task status to COMPLETED but never created the EXPERT_QUALITY_CHECK worker run record. The Delivery Completed tab query requires both the stage and the worker run. Normal expert review creates it automatically; the admin bypass skipped it. Fixed with upsert (empty update to avoid overwriting existing runs), non-blocking so status changes succeed even if worker run creation fails. 11 new test cases, 83 total. Both bugs share a root cause: bypass paths that skip steps the normal flow performs automatically.
+
+---
+
 ## Designing a Task Lifecycle V1 from Scratch
 
 URL: https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html

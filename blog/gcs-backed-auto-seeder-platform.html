@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building a GCS-Backed Auto-Seeder Platform — Humza Tareen</title>
+  <meta name="description" content="Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="GCS, TypeScript, Provider Pattern, Next.js, Service Layer">
+  <link rel="canonical" href="https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building a GCS-Backed Auto-Seeder Platform">
+  <meta property="og:description" content="Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-15T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="GCS">
+  <meta property="article:tag" content="Provider Pattern">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Next.js">
+  <meta property="article:tag" content="Service Layer">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building a GCS-Backed Auto-Seeder Platform">
+  <meta name="twitter:description" content="Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building a GCS-Backed Auto-Seeder Platform",
+    "description": "Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-15",
+    "dateModified": "2026-05-15",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html" },
+    "keywords": ["GCS", "TypeScript", "Provider Pattern", "Next.js", "Service Layer"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Building a GCS-Backed Auto-Seeder Platform</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-15">May 15, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">GCS</span>
+          <span class="blog-tag">Provider Pattern</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Next.js</span>
+          <span class="blog-tag">Service Layer</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>The team needed a web-based seeding platform to replace a desktop tool for preparing AI evaluation tasks. The desktop tool had years of muscle memory behind it, and it stored everything in Google Cloud Storage as JSON manifests. A browser experience had to land quickly on that same data, but we also knew the long-term home for task metadata was a relational database with a proper service layer. Building the first version directly on Prisma would have blocked product work for months while schemas and migrations caught up to a moving task system. Building only against GCS would have produced a pile of throwaway controller code the moment we flipped storage.</p>
+
+        <p>This post is about the architecture that let us ship on GCS immediately without painting ourselves into a corner: routes that stay thin, services that encode business rules once, and providers that swap between object storage and SQL behind a single interface. Along the way we added a run manifest store, a versioned API adapter for the Next.js frontend, registries for artifacts and pipeline steps, a thirteen-node lifecycle graph with gates, and a task detail experience that matches the desktop tool closely enough that operators do not need retraining.</p>
+
+        <h2>The problem in one sentence</h2>
+        <p>We had to satisfy today’s reality (JSON in GCS) and tomorrow’s reality (normalized rows in Postgres) without writing the product twice or blocking the roadmap on database readiness.</p>
+
+        <h2>Provider-service architecture</h2>
+        <p>The fix is a three-layer shape: <strong>routes → services → providers</strong>. HTTP handlers in Next.js validate input, attach request context, and delegate. Services own business logic—creating runs, resolving step identifiers, assembling views for the UI—and they depend only on a TypeScript interface that describes persistence. The concrete <code>GcsProvider</code> implements that interface by reading and writing objects in a bucket; when the schema and Prisma models are ready, a <code>PrismaProvider</code> implements the same methods against the database.</p>
+
+        <p>Services and routes do not branch on storage. They call <code>runManifest.create</code>, <code>taskVersion.get</code>, or whatever the interface exposes. Swapping providers is configuration: an environment flag or dependency injection at the composition root. That is the difference between “we are waiting on migrations” and “we already shipped; migration is an implementation detail.”</p>
+
+<pre><code class="language-typescript">export interface TaskStorageProvider {
+  getTaskVersion(taskId: string, version: string): Promise&lt;TaskVersionRecord | null&gt;;
+  writeRunManifest(taskId: string, manifest: RunManifest): Promise&lt;void&gt;;
+  listRuns(taskId: string): Promise&lt;RunSummary[]&gt;;
+}
+
+export class GcsTaskStorageProvider implements TaskStorageProvider {
+  constructor(private bucket: BucketName, private client: GcsClient) {}
+
+  async getTaskVersion(taskId: string, version: string) {
+    const path = `tasks/${taskId}/versions/${version}.json`;
+    return readJsonFromGcs&lt;TaskVersionRecord&gt;(this.client, this.bucket, path);
+  }
+
+  async writeRunManifest(taskId: string, manifest: RunManifest) {
+    const path = `tasks/${taskId}/.manifest.json`;
+    await writeJsonToGcs(this.client, this.bucket, path, manifest);
+  }
+
+  async listRuns(taskId: string) {
+    // prefix list + parse manifests
+    return [];
+  }
+}</code></pre>
+
+        <p>The important discipline is naming methods after <em>capabilities</em> the product needs, not after GCS verbs. If the interface stays honest, Prisma never leaks <code>$transaction</code> into routes and GCS never leaks bucket paths into services beyond the provider.</p>
+
+        <h2>Run manifest store</h2>
+        <p>Each task run is represented as a single JSON document in the bucket at <code>tasks/{taskId}/.manifest.json</code>. That convention matches what the desktop tool already produced: one manifest per task folder, easy to inspect with standard tools, and simple to list with a prefix query. <code>RunManifestService</code> exposes create, list, get, and update operations; the service validates invariants (for example, monotonic step progression or required metadata fields) and calls the provider.</p>
+
+        <p>We already had a <code>readJsonFromGcs</code> helper for pulling typed JSON from objects. Symmetry demanded a <code>writeJsonToGcs</code> companion: same serialization options, same error mapping, explicit content types for debugging. Providers stay small; shared I/O helpers keep retry and logging consistent whether the caller is writing a manifest or a sidecar artifact.</p>
+
+        <h2>V1 adapter layer</h2>
+        <p>The React client was written against stable domain types—call them <code>AutoSeed*</code> types—shaped for forms, tables, and step viewers. The HTTP API backed by GCS naturally returns versioned wire shapes—here, <code>V1TaskVersion</code>—because the bucket layout and field names evolved with the desktop tool. Coupling the UI to those wire types would have made every storage migration a frontend rewrite.</p>
+
+        <p>The compromise is a client-side adapter, <code>adaptV1TaskVersion</code>, that maps API responses into the UI’s domain model. When the backend eventually serves Prisma-backed JSON, only the server route and possibly a thin server adapter change. The browser keeps importing the same <code>AutoSeedTaskVersion</code> types and the same components. The adapter is the pressure valve between “what the storage layer can emit today” and “what the product wants to render.”</p>
+
+<pre><code class="language-typescript">type AutoSeedTaskVersion = {
+  id: string;
+  pipelineStepId: string;
+  artifactRefs: AutoSeedArtifactRef[];
+  meta: Record&lt;string, unknown&gt;;
+};
+
+type V1TaskVersion = {
+  task_id: string;
+  active_step_key: string;
+  artifacts_v1: { uri: string; kind_hint?: string }[];
+  extras: Record&lt;string, unknown&gt;;
+};
+
+export function adaptV1TaskVersion(v1: V1TaskVersion): AutoSeedTaskVersion {
+  return {
+    id: v1.task_id,
+    pipelineStepId: v1.active_step_key,
+    artifactRefs: v1.artifacts_v1.map((a) => ({
+      uri: a.uri,
+      kind: a.kind_hint ?? "unknown",
+    })),
+    meta: v1.extras ?? {},
+  };
+}</code></pre>
+
+        <p>In practice the real adapter handles nullability, optional nested blocks, and default values. The pattern is the same: isolate ugly field names and legacy nesting at the boundary so components never import <code>V1*</code> types.</p>
+
+        <h2>Artifact and step registries</h2>
+        <p>Seeding UIs need to answer two questions dozens of times per page: what <em>kind</em> of file is this, and which <em>pipeline step</em> does this identifier refer to? Hard-coded <code>if (path.endsWith(".json"))</code> branches rot quickly when new artifact classes appear or when multiple steps share similar filenames.</p>
+
+        <p>An <strong>artifact kind registry</strong> centralizes inference: it matches extension, MIME type, and path patterns in priority order and returns a discriminated union of kinds. A <strong>step registry</strong> resolves string step IDs to canonical step records, including disambiguation when names collide—think <code>model_output_execution_0</code> style suffixes copied from legacy logs. Both registries use exhaustive <code>switch</code> on unions so TypeScript fails the build when a new kind or step arrives without handling.</p>
+
+        <p>That explicitness pays off when the thirteen-node pipeline adds a gate or renames a label: you update one table of metadata rather than chasing string literals across the tree.</p>
+
+        <h2>Unified thirteen-node pipeline</h2>
+        <p>The task lifecycle specification stopped being eleven flat steps. We modeled it as <strong>thirteen nodes</strong>: ten actionable steps plus three gates that represent approval or synchronization points in the lifecycle. Each node declares a structural <code>type</code> of either <code>"step"</code> or <code>"gate"</code> so the timeline can render different iconography and copy without string matching on identifiers.</p>
+
+        <p>All thirteen statuses share a single <strong>status registry</strong>: the authoritative map from status key to human label, icon name, semantic color token, and sort order for the timeline. Feature code imports that registry instead of scattering parallel constants in CSS and JSX. Task-level status for the overview is derived from <code>currentStepStatus</code>—there is no parallel <code>status</code> field that could disagree with the pipeline and confuse operators.</p>
+
+<pre><code class="language-typescript">export const TASK_PIPELINE_STATUS_REGISTRY = {
+  queued: {
+    label: "Queued",
+    icon: "clock",
+    tone: "neutral",
+    rank: 0,
+    nodeType: "step",
+  },
+  awaiting_review_gate: {
+    label: "Awaiting review",
+    icon: "shield-check",
+    tone: "warning",
+    rank: 6,
+    nodeType: "gate",
+  },
+  completed: {
+    label: "Completed",
+    icon: "check",
+    tone: "success",
+    rank: 12,
+    nodeType: "step",
+  },
+} as const satisfies Record&lt;
+  string,
+  { label: string; icon: string; tone: string; rank: number; nodeType: "step" | "gate" }
+&gt;;
+
+export type TaskPipelineStatus = keyof typeof TASK_PIPELINE_STATUS_REGISTRY;</code></pre>
+
+        <p>Gates are first-class nodes, not afterthought badges. That alignment between data model and UI makes the timeline honest: you see the same progression in the seeding platform that you saw in the desktop tool’s graph.</p>
+
+        <h2>Task detail with desktop parity</h2>
+        <p>The detail page used to fire three parallel fetches—manifest, task version, auxiliary metadata—and stitch results in the client. That increased failure modes and duplicated loading states. We collapsed the read path into <strong>one API response</strong> assembled on the server: run metadata banner at the top, step content routed by the current pipeline node, and a compact timeline that surfaces eight visible steps with overflow for the rest.</p>
+
+        <p>New viewers round out parity with the desktop tool. A <strong>model output</strong> panel pairs execution metadata (timing, model id, token counts where available) with an artifact browser rooted at the run’s output prefix. A <strong>golden data</strong> panel shows the human-improved reference content beside the same artifact affordances so reviewers can diff structure without leaving the browser. Labels and section order follow desktop terminology deliberately; the goal is continuity, not a redesign that forces a second training curve.</p>
+
+        <p>Keeping vocabulary aligned also reduces support load: search results, runbooks, and screenshots from the legacy tool still read as true when someone opens the same task in the browser.</p>
+
+        <p>Step content routing is a small map from pipeline node key to viewer component lazy-loaded per tab. Combined with the status registry, the page stays declarative: add a node in one place and both the timeline and the main panel learn about it.</p>
+
+        <h2>Route template with versioned handlers</h2>
+        <p>Next.js API routes stayed thin wrappers. A shared factory builds handlers for each API version so authentication, observability, and error envelopes match across endpoints. Inside the closure we resolve the injected <code>TaskStorageProvider</code> and call the right service.</p>
+
+<pre><code class="language-typescript">type HandlerCtx = {
+  provider: TaskStorageProvider;
+};
+
+export function createV1Handler&lt;Body, Result&gt;(opts: {
+  methods: readonly ("GET" | "POST" | "PUT")[];
+  run: (input: Body, ctx: HandlerCtx) =&gt; Promise&lt;Result&gt;;
+}) {
+  return async function handler(req: Request, ctx: HandlerCtx): Promise&lt;Response&gt; {
+    if (!opts.methods.includes(req.method as (typeof opts.methods)[number])) {
+      return Response.json({ error: "method_not_allowed" }, { status: 405 });
+    }
+
+    try {
+      const body = req.method === "GET" ? (undefined as Body) : ((await req.json()) as Body);
+      const result = await opts.run(body, ctx);
+      return Response.json({ ok: true, data: result });
+    } catch (e) {
+      return Response.json({ ok: false, error: mapError(e) }, { status: 500 });
+    }
+  };
+}
+
+export const GET_TASK_VERSION_V1 = createV1Handler({
+  methods: ["GET"],
+  run: async (_body, { provider }) =&gt; {
+    // parse taskId / version from URL, delegate to service
+    return provider.getTaskVersion("taskId", "v1");
+  },
+});</code></pre>
+
+        <p>When Prisma lands, the import that constructs <code>ctx.provider</code> changes; the handler factory and the service signatures do not.</p>
+
+        <h2>What I would ship earlier next time</h2>
+        <p>I would publish the provider interface as a tiny internal package or module the day the first manifest path is invented, even if only GCS exists. The psychological cost of “we will abstract later” is real, and the longer string paths live in handlers, the harder the extraction. I would also snapshot example manifests in tests as soon as the desktop tool exports them—fixtures beat oral tradition when debugging bucket ACLs at midnight.</p>
+
+        <p>Hot-swappable storage sounds like premature optimization until you watch a team ship a full seeding portal while migrations are still debating foreign keys. The provider-service split turned that schedule pressure into leverage: same product surface, same types, different backing store—but only because we disciplined the seams early and kept adapters at the edges.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Invisible Bugs: File Bypass & Missing Worker Runs — Humza Tareen</title>
+  <meta name="description" content="Two production bugs that were invisible until real users hit them — a file type validation bypass in expert review and a missing worker run on admin approve.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Bug Fix, TypeScript, Validation, Prisma, Production">
+  <link rel="canonical" href="https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Invisible Bugs: File Bypass & Missing Worker Runs">
+  <meta property="og:description" content="Two production bugs that were invisible until real users hit them — a file type validation bypass in expert review and a missing worker run on admin approve.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-15T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Bug Fixing">
+  <meta property="article:tag" content="Validation">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Prisma">
+  <meta property="article:tag" content="Production">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Invisible Bugs: File Bypass & Missing Worker Runs">
+  <meta name="twitter:description" content="Two production bugs that were invisible until real users hit them — a file type validation bypass in expert review and a missing worker run on admin approve.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Invisible Bugs: File Bypass & Missing Worker Runs",
+    "description": "Two production bugs that were invisible until real users hit them — a file type validation bypass in expert review and a missing worker run on admin approve.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-15",
+    "dateModified": "2026-05-15",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html" },
+    "keywords": ["Bug Fix", "TypeScript", "Validation", "Prisma", "Production"],
+    "articleSection": "DevOps"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Invisible Bugs: File Bypass & Missing Worker Runs</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-15">May 15, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Bug Fixing</span>
+          <span class="blog-tag">Validation</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Prisma</span>
+          <span class="blog-tag">Production</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>Some bugs never show up in staging. They sit behind assumptions that only break when a real reviewer picks the wrong file type, or when an operator uses the admin panel in a way your happy-path tests never exercised. This post is about two such production issues on the platform I work on: a file upload validation bypass in the review system, and a missing background “worker run” record when admins bulk-approve tasks. Both looked fine in isolation. Both failed only when the shortcut path diverged from the full workflow.</p>
+
+        <p>The through-line is not clever TypeScript tricks. It is <em>postconditions</em>: whatever the normal flow guarantees after a step—matching file types, durable pipeline markers—the bypass must guarantee the same thing, or downstream queries and jobs will lie to you quietly until someone notices missing rows in a tab.</p>
+
+        <h2>Bug 1: When “allowed extension” is not enough</h2>
+
+        <h3>The setup</h3>
+        <p>Expert reviewers on the platform upload revised deliverables for tasks. The upload endpoint applies a global allowlist of extensions—think <code>.docx</code>, <code>.xlsx</code>, <code>.pdf</code>, and a handful of others. That check is reasonable: it blocks executables, odd archives, and obvious mistakes before anything hits object storage.</p>
+
+        <p>In development, we always uploaded the same kind of file the task started with. Tests used fixtures that matched the original artifact. No one tried to “fix” a Word report by dropping in a PDF, so the allowlist looked like sufficient protection.</p>
+
+        <h3>The bug</h3>
+        <p>Consider a task whose original artifact is a model-generated <code>report.docx</code>. A reviewer uploads a revised version—but they choose a <code>.pdf</code> instead. The global allowlist happily accepts PDFs, so the request passes validation. The problem is downstream: document processing, diff tooling, and merge steps assume the revised file is the <em>same</em> format as the original. Swapping <code>.docx</code> for <code>.pdf</code> does not trip the allowlist; it breaks the pipeline that expects a single consistent type through the revision boundary.</p>
+
+        <p>From the server’s perspective, nothing “failed” at upload time. From the user’s perspective, things fail later in ways that are hard to attribute to the upload step. That is the definition of an invisible bug: locally valid input, globally invalid state.</p>
+
+        <h3>The fix: two layers</h3>
+        <p>We added <strong>two-layer validation</strong>. On the server, a function <code>validateFileTypeMatch()</code> compares the uploaded file’s extension to the original task artifact’s extension. If they differ, the API rejects the upload with a clear error, even when both extensions appear on the global allowlist.</p>
+
+        <p>On the client, each row in the file list gets a dropzone whose <code>accept</code> attribute is restricted to the original file’s extension. If the source was <code>.docx</code>, the picker only offers Word-class inputs; the user never reaches the misleading success path for a PDF in the first place.</p>
+
+        <p>To avoid breaking older clients, <code>originalFileName</code> (or equivalent metadata) is optional on the request. When it is missing, we fall back to allowlist-only validation—the legacy behavior—so nothing hard-crashes for consumers that have not been updated yet. New clients send the field; the server enforces the match when present.</p>
+
+<pre><code class="language-typescript">function extname(filename: string): string {
+  const base = filename.split(/[/\\]/).pop() ?? "";
+  const i = base.lastIndexOf(".");
+  return i === -1 ? "" : base.slice(i).toLowerCase();
+}
+
+export function validateFileTypeMatch(
+  originalFileName: string | undefined | null,
+  uploadedFileName: string
+): { ok: true } | { ok: false; reason: string } {
+  if (!originalFileName?.trim()) {
+    return { ok: true };
+  }
+
+  const a = extname(originalFileName);
+  const b = extname(uploadedFileName);
+
+  if (a === "" || b === "") {
+    return { ok: false, reason: "missing_extension" };
+  }
+
+  if (a !== b) {
+    return { ok: false, reason: `type_mismatch:${a}->${b}` };
+  }
+
+  return { ok: true };
+}</code></pre>
+
+        <p>For the UI, tying <code>accept</code> to the original artifact keeps mistakes from becoming API calls:</p>
+
+<pre><code class="language-typescript">function acceptForOriginal(originalFileName?: string | null): string | undefined {
+  if (!originalFileName?.trim()) return undefined;
+
+  const ext = extname(originalFileName);
+  if (!ext) return undefined;
+
+  if (ext === ".docx" || ext === ".doc") return ".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  if (ext === ".pdf") return ".pdf,application/pdf";
+  if (ext === ".xlsx" || ext === ".xls") return ".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+  return ext;
+}
+
+export function RevisedFileDropzone(props: {
+  originalFileName?: string | null;
+  onFile: (file: File) =&gt; void;
+}) {
+  const accept = acceptForOriginal(props.originalFileName);
+
+  return (
+    &lt;input
+      type="file"
+      accept={accept}
+      onChange={(e) =&gt; {
+        const file = e.target.files?.[0];
+        if (file) props.onFile(file);
+      }}
+    /&gt;
+  );
+}</code></pre>
+
+        <h3>Testing</h3>
+        <p>We added ten focused tests: pure validation cases, route-level integration, explicit mismatch rejection, case-insensitive extension comparison, and the backward-compat path when <code>originalFileName</code> is absent. Isolating the matcher in a small module made it cheap to enumerate edge cases without standing up the whole storage stack.</p>
+
+        <h2>Bug 2: Admin bulk-approve and the tab that stayed empty</h2>
+
+        <h3>The setup</h3>
+        <p>The admin panel exposes bulk status changes: select many tasks and move them to an approved outcome—labels like passed, approved, or auto-accepted depending on your domain vocabulary. A separate view, call it “Delivery Completed,” lists work that has fully cleared internal quality gates.</p>
+
+        <p>That tab is driven by a database query with two predicates: the task stage must be <code>COMPLETED</code>, and there must exist a row for a specific worker run type—say an expert quality check—marking that step as finished. The normal reviewer flow always creates that worker run when someone submits an assessment, so in manual testing the tab populated predictably.</p>
+
+        <h3>The bug</h3>
+        <p>Bulk admin approval does not go through the reviewer submission path. It updates status (and related fields) directly. The query for “Delivery Completed” still required the expert quality check run. Tasks that admins approved never got that run inserted, so they never appeared in the tab—even though, from the admin’s point of view, the tasks were “done.”</p>
+
+        <p>This is another invisible failure: no thrown exception, no red banner. Just an empty slice of the product for a class of tasks that took a legitimate shortcut.</p>
+
+        <h3>The fix: align the shortcut with the full path</h3>
+        <p>When bulk operations move tasks into an approved terminal family (<code>PASSED</code>, <code>APPROVED</code>, <code>AUTO_ACCEPTED</code>), the server now <strong>upserts</strong> the expert quality check worker run with status <code>COMPLETED</code>. The upsert uses an empty update clause (or equivalent no-op on conflict) so that if the normal flow already wrote a run, we do not clobber timestamps or metadata.</p>
+
+        <p>Worker-run creation is intentionally <strong>non-blocking</strong>: if persisting the run fails, the status transition still commits, and the API returns success with a partial warning so operators know something needs follow-up instead of silently losing the bulk action.</p>
+
+<pre><code class="language-typescript">type WorkerRunType = "EXPERT_QUALITY_CHECK";
+type WorkerRunStatus = "COMPLETED" | "FAILED" | "PENDING";
+
+async function ensureExpertQualityCheckRun(
+  tx: Prisma.TransactionClient,
+  taskId: string
+) {
+  await tx.workerRun.upsert({
+    where: {
+      taskId_type: { taskId, type: "EXPERT_QUALITY_CHECK" },
+    },
+    create: {
+      taskId,
+      type: "EXPERT_QUALITY_CHECK",
+      status: "COMPLETED",
+      completedAt: new Date(),
+    },
+    update: {},
+  });
+}</code></pre>
+
+<pre><code class="language-typescript">type BulkApplyResult = {
+  taskId: string;
+  ok: true;
+  warnings?: string[];
+} | {
+  taskId: string;
+  ok: false;
+  error: string;
+};
+
+async function applyApprovedTransition(
+  prisma: PrismaClient,
+  taskId: string,
+  nextStatus: "PASSED" | "APPROVED" | "AUTO_ACCEPTED"
+): Promise&lt;BulkApplyResult&gt; {
+  const warnings: string[] = [];
+
+  await prisma.$transaction(async (tx) =&gt; {
+    await tx.task.update({
+      where: { id: taskId },
+      data: { status: nextStatus, stage: "COMPLETED", updatedAt: new Date() },
+    });
+  });
+
+  try {
+    await prisma.$transaction(async (tx) =&gt; {
+      await ensureExpertQualityCheckRun(tx, taskId);
+    });
+  } catch {
+    warnings.push("worker_run_upsert_failed");
+  }
+
+  return warnings.length
+    ? { taskId, ok: true, warnings }
+    : { taskId, ok: true };
+}</code></pre>
+
+        <p>We do <em>not</em> create this run for negative or in-review outcomes (<code>FAILED</code>, <code>REJECTED</code>, <code>NEEDS_HUMAN_REVIEW</code>, and so on); the fix is scoped to transitions that are meant to mirror a successful expert sign-off.</p>
+
+        <h3>Testing</h3>
+        <p>Eleven new cases cover happy paths for each approved status, absence of runs for non-approved transitions, and upsert idempotency when a run already exists. The bulk status module’s test file now sits at eighty-three examples total—enough volume that regressions in the shortcut path are harder to sneak in.</p>
+
+        <h2>The shared pattern</h2>
+        <p>Both bugs come from the same structural mistake: a <strong>bypass</strong> that performed a subset of the steps the main flow performs automatically. Upload validation checked “is this extension globally OK?” but not “does it match the task’s original type?” Admin approval changed status but did not create the worker-run marker the rest of the system assumes exists after a human quality gate.</p>
+
+        <p>The normal path did both layers; the shortcut did one. Production did not complain at the boundary—it complained where assumptions accumulated: document jobs and read models that encoded those assumptions in SQL.</p>
+
+        <h2>The lesson</h2>
+        <p>Every shortcut in your system should document—or better, test—the same <em>postconditions</em> as the long path. If the full flow creates a worker run and updates status, the admin tool must do both. If the full flow ties revised files to original types, the upload API must enforce that match when it knows the original name, and the UI should steer users before the mistake ships.</p>
+
+        <p>When you add a bypass, ask explicitly: “What side effects did we skip?” Then either replay them in the shortcut, or weaken downstream queries so they do not rely on effects that are not guaranteed. The second option is rarer; usually you want the invariant, not a looser dashboard.</p>
+
+        <p>Invisible bugs are not magic. They are invariant drift between paths that <em>look</em> equivalent at the UI layer. Making those invariants explicit—and covered by tests—is how you surface them before a customer does.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

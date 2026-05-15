@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>When 57K Lines Get Rolled Back — Humza Tareen</title>
+  <meta name="description" content="11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Code Integration, Rollback, Architecture, TypeScript, Git">
+  <link rel="canonical" href="https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="When 57K Lines Get Rolled Back">
+  <meta property="og:description" content="11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-15T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Integration">
+  <meta property="article:tag" content="Rollback">
+  <meta property="article:tag" content="Architecture">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Git">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="When 57K Lines Get Rolled Back">
+  <meta name="twitter:description" content="11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "When 57K Lines Get Rolled Back",
+    "description": "11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-15",
+    "dateModified": "2026-05-15",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html" },
+    "keywords": ["Code Integration", "Rollback", "Architecture", "TypeScript", "Git"],
+    "articleSection": "DevOps"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">When 57K Lines Get Rolled Back</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-15">May 15, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Integration</span>
+          <span class="blog-tag">Rollback</span>
+          <span class="blog-tag">Architecture</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Git</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>Shipping a large vertical slice—schemas, persistence, APIs, background work, UI, dashboards, and cluster config—looks straightforward on paper. Split the work into reviewable pull requests, get approvals, merge, and celebrate. Reality had other plans. Eleven stacked pull requests collapsed into one squashed merge of roughly fifty-seven thousand lines across three hundred thirty-four files; the next day, the whole thing was reverted; and the follow-up was not a replay of the same diff but a deliberate reconsolidation with stricter boundaries. This is the engineering story of that arc: what worked in review, what broke in integration, why the team chose rollback, and how pressure to land the feature again produced a smaller, clearer codebase than the first attempt.</p>
+
+        <h2>The setup: one feature, many surfaces</h2>
+        <p>I had built an auto-seeder capability for the platform—a full task-seeding flow with a first-version data foundation, runtime validation, a database layer with explicit state machines, HTTP routes, an agent-style engine with pipeline steps and quality gates, supporting services, a complete operator UI with list and detail views, dashboard and admin affordances, and Kubernetes wiring for the worker paths. The footprint was large by design: the feature touched almost every layer of the stack. In aggregate the branch measured on the order of fifty-seven thousand lines spread across more than three hundred files. That scale is not bragging rights; it is a warning label. The question was never “can we write it,” but “can we land it without turning main into an unmaintainable blast radius.”</p>
+
+        <h2>The split strategy: eleven layers, eleven reviews</h2>
+        <p>To keep cognitive load human-sized, I carved the work into eleven pull requests, each aimed at a coherent layer. The intent was familiar: reviewers could reason about schema changes without wading through React components, and UI folks could comment on UX without blocking on migration SQL.</p>
+
+        <ol>
+          <li><strong>PR 1:</strong> ORM schema, migrations, and core shared types.</li>
+          <li><strong>PR 2:</strong> Runtime schema definitions for request and domain payloads.</li>
+          <li><strong>PR 3:</strong> Database access layer, step and task state machines, and internal documentation.</li>
+          <li><strong>PR 4:</strong> HTTP routes plus shared library updates they depended on.</li>
+          <li><strong>PR 5:</strong> Auto-seeder agent module and core runtime wiring.</li>
+          <li><strong>PR 6:</strong> Pipeline steps and the quality gate that sits in front of downstream work.</li>
+          <li><strong>PR 7:</strong> Services—for example run bookkeeping, taxonomy, gate review orchestration, and task detail aggregation.</li>
+          <li><strong>PR 8:</strong> Additional library helpers and complementary API surfaces.</li>
+          <li><strong>PR 9:</strong> UI: task detail, list pages, and read-only viewers.</li>
+          <li><strong>PR 10:</strong> Dashboard and admin shells, shared components, and CI configuration.</li>
+          <li><strong>PR 11:</strong> Cluster manifests and ops-facing documentation.</li>
+        </ol>
+
+        <p>Each pull request went through independent review. Most stacks carried two to four approvals. On paper that is healthy process. Under the surface, however, the stack was not eleven isolated modules—it was one system delivered in slices. Tests in later pull requests imported types, fixtures, and behaviors introduced earlier. Fixtures assumed admin-capable callers. Method signatures drifted slightly as earlier layers tightened their contracts. The reviews were thorough for <em>each</em> slice, but no single review saw the whole dependency graph at once.</p>
+
+        <h2>The merge problem: clean PRs, messy integration</h2>
+        <p>When we tried to land the stack piecemeal, the picture changed. Individual pull requests could not merge into main in isolation without leaving the tree in a failing state. Tests in PR 9 assumed code that only existed once PRs 4 through 7 were present; merging PR 3 alone was “correct” for that file set but wrong for the repository as a whole. Failures cascaded: auth-related tests needed consistent mock claims (for example <code>admin: true</code> where the route enforced elevated access), and signature changes in service constructors rippled through factories that each PR had updated differently.</p>
+
+        <p>The pragmatic fix was to open an integration branch, merge or replay all eleven branches into it, resolve conflicts once, and run the full suite until green. That work included mechanical conflict resolution, but more importantly it forced a single coherent view of contracts: one shape for context objects, one ruleset for authorization in tests, one agreed order of initialization for the pipeline. When the branch was stable, we merged it to main as a <em>single squashed commit</em>—one hash, one giant diff, one point in history that contained the entire feature.</p>
+
+        <p>Squashing cleaned history but concentrated risk: one commit, one blame target, little room for surgical rollback. Reviewers of the final merge had to trust integration work done off the beaten path.</p>
+
+        <h2>The rollback: size as an operational concern</h2>
+        <p>The feature worked. Smoke tests and targeted manual passes looked good. And yet, the next day, the team reverted the merge. The concern was not a specific production defect; it was exposure. A change that large is hard to reason about under incident pressure. If something subtle misbehaved in production—latency, partial writes, a race in the worker—debugging would mean spelunking a single rev that touched everything from SQL to CSS. The team preferred a clean working tree and a rethink over living with that concentration of risk. A single revert commit removed the feature wholesale. It was the right call for how the organization weighed operability against shipping velocity in that moment.</p>
+
+        <p>Rollback is often framed as failure. Here it functioned as a forcing function: we still needed the capability, but we no longer had the luxury of carrying two half-merged directory trees and opportunistic imports. We had to come back with a story that fit in human heads <em>and</em> in git history.</p>
+
+        <h2>The reconsolidation: structure before replay</h2>
+        <p>Rather than cherry-picking the old branch and hoping for a warmer reception, I treated the empty tree as a design exercise. The original implementation had split concepts across two top-level areas with overlapping responsibilities—think parallel folders where both claimed “the” place for seeding logic, types, and glue code. That duplication had been expedient while prototyping; at integration time it became import cycles, inconsistent naming, and two competing answers to “where does validation live.”</p>
+
+        <p>Conceptually, the before state looked like this—two sibling trees with blurry boundaries:</p>
+
+<pre><code class="language-typescript">// Before (simplified layout): overlapping concerns split across siblings
+src/
+  feature-a-seed/**     // validators, handlers, “utility” DB touches
+  feature-b-seeder/**   // overlapping validators, duplicated DTO shapes
+  apps/api/routes/**    // routes calling into both inconsistently</code></pre>
+
+        <p>The reconsolidation merged those concerns into one versioned library root—below shown as <code>src/lib/v1/</code>—and enforced a directional rule: providers talk to the outside world, services encapsulate orchestration and policy, routes stay thin.</p>
+
+<pre><code class="language-typescript">// After: explicit layering — dependencies point inward/downward only
+src/lib/v1/
+  providers/    // IO boundaries (object storage, queue, outbound HTTP)
+  services/     // application use-cases; compose providers + domain
+  domain/       // pure types, invariants, state transitions
+  pipeline/     // worker engine, steps, gate execution
+apps/api/routes/**  // parse/validate request → call service → map response</code></pre>
+
+        <p>Routes stopped reaching into storage clients. Services stopped importing UI helpers. Domain code knew nothing about Express or Kubernetes—only facts about tasks, steps, and allowed transitions.</p>
+
+        <p>Object storage had been the worst offender for “scatter.” Multiple modules issued their own uploads, deletes, and signed URL logic. During reconsolidation I introduced a single provider type—conceptually <code>GcsRepository</code>—as the lone module allowed to speak the vendor SDK dialect. Everyone else depended on narrow methods with stable TypeScript signatures.</p>
+
+<pre><code class="language-typescript">// The only module that imports the vendor SDK lives beside other providers
+export class GcsRepository {
+  constructor(private readonly bucket: string) {}
+
+  async putObject(key: string, body: Buffer, contentType: string): Promise&lt;void&gt; {
+    // vendor-specific client calls isolated here
+  }
+
+  async getSignedReadUrl(key: string, ttlMs: number): Promise&lt;string&gt; {
+    // policy for TTL and headers centralized
+  }
+
+  async deleteObject(key: string): Promise&lt;void&gt; {}
+}
+
+// Services consume an interface-shaped stub in tests — never the SDK
+export interface ObjectStore {
+  putObject(key: string, body: Buffer, contentType: string): Promise&lt;void&gt;;
+  getSignedReadUrl(key: string, ttlMs: number): Promise&lt;string&gt;;
+  deleteObject(key: string): Promise&lt;void&gt;;
+}</code></pre>
+
+        <p>Retry, content-type defaults, and path naming lived in one place—so credential rotation or per-environment buckets touched a few provider lines instead of dozens of service call sites.</p>
+
+        <p>Pure logic moved under <code>domain/</code> as small modules with no side effects—ideal for exhaustive unit tests without spinning databases or mocking network.</p>
+
+<pre><code class="language-typescript">// domain/task-machine.ts — no framework imports
+export type TaskPhase = "draft" | "queued" | "running" | "passed" | "failed";
+
+export function canEnqueue(current: TaskPhase): boolean {
+  return current === "draft";
+}
+
+export function nextPhaseAfterGate(qualityOk: boolean): TaskPhase {
+  return qualityOk ? "passed" : "failed";
+}</code></pre>
+
+        <p>The worker runtime—steps, sequencing, timeouts—lived under <code>pipeline/</code>, depending on domain invariants and calling services when a side effect was required. That separation made it obvious where to add a new gate, versus where to adjust persistence, versus where to tweak an API response DTO.</p>
+
+        <p>When the dust settled, the consolidated tree was roughly nine thousand six hundred eighty-five lines <em>smaller</em> than the first landing attempt—same capabilities, fewer contradictions. Deletion is the unsung half of architecture work.</p>
+
+        <h2>The database split: ship without blocking on migrations</h2>
+        <p>On the second pass, schema and migrations lived in their own PR train, separate from the service-layer and object-storage integration branch. Reviewers could vet application logic against existing tables without coupling every discussion to forward-only migration rollback. The app could ship paths that reused current columns and defer additive schema until a dedicated migration landed. Ordering work that way does not eliminate migrations—it keeps schema debate from freezing feature integration and vice versa.</p>
+
+        <h2>Lessons</h2>
+        <p><strong>Stacked PRs excel at review and fail at integration when dependencies are circular across layers.</strong> If later tests compile only because earlier “unfinished” APIs exist, you are building one branch that is masquerading as many. In that regime, frequent rebases of a shared feature branch beat pretending each PR is merge-eligible alone.</p>
+
+        <p><strong>Squashed mega-merges trade history for cleanliness.</strong> If the org cannot operate a fifty-thousand-line atomic commit, prefer deployable vertical slices or feature flags instead of one blast.</p>
+
+        <p><strong>Rollback can be productive.</strong> Losing the first merge was discouraging in the moment, but it created permission to collapse duplicate directories, enforce provider boundaries, and delete dead scaffolding. The second shape of the codebase was not a sentimental copy-paste; it was a refined design under time pressure.</p>
+
+        <p>Big features do not fail only because engineers cannot build them; they fail when integration strategy and operational comfort do not match the size of the diff. Align those early—or be ready to absorb the cost of a revert and treat it as a rewrite opportunity, not just a setback.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

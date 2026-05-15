@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 May 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 15 May 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -279,6 +279,45 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>Building a GCS-Backed Auto-Seeder Platform</title>
+      <link>https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html</guid>
+      <pubDate>Thu, 15 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>GCS</category>
+      <category>Provider Pattern</category>
+      <category>TypeScript</category>
+      <category>Service Layer</category>
+      <description>Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.</description>
+    </item>
+
+    <item>
+      <title>When 57K Lines Get Rolled Back</title>
+      <link>https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html</guid>
+      <pubDate>Thu, 15 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Integration</category>
+      <category>Rollback</category>
+      <category>Architecture</category>
+      <category>Git</category>
+      <description>11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering.</description>
+    </item>
+
+    <item>
+      <title>Invisible Bugs: File Bypass and Missing Worker Runs</title>
+      <link>https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html</guid>
+      <pubDate>Thu, 15 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Bug Fix</category>
+      <category>Validation</category>
+      <category>TypeScript</category>
+      <category>Production</category>
+      <description>Two production bugs invisible during development — a file type validation bypass and a missing worker run that broke admin bulk-approve visibility.</description>
+    </item>
+
     <item>
       <title>Designing a Task Lifecycle V1 from Scratch</title>
       <link>https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html</link>

@@ -1,5 +1,38 @@
 [
   {
+    "id": "gcs-backed-auto-seeder-platform",
+    "title": "Building a GCS-Backed Auto-Seeder Platform with Hot-Swappable Backends",
+    "summary": "Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.",
+    "date": "2026-05-15",
+    "themes": ["infrastructure", "api-design"],
+    "components": ["GCS", "TypeScript", "Provider Pattern", "Next.js", "Service Layer"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html"
+    }
+  },
+  {
+    "id": "57k-line-merge-rollback-reconsolidation",
+    "title": "When 57K Lines Get Rolled Back: Lessons from a Mega-Merge",
+    "summary": "11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering — deleting 9,685 lines in the process.",
+    "date": "2026-05-15",
+    "themes": ["devops", "infrastructure"],
+    "components": ["Git", "Architecture", "TypeScript", "Code Integration", "Rollback"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html"
+    }
+  },
+  {
+    "id": "invisible-bugs-file-type-bypass-missing-worker-runs",
+    "title": "Invisible Bugs: File Type Bypass and Missing Worker Runs in Production",
+    "summary": "Two production bugs invisible during development — a file type validation bypass in expert review and a missing worker run that broke admin bulk-approve visibility.",
+    "date": "2026-05-15",
+    "themes": ["devops", "security"],
+    "components": ["Bug Fix", "TypeScript", "Prisma", "Validation", "Production"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html"
+    }
+  },
+  {
     "id": "task-lifecycle-v1-schema-api-design",
     "title": "Designing a Task Lifecycle V1 from Scratch: 10-Table Schema and 40+ API Routes",
     "summary": "10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs with 176+ tests.",
