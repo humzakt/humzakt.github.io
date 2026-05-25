@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Multi-Layer Caching for Dashboard Latency — Humza Tareen</title>
+  <meta name="description" content="HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Caching, React Query, Next.js, Performance, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Multi-Layer Caching for Dashboard Latency">
+  <meta property="og:description" content="HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Caching">
+  <meta property="article:tag" content="React Query">
+  <meta property="article:tag" content="Next.js">
+  <meta property="article:tag" content="Performance">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Multi-Layer Caching for Dashboard Latency">
+  <meta name="twitter:description" content="HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Multi-Layer Caching for Dashboard Latency",
+    "description": "HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-26",
+    "dateModified": "2026-05-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html" },
+    "keywords": ["Caching", "React Query", "Next.js", "Performance", "TypeScript"],
+    "articleSection": "Performance"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Multi-Layer Caching for Dashboard Latency</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-26">May 26, 2026</time>
+          <span>&middot;</span>
+          <span>9 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Caching</span>
+          <span class="blog-tag">React Query</span>
+          <span class="blog-tag">Next.js</span>
+          <span class="blog-tag">Performance</span>
+          <span class="blog-tag">TypeScript</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>The admin dashboard for the task seeding platform I work on had a latency problem that grew worse with every new feature. Every page load triggered a fan-out of storage requests—reading multiple manifest files from Google Cloud Storage to reconstruct a list of task summaries. Switching tabs refetched everything. Drilling into a specific batch job issued another round-trip per batch to load its tasks. The initial JavaScript bundle was heavy because all eight step viewers (model output, golden data, review interface, and so on) loaded upfront regardless of which step a user actually selected. The page felt sluggish—multi-second loads on a tool that operators used hundreds of times a day.</p>
+
+        <p>This post walks through the four layers of caching and the code-splitting strategy that brought the dashboard down to sub-second loads. Each layer addresses a different part of the problem, and they compound: the benefit of all four together is larger than the sum of any one in isolation.</p>
+
+        <h2>Layer 1 — HTTP Cache-Control headers</h2>
+        <p>The simplest wins came from telling the browser what it already knows: some data does not change often. The dashboard fetches several categories of data with very different volatility profiles, but every API route was returning default headers—effectively <code>no-store</code>—so the browser re-requested everything on every navigation.</p>
+
+        <p>The fix was straightforward. Taxonomy data like sectors and occupations changes on the order of weeks or months, so it gets a long public cache. Pool availability data changes frequently when you are looking at all available pools, but the "my pools" scope is tied to the session and needs revalidation. Run listings change when someone creates or cancels a run, so they get a short TTL with <code>stale-while-revalidate</code> for a snappy feel.</p>
+
+<pre><code class="language-typescript">function setCacheHeaders(
+  res: NextApiResponse,
+  profile: "taxonomy" | "pool-available" | "pool-mine" | "runs"
+) {
+  switch (profile) {
+    case "taxonomy":
+      // Sectors, occupations — changes rarely
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=600");
+      break;
+    case "pool-available":
+      // Pool listings — short private cache
+      res.setHeader("Cache-Control", "private, max-age=5, stale-while-revalidate=10");
+      break;
+    case "pool-mine":
+      // User-specific scope — always revalidate
+      res.setHeader("Cache-Control", "private, no-cache");
+      break;
+    case "runs":
+      // Run summaries — moderate TTL
+      res.setHeader("Cache-Control", "private, max-age=15, stale-while-revalidate=30");
+      break;
+  }
+}</code></pre>
+
+        <p>This is not clever engineering—it is the HTTP spec doing its job. But it eliminates a surprising number of redundant network requests, especially for taxonomy data that the browser was re-downloading on every tab switch. The key insight is matching cache policy to data volatility rather than applying a single policy everywhere.</p>
+
+        <h2>Layer 2 — Server-side cache with tag invalidation</h2>
+        <p>HTTP caching helps the browser, but it does nothing for the server-side fan-out problem. Every time a user loads the task list, the server reads multiple manifest files from cloud storage, parses them, and assembles a unified response. That fan-out was the dominant contributor to time-to-first-byte.</p>
+
+        <p>The solution was to wrap the storage read logic in Next.js's <code>unstable_cache</code> with a 30-second TTL. Reads within that window are served from the server's in-memory cache with no storage calls at all. The critical design decision was tag-based invalidation: every mutation that changes task state—creating a run, updating status, cancelling a batch—calls <code>revalidateTag</code> to bust the cache immediately.</p>
+
+<pre><code class="language-typescript">import { unstable_cache, revalidateTag } from "next/cache";
+
+const CACHE_TAG = "task-summaries";
+
+export const getCachedTaskSummaries = unstable_cache(
+  async (scope: string): Promise&lt;TaskSummary[]&gt; => {
+    const manifests = await listManifestFiles(scope);
+    const summaries = await Promise.all(
+      manifests.map((m) => parseManifest(m))
+    );
+    return summaries.flat();
+  },
+  ["task-summaries"],
+  { revalidate: 30, tags: [CACHE_TAG] }
+);
+
+export function invalidateTaskCache(reason: string) {
+  logger.info("cache.invalidate", { tag: CACHE_TAG, reason });
+  revalidateTag(CACHE_TAG);
+}</code></pre>
+
+        <p>Every mutation handler calls <code>invalidateTaskCache</code> with a structured reason string. A dedicated cache-invalidation module logs every invalidation event, so when debugging staleness issues you can trace exactly which action busted the cache and when. The pattern is simple: reads are instant (served from cache), writes trigger immediate invalidation, and the next read after a write gets fresh data. The 30-second TTL is a safety net—most invalidation happens explicitly through tags rather than by expiry.</p>
+
+        <p>This single change cut the median time-to-first-byte for the task list endpoint from over a second to under 50 milliseconds for cache-hit requests.</p>
+
+        <h2>Layer 3 — React Query migration</h2>
+        <p>The first two layers optimized the network. The third optimized the client. The dashboard was built with raw <code>useEffect</code> + <code>fetch</code> patterns—the kind where every component manages its own loading state, has its own error handling (or does not), and refetches on every mount. Tab switches triggered full refetches even when the data was seconds old. There was no coordination between components that needed the same data.</p>
+
+        <p>Migrating to React Query replaced all of that with declarative cache management. The taxonomy hook sets <code>staleTime: Infinity</code> because sectors and occupations genuinely do not change during a user session. The submissions view runs parallel queries for two data sources via <code>useQueries</code>. The expert pool table runs parallel queries for expert data and pool metadata.</p>
+
+        <p>The real leverage came from a centralized query key registry. Instead of scattering string keys across components, every key is defined as a hierarchical readonly tuple in one module. This gives you type-safe invalidation cascading for free—invalidating a parent key like <code>['tasks']</code> also invalidates every child key like <code>['tasks', taskId]</code>.</p>
+
+<pre><code class="language-typescript">export const taskKeys = {
+  all: ["tasks"] as const,
+  lists: () => [...taskKeys.all, "list"] as const,
+  list: (scope: string) => [...taskKeys.lists(), scope] as const,
+  details: () => [...taskKeys.all, "detail"] as const,
+  detail: (id: string) => [...taskKeys.details(), id] as const,
+  batches: (id: string) => [...taskKeys.detail(id), "batches"] as const,
+} as const;
+
+export const taxonomyKeys = {
+  all: ["taxonomy"] as const,
+  sectors: () => [...taxonomyKeys.all, "sectors"] as const,
+  occupations: (sectorId?: string) =>
+    [...taxonomyKeys.all, "occupations", sectorId] as const,
+} as const;
+
+// Invalidating taskKeys.all cascades to every task query
+// Invalidating taskKeys.lists() only affects list queries
+queryClient.invalidateQueries({ queryKey: taskKeys.all });</code></pre>
+
+        <p>This structure means a mutation that creates a new run can invalidate <code>taskKeys.lists()</code> to refresh every list view without touching cached detail data for tasks the user has already drilled into. Granular invalidation prevents the waterfall of unnecessary refetches that plagued the old approach.</p>
+
+        <p>The taxonomy hook is a good example of the before-and-after difference. Before: a <code>useEffect</code> that fetches on every mount, manages its own <code>loading</code> and <code>error</code> state, and has no cache awareness. After: a one-liner that fetches once per session and shares the result across every component that needs it.</p>
+
+        <h2>Layer 4 — Code splitting with dynamic imports</h2>
+        <p>The task detail page renders a multi-step workflow viewer. Each step has its own viewer component—model output, golden data, human review, quality audit, and so on—eight in total. The original implementation imported all eight at the top of the file, so the initial bundle included every viewer's code, dependencies, and assets regardless of which step the user selected. Most users only look at one or two steps per visit.</p>
+
+        <p>Switching to dynamic imports defers each viewer until the user actually selects that step. The initial bundle only includes the shell of the detail page and the tab navigation. When a user clicks a step tab, the corresponding viewer loads on demand.</p>
+
+<pre><code class="language-typescript">import dynamic from "next/dynamic";
+
+const StepViewers: Record&lt;StepType, React.ComponentType&lt;StepViewerProps&gt;&gt; = {
+  MODEL_OUTPUT: dynamic(() => import("./viewers/model-output-viewer")),
+  GOLDEN_DATA: dynamic(() => import("./viewers/golden-data-viewer")),
+  HUMAN_REVIEW: dynamic(() => import("./viewers/human-review-viewer")),
+  QUALITY_AUDIT: dynamic(() => import("./viewers/quality-audit-viewer")),
+  FINAL_REVIEW: dynamic(() => import("./viewers/final-review-viewer")),
+  CALIBRATION: dynamic(() => import("./viewers/calibration-viewer")),
+  EXPERT_REVIEW: dynamic(() => import("./viewers/expert-review-viewer")),
+  SUMMARY: dynamic(() => import("./viewers/summary-viewer")),
+};
+
+function TaskDetailStepContent({ step, data }: { step: StepType; data: StepData }) {
+  const Viewer = StepViewers[step];
+  return &lt;Viewer data={data} /&gt;;
+}</code></pre>
+
+        <p>The initial JavaScript bundle for the detail page shrank substantially. Subsequent step loads are fast because each viewer chunk is small and the browser caches it after the first load. Combined with React Query's cache, drilling into a step the user has already visited is effectively instant—no network request, no code load.</p>
+
+        <h2>Dashboard state in the URL</h2>
+        <p>Caching and code splitting solved the performance problem, but the dashboard had a usability problem too: every navigation reset view state. Selecting a tab, choosing a batch, applying filters, and setting a sort order—all stored in <code>useState</code>, all lost on browser back/forward or page refresh. Users could not share a link to a specific dashboard view.</p>
+
+        <p>A custom hook replaced all transient view state with URL search parameters. Each parameter uses a namespace prefix to avoid collisions with other parts of the application.</p>
+
+<pre><code class="language-typescript">import { useSearchParams, useRouter, usePathname } from "next/navigation";
+
+const PREFIX = "as.";
+
+export function useAutoSeedUrlState() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const get = (key: string) => searchParams.get(`${PREFIX}${key}`);
+
+  const set = (updates: Record&lt;string, string | null&gt;) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(updates)) {
+      const prefixed = `${PREFIX}${key}`;
+      if (value === null) {
+        params.delete(prefixed);
+      } else {
+        params.set(prefixed, value);
+      }
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  return {
+    tab: get("tab") ?? "runs",
+    batchId: get("batch"),
+    sortField: get("sort") ?? "createdAt",
+    sortDir: (get("dir") ?? "desc") as "asc" | "desc",
+    filterStatus: get("status"),
+    setTab: (tab: string) => set({ tab, batch: null }),
+    selectBatch: (id: string) => set({ batch: id }),
+    setSort: (field: string, dir: "asc" | "desc") => set({ sort: field, dir }),
+    setFilter: (status: string | null) => set({ status }),
+  };
+}</code></pre>
+
+        <p>With this hook, browser back/forward preserves the exact dashboard state. Operators can bookmark a filtered view or paste a URL into Slack and the recipient sees the same tab, batch, filters, and sort order. Every <code>useState</code> call for view state was removed in favor of the URL as the single source of truth.</p>
+
+        <h2>Batch drill-down without a round-trip</h2>
+        <p>The original batch detail view made a separate storage request per batch to load its tasks. Since the task list endpoint already reads every manifest (and the server-side cache keeps that fast), the fix was to include the <code>runTaskIds</code> array in each <code>BatchSummary</code>—a zero-cost addition since those IDs are already present in the manifest data.</p>
+
+        <p>When a user drills into a batch, the client filters the already-loaded task list by the batch's task IDs instead of making a new round-trip. Combined with React Query's cache, this means batch drill-down is instantaneous: no network request, no loading spinner, just an in-memory filter over data the client already has.</p>
+
+        <h2>How the layers compound</h2>
+        <p>Each layer addresses a different bottleneck, and they reinforce each other:</p>
+
+        <ul>
+          <li><strong>HTTP Cache-Control</strong> eliminates redundant network requests for stable reference data. The browser never re-downloads taxonomy information it fetched minutes ago.</li>
+          <li><strong>Server-side cache</strong> reduces the cloud storage fan-out from every request to roughly once per 30 seconds (or immediately after a write, via tag invalidation). This is the biggest single improvement to time-to-first-byte.</li>
+          <li><strong>React Query</strong> prevents unnecessary refetches and re-renders on the client. Components share cached data, stale times are tuned to data volatility, and invalidation is granular thanks to hierarchical keys.</li>
+          <li><strong>Dynamic imports</strong> shrink the initial bundle so the page becomes interactive faster. Code for rarely-used step viewers never loads unless needed.</li>
+        </ul>
+
+        <p>A request for taxonomy data might hit all four layers: the browser serves it from its HTTP cache (layer 1), so no request reaches the server. If the browser cache has expired, the server serves it from its own cache (layer 2) without touching storage. React Query on the client marks it as never-stale (layer 3), so even after a hard refresh, subsequent component mounts reuse the cached response. And the component that renders the taxonomy picker is only loaded when the user opens the relevant panel (layer 4).</p>
+
+        <p>The result: page loads dropped from multi-second to sub-second. Tab switches that previously triggered full refetches now feel instant. Batch drill-downs that required per-batch round-trips resolve from in-memory data. The initial bundle is a fraction of its former size. And because every layer has clear invalidation semantics—HTTP expiry, tag-based revalidation, React Query key invalidation—the data is never stale after a write. The dashboard went from something operators tolerated to something they trust.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

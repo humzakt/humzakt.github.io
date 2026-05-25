@@ -4,6 +4,30 @@
 
 ---
 
+## GCS Race Conditions and Generation-Fenced Leases
+
+URL: https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html
+
+Two race conditions in a distributed step-leasing system where stale workers could delete fresh locks. Race 1 (release path): Worker A's lease expires, Worker B acquires a fresh lease, Worker A finishes and calls release — the read-then-delete was non-atomic, so the token check passed against stale data and the delete removed Worker B's valid lease. Race 2 (reclaim path): when acquiring a lease over an expired one, the unconditional delete could remove another worker's freshly acquired lease between the read and delete. Fix: GCS generation-based fencing. Every lease read captures the GCS object generation number. Every delete passes `ifGenerationMatch`. If another worker overwrote the lease, GCS returns 412 Precondition Failed and the delete is a no-op. Same principle as database row versioning or HTTP ETags — optimistic concurrency control applied to cloud object storage with zero additional infrastructure.
+
+---
+
+## Multi-Layer Caching for Dashboard Latency
+
+URL: https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html
+
+Four-layer caching strategy to reduce an admin dashboard from multi-second loads to sub-second. Layer 1: HTTP Cache-Control headers matched to data volatility — taxonomy data at 1h public cache, pool availability at 5s private, run listings with short TTL. Layer 2: Next.js unstable_cache wrapping GCS fan-out with 30s TTL and tag-based invalidation — every mutation calls revalidateTag to bust the cache. Layer 3: React Query migration with staleTime: Infinity for stable data, parallel queries via useQueries, and a centralized hierarchical query key registry (autoSeedKeys) for type-safe invalidation cascading. Layer 4: dynamic imports for 8 step viewers reducing initial JS bundle. Plus: useAutoSeedUrlState hook storing tab/batch/filters/sort in URL search params for shareable dashboard state, and batch drill-down optimization filtering from already-loaded task lists instead of new GCS round-trips.
+
+---
+
+## Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown
+
+URL: https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html
+
+Three production issues in a pipeline engine. Problem 1: uniform 1800s dispatch deadline meant 10-minute steps held queue slots for 30 minutes. Fix: dispatch registry — frozen array + Map index defining per-step agent timeout, dispatch deadline, and env var override keys. Problem 2: Cloud Tasks dispatch deadline kills left tasks stuck in_progress with no error — silent container termination. Fix: SIGTERM handler with in-flight lease registry that releases all held leases and writes trace events before exit. Also fixed Zod validation errors being swallowed (only err.message logged, not err.code/err.details) and QC gate failures missing remediation text. Problem 3: static 1-hour lease TTL regardless of step duration. Fix: dynamic TTL derived from dispatch deadline + 5-minute buffer. Plus three long-horizon handoff fixes: skip manifest reset on duplicate replays, gate author-slot opening on fully successful output, reapply task.toml rewrite on crash recovery.
+
+---
+
 ## Building a GCS-Backed Auto-Seeder Platform
 
 URL: https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html

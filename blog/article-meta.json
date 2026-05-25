@@ -1,5 +1,38 @@
 [
   {
+    "id": "gcs-race-conditions-generation-fenced-leases",
+    "title": "GCS Race Conditions: Generation-Fenced Lease Deletion",
+    "summary": "Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.",
+    "date": "2026-05-26",
+    "themes": ["infrastructure", "distributed-systems"],
+    "components": ["GCS", "Distributed Locking", "Race Conditions", "TypeScript", "Optimistic Concurrency"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html"
+    }
+  },
+  {
+    "id": "multi-layer-cache-dashboard-latency",
+    "title": "Multi-Layer Caching for Dashboard Latency",
+    "summary": "HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.",
+    "date": "2026-05-26",
+    "themes": ["performance", "frontend"],
+    "components": ["Caching", "React Query", "Next.js", "Performance", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html"
+    }
+  },
+  {
+    "id": "pipeline-hardening-timeouts-traceability-graceful-shutdown",
+    "title": "Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown",
+    "summary": "Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.",
+    "date": "2026-05-26",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Pipeline", "Cloud Tasks", "TypeScript", "Graceful Shutdown", "Observability"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html"
+    }
+  },
+  {
     "id": "gcs-backed-auto-seeder-platform",
     "title": "Building a GCS-Backed Auto-Seeder Platform with Hot-Swappable Backends",
     "summary": "Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.",

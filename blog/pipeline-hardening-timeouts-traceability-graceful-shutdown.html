@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Pipeline Hardening: Timeouts, Traceability &amp; Shutdown — Humza Tareen</title>
+  <meta name="description" content="Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Pipeline, Cloud Tasks, TypeScript, Graceful Shutdown, Observability">
+  <link rel="canonical" href="https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Pipeline Hardening: Timeouts, Traceability &amp; Shutdown">
+  <meta property="og:description" content="Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Pipeline">
+  <meta property="article:tag" content="Cloud Tasks">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Graceful Shutdown">
+  <meta property="article:tag" content="Observability">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pipeline Hardening: Timeouts, Traceability &amp; Shutdown">
+  <meta name="twitter:description" content="Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Pipeline Hardening: Timeouts, Traceability & Shutdown",
+    "description": "Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-26",
+    "dateModified": "2026-05-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html" },
+    "keywords": ["Pipeline", "Cloud Tasks", "TypeScript", "Graceful Shutdown", "Observability"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Pipeline Hardening: Timeouts, Traceability &amp; Shutdown</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-26">May 26, 2026</time>
+          <span>&middot;</span>
+          <span>9 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Pipeline</span>
+          <span class="blog-tag">Cloud Tasks</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Graceful Shutdown</span>
+          <span class="blog-tag">Observability</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>The pipeline engine I maintain orchestrates multi-step AI task processing. Each step in a run is dispatched as a Cloud Tasks message to a pool of workers. A worker picks up the message, acquires a lease on the step so no other worker touches it, runs the agent logic, writes outputs, and releases the lease. Steps vary wildly in expected duration: a lightweight extraction step finishes in ten minutes; a multi-trial synthesis step can run for twenty-five. Over the past two weeks, three production issues surfaced that all traced back to the same root cause: the engine treated every step as if it were identical. This post covers how a dispatch registry, a SIGTERM handler, and dynamic lease TTL fixed that.</p>
+
+        <h2>Problem 1: uniform timeouts for non-uniform steps</h2>
+
+        <p>Every step shared a single hardcoded dispatch deadline of 1800 seconds—thirty minutes. Cloud Tasks uses this value to decide how long to wait before considering a dispatched message failed. In theory, thirty minutes is generous enough for any step. In practice, it masked failures. A step that should finish in ten minutes would fail silently at minute three, but Cloud Tasks would not retry it for another twenty-seven minutes because the deadline had not expired yet. The worker process was already gone; the queue slot sat occupied by a dead message.</p>
+
+        <p>Worse, these timeouts were compile-time constants. Tuning a single step's deadline required a code change, a review, a merge, and a full deployment. During an incident, that cycle time is unacceptable. You want to pull a lever in the environment and see the effect on the next dispatch, not the next release.</p>
+
+        <h2>Solution: the dispatch registry</h2>
+
+        <p>The codebase already used a registry pattern—frozen arrays with a <code>Map</code>-backed index—for other per-step configuration. The dispatch registry follows the same shape: a single frozen array where each entry defines the step's agent timeout, dispatch deadline, and environment variable override keys for both values.</p>
+
+<pre><code class="language-typescript">type StepDispatchEntry = {
+  stepType: string;
+  agentTimeoutMs: number;
+  dispatchDeadlineS: number;
+  envOverrides: {
+    agentTimeout: string;
+    dispatchDeadline: string;
+  };
+};
+
+const DISPATCH_REGISTRY: readonly StepDispatchEntry[] = Object.freeze([
+  {
+    stepType: "extraction",
+    agentTimeoutMs: 600_000,
+    dispatchDeadlineS: 900,
+    envOverrides: {
+      agentTimeout: "PIPELINE_EXTRACTION_TIMEOUT_MS",
+      dispatchDeadline: "PIPELINE_EXTRACTION_DEADLINE_S",
+    },
+  },
+  {
+    stepType: "synthesis",
+    agentTimeoutMs: 1_500_000,
+    dispatchDeadlineS: 1_800,
+    envOverrides: {
+      agentTimeout: "PIPELINE_SYNTHESIS_TIMEOUT_MS",
+      dispatchDeadline: "PIPELINE_SYNTHESIS_DEADLINE_S",
+    },
+  },
+]);
+
+const registryIndex = new Map(
+  DISPATCH_REGISTRY.map((e) =&gt; [e.stepType, e])
+);
+
+function getDispatchConfig(stepType: string): StepDispatchEntry {
+  const entry = registryIndex.get(stepType);
+  if (!entry) throw new Error(`Unknown step type: ${stepType}`);
+
+  return {
+    ...entry,
+    agentTimeoutMs:
+      Number(process.env[entry.envOverrides.agentTimeout]) ||
+      entry.agentTimeoutMs,
+    dispatchDeadlineS:
+      Number(process.env[entry.envOverrides.dispatchDeadline]) ||
+      entry.dispatchDeadlineS,
+  };
+}</code></pre>
+
+        <p>The extraction step gets a 600-second (ten-minute) agent timeout and a 900-second (fifteen-minute) dispatch deadline. The synthesis step gets 1500 seconds and 1800 seconds respectively. If an incident demands a quick adjustment, an operator sets <code>PIPELINE_EXTRACTION_DEADLINE_S=1200</code> in the environment and the next dispatch picks it up—no code change, no deploy.</p>
+
+        <p>There was also a deployment problem hiding underneath. The CI script that provisioned Cloud Tasks queues was using a create-or-update call, meaning every deploy overwrote queue settings—including retry configuration. The original setup had no backoff configured, which meant a failed task would retry ten times in under a second before exhausting its attempts. The fix was twofold: switch queue provisioning to create-only so deploys do not stomp existing settings, and set proper retry backoff defaults (minimum backoff of 10 seconds, maximum of 300 seconds, doubling ratio of 2) when creating queues for the first time.</p>
+
+        <h2>Problem 2: silent dispatch deadline kills</h2>
+
+        <p>When Cloud Tasks hits the dispatch deadline, it terminates the container running the worker. In the normal request-response model, that is fine—the unacknowledged message goes back to the queue. But the pipeline uses async acknowledgment: the worker acknowledges the message immediately on receipt and manages progress through the lease system. So when the deadline kills the container, Cloud Tasks considers the message delivered. The lease is still held. The step's database row says <code>in_progress</code>. No error is recorded. No trace event is written. From the outside, the step looks like it is still running. You only discover it is dead when someone notices the step has been "in progress" for three hours and starts investigating.</p>
+
+        <p>This was the most operationally painful of the three issues. Without a trace event explaining what happened, debugging required correlating Cloud Tasks logs, container lifecycle events, and database state manually. Every incident ate an hour of engineering time before anyone understood the cause.</p>
+
+        <h2>Solution: SIGTERM handler with error traceability</h2>
+
+        <p>When Cloud Tasks terminates a container, it sends SIGTERM before the hard kill. The window is short—typically ten seconds—but that is enough to clean up if the handler is lean. The new handler iterates over the in-flight lease registry (a simple <code>Map</code> of step ID to lease metadata maintained by the worker runtime), releases each lease, writes a trace event with error details, and exits.</p>
+
+<pre><code class="language-typescript">const inFlightLeases = new Map&lt;string, { stepId: string; leaseId: string }&gt;();
+
+process.on("SIGTERM", async () => {
+  console.warn(`SIGTERM received — releasing ${inFlightLeases.size} leases`);
+
+  const cleanup = [...inFlightLeases.values()].map(async ({ stepId, leaseId }) => {
+    try {
+      await releaseLease(leaseId);
+      await writeTraceEvent(stepId, {
+        type: "step_terminated",
+        reason: "dispatch_deadline_exceeded",
+        detail: "Container received SIGTERM; lease released during shutdown.",
+      });
+    } catch (err) {
+      console.error(`Cleanup failed for step ${stepId}:`, err);
+    }
+  });
+
+  await Promise.allSettled(cleanup);
+  process.exit(0);
+});</code></pre>
+
+        <p>Now, when a dispatch deadline kills a worker, the step's trace log contains a <code>step_terminated</code> event with the reason <code>dispatch_deadline_exceeded</code>. Operators can see it in the dashboard. Automated monitors can alert on it. The lease is released, so another worker can reclaim the step immediately instead of waiting for a static TTL to expire.</p>
+
+        <p>The SIGTERM fix also exposed two gaps in how errors were recorded during normal (non-shutdown) execution.</p>
+
+        <h3>Gap 1: swallowed validation errors</h3>
+
+        <p>The agent client threw a structured error—call it <code>AgentClientError</code>—that carried a <code>code</code> field (e.g., <code>VALIDATION_FAILED</code>) and a <code>details</code> array of Zod validation issues. But the catch block only logged <code>err.message</code> and wrote that single string to the trace record. The structured details were lost.</p>
+
+<pre><code class="language-typescript">// Before: only message propagated
+catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  await writeTraceEvent(stepId, {
+    type: "step_error",
+    reason: message,
+  });
+}
+
+// After: full error context preserved
+catch (err) {
+  const tracePayload: StepTraceError = {
+    type: "step_error",
+    reason: err instanceof Error ? err.message : String(err),
+  };
+
+  if (err instanceof AgentClientError) {
+    tracePayload.errorCode = err.code;
+    tracePayload.validationIssues = err.details;
+  }
+
+  await writeTraceEvent(stepId, tracePayload);
+}</code></pre>
+
+        <p>With the full error context in the trace record, a Zod validation failure now shows exactly which field failed and why, without anyone needing to reproduce the input locally.</p>
+
+        <h3>Gap 2: opaque quality gate failures</h3>
+
+        <p>The pipeline includes quality gate checks that can block a step from advancing. When a check failed, the blocking log only captured the <code>checkId</code>—a string like <code>format_compliance</code>—with no information about what specifically failed or how to fix it. The new <code>GatePolicyFailure</code> structure includes a <code>remediation</code> field with human-readable guidance, and both the blocking log and the trace event carry the full check detail: which check, what it found, and what the operator should do.</p>
+
+        <h2>Problem 3: static lease TTL</h2>
+
+        <p>Leases had a fixed one-hour TTL regardless of step type. The intent was conservative: give every step plenty of time so leases do not expire prematurely during legitimate long runs. The side effect was that a crashed worker held its lease for the full hour. During that hour, no other worker could pick up the step. For a ten-minute extraction step, that is fifty minutes of dead time before recovery can begin.</p>
+
+        <p>Combined with the silent deadline kill from Problem 2, this created a worst case: a step fails at the dispatch deadline, no error is recorded, and the lease blocks retries for an hour. The effective recovery time was the dispatch deadline plus the lease TTL—potentially ninety minutes for a step that should have finished in ten.</p>
+
+        <h2>Solution: dynamic lease TTL from the dispatch registry</h2>
+
+        <p>Since the dispatch registry already knows how long each step should take, lease TTL can be derived from it. The formula is straightforward: take the dispatch deadline in seconds, convert to milliseconds, and add a five-minute buffer. The buffer accounts for the SIGTERM cleanup window and minor clock skew.</p>
+
+<pre><code class="language-typescript">const LEASE_BUFFER_MS = 5 * 60 * 1000;
+
+function computeLeaseTtlMs(stepType: string): number {
+  const config = getDispatchConfig(stepType);
+  return config.dispatchDeadlineS * 1000 + LEASE_BUFFER_MS;
+}
+
+// Usage at lease acquisition
+const ttlMs = computeLeaseTtlMs(step.type);
+const lease = await acquireLease(step.id, { ttlMs });</code></pre>
+
+        <p>An extraction step with a 900-second dispatch deadline gets a lease TTL of <code>900 * 1000 + 300000 = 1,200,000ms</code>—twenty minutes. If the worker crashes after the dispatch deadline fires, the SIGTERM handler releases the lease immediately. If the handler itself fails (hard kill, network partition), the lease expires five minutes after the deadline and another worker can reclaim the step. Worst-case recovery dropped from sixty minutes to five.</p>
+
+        <p>Tests for this are straightforward: mock the dispatch registry to return known deadline values, call <code>computeLeaseTtlMs</code>, and assert the result equals <code>deadline * 1000 + LEASE_BUFFER_MS</code>. A second test verifies that environment variable overrides flow through correctly—set the env var, call the function, confirm the TTL reflects the overridden deadline rather than the default.</p>
+
+        <h2>Long-horizon handoff fixes</h2>
+
+        <p>While working on the dispatch registry, three additional P1 issues surfaced in the long-running multi-trial steps—steps that can run multiple attempts before settling on a result.</p>
+
+        <p><strong>Duplicate handoff replays.</strong> When a step completes and hands off to the next step, it writes a manifest entry marking the transition. If the handoff message is delivered twice (at-least-once delivery is the norm with Cloud Tasks), the second delivery would reset the manifest state, effectively erasing progress. The fix was to move the state update <em>after</em> the idempotency guard: check if the manifest entry already exists, and if it does, skip the entire handler. The state mutation only runs on the first delivery.</p>
+
+        <p><strong>Premature author-slot opening.</strong> A downstream step checks whether the previous step produced output and, if so, opens an author slot for the next trial. The check was too loose—it triggered on <em>any</em> output, including partial or errored output. Now the gate requires fully successful output, verified by checking the output status field rather than just the existence of the output blob.</p>
+
+        <p><strong>Crash recovery for config rewrites.</strong> One step rewrites a configuration file (<code>task.toml</code>) into the destination blob store before processing. If the worker crashed after the rewrite but before completing the step, the recovery path would skip the rewrite because the destination blob already existed. But the blob might contain stale config from a previous attempt. The fix is to always reapply the rewrite on step entry, regardless of whether the destination exists, so crash recovery starts from a known-good configuration state.</p>
+
+        <h2>What changed operationally</h2>
+
+        <p>Before these fixes, a dispatch deadline kill was invisible. The step sat in limbo, the lease blocked retries, and someone had to manually investigate. Now, the SIGTERM handler releases the lease and writes a trace event. The dynamic TTL means even if the handler fails, recovery starts in minutes, not an hour. The dispatch registry means timeout tuning is an environment variable change, not a deployment. And the error traceability improvements mean that when something does fail, the trace log tells you <em>what</em> failed and <em>why</em>, not just that it failed.</p>
+
+        <p>Pipeline reliability is not one feature. It is the accumulation of dozens of small correctness fixes—each one closing a gap between what the system assumes and what production actually does. A dispatch registry, a SIGTERM handler, and a dynamic lease TTL are not glamorous. They are the difference between a pipeline that silently loses work and one that recovers on its own.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

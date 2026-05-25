@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>GCS Race Conditions &amp; Generation-Fenced Leases — Humza Tareen</title>
+  <meta name="description" content="Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="GCS, Distributed Locking, Race Conditions, TypeScript, Optimistic Concurrency">
+  <link rel="canonical" href="https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="GCS Race Conditions & Generation-Fenced Leases">
+  <meta property="og:description" content="Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-05-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="GCS">
+  <meta property="article:tag" content="Distributed Locking">
+  <meta property="article:tag" content="Race Conditions">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Optimistic Concurrency">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GCS Race Conditions & Generation-Fenced Leases">
+  <meta name="twitter:description" content="Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "GCS Race Conditions & Generation-Fenced Leases",
+    "description": "Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-05-26",
+    "dateModified": "2026-05-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html" },
+    "keywords": ["GCS", "Distributed Locking", "Race Conditions", "TypeScript", "Optimistic Concurrency"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">GCS Race Conditions &amp; Generation-Fenced Leases</h1>
+        <div class="blog-meta">
+          <time datetime="2026-05-26">May 26, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">GCS</span>
+          <span class="blog-tag">Distributed Locking</span>
+          <span class="blog-tag">Race Conditions</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Optimistic Concurrency</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>The pipeline I work on runs hundreds of steps concurrently, each executed by a worker process that pulls from a queue, runs the step, and reports results. To prevent two workers from executing the same step at the same time, the system uses <strong>leases</strong>: before a worker starts a step, it acquires a lease stored as an object in Google Cloud Storage. The lease contains a token identifying the owner and an expiry timestamp. If the lease already exists and has not expired, other workers back off. When the step finishes, the worker deletes the lease. Simple enough on paper.</p>
+
+        <p>This post is about two race conditions hiding in that "simple" lease lifecycle, and the one-line fix that eliminated both of them.</p>
+
+        <h2>How the lease works</h2>
+        <p>Each step has a corresponding GCS object at a deterministic path — something like <code>leases/{stepId}.json</code>. The object body is a small JSON blob:</p>
+
+<pre><code class="language-typescript">interface StepLease {
+  token: string;      // unique per acquisition
+  holder: string;     // worker identity
+  expiresAt: string;  // ISO timestamp
+}</code></pre>
+
+        <p>Acquiring a lease means creating or overwriting this object. Releasing means deleting it. If a worker crashes, the lease expires naturally, and another worker can reclaim the step by noticing the expired timestamp on a subsequent acquisition attempt.</p>
+
+        <p>This pattern is common in distributed systems that use object storage as a coordination layer. It works well — until you look at the space between the read and the write.</p>
+
+        <h2>Race condition 1: the release path</h2>
+        <p>Consider the following sequence. Worker A acquires a lease for step 42, starts executing, but runs slower than expected. The lease expires. Worker B comes along, sees the expired lease, acquires a fresh one, and begins its own execution of step 42. Meanwhile, Worker A finishes and calls <code>releaseStepLease()</code>.</p>
+
+        <p>The original release code looked like this:</p>
+
+<pre><code class="language-typescript">async function releaseStepLease(
+  bucket: Bucket,
+  stepId: string,
+  token: string
+): Promise&lt;void&gt; {
+  const file = bucket.file(`leases/${stepId}.json`);
+  const [content] = await file.download();
+  const lease: StepLease = JSON.parse(content.toString());
+
+  if (lease.token !== token) {
+    return; // not our lease anymore
+  }
+
+  await file.delete();
+}</code></pre>
+
+        <p>The intent is correct: read the lease, check if the token matches ours, and only then delete. But there is a gap between the <code>download()</code> and the <code>delete()</code>. In that gap, the GCS object can change. Here is the timeline that breaks things:</p>
+
+        <ol>
+          <li><strong>T1</strong>: Worker A reads the lease. The token matches — it still sees its own (now-expired) lease data because Worker B's acquisition has not landed yet, or Worker A's read hits a slightly stale version.</li>
+          <li><strong>T2</strong>: Worker B overwrites the lease with a fresh token and a new expiry.</li>
+          <li><strong>T3</strong>: Worker A's token check passes (it compared against the stale read from T1) and calls <code>file.delete()</code>.</li>
+          <li><strong>T4</strong>: Worker B's lease is gone. Worker B is now executing step 42 without a lock.</li>
+        </ol>
+
+        <p>Worker B has no idea its lease was destroyed. If a third worker comes along, it sees no lease at all and happily acquires one. Now two workers are running the same step. Depending on the step's side effects, this can mean duplicated writes, corrupted outputs, or subtle data inconsistencies that surface hours later.</p>
+
+        <h2>Race condition 2: the expired-lease reclaim path</h2>
+        <p>The second bug lives in the acquisition path. When a worker tries to acquire a lease and finds an existing one that has expired, it needs to clean up the stale lease and create a fresh one. The original code:</p>
+
+<pre><code class="language-typescript">async function acquireStepLease(
+  bucket: Bucket,
+  stepId: string,
+  workerIdentity: string
+): Promise&lt;AcquiredStepLease | null&gt; {
+  const file = bucket.file(`leases/${stepId}.json`);
+
+  const [exists] = await file.exists();
+  if (exists) {
+    const [content] = await file.download();
+    const lease: StepLease = JSON.parse(content.toString());
+
+    if (new Date(lease.expiresAt) &gt; new Date()) {
+      return null; // active lease held by someone else
+    }
+
+    // Expired — delete and recreate
+    await file.delete();
+  }
+
+  const newLease: StepLease = {
+    token: crypto.randomUUID(),
+    holder: workerIdentity,
+    expiresAt: new Date(Date.now() + LEASE_TTL_MS).toISOString(),
+  };
+  await file.save(JSON.stringify(newLease));
+  return { ...newLease, stepId };
+}</code></pre>
+
+        <p>Same pattern, same problem. Between the <code>download()</code> that reads the expired lease and the <code>file.delete()</code> that removes it, another worker may have already reclaimed it. Worker C reads the expired lease. Worker D reads the same expired lease. Worker C deletes it and creates a fresh one. Worker D then deletes Worker C's fresh lease and creates its own. Worker C is now running without a lock.</p>
+
+        <p>The window is small, but under load — dozens of workers polling the same expired leases — it is not hypothetical. It is a guaranteed occurrence at sufficient concurrency.</p>
+
+        <h2>The fix: generation fencing</h2>
+        <p>GCS assigns a monotonically increasing <strong>generation</strong> number to every object. Each time an object is created or overwritten, it gets a new generation. This number is available in the object's metadata and can be used as a precondition on subsequent operations.</p>
+
+        <p>The fix is conceptually simple: when you read a lease, also capture its generation. When you delete, pass <code>ifGenerationMatch</code> as a precondition. If any other worker has overwritten the object between your read and your delete, the generation will have changed, and GCS returns <code>412 Precondition Failed</code>. Your delete becomes a no-op instead of destroying someone else's lease.</p>
+
+        <p>First, a helper that returns both the lease data and the generation:</p>
+
+<pre><code class="language-typescript">interface LeaseWithGeneration {
+  lease: StepLease;
+  generation: number;
+}
+
+async function readLeaseWithGeneration(
+  file: File
+): Promise&lt;LeaseWithGeneration | null&gt; {
+  const [exists] = await file.exists();
+  if (!exists) return null;
+
+  const [content] = await file.download();
+  const [metadata] = await file.getMetadata();
+
+  return {
+    lease: JSON.parse(content.toString()),
+    generation: Number(metadata.generation),
+  };
+}</code></pre>
+
+        <p>The <code>AcquiredStepLease</code> type now carries the generation so that the release path has access to it without a second metadata fetch:</p>
+
+<pre><code class="language-typescript">interface AcquiredStepLease {
+  stepId: string;
+  token: string;
+  holder: string;
+  expiresAt: string;
+  generation: number;
+}</code></pre>
+
+        <p>The release path becomes:</p>
+
+<pre><code class="language-typescript">async function releaseStepLease(
+  bucket: Bucket,
+  stepId: string,
+  lease: AcquiredStepLease
+): Promise&lt;void&gt; {
+  const file = bucket.file(`leases/${stepId}.json`);
+  try {
+    await file.delete({
+      ifGenerationMatch: lease.generation,
+    });
+  } catch (err: any) {
+    if (err.code === 412) {
+      // Lease was already overwritten by another worker.
+      // Our lease expired and someone else reclaimed it — nothing to clean up.
+      return;
+    }
+    throw err;
+  }
+}</code></pre>
+
+        <p>No more read-then-check-then-delete. The generation precondition turns the delete into an atomic compare-and-delete. If the object has been touched since we acquired it, the delete silently fails, and the rightful owner keeps their lock.</p>
+
+        <p>The acquisition path gets the same treatment:</p>
+
+<pre><code class="language-typescript">async function acquireStepLease(
+  bucket: Bucket,
+  stepId: string,
+  workerIdentity: string
+): Promise&lt;AcquiredStepLease | null&gt; {
+  const file = bucket.file(`leases/${stepId}.json`);
+  const existing = await readLeaseWithGeneration(file);
+
+  if (existing) {
+    if (new Date(existing.lease.expiresAt) &gt; new Date()) {
+      return null; // active lease
+    }
+
+    try {
+      await file.delete({
+        ifGenerationMatch: existing.generation,
+      });
+    } catch (err: any) {
+      if (err.code === 412) {
+        return null; // someone else already reclaimed it
+      }
+      throw err;
+    }
+  }
+
+  const newLease: StepLease = {
+    token: crypto.randomUUID(),
+    holder: workerIdentity,
+    expiresAt: new Date(Date.now() + LEASE_TTL_MS).toISOString(),
+  };
+  await file.save(JSON.stringify(newLease));
+
+  const [metadata] = await file.getMetadata();
+  return {
+    stepId,
+    ...newLease,
+    generation: Number(metadata.generation),
+  };
+}</code></pre>
+
+        <p>When two workers race to reclaim the same expired lease, at most one of them will have a matching generation. The loser gets a 412, returns <code>null</code>, and retries on the next poll cycle. No lease is destroyed out from under an active worker.</p>
+
+        <h2>Testing the fix</h2>
+        <p>The tests mock GCS's <code>file.delete()</code> and <code>file.getMetadata()</code> to verify that <code>ifGenerationMatch</code> is always present on delete calls. A representative pattern:</p>
+
+<pre><code class="language-typescript">it("passes ifGenerationMatch when releasing", async () =&gt; {
+  const deleteSpy = jest.fn().mockResolvedValue([]);
+  mockFile.delete = deleteSpy;
+
+  const lease: AcquiredStepLease = {
+    stepId: "step-42",
+    token: "abc-123",
+    holder: "worker-1",
+    expiresAt: new Date(Date.now() + 60_000).toISOString(),
+    generation: 17,
+  };
+
+  await releaseStepLease(mockBucket, "step-42", lease);
+
+  expect(deleteSpy).toHaveBeenCalledWith({
+    ifGenerationMatch: 17,
+  });
+});</code></pre>
+
+        <p>A second set of tests simulates the race: the mock throws a 412 error on <code>delete()</code>, and the test asserts that the function returns gracefully instead of propagating the error or leaving the system in a broken state.</p>
+
+        <h2>The pattern: optimistic concurrency on object storage</h2>
+        <p>This is the same principle as database row versioning or HTTP ETags. Read the version, attempt a conditional write (or delete), handle conflicts. The terminology changes — <em>generation</em> in GCS, <em>ETag</em> in S3, <em>version</em> in a database row — but the concurrency control is identical.</p>
+
+        <p>The key insight is that GCS objects are not just blobs. They carry metadata — <code>generation</code>, <code>metageneration</code>, content hashes — that enables safe concurrent access without external coordination services. You do not need Redis, ZooKeeper, or DynamoDB to build correct distributed locking on GCS. The primitives are already there, built into every API call, waiting to be used.</p>
+
+        <h2>Why not use a dedicated lock service?</h2>
+        <p>For this system, the leases were already GCS objects. Adding <code>ifGenerationMatch</code> to existing <code>delete()</code> calls was a one-line change per call site. Introducing a Redis cluster or a Chubby-style lock service would mean new infrastructure to provision, monitor, and page on — for a problem that GCS metadata solves natively.</p>
+
+        <p>The tradeoff is real: GCS-based locking has higher latency than an in-memory lock service, and it does not support features like blocking acquisition (you have to poll). For a pipeline running dozens of steps with lease durations measured in minutes, the latency is irrelevant and polling is already the natural acquisition pattern. Zero additional infrastructure, zero new failure modes, and the correctness guarantee comes from the storage layer itself rather than from a sidecar you have to keep alive.</p>
+
+        <h2>Takeaways</h2>
+        <p>Any time you see a read-then-act pattern on a shared mutable resource, ask what happens if the resource changes between the read and the act. In distributed systems, the answer is almost always "something bad, eventually." The fix is almost always some form of conditional operation: compare-and-swap, version-gated writes, generation-fenced deletes.</p>
+
+        <p>GCS makes this easy. The generation number is always there. The precondition parameters are already in the SDK. The 412 response is well-defined and easy to handle. The hard part is not the implementation — it is recognizing that you need it, which usually means staring at a timeline diagram until the interleaving jumps out at you.</p>
+
+        <p>Two race conditions, two stale deletes, one fix: stop trusting your read and start fencing your writes.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

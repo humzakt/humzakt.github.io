@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 May 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 26 May 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -279,6 +279,45 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>GCS Race Conditions and Generation-Fenced Leases</title>
+      <link>https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html</guid>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>GCS</category>
+      <category>Distributed Locking</category>
+      <category>Race Conditions</category>
+      <category>Optimistic Concurrency</category>
+      <description>Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.</description>
+    </item>
+
+    <item>
+      <title>Multi-Layer Caching for Dashboard Latency</title>
+      <link>https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html</guid>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Caching</category>
+      <category>React Query</category>
+      <category>Next.js</category>
+      <category>Performance</category>
+      <description>HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.</description>
+    </item>
+
+    <item>
+      <title>Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown</title>
+      <link>https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html</guid>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Pipeline</category>
+      <category>Cloud Tasks</category>
+      <category>Graceful Shutdown</category>
+      <category>Observability</category>
+      <description>Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.</description>
+    </item>
+
     <item>
       <title>Building a GCS-Backed Auto-Seeder Platform</title>
       <link>https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html</link>
