@@ -200,10 +200,60 @@
       <button class="blog-filter-btn" data-filter="security" role="tab" aria-selected="false">Security</button>
     </div>
 
-    <!-- Article grid -->
+    <!-- Article grid (JS-rendered from article-meta.json) -->
     <div class="blog-grid" id="blog-grid">
       <p class="blog-empty">Loading articles...</p>
     </div>
+
+    <!-- Static article links for search engine crawlers (hidden when JS loads the grid) -->
+    <noscript>
+    <nav aria-label="All blog articles">
+    <ul style="max-width:1100px;margin:0 auto;padding:0 20px 80px;list-style:none;">
+      <li><a href="blog/dead-letter-queue-pipeline-reliability.html">Dead Letter Queues for Pipeline Reliability</a></li>
+      <li><a href="blog/two-cache-layers-stale-data.html">When Two Cache Layers Serve Stale Data</a></li>
+      <li><a href="blog/ux-polish-sprint-filter-registry-consolidated-controls.html">A UX Polish Sprint: 8 PRs in 48 Hours</a></li>
+      <li><a href="blog/gcs-race-conditions-generation-fenced-leases.html">GCS Race Conditions: Generation-Fenced Lease Deletion</a></li>
+      <li><a href="blog/multi-layer-cache-dashboard-latency.html">Multi-Layer Caching for Dashboard Latency</a></li>
+      <li><a href="blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html">Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown</a></li>
+      <li><a href="blog/gcs-backed-auto-seeder-platform.html">Building a GCS-Backed Auto-Seeder Platform</a></li>
+      <li><a href="blog/57k-line-merge-rollback-reconsolidation.html">When 57K Lines Get Rolled Back</a></li>
+      <li><a href="blog/invisible-bugs-file-type-bypass-missing-worker-runs.html">Invisible Bugs: File Type Bypass and Missing Worker Runs</a></li>
+      <li><a href="blog/task-lifecycle-v1-schema-api-design.html">Designing a Task Lifecycle V1 from Scratch</a></li>
+      <li><a href="blog/sft-recording-pipeline-docker-sandboxes.html">Building an SFT Recording Pipeline</a></li>
+      <li><a href="blog/unified-status-sort-display-labels.html">When Display Labels Break Sorting</a></li>
+      <li><a href="blog/enterprise-state-machine-bulk-admin-ops.html">Taming a State Machine: Bulk Admin Ops</a></li>
+      <li><a href="blog/claim-timeout-decoupling-expert-review-ux.html">Decoupling Claim Timeouts from Feature Flags</a></li>
+      <li><a href="blog/bootstrapping-engineering-standards-legacy-codebase.html">Bootstrapping Engineering Standards on a Legacy Codebase</a></li>
+      <li><a href="blog/production-ready-multi-turn-evaluation.html">Production-Ready Multi-Turn Evaluation</a></li>
+      <li><a href="blog/reverse-engineering-codebase-architecture-docs.html">Reverse-Engineering a Codebase Into Architecture Docs</a></li>
+      <li><a href="blog/audit-safe-admin-bulk-operations.html">Audit-Safe Admin Tools with Event Sourcing</a></li>
+      <li><a href="blog/multi-turn-agent-evaluation-persistent-state.html">Multi-Turn Agent Evaluation: Persistent State</a></li>
+      <li><a href="blog/docker-image-hardening-ai-benchmarks.html">Docker Image Hardening for AI Benchmarks</a></li>
+      <li><a href="blog/responses-api-support-agent-framework.html">Adding Responses API to an Agent Framework</a></li>
+      <li><a href="blog/dev-starter-kit-ai-coding-tools.html">Dev Starter Kit: AI Coding Tools as Senior Engineers</a></li>
+      <li><a href="blog/building-ai-evaluation-platform-gcp.html">Building an AI Evaluation Platform on GCP</a></li>
+      <li><a href="blog/event-driven-architecture-gcp-pubsub.html">Event-Driven Architecture on GCP: Pub/Sub</a></li>
+      <li><a href="blog/debugging-alloydb-ssl-connection-drops.html">Debugging AlloyDB SSL Connection Drops</a></li>
+      <li><a href="blog/idempotent-cloud-tasks-handlers-python.html">Idempotent Cloud Tasks Handlers in Python</a></li>
+      <li><a href="blog/rag-embedding-migration-zero-downtime.html">Zero-Downtime Embedding Migration</a></li>
+      <li><a href="blog/rl-training-arena-code-agents.html">RL Training Arena for Code Agents</a></li>
+      <li><a href="blog/security-audit-ai-platform-25-critical-issues.html">Security Audit: 25 Critical Issues</a></li>
+      <li><a href="blog/atlas-evaluations-core-engine.html">Building the Core AI Evaluation Engine</a></li>
+      <li><a href="blog/auto-rater-service-llm-scoring.html">Automated LLM Scoring Service</a></li>
+      <li><a href="blog/guard-service-auth-gateway.html">Auth Gateway with Admin Dashboard</a></li>
+      <li><a href="blog/notification-service-event-delivery.html">Notification Service: Event Delivery</a></li>
+      <li><a href="blog/rag-service-embedding-search.html">RAG Retrieval Service: pgvector and Embeddings</a></li>
+      <li><a href="blog/rl-arena-executor-preprocessor.html">RL Arena Executor and Preprocessor</a></li>
+      <li><a href="blog/workflow-taxonomy-platform-services.html">Workflow, Taxonomy, and Platform Services</a></li>
+      <li><a href="blog/incident-response-iflow-debugging.html">Incident Response and CLI Agent Debugging</a></li>
+      <li><a href="blog/systematic-service-hardening-guard-notification.html">Systematic Service Hardening</a></li>
+      <li><a href="blog/production-bug-hunting-33-issues.html">Production Bug Hunting: 33 Issues</a></li>
+      <li><a href="blog/ci-cd-quality-gates-test-infrastructure.html">CI/CD Quality Gates That Actually Catch Bugs</a></li>
+      <li><a href="blog/production-logging-safe-debugging.html">When Your Logging Framework Crashes Production</a></li>
+      <li><a href="blog/headless-api-hardening-production-stability.html">Hardening a Headless API for Production</a></li>
+    </ul>
+    </nav>
+    </noscript>
   </main>
 
   <!-- ===== FOOTER ===== -->

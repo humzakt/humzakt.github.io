@@ -1,0 +1,37 @@
+name: Ping Search Engines
+
+on:
+  push:
+    branches: [gh-pages]
+    paths:
+      - 'blog/**'
+      - 'sitemap.xml'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ping Google Sitemap
+        run: |
+          echo "Pinging Google..."
+          curl -sf "https://www.google.com/ping?sitemap=https://humzakt.github.io/sitemap.xml" || true
+
+      - name: Ping Bing Sitemap
+        run: |
+          echo "Pinging Bing..."
+          curl -sf "https://www.bing.com/ping?sitemap=https://humzakt.github.io/sitemap.xml" || true
+
+      - name: Submit to IndexNow
+        run: |
+          URLS=$(grep -oP 'https://humzakt\.github\.io/blog/[^<]+' sitemap.xml | head -50)
+          URL_JSON=$(echo "$URLS" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read().strip().split('\n')))")
+          echo "Submitting $(echo "$URLS" | wc -l) URLs to IndexNow..."
+          curl -sf -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"host\": \"humzakt.github.io\",
+              \"key\": \"$(cat indexnow-key.txt 2>/dev/null || echo 'no-key')\",
+              \"urlList\": $URL_JSON
+            }" || echo "IndexNow ping skipped (no key file)"
