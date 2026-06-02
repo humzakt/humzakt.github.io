@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>A UX Polish Sprint: 8 PRs in 48 Hours — Humza Tareen</title>
+  <meta name="description" content="Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="UX Engineering, React, TypeScript, Admin UI, Registry Pattern">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="A UX Polish Sprint: 8 PRs in 48 Hours">
+  <meta property="og:description" content="Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-02T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="UX Engineering">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Admin UI">
+  <meta property="article:tag" content="Registry Pattern">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="A UX Polish Sprint: 8 PRs in 48 Hours">
+  <meta name="twitter:description" content="Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A UX Polish Sprint: 8 PRs in 48 Hours",
+    "description": "Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-02",
+    "dateModified": "2026-06-02",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html" },
+    "keywords": ["UX Engineering", "React", "TypeScript", "Admin UI", "Registry Pattern"],
+    "articleSection": "UX Engineering"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">A UX Polish Sprint: 8 PRs in 48 Hours</h1>
+        <div class="blog-meta">
+          <time datetime="2026-06-02">Jun 2, 2026</time>
+          <span>&middot;</span>
+          <span>7 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">UX Engineering</span>
+          <span class="blog-tag">React</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Admin UI</span>
+          <span class="blog-tag">Registry Pattern</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>Over a weekend I shipped eight focused pull requests to polish an admin dashboard for a task seeding platform. None of them fixed a broken feature. Every one removed friction that had accumulated while the product grew: crowded toolbars, hardcoded filter lists, search that fired on every keystroke, internal jargon on buttons, missing navigation cues. Core functionality was already solid. The dashboard was just harder to use than it needed to be.</p>
+
+        <p>This post walks through each PR—what changed, why it mattered, and the patterns worth reusing. The through-line is simple: polish is not a big redesign. It is a series of small, intentional improvements that respect the user's time and compound into a dramatically better experience.</p>
+
+        <h2>The context</h2>
+        <p>The admin panel had grown organically over several weeks. Operators could list tasks, filter by status, drill into batches, and run bulk actions. But the UI showed its age. Five separate filter dropdowns sat inline on the toolbar next to sort controls and a search box. Filter options were hardcoded in component files, so adding a new status meant touching multiple places and hoping string literals stayed in sync. One action button still used an internal slot code instead of the human label the rest of the app used. Task tables showed a redundant arrow column even though the whole row was clickable. Search re-filtered the list on every character, including single-letter queries that matched half the database.</p>
+
+        <p>None of these were bugs. All of them made daily work slower and more error-prone. A 48-hour polish sprint was the right response: ship small PRs, review quickly, and let the improvements stack.</p>
+
+        <h2>PR 1 — Filter registry (208 lines)</h2>
+        <p>The status filter chips were driven by a hardcoded <code>statusChipOptions</code> array. Labels, colors, icons, and matching logic lived in different files. Adding "Completed" or a virtual "Duplicate" filter meant hunting magic strings across the UI and the filter reducer.</p>
+
+        <p>I replaced that with a single ordered registry: <code>LISTING_FILTER_REGISTRY</code>. Each entry is a <code>ListingFilterDef</code>—key, label, icon, color, and a <code>matches()</code> predicate. The chip row and the filter logic both derive from the same array. Adding a filter is one registry entry; removing one is deleting a line.</p>
+
+<pre><code class="language-typescript">interface ListingFilterDef {
+  key: string;
+  label: string;
+  icon: React.ComponentType&lt;{ className?: string }&gt;;
+  color: string;
+  matches: (task: TaskRow) =&gt; boolean;
+}
+
+const DEDUP_MARKER = "duplicate_detected";
+
+export const LISTING_FILTER_REGISTRY: ListingFilterDef[] = [
+  {
+    key: "all",
+    label: "All",
+    icon: ListIcon,
+    color: "muted",
+    matches: () =&gt; true,
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    icon: CheckCircleIcon,
+    color: "success",
+    matches: (task) =&gt; task.status === "completed",
+  },
+  {
+    key: "duplicate",
+    label: "Duplicate",
+    icon: CopyIcon,
+    color: "warning",
+    matches: (task) =&gt;
+      task.errorReason?.includes(DEDUP_MARKER) ?? false,
+  },
+  // ...other status filters
+];</code></pre>
+
+        <p>"Duplicate" is a virtual filter: it does not map to a database status. It matches tasks whose <code>errorReason</code> contains a deduplication marker—useful when operators need to triage collisions without learning internal status enums. "Completed" is a straight status match. Both shipped because the registry made them trivial.</p>
+
+        <h2>PR 2 — Search minimum length (60 lines)</h2>
+        <p>Free-text search ran on every keystroke. Typing <code>a</code> re-filtered thousands of rows and made the list feel broken. Users had no feedback about why results looked random.</p>
+
+        <p>I introduced <code>MIN_SEARCH_QUERY_LENGTH = 3</code>. Queries shorter than three characters are treated as empty—no filter applied. An inline hint appears below the input when the field is non-empty but too short.</p>
+
+<pre><code class="language-typescript">const MIN_SEARCH_QUERY_LENGTH = 3;
+
+function effectiveSearchQuery(raw: string): string {
+  const trimmed = raw.trim();
+  return trimmed.length &gt;= MIN_SEARCH_QUERY_LENGTH ? trimmed : "";
+}
+
+// In the listing toolbar component:
+{searchQuery.length &gt; 0 &amp;&amp; searchQuery.length &lt; MIN_SEARCH_QUERY_LENGTH &amp;&amp; (
+  &lt;p className="text-sm text-muted-foreground" role="status"&gt;
+    Enter at least {MIN_SEARCH_QUERY_LENGTH} characters to search.
+  &lt;/p&gt;
+)}</code></pre>
+
+        <p>The list stops thrashing on single-character input, and users get a clear explanation instead of silence.</p>
+
+        <h2>PR 3 — Consolidated filters panel (291 lines)</h2>
+        <p>The toolbar had grown to eight dense inline controls: step, version, progress, updated, task state, plus sort field, sort direction, and clear. On a laptop screen it wrapped awkwardly and competed with the search box for attention.</p>
+
+        <p>Five categorical filters moved into one <code>Filters</code> dropdown. Inside, a <code>DropdownMenuRadioGroup</code> gives native single-select semantics—only one secondary filter active at a time, which matches how operators actually think ("show me tasks stuck on this step"). The trigger shows an active-count badge. Sort controls stayed as separate compact dropdowns because they are used constantly and deserve one click.</p>
+
+<pre><code class="language-typescript">&lt;DropdownMenu&gt;
+  &lt;DropdownMenuTrigger asChild&gt;
+    &lt;Button variant="outline" size="sm"&gt;
+      Filters
+      {activeFilterCount &gt; 0 &amp;&amp; (
+        &lt;Badge variant="secondary" className="ml-2"&gt;
+          {activeFilterCount}
+        &lt;/Badge&gt;
+      )}
+    &lt;/Button&gt;
+  &lt;/DropdownMenuTrigger&gt;
+  &lt;DropdownMenuContent align="start" className="w-56"&gt;
+    &lt;DropdownMenuLabel&gt;Filter by&lt;/DropdownMenuLabel&gt;
+    &lt;DropdownMenuRadioGroup
+      value={secondaryFilter ?? "none"}
+      onValueChange={(v) =&gt; setSecondaryFilter(v === "none" ? null : v)}
+    &gt;
+      {SECONDARY_FILTER_OPTIONS.map((opt) =&gt; (
+        &lt;DropdownMenuRadioItem key={opt.value} value={opt.value}&gt;
+          {opt.label}
+        &lt;/DropdownMenuRadioItem&gt;
+      ))}
+    &lt;/DropdownMenuRadioGroup&gt;
+  &lt;/DropdownMenuContent&gt;
+&lt;/DropdownMenu&gt;</code></pre>
+
+        <p><strong>Before:</strong> <code>[Step ▼] [Version ▼] [Progress ▼] [Updated ▼] [Task state ▼] [Sort: Updated ▼] [Newest ▼] [Clear]</code></p>
+        <p><strong>After:</strong> <code>[Filters (2)] [Sort: Updated ▼] [Newest first ▼] [Clear]</code></p>
+
+        <p>Same capability, half the visual noise. Operators who live in this screen immediately noticed the calmer header.</p>
+
+        <h2>PR 4 — Conditional task state filter</h2>
+        <p>The task state filter (paused / cancelled / active) always rendered three options even when every visible task was active. Empty filters teach users that the product is unfinished.</p>
+
+        <p>The dropdown now mounts only when at least one loaded task has a paused or cancelled overlay state. When data refreshes and no overlay tasks remain, the filter resets to "all" and the control hides itself. No dead options, no stale filter state pointing at zero rows.</p>
+
+        <h2>PR 5 — Back button for batch detail (10 lines)</h2>
+        <p>Users could open a bulk job detail view from the jobs list but had no in-app way back except the browser chrome. Ten lines: a back button in the detail header that navigates to the list route. Obvious in hindsight; absent for weeks because nobody filed it as a bug.</p>
+
+        <h2>PR 6 — Label cleanup (14 lines)</h2>
+        <p>One row action still said "Open A1"—internal jargon for the author assignment slot. The rest of the admin panel already said "Trainer" via shared <code>ASSIGNMENT_ROLE_LABELS</code>. This button was the last holdout. Renamed to "Assign Trainer" with a matching <code>aria-label</code>. Fourteen lines, zero functional change, meaningful clarity for new operators.</p>
+
+        <h2>PR 7 — Remove arrow column (1 line)</h2>
+        <p>Task tables included a trailing arrow icon implying "click to open." The entire row was already clickable. The column added visual clutter without affordance the row did not already provide. One line deleted from the column definition.</p>
+
+        <h2>PR 8 — Stale cache on detail route</h2>
+        <p>The batch detail view could show pipeline state from a server-side cache that lagged behind the live job. That fix is documented in a separate post; it belongs in the same sprint because stale detail pages feel like broken navigation even when the list view is correct. Removing the cache from the detail route aligned what operators see with what the job runner actually did.</p>
+
+        <h2>The compounding effect</h2>
+        <p>No single PR in this sprint is impressive on a slide deck. One line here, sixty there, two hundred in the registry. Together they change how the dashboard feels:</p>
+        <ul>
+          <li>The toolbar is scannable instead of crowded.</li>
+          <li>Filters are extensible without archaeology through components.</li>
+          <li>Search explains itself instead of failing silently.</li>
+          <li>Navigation has explicit back affordances.</li>
+          <li>Labels match the language the rest of the product uses.</li>
+          <li>Dead UI—empty filters, redundant arrows— is gone.</li>
+        </ul>
+        <p>The lesson for me was pacing: polish sprints work when each PR is reviewable in minutes and shippable without a feature flag. Big redesigns get deferred; small improvements ship.</p>
+
+        <h2>The pattern — registry-driven UI</h2>
+        <p>The filter registry is the most reusable artifact from the sprint. Instead of scattering option arrays and <code>switch</code> statements across components, declare each option as data with rendering metadata and a matching function. The UI maps over the registry; tests can assert <code>matches()</code> in isolation.</p>
+
+        <p>When product asks for another chip—"Blocked on review," "Stuck in export," a virtual bucket keyed off metadata—you add one object to <code>LISTING_FILTER_REGISTRY</code>. No new prop drilling, no duplicated color maps, no risk that the chip label and the filter predicate disagree.</p>
+
+        <p>That pattern generalizes beyond status chips: assignment roles, bulk action types, export formats—anywhere the admin panel presents a fixed set of choices with per-option behavior. Registries trade a few dozen lines upfront for predictable extension later.</p>
+
+        <h2>What I would do again</h2>
+        <p>I would schedule polish sprints earlier, before friction becomes "how the product works." I would default new listing filters to registry entries on day one rather than hardcoded arrays. I would treat toolbar density as a metric: if inline controls exceed four, consolidate.</p>
+
+        <p>Users rarely ask for a redesign. They ask why search feels broken, why they need the browser back button, why a button says "A1." Eight small PRs answered those questions. That is UX engineering: respect people's time, ship the obvious fix, and let the compound effect do the rest.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

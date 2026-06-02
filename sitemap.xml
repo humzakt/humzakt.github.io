@@ -151,6 +151,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/two-cache-layers-stale-data.html</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>

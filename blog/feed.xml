@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Tue, 26 May 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -279,6 +279,45 @@
       <category>GCP</category>
       <description>Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.</description>
     </item>
+    <item>
+      <title>Dead Letter Queues for Pipeline Reliability</title>
+      <link>https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html</guid>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Dead Letter Queue</category>
+      <category>Pipeline</category>
+      <category>Cloud Tasks</category>
+      <category>Reliability</category>
+      <description>DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.</description>
+    </item>
+
+    <item>
+      <title>When Two Cache Layers Serve Stale Data</title>
+      <link>https://humzakt.github.io/blog/two-cache-layers-stale-data.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/two-cache-layers-stale-data.html</guid>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>Caching</category>
+      <category>Next.js</category>
+      <category>React Query</category>
+      <category>Debugging</category>
+      <description>Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.</description>
+    </item>
+
+    <item>
+      <title>A UX Polish Sprint: 8 PRs in 48 Hours</title>
+      <link>https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html</guid>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <category>UX Engineering</category>
+      <category>React</category>
+      <category>Admin UI</category>
+      <category>Registry Pattern</category>
+      <description>Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.</description>
+    </item>
+
     <item>
       <title>GCS Race Conditions and Generation-Fenced Leases</title>
       <link>https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html</link>

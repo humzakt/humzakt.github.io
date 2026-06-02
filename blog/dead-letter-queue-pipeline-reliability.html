@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Dead Letter Queues for Pipeline Reliability — Humza Tareen</title>
+  <meta name="description" content="DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Dead Letter Queue, Pipeline, TypeScript, Cloud Tasks, Reliability">
+  <link rel="canonical" href="https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Dead Letter Queues for Pipeline Reliability">
+  <meta property="og:description" content="DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-02T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Dead Letter Queue">
+  <meta property="article:tag" content="Pipeline">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Cloud Tasks">
+  <meta property="article:tag" content="Reliability">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dead Letter Queues for Pipeline Reliability">
+  <meta name="twitter:description" content="DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Dead Letter Queues for Pipeline Reliability",
+    "description": "DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-02",
+    "dateModified": "2026-06-02",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html" },
+    "keywords": ["Dead Letter Queue", "Pipeline", "TypeScript", "Cloud Tasks", "Reliability"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">Dead Letter Queues for Pipeline Reliability</h1>
+        <div class="blog-meta">
+          <time datetime="2026-06-02">Jun 2, 2026</time>
+          <span>&middot;</span>
+          <span>8 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Dead Letter Queue</span>
+          <span class="blog-tag">Pipeline</span>
+          <span class="blog-tag">TypeScript</span>
+          <span class="blog-tag">Cloud Tasks</span>
+          <span class="blog-tag">Reliability</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>The pipeline engine I work on processes work through a chain of steps, each step dispatched as a Cloud Task. When a step fails, the task system retries with backoff. That model works well for transient failures—network blips, rate limits, a worker that crashed mid-request. It breaks down for permanent failures: invalid input that will never parse, a dependency that was deleted, a configuration mistake that no amount of waiting will fix.</p>
+
+        <p>Without explicit dead-letter handling, those runs do not disappear. They linger. A task exhausts all retries and the manifest still reads <code>IN_PROGRESS</code> because no worker is attached anymore. Another run sits in <code>ERROR</code> past any reasonable recovery window while operators wonder whether to retry or abandon. Dashboards fill with ambiguous rows. Every investigation starts with the same question: is this still recoverable, or is it dead?</p>
+
+        <p>This post is about implementing dead letter queue escalation for that engine—two detection paths, a reason-code registry, a service that writes terminal state to the GCS manifest, and UI surfacing so permanently failed runs are flagged instead of silently stalling.</p>
+
+        <h2>The problem: silent stalls vs. explicit terminal state</h2>
+        <p>A multi-step pipeline is only as trustworthy as its worst failure mode. Retries are correct for uncertainty; they are wrong for certainty. When the worker knows retries are exhausted, or when a cron sweep finds a run that has been stuck longer than the dispatch deadline with no active worker, the system should stop pretending the run might complete on its own.</p>
+
+        <p>Dead-lettering is not “delete and forget.” It is a permanent, explicit signal: this run will not progress without human intervention. The record stays in storage for visibility and audit. Operators can filter for it, see why it was escalated, and recreate work if the underlying issue is fixed. The alternative—a pipeline that hides failures behind ambiguous statuses—is a pipeline that trains people to distrust the dashboard.</p>
+
+        <h2>Two detection paths</h2>
+        <p>Reliability here comes from redundancy. No single code path should be the only way a permanently failed run gets flagged.</p>
+
+        <h3>Inline detection</h3>
+        <p>When a worker handles a step failure, it already knows the retry count and the configured maximum. If the next attempt would exceed the limit, the worker dead-letters the run <em>before</em> returning success or scheduling another retry. The run never enters another ambiguous cycle of “maybe something will pick it up.”</p>
+
+        <h3>Sweep detection</h3>
+        <p>Inline detection cannot catch every edge case. A worker can crash after writing <code>IN_PROGRESS</code> but before finishing. Cloud Tasks can stop redispatching while the manifest still looks active. A separate cron job—call it <code>recover-stale-workers</code>—periodically lists active manifests and applies two thresholds:</p>
+
+        <ul>
+          <li><strong>Stuck in progress:</strong> status is <code>IN_PROGRESS</code>, last heartbeat or step start is older than the stuck timeout (aligned with the dispatch deadline plus margin).</li>
+          <li><strong>Unrecovered error:</strong> status is <code>ERROR</code> and the error timestamp is older than a configurable recovery window—long enough for legitimate auto-recovery, short enough that abandoned errors do not linger forever.</li>
+        </ul>
+
+        <p>Either path calls the same dead-letter service with a reason code from the registry. Symmetry matters: inline and sweep produce the same manifest fields and the same analytics event, so operations and the UI see one concept, not two.</p>
+
+        <h2>Dead letter registry</h2>
+        <p>The codebase already uses a pattern for extensible enums: a frozen array of entries, each with a stable code and metadata, plus a Map-backed index for lookup. Dead-letter reasons follow that pattern. Adding a new reason is one registry entry—not a scatter of string literals across workers and cron jobs.</p>
+
+        <p>Thresholds live beside the reasons and are overridable via environment variables so staging can be aggressive and production conservative without forking code.</p>
+
+<pre><code class="language-typescript">const DEAD_LETTER_REASONS = [
+  { code: "RETRIES_EXHAUSTED", label: "Retries exhausted", severity: "terminal" },
+  { code: "STUCK_IN_PROGRESS", label: "Stuck in progress", severity: "terminal" },
+  { code: "UNRECOVERED_ERROR", label: "Error past recovery window", severity: "terminal" },
+] as const;
+
+type DeadLetterReasonCode = (typeof DEAD_LETTER_REASONS)[number]["code"];
+
+const reasonByCode = new Map(
+  DEAD_LETTER_REASONS.map((r) =&gt; [r.code, r])
+);
+
+export const DLQ_THRESHOLDS = {
+  maxRetries: Number(process.env.PIPELINE_MAX_RETRIES ?? "5"),
+  stuckInProgressMs: Number(process.env.PIPELINE_STUCK_TIMEOUT_MS ?? "900000"),
+  unrecoveredErrorMs: Number(process.env.PIPELINE_RECOVERY_WINDOW_MS ?? "3600000"),
+};
+
+export function isKnownDeadLetterReason(code: string): code is DeadLetterReasonCode {
+  return reasonByCode.has(code as DeadLetterReasonCode);
+}</code></pre>
+
+        <h2>Dead letter service</h2>
+        <p>A small service class owns the side effects. Two public methods cover the two detection paths.</p>
+
+        <p><code>recordDeadLetter(taskId, reason, metadata)</code> loads the run manifest from object storage, short-circuits if <code>deadLettered</code> is already true (idempotent), then writes <code>deadLettered: true</code>, <code>deadLetteredAt</code> as an ISO timestamp, and <code>deadLetterReason</code> from the registry. It emits a <code>STEP_DEAD_LETTERED</code> analytics event with the reason and optional metadata (last step, retry count, sweep job id). The operation is deliberately non-reversible: once dead-lettered, the run can only be recreated, not resumed. That constraint prevents “helpful” retries from undoing a terminal decision.</p>
+
+<pre><code class="language-typescript">export class DeadLetterService {
+  constructor(
+    private manifestStore: ManifestStore,
+    private analytics: AnalyticsClient
+  ) {}
+
+  async recordDeadLetter(
+    taskId: string,
+    reason: DeadLetterReasonCode,
+    metadata?: Record&lt;string, unknown&gt;
+  ): Promise&lt;RunManifest&gt; {
+    const manifest = await this.manifestStore.read(taskId);
+    if (manifest.deadLettered) return manifest;
+
+    const updated: RunManifest = {
+      ...manifest,
+      deadLettered: true,
+      deadLetteredAt: new Date().toISOString(),
+      deadLetterReason: reason,
+    };
+
+    await this.manifestStore.write(taskId, updated);
+    await this.analytics.track("STEP_DEAD_LETTERED", {
+      taskId,
+      reason,
+      ...metadata,
+    });
+
+    return updated;
+  }
+}</code></pre>
+
+        <p><code>sweepStaleRuns()</code> is invoked by the cron job. It lists manifests for active runs, evaluates each against <code>DLQ_THRESHOLDS</code>, and calls <code>recordDeadLetter</code> for any that qualify. Logging includes counts by reason so on-call can see whether spikes are retry exhaustion or stuck workers.</p>
+
+<pre><code class="language-typescript">async sweepStaleRuns(): Promise&lt;SweepResult&gt; {
+  const now = Date.now();
+  const manifests = await this.manifestStore.listActive();
+  const results: SweepResult = { deadLettered: 0, byReason: {} };
+
+  for (const manifest of manifests) {
+    const reason = this.classifyStaleRun(manifest, now);
+    if (!reason) continue;
+
+    await this.recordDeadLetter(manifest.taskId, reason, {
+      sweep: true,
+      lastStep: manifest.currentStep,
+    });
+    results.deadLettered += 1;
+    results.byReason[reason] = (results.byReason[reason] ?? 0) + 1;
+  }
+
+  return results;
+}
+
+private classifyStaleRun(
+  manifest: RunManifest,
+  now: number
+): DeadLetterReasonCode | null {
+  if (manifest.deadLettered) return null;
+
+  if (manifest.status === "IN_PROGRESS") {
+    const startedAt = Date.parse(manifest.stepStartedAt ?? manifest.updatedAt);
+    if (now - startedAt &gt; DLQ_THRESHOLDS.stuckInProgressMs) {
+      return "STUCK_IN_PROGRESS";
+    }
+  }
+
+  if (manifest.status === "ERROR" &amp;&amp; manifest.errorAt) {
+    const errorAt = Date.parse(manifest.errorAt);
+    if (now - errorAt &gt; DLQ_THRESHOLDS.unrecoveredErrorMs) {
+      return "UNRECOVERED_ERROR";
+    }
+  }
+
+  return null;
+}</code></pre>
+
+        <h2>Manifest schema extension</h2>
+        <p>The run manifest in GCS is the source of truth the workers and the API agree on. Three fields extend that schema and flow through domain types into the task summary the UI consumes.</p>
+
+<pre><code class="language-typescript">type RunManifest = {
+  taskId: string;
+  status: PipelineStatus;
+  currentStep: string;
+  stepStartedAt?: string;
+  errorAt?: string;
+  updatedAt: string;
+  // Dead letter fields — terminal, written once
+  deadLettered?: boolean;
+  deadLetteredAt?: string;      // ISO-8601
+  deadLetterReason?: DeadLetterReasonCode;
+};</code></pre>
+
+        <p>API handlers map these fields onto list and detail responses without special casing in every endpoint: if <code>deadLettered</code> is true, the summary carries the reason for overlays and filters. Listing supports <code>?deadLettered=true</code> so support can pull the terminal queue without exporting raw storage paths.</p>
+
+        <h2>UI surfacing</h2>
+        <p>Backend terminal state only helps if operators see it at a glance. Dead-lettered runs get a dedicated overlay in the status registry—distinct icon, color, and tooltip from error, paused, or cancelled overlays. In the task list and on the detail page, a red skull badge sits beside the status chip so terminal runs are visually unmistakable.</p>
+
+<pre><code class="language-typescript">const STATUS_OVERLAYS = {
+  deadLettered: {
+    label: "Dead lettered",
+    icon: "skull",
+    color: "var(--danger)",
+    tooltip: (summary: TaskSummary) =&gt;
+      summary.deadLetterReason
+        ? `Permanently failed: ${summary.deadLetterReason}`
+        : "Permanently failed — requires human review",
+  },
+  // error, paused, cancelled ...
+};
+
+function TaskStatusBadge({ summary }: { summary: TaskSummary }) {
+  const base = &lt;StatusChip status={summary.status} /&gt;;
+  if (!summary.deadLettered) return base;
+
+  const overlay = STATUS_OVERLAYS.deadLettered;
+  return (
+    &lt;span className="status-with-overlay"&gt;
+      {base}
+      &lt;span
+        className="badge badge-dead-letter"
+        title={overlay.tooltip(summary)}
+        aria-label={overlay.label}
+      &gt;
+        &lt;Icon name={overlay.icon} color={overlay.color} /&gt;
+      &lt;/span&gt;
+    &lt;/span&gt;
+  );
+}</code></pre>
+
+        <p>The skull is intentional affordance: this is not “failed again, try retry.” It is “stop waiting for automation.” Filters in the listing UI wire through to the API parameter so triage does not depend on memorizing reason codes.</p>
+
+        <h2>Design philosophy: escalate, do not hide</h2>
+        <p>Dead-lettering does not try to fix the problem at the system level. It acknowledges that the problem is unfixable without a human—wrong data, missing dependency, policy block—and escalates. The run remains in the system for visibility; it is not deleted to make metrics look better. That is the difference between a pipeline that hides failures and one that surfaces them.</p>
+
+        <p>Inline detection catches the cases workers already understand. Sweep detection catches the cases only time reveals. A single registry and service keep behavior consistent. Manifest fields and UI badges make terminal state legible. Together, they turn “is this still running?” from a manual investigation into a answered question on the dashboard.</p>
+
+        <p>If I were shipping this again from scratch, I would add the manifest fields and the registry before the first production incident—schema migration is cheap early and expensive when thousands of ambiguous rows already exist. I would also alert on <code>STEP_DEAD_LETTERED</code> rate by reason so spikes in <code>STUCK_IN_PROGRESS</code> surface worker or dispatch issues before operators open the task list. Reliability is not only recovering from failure; it is making failure impossible to ignore.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

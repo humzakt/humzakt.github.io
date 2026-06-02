@@ -4,6 +4,30 @@
 
 ---
 
+## Dead Letter Queues for Pipeline Reliability
+
+URL: https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html
+
+Implementing DLQ escalation for a multi-step pipeline engine. Two detection paths: inline (worker catches retries exhausted) and sweep (cron job detects stuck/orphaned runs past configurable thresholds). A dead letter registry defines reason codes (RETRIES_EXHAUSTED, STUCK_IN_PROGRESS, UNRECOVERED_ERROR) with env-overridable thresholds. DeadLetterService writes deadLettered/deadLetteredAt/deadLetterReason to GCS manifests and emits analytics events. Dead-lettered runs show red skull badges in the UI with a dedicated overlay in the status registry. Runs can be filtered via API parameter. Design philosophy: dead-lettering is a permanent, explicit signal that acknowledges the problem is unfixable at the system level and escalates to a human. The run stays visible but is clearly terminal.
+
+---
+
+## When Two Cache Layers Serve Stale Data
+
+URL: https://humzakt.github.io/blog/two-cache-layers-stale-data.html
+
+Completed tasks showed stale "In Progress" state when reopened. Two independent cache layers both served old data. Root cause 1: Next.js unstable_cache on the detail API route had a 15s TTL, but the worker pipeline never called revalidateTag during step progression — adding it would create tight coupling, so the fix was removing the server cache entirely. Root cause 2: React Query's default gcTime of 5 minutes cached the response from the user's first visit; navigating away and back served the stale cached response before fetching fresh data. Fix: gcTime: 0 so cached data is discarded on navigation. Both fixes were needed — removing only one layer still served stale data from the other. The listing page worked correctly because it used a different data path, making the bug harder to diagnose.
+
+---
+
+## A UX Polish Sprint: 8 PRs in 48 Hours
+
+URL: https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html
+
+Eight focused PRs shipped in 48 hours to polish an admin dashboard. (1) LISTING_FILTER_REGISTRY replacing hardcoded arrays — each filter entry declares key, label, icon, color, and matches() predicate; added Completed and virtual Duplicate filters. (2) MIN_SEARCH_QUERY_LENGTH = 3 with inline hint. (3) Consolidated 5 inline filter dropdowns into a single Filters DropdownMenu with active-count badge; toolbar went from 8 dense controls to [Filters (N)] [Sort] [Order] [Clear]. (4) Conditional task state filter that auto-hides when no paused/cancelled tasks exist. (5) Back button for batch detail. (6) Replaced internal jargon "Open A1" with "Assign Trainer". (7) Removed redundant arrow column. (8) Stale cache fix. No single PR is impressive; the compounding transforms the experience.
+
+---
+
 ## GCS Race Conditions and Generation-Fenced Leases
 
 URL: https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html

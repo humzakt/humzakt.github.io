@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>When Two Cache Layers Serve Stale Data — Humza Tareen</title>
+  <meta name="description" content="Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Caching, Next.js, React Query, Debugging, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/two-cache-layers-stale-data.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="When Two Cache Layers Serve Stale Data">
+  <meta property="og:description" content="Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/two-cache-layers-stale-data.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-02T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Caching">
+  <meta property="article:tag" content="Next.js">
+  <meta property="article:tag" content="React Query">
+  <meta property="article:tag" content="Debugging">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="When Two Cache Layers Serve Stale Data">
+  <meta name="twitter:description" content="Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "When Two Cache Layers Serve Stale Data",
+    "description": "Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-02",
+    "dateModified": "2026-06-02",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/two-cache-layers-stale-data.html" },
+    "keywords": ["Caching", "Next.js", "React Query", "Debugging", "TypeScript"],
+    "articleSection": "Performance"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-footer { margin-top: 60px; padding-top: 32px; border-top: 1px solid var(--card-border); }
+    .blog-author { display: flex; align-items: center; gap: 16px; }
+    .blog-author-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+    .blog-author-info h4 { color: var(--heading); font-size: 16px; }
+    .blog-author-info p { color: var(--text); font-size: 14px; }
+    .blog-cta { margin-top: 32px; text-align: center; }
+    .blog-cta a { display: inline-block; padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-family: var(--font-mono); font-size: 14px; transition: var(--transition); }
+    .blog-cta a:hover { background: var(--accent-muted); }
+    @media (max-width: 768px) { .blog-post { padding-top: calc(var(--nav-height) + 20px); } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+      <a href="../engineering.html#articles" role="listitem">All Articles</a>
+      <a href="../engineering.html#contact" class="nav-cta" role="listitem">Hire Me</a>
+    </div>
+  </nav>
+  <main class="blog-post">
+    <a href="../engineering.html#articles" class="blog-back"><i class="fas fa-arrow-left"></i> All Articles</a>
+    <article>
+      <header class="blog-header">
+        <h1 class="blog-title">When Two Cache Layers Serve Stale Data</h1>
+        <div class="blog-meta">
+          <time datetime="2026-06-02">Jun 2, 2026</time>
+          <span>&middot;</span>
+          <span>7 min read</span>
+          <span>&middot;</span>
+          <span>Humza Tareen</span>
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Caching</span>
+          <span class="blog-tag">Next.js</span>
+          <span class="blog-tag">React Query</span>
+          <span class="blog-tag">Debugging</span>
+          <span class="blog-tag">TypeScript</span>
+        </div>
+      </header>
+      <div class="blog-content">
+
+        <p>Users on the dashboard reported a confusing pattern: when they clicked a completed task in the listing, the detail page briefly showed an intermediate <em>In Progress</em> state—step 1 or step 2 still running—before snapping to the correct completed view. The listing page always showed the right status. Only the detail page lied, and only for a moment. That asymmetry made the bug feel like a rendering glitch until we traced two independent cache layers, each serving stale data for different reasons. Fixing one was not enough; both had to change.</p>
+
+        <p>This post walks through that investigation: the architecture, two root causes, the fixes, and why sometimes the right answer is to remove a cache instead of perfecting its invalidation.</p>
+
+        <h2>The bug report</h2>
+        <p>The symptom was consistent and reproducible under the right timing. Open a task while it is still executing, leave, wait for the worker pipeline to finish, then open the same task from the listing where it now appears completed. For a second or two the detail page showed an old pipeline step—<em>In Progress</em>—then updated. No hard refresh was required; the UI eventually corrected itself. That “eventually” pointed at caching or polling, not at permanently wrong data in object storage.</p>
+
+        <p>Because the listing was correct, engineers first suspected the detail page’s client state or a race in the UI. Network tab inspection showed something subtler: the first response body for the detail API sometimes described an earlier step, even though manifests in storage had already moved on. Reproducing the issue required deliberate timing—visit during execution, navigate away, wait for completion, return from the listing—but once you had that sequence, the wrong first paint was reliable enough to rule out a one-off race.</p>
+
+        <h2>Two data paths on the detail page</h2>
+        <p>The detail page does not read storage directly in the browser. It has two stacked paths:</p>
+
+        <ul>
+          <li><strong>Server:</strong> An API route loads task details from object storage via a <code>TaskDetailService</code> and returns JSON. That handler was wrapped in Next.js <code>unstable_cache</code> with a 15-second TTL and tag-based revalidation.</li>
+          <li><strong>Client:</strong> A React Query hook calls that API route on an interval—every 10 seconds—with background refetching while the tab is focused.</li>
+        </ul>
+
+        <p>So a single user session could hit a cached server response <em>and</em> reuse a cached client query result. The listing page followed a different path: it read manifests fresh from storage on each revalidation, without the same server cache in front of the detail route. Same task, two pages, two truths—that is what made diagnosis slow.</p>
+
+<pre><code>  Browser (detail page)
+       |
+       |  React Query (client cache, default gcTime 5 min)
+       |  poll every 10s
+       v
+  GET /api/tasks/[id]  ----&gt;  unstable_cache (server, TTL 15s, tags)
+       |                           |
+       |                           v
+       +------------------&gt;  TaskDetailService  ----&gt;  object storage
+
+  Listing page (separate path)
+       |
+       v
+  manifests read fresh from storage (no detail-route server cache)</code></pre>
+
+        <h2>Root cause 1: server cache never invalidated</h2>
+        <p>The API route used <code>unstable_cache</code> with a revalidate tag so that, in theory, writers could bust the cache when task state changed. In practice, the worker pipeline that advances steps never called <code>revalidateTag</code>. Workers update manifests directly in object storage. They have no knowledge of a Next.js cache sitting in front of the detail route.</p>
+
+        <p>What happened in production looked like this: a user opened the detail page while the task was on step 1. The server cached that JSON for up to 15 seconds. The worker finished step 2 and step 3 in storage, but nothing told the web layer to drop the entry. Another visit inside the TTL window got the cached “step 1 running” payload. React Query’s polling would eventually fetch fresher data—but the <em>first</em> paint could still be wrong if the server cache responded first.</p>
+
+        <p>That is the classic “cache invalidation only works if every writer knows about the cache” problem. Your mental model might assume tags connect storage writes to HTTP responses automatically. In a split architecture—workers in one runtime, Next.js in another—the tag is invisible unless you build an explicit bridge. We had defined the bridge on paper (tags on the cache entry) but never wired the pipeline to call it.</p>
+
+        <p>The tempting fix was to sprinkle <code>revalidateTag</code> calls through the worker pipeline whenever a step completes. That couples pipeline code to a specific web framework’s cache API—tight coupling across system boundaries, and easy to forget on the next new writer.</p>
+
+        <p>The better fix for this route: <strong>remove the server-side cache entirely.</strong> Client polling already bounds how often the browser hits the API. A 15-second server cache bought little latency and added a stale-serving failure mode whenever invalidation was incomplete.</p>
+
+        <h3>Before: cached API handler</h3>
+
+<pre><code class="language-typescript">import { unstable_cache } from "next/cache";
+
+const TASK_DETAIL_TAG = "task-detail";
+
+export async function GET(
+  _req: Request,
+  { params }: { params: { id: string } }
+) {
+  const getCachedDetail = unstable_cache(
+    async () => TaskDetailService.getById(params.id),
+    [`task-detail-${params.id}`],
+    { revalidate: 15, tags: [TASK_DETAIL_TAG, `task-${params.id}`] }
+  );
+
+  const detail = await getCachedDetail();
+  return Response.json(detail);
+}</code></pre>
+
+        <h3>After: direct service call</h3>
+
+<pre><code class="language-typescript">export async function GET(
+  _req: Request,
+  { params }: { params: { id: string } }
+) {
+  const detail = await TaskDetailService.getById(params.id);
+  return Response.json(detail);
+}</code></pre>
+
+        <p>After deploying that change, server responses tracked storage on every request. The flash did not disappear.</p>
+
+        <h2>Root cause 2: client gcTime replayed old data</h2>
+        <p>Even with a fresh server, users still saw a brief stale state. The second layer was React Query’s default <code>gcTime</code> (formerly <code>cacheTime</code>): five minutes. While a user stayed on the detail page during execution, React Query stored the “step 1 in progress” result. When they navigated away and returned after completion, React Query immediately showed that cached entry—instant wrong UI—while a background refetch ran. Fresh data replaced it a moment later. Correct outcome, jarring path.</p>
+
+        <p>For a detail view where correctness on entry matters more than instant back-navigation, we set <code>gcTime: 0</code>. Leaving the page discards cached data immediately. The next visit shows a loading state, then the current truth. No stale flash. The tradeoff is intentional: users who bounce between list and detail more often pay an extra spinner, but they never see a completed task masquerading as mid-pipeline work.</p>
+
+        <p>Note that <code>staleTime</code> and <code>gcTime</code> solve different problems. <code>staleTime</code> controls how long data is considered fresh before a refetch; <code>gcTime</code> controls how long inactive query data stays in memory after the last subscriber unmounts. Our bug was almost entirely the latter—old data resurrected on remount, not a refusal to refetch while the page was open.</p>
+
+        <h3>Before: default garbage collection</h3>
+
+<pre><code class="language-typescript">export function useTaskDetail(taskId: string) {
+  return useQuery({
+    queryKey: ["task-detail", taskId],
+    queryFn: () =&gt; fetchTaskDetail(taskId),
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
+    // gcTime defaults to 5 minutes — stale snapshot survives navigation
+  });
+}</code></pre>
+
+        <h3>After: discard cache on unmount</h3>
+
+<pre><code class="language-typescript">export function useTaskDetail(taskId: string) {
+  return useQuery({
+    queryKey: ["task-detail", taskId],
+    queryFn: () =&gt; fetchTaskDetail(taskId),
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
+    gcTime: 0,
+  });
+}</code></pre>
+
+        <h2>Why both fixes were required</h2>
+        <p>These layers are independent. Removing only the server cache still left React Query serving a five-minute-old snapshot on remount. Setting only <code>gcTime: 0</code> still allowed <code>unstable_cache</code> to return 15-second-old JSON from the API. Each layer could be “correct” in isolation while the combined system was wrong.</p>
+
+        <p>Cache invalidation is only as reliable as the least-invalidated layer. Here, the worker never participated in server invalidation, and the client deliberately kept data warm for UX on other pages—defaults that made sense globally but hurt this screen.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Symptom if unfixed</th>
+              <th>Fix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Server <code>unstable_cache</code></td>
+              <td>Stale JSON within TTL; listing vs detail mismatch</td>
+              <td>Remove cache on detail route</td>
+            </tr>
+            <tr>
+              <td>React Query client cache</td>
+              <td>Instant replay of old step on return visit</td>
+              <td><code>gcTime: 0</code> on detail query</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Listing vs detail asymmetry</h2>
+        <p>The listing page worked because it never depended on the cached detail handler. It aggregated status from manifests refreshed on a separate revalidation path. So operators trusted the grid and distrusted the detail page—a classic split-brain symptom when two features read the same domain through different pipelines.</p>
+
+        <p>When debugging “page A is right, page B is wrong,” map the full path for each screen before assuming a shared bug in storage or workers. Here, storage was fine; the caches in front of the detail route were not.</p>
+
+        <h2>The lesson</h2>
+        <p>Every cache you add is a potential source of stale data. Multiple layers multiply that risk: a bug or omission in either layer can serve old state even if the other is perfect. Tag-based revalidation only works when every writer that mutates underlying data knows about the tag—and workers that touch object storage often do not.</p>
+
+        <p>Sometimes the right fix is not better invalidation but fewer caches. Server caching on a route that is already polled every ten seconds was redundant. Client caching with a five-minute gcTime was wrong for a view where users care about the first paint after navigation. Together, those choices produced a bug that looked like a UI flicker but was really two systems each doing what they were told—just not coordinated with how tasks actually change in the platform.</p>
+
+        <p>If you are seeing a brief wrong state that self-corrects, check the stack twice: once at the edge of your framework on the server, and once in your data library on the client. Fix one, verify, then fix the other. Stale data rarely respects how neatly you drew the architecture diagram.</p>
+
+      </div>
+      <footer class="blog-footer">
+        <div class="blog-author">
+          <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">
+          <div class="blog-author-info">
+            <h4>Humza Tareen</h4>
+            <p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p>
+          </div>
+        </div>
+        <div class="blog-cta">
+          <a href="../engineering.html#articles">Read More Articles</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

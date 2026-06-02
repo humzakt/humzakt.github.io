@@ -1,5 +1,38 @@
 [
   {
+    "id": "dead-letter-queue-pipeline-reliability",
+    "title": "Dead Letter Queues for Pipeline Reliability",
+    "summary": "DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.",
+    "date": "2026-06-02",
+    "themes": ["infrastructure", "devops"],
+    "components": ["Dead Letter Queue", "Pipeline", "TypeScript", "Cloud Tasks", "Reliability"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html"
+    }
+  },
+  {
+    "id": "two-cache-layers-stale-data",
+    "title": "When Two Cache Layers Serve Stale Data",
+    "summary": "Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.",
+    "date": "2026-06-02",
+    "themes": ["performance", "debugging"],
+    "components": ["Caching", "Next.js", "React Query", "Debugging", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/two-cache-layers-stale-data.html"
+    }
+  },
+  {
+    "id": "ux-polish-sprint-filter-registry-consolidated-controls",
+    "title": "A UX Polish Sprint: 8 PRs in 48 Hours",
+    "summary": "Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.",
+    "date": "2026-06-02",
+    "themes": ["frontend", "ux-engineering"],
+    "components": ["UX Engineering", "React", "TypeScript", "Admin UI", "Registry Pattern"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html"
+    }
+  },
+  {
     "id": "gcs-race-conditions-generation-fenced-leases",
     "title": "GCS Race Conditions: Generation-Fenced Lease Deletion",
     "summary": "Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.",
