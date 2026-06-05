@@ -4,6 +4,22 @@
 
 ---
 
+## Building an Events Table for Pipeline Observability
+
+URL: https://humzakt.github.io/blog/events-table-pipeline-observability.html
+
+Built a unified events table for a multi-step pipeline platform, aggregating events from four different sources into one diagnostic timeline. Events come from GCS manifest statusHistory (status transitions with actor/reason metadata), manifest actionHistory (admin actions like pause/cancel/reject), step trace files (execution data with QC results, dedup verdicts, agent metrics, error details), and database assignment lifecycle (created/claimed/closed). Instrumented 30 call sites across user routes, workers, batch services, and rework flows to record statusHistory transitions inside GCS CAS windows. Built causal event ordering with EVENT_TYPE_PRIORITY map for deterministic same-timestamp sort. Rich UI with context-specific error previews, QC breakdown panels, dedup detail panels, and client-side pagination after consolidation. Parallelized GCS reads from 13 serial round-trips to 3 parallel stages. 7,326 lines, 73 files, 64 commits.
+
+---
+
+## Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish
+
+URL: https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html
+
+Replaced a checkbox taxonomy grid with a row-entry table featuring cascading sector/occupation dropdowns, per-row scenario textarea, and add/remove/duplicate row controls. All fields now required with Zod schema enforcement. Server-side validates every slug against a vendored taxonomy registry before creating runs. Scenario threading passes operator context through batch service to AI agent prompts. Dedup compatibility maintained with inline types for nullable-occupation callers. Same sprint: consolidated filter controls into single panel, fixed stale client cache, corrected step filter mapping, replaced internal labels with user-friendly text, fixed sector column truncation, and upgraded GitHub Actions to Node.js 24.
+
+---
+
 ## Dead Letter Queues for Pipeline Reliability
 
 URL: https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html

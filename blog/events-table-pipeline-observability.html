@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building an Events Table for Pipeline Observability — Humza Tareen</title>
+  <meta name="description" content="How I built a unified events timeline that aggregates four heterogeneous data sources — GCS manifest history, step traces, and database assignments — into one debuggable pipeline observability UI.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Observability, Pipeline, TypeScript, GCS, Event Sourcing, Next.js">
+  <link rel="canonical" href="https://humzakt.github.io/blog/events-table-pipeline-observability.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building an Events Table for Pipeline Observability">
+  <meta property="og:description" content="How I built a unified events timeline that aggregates four heterogeneous data sources — GCS manifest history, step traces, and database assignments — into one debuggable pipeline observability UI.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/events-table-pipeline-observability.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-05T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="Pipeline">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="GCS">
+  <meta property="article:tag" content="Event Sourcing">
+  <meta property="article:tag" content="Next.js">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building an Events Table for Pipeline Observability">
+  <meta name="twitter:description" content="How I built a unified events timeline that aggregates four heterogeneous data sources — GCS manifest history, step traces, and database assignments — into one debuggable pipeline observability UI.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building an Events Table for Pipeline Observability",
+    "description": "How I built a unified events timeline that aggregates four heterogeneous data sources — GCS manifest history, step traces, and database assignments — into one debuggable pipeline observability UI.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-05",
+    "dateModified": "2026-06-05",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/events-table-pipeline-observability.html" },
+    "keywords": ["Observability", "Pipeline", "TypeScript", "GCS", "Event Sourcing", "Next.js"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Events Table for Pipeline Observability"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Building an Events Table for Pipeline Observability</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-05" itemprop="datePublished">June 5, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">Pipeline</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">GCS</span>
+        <span class="blog-tag">Event Sourcing</span>
+        <span class="blog-tag">Next.js</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The platform I work on runs an auto-seeding task pipeline: each task moves through a multi-step workflow spanning task design, model output generation, quality checks, expert review, deduplication gates, and rework flows. A single run can touch thirteen or more steps, each with its own state transitions, failure modes, and side effects. When something went wrong in production, the debugging workflow was painful. There was no unified timeline. You opened the GCS manifest JSON, scrolled through <code>statusHistory</code> if it existed, downloaded individual <code>trace.json</code> files from step folders, cross-referenced <code>result.json</code> for non-agentic steps, and checked the database for assignment lifecycle events. Four different storage locations, four different schemas, zero causal ordering guarantee. I built an events table that aggregates all of it into one paginated, expandable timeline — and a companion instrumentation pass that made the write side trustworthy enough to depend on.</p>
+
+      <h2>The Problem: Fragmented Observability</h2>
+
+      <p>Pipeline failures do not announce themselves cleanly. A task can stall because a worker hit a dispatch deadline, because an admin paused it, because a dedup gate matched an existing task, because a QC check blocked advancement, or because a rework orchestrator sent it back three steps. Each of those failure paths writes evidence to a different place. Status transitions lived in the manifest — sometimes. Step-level execution detail lived in per-step trace files. Admin interventions were buried in <code>actionHistory</code>. Expert assignment lifecycle events lived only in the relational database.</p>
+
+      <p>Before this work, an engineer debugging a stuck task would spend twenty to forty minutes just assembling context: downloading manifest JSON from cloud storage, opening step trace files one by one, correlating timestamps manually, and guessing which event caused which downstream effect. The platform had rich data. It just had no lens.</p>
+
+      <blockquote>
+        Observability is not about collecting more logs. It is about making the causal chain visible in one place, in the order things actually happened.
+      </blockquote>
+
+      <p>The goal was straightforward: one API endpoint, one UI table, one chronological timeline per task. The implementation was not.</p>
+
+      <h2>Four-Source Event Aggregation</h2>
+
+      <p>I designed the aggregator to pull from four independent sources and normalize them into a single <code>PipelineEvent</code> schema. Each source contributes a different slice of the story.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>What it captures</th>
+            <th>Storage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>statusHistory</code></td>
+            <td>Status transitions at write time</td>
+            <td>GCS manifest</td>
+          </tr>
+          <tr>
+            <td><code>actionHistory</code></td>
+            <td>Admin actions (pause, resume, cancel, reject, rerun)</td>
+            <td>GCS manifest</td>
+          </tr>
+          <tr>
+            <td>Step traces</td>
+            <td>Execution detail, QC results, dedup verdicts, agent metrics</td>
+            <td>GCS step folders (<code>trace.json</code> / <code>events.json</code>)</td>
+          </tr>
+          <tr>
+            <td><code>TaskAssignment</code></td>
+            <td>Assignment lifecycle (created, claimed, closed)</td>
+            <td>Database</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The manifest's <code>statusHistory</code> array was the most important source — and the least complete before instrumentation. Each transition records <code>fromStatus</code>, <code>toStatus</code>, <code>stepName</code>, <code>version</code>, <code>actorId</code>, <code>actorType</code>, <code>reason</code>, and <code>timestamp</code>. Actor types distinguish human operators (<code>USER</code>) from automated paths (<code>SYSTEM</code>), which matters when you are trying to figure out whether a task was paused by an admin or blocked by a worker.</p>
+
+      <p>Step traces carry the execution layer: <code>errorDetails</code> with typed sub-reasons, per-check QC summaries, dedup verdicts with matched task IDs and similarity scores, and agent execution metrics (token counts, cost, turn count). For steps that do not write a <code>trace.json</code> — notably some model-output steps — the aggregator falls back to <code>result.json</code> in the same step folder.</p>
+
+      <p>The database source covers the expert review side of the pipeline. When a task enters a human review step, assignment records track creation, claim, and closure. Without this source, the timeline would show the task entering review but never show who claimed it or when it was released.</p>
+
+      <h2>Architecture: Provider-Service Pattern</h2>
+
+      <p>I structured the backend in four layers: route, service, aggregator, and provider. The route handles auth, pagination params, and cache headers. The service orchestrates merging, deduplication, consolidation, sorting, and pagination. The aggregator coordinates multiple providers. Each provider implements a narrow interface and knows how to read one storage backend.</p>
+
+<pre><code class="language-typescript">interface EventsProvider {
+  fetchStatusHistory(taskId: string): Promise&lt;StatusTransitionEvent[]&gt;;
+  fetchActionHistory(taskId: string): Promise&lt;AdminActionEvent[]&gt;;
+  fetchStepTraces(taskId: string): Promise&lt;StepTraceEvent[]&gt;;
+}
+
+class GcsEventsProvider implements EventsProvider {
+  constructor(
+    private readonly manifestStore: ManifestStore,
+    private readonly stepStore: StepObjectStore,
+  ) {}
+
+  async fetchStatusHistory(taskId: string): Promise&lt;StatusTransitionEvent[]&gt; {
+    const manifest = await this.manifestStore.read(taskId);
+    return (manifest.statusHistory ?? []).map(normalizeStatusTransition);
+  }
+
+  async fetchStepTraces(taskId: string): Promise&lt;StepTraceEvent[]&gt; {
+    const folders = await this.stepStore.listStepFolders(taskId);
+    const traces = await Promise.all(
+      folders.map((folder) =&gt; this.readTraceWithFallback(taskId, folder))
+    );
+    return traces.flat().map(enrichStepTrace);
+  }
+}</code></pre>
+
+      <p>The <code>EventsProvider</code> interface is deliberately storage-agnostic. Today everything reads from GCS. Tomorrow, if we migrate manifest history to a database, we swap the provider implementation without touching the service layer or the UI. The service calls <code>aggregator.collect(taskId)</code> and receives a flat array of normalized events regardless of where they originated.</p>
+
+      <p>The service layer owns the messy parts: deduplicating events that appear in both <code>statusHistory</code> and step traces, consolidating step-level event groups so the UI can collapse an entire step execution into one row, and applying pagination <em>after</em> consolidation so step groups never split across page boundaries.</p>
+
+      <h2>Trace Enrichment</h2>
+
+      <p>Raw trace files are verbose. The UI does not need every field on every row — it needs the right summary at the right depth. I built an enrichment pass that extracts context-specific previews from each trace type.</p>
+
+      <p>For QC-blocked steps, the preview shows the count of failed checks and their IDs. Expanding the row opens a <code>QcBreakdownPanel</code> with per-check pass/fail status, confidence scores, explanations, and remediation guidance. For dedup gates, the preview shows the matched task ID and similarity score against the configured threshold. For agent failures, the preview surfaces error type and subtype without dumping the full stack trace into the table row.</p>
+
+<pre><code class="language-typescript">function enrichStepTrace(raw: RawStepTrace): EnrichedStepEvent {
+  const base = {
+    type: "step_outcome" as const,
+    stepName: raw.stepName,
+    timestamp: raw.completedAt ?? raw.startedAt,
+    actorType: "SYSTEM" as const,
+  };
+
+  if (raw.errorDetails) {
+    return {
+      ...base,
+      preview: {
+        kind: "error",
+        errorType: raw.errorDetails.type,
+        errorSubtype: raw.errorDetails.subtype,
+        errorReason: classifyError(raw.errorDetails),
+      },
+      detail: raw.errorDetails,
+    };
+  }
+
+  if (raw.qcSummary) {
+    const failed = raw.qcSummary.checks.filter((c) =&gt; !c.passed);
+    return {
+      ...base,
+      preview: {
+        kind: "qc_blocked",
+        failedCount: failed.length,
+        checkIds: failed.map((c) =&gt; c.checkId),
+      },
+      detail: raw.qcSummary,
+    };
+  }
+
+  if (raw.dedupVerdict) {
+    return {
+      ...base,
+      preview: {
+        kind: "dedup_match",
+        matchedTaskId: raw.dedupVerdict.matchedTaskId,
+        score: raw.dedupVerdict.score,
+        threshold: raw.dedupVerdict.threshold,
+      },
+      detail: raw.dedupVerdict,
+    };
+  }
+
+  return { ...base, preview: { kind: "success" }, detail: raw.agentMetrics };
+}</code></pre>
+
+      <p>Error classification deserves its own mention. Not every step failure is an agent crash. SIGTERM from dispatch deadline kills, output write failures, and enqueue failures each get a distinct <code>errorReason</code> stamp. This matters because the platform's rework flow can rerun a task from a failed step — and if the failure reason is misattributed, the rerun targets the wrong root cause.</p>
+
+      <h2>Causal Event Ordering</h2>
+
+      <p>Once events from four sources land in one array, sorting by timestamp alone is not enough. Multiple events can share the same millisecond — an admin action and the status transition it triggers, or a step outcome and the subsequent pipeline advance. Without deterministic tie-breaking, the timeline would shuffle between page loads.</p>
+
+      <p>I built an <code>EVENT_TYPE_PRIORITY</code> map that breaks timestamp ties in causal order: admin actions first, then status transitions, then step outcomes. The sort comparator applies timestamp first, then priority, then a stable secondary key.</p>
+
+<pre><code class="language-typescript">const EVENT_TYPE_PRIORITY: Record&lt;PipelineEventType, number&gt; = {
+  admin_action: 0,
+  status_transition: 1,
+  step_outcome: 2,
+  assignment_lifecycle: 3,
+};
+
+function compareEvents(a: PipelineEvent, b: PipelineEvent): number {
+  const timeDiff = a.timestamp.getTime() - b.timestamp.getTime();
+  if (timeDiff !== 0) return timeDiff;
+
+  const priorityDiff =
+    EVENT_TYPE_PRIORITY[a.type] - EVENT_TYPE_PRIORITY[b.type];
+  if (priorityDiff !== 0) return priorityDiff;
+
+  return a.id.localeCompare(b.id);
+}</code></pre>
+
+      <p>This is a small piece of code with an outsized UX impact. Before it, an admin pause followed by a status change to <code>paused</code> could render in either order depending on which provider returned first. After it, the action always precedes the transition it caused.</p>
+
+      <h2>Rich UI Components</h2>
+
+      <p>The events table is not a generic data grid. Each event type renders a context-specific preview in the collapsed row, with expandable detail panels behind it. I built five panel types:</p>
+
+      <ul>
+        <li><strong>QcBreakdownPanel</strong> — per-check results with confidence, explanation, and remediation</li>
+        <li><strong>DedupDetailsPanel</strong> — matched task link, score, threshold, and verdict reasoning</li>
+        <li><strong>ErrorDetailsPanel</strong> — structured error type, subtype, stack context, and classified reason</li>
+        <li><strong>SlugStatusPanel</strong> — slug-level status within multi-output steps</li>
+        <li><strong>RepairSummaryPanel</strong> — rework and repair orchestration outcomes</li>
+      </ul>
+
+      <p>Actor UIDs in the raw events are not human-readable. The UI resolves them to email addresses via a batch lookup on initial load, so operators see "paused by jane@example.com" instead of an opaque identifier. Pagination runs client-side after the service consolidates step groups, which prevents the confusing case where page one ends mid-step and page two starts with the error detail from that same step.</p>
+
+      <p>One deliberate UX decision: the Events tab uses <code>keepMounted: false</code> in the tab panel configuration. The timeline query can fan out across every step folder for a task. There is no reason to fire that aggregation when an operator is viewing a different tab. Unmounting the panel cancels in-flight requests and keeps the task detail page responsive.</p>
+
+      <h2>Write-Side Instrumentation</h2>
+
+      <p>Building the read path exposed a gap: <code>statusHistory</code> did not exist on most manifests. The array was defined in the Zod schema but populated at exactly zero call sites. The events table would have been a fancy viewer over empty data. I shipped a companion instrumentation pass that added write-side recording at every status mutation in the codebase.</p>
+
+      <p>The approach extended the manifest provider's <code>update()</code> and <code>appendAction()</code> methods to accept an optional <code>StatusTransition</code> parameter. Inside the same compare-and-swap window that writes the new status, the provider reads the current <code>fromStatus</code> and <code>version</code> from the existing manifest and appends a complete history entry. No separate read, no race between status write and history append.</p>
+
+<pre><code class="language-typescript">async update(
+  taskId: string,
+  patch: ManifestPatch,
+  transition?: StatusTransitionInput,
+): Promise&lt;Manifest&gt; {
+  return this.casWrite(taskId, (current) =&gt; {
+    const next = applyPatch(current, patch);
+
+    if (transition) {
+      next.statusHistory = [
+        ...(current.statusHistory ?? []),
+        {
+          fromStatus: current.status,
+          toStatus: patch.status ?? current.status,
+          stepName: transition.stepName,
+          version: current.version,
+          actorId: transition.actorId,
+          actorType: transition.actorType,
+          reason: transition.reason,
+          errorReason: transition.errorReason,
+          timestamp: new Date().toISOString(),
+        },
+      ];
+    }
+
+    return next;
+  });
+}</code></pre>
+
+      <p>I instrumented thirty call sites across user-facing routes, background workers, the batch service, pipeline modules, and the rework orchestrator. Each call site passes the correct <code>actorType</code>: user routes stamp <code>USER</code>, workers and pipeline modules stamp <code>SYSTEM</code>. Critically, each transition carries its own <code>errorReason</code> rather than relying on a manifest-level error field. Without per-transition error reasons, a rework rerun could inherit the original failure's reason and misattribute the new failure to the old root cause.</p>
+
+      <p>The instrumentation pass added 367 lines across 19 files with 36 tests validating that every mutation path appends a history entry and that CAS conflicts do not produce duplicate or out-of-order records.</p>
+
+      <h2>Performance and Security</h2>
+
+      <p>The naive implementation listed step folders sequentially, then read each trace file one at a time. For a task with thirteen steps, that was thirteen serial round trips to GCS before any parsing began. I restructured the read path into three parallel stages: list all step folders, read all trace files via <code>Promise.all</code>, then parse and enrich in memory. The serial pipeline became three parallel batches.</p>
+
+      <p>The API response is cacheable. I set <code>Cache-Control</code> headers with a short TTL so repeated views of the same task within a debugging session do not re-hit GCS. For tasks that are actively running, the TTL is short enough that new events appear within seconds without requiring a hard refresh.</p>
+
+      <p>Security mattered too. Step trace files can contain raw model outputs and internal payloads. The step-detail events route strips sensitive fields for non-admin users before the response leaves the server. Admins see the full enrichment; standard operators see previews and sanitized detail panels.</p>
+
+      <h2>What Changed in Practice</h2>
+
+      <p>The combined delivery — read-path aggregation plus write-path instrumentation — landed at roughly 7,300 lines across 73 files over 64 commits. That sounds large, but the scope was end-to-end: backend provider interface, aggregation service, API routes, five detail panel components, actor resolution, pagination logic, error classification, parallelized GCS reads, cache headers, auth-gated payload stripping, and thirty instrumented write call sites.</p>
+
+      <p>The operational impact was immediate. A debugging session that previously required downloading four different file types and manually correlating timestamps now starts and ends in one browser tab. When a task is stuck in a dedup gate, the timeline shows the exact matched task, the similarity score, and the threshold in the collapsed row — no GCS console required. When a QC check blocks advancement, the breakdown panel shows which checks failed and what remediation the system recommends.</p>
+
+      <p>Pipeline observability is a read-side and write-side problem. The events table is the read side — aggregation, enrichment, ordering, and a UI that respects how operators actually debug. The <code>statusHistory</code> instrumentation is the write side — making sure every transition is recorded at the moment it happens, with the actor, reason, and error context that make the timeline trustworthy. Neither works without the other. Together, they turned a platform that hoarded observability data across disconnected storage into one where the causal chain is a first-class product surface.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

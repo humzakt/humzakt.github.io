@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish — Humza Tareen</title>
+  <meta name="description" content="How I replaced a checkbox taxonomy grid with row-entry bulk intake, added server-side slug validation against a vendored registry, threaded per-row scenarios into the data generation pipeline, and shipped six companion polish PRs in the same sprint.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Bulk Intake, TypeScript, Admin UI, Taxonomy Validation, React, Next.js, Zod">
+  <link rel="canonical" href="https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish">
+  <meta property="og:description" content="How I replaced a checkbox taxonomy grid with row-entry bulk intake, added server-side slug validation against a vendored registry, threaded per-row scenarios into the data generation pipeline, and shipped six companion polish PRs in the same sprint.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-05T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Bulk Intake">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Admin UI">
+  <meta property="article:tag" content="Taxonomy Validation">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="Next.js">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish">
+  <meta name="twitter:description" content="How I replaced a checkbox taxonomy grid with row-entry bulk intake, added server-side slug validation against a vendored registry, threaded per-row scenarios into the data generation pipeline, and shipped six companion polish PRs in the same sprint.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish",
+    "description": "How I replaced a checkbox taxonomy grid with row-entry bulk intake, added server-side slug validation against a vendored registry, threaded per-row scenarios into the data generation pipeline, and shipped six companion polish PRs in the same sprint.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-05",
+    "dateModified": "2026-06-05",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html" },
+    "keywords": ["Bulk Intake", "TypeScript", "Admin UI", "Taxonomy Validation", "React", "Next.js", "Zod"],
+    "articleSection": "DevOps"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Bulk Intake Redesign"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-05" itemprop="datePublished">June 5, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Bulk Intake</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Admin UI</span>
+        <span class="blog-tag">Taxonomy Validation</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">Next.js</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The platform I work on generates training data through AI agents. Operators submit bulk batches — dozens or hundreds of runs at once — specifying which sector and occupation each task should target and what scenario the agent should produce. The bulk intake form is the front door to the entire data generation pipeline. When it is wrong, bad taxonomy slugs slip into production runs, scenarios never reach the agent prompt, and operators waste time fighting a UI that does not match how they actually think about work.</p>
+
+      <p>Over one sprint I redesigned bulk intake from a checkbox taxonomy grid into a compact row-entry table with cascading dropdowns and per-row scenario input, hardened the API with server-side taxonomy validation, and threaded scenarios through to the pipeline enqueue path. Six smaller polish PRs shipped in the same window — filter consolidation, stale cache fixes, step filter mapping, label cleanup, sector display, and a GitHub Actions Node.js upgrade. This post walks through the bulk intake redesign first, then the companion fixes that made the admin dashboard feel finished.</p>
+
+      <h2>The old design: combinatorial explosion</h2>
+
+      <p>The previous bulk intake UI presented a checkbox grid of sectors. Selecting a sector caused the system to generate every occupation combination under it automatically. There was no per-row control. Occupation and scenario were optional fields buried in the expansion logic, not surfaced to the operator.</p>
+
+      <p>That model had three problems. First, operators could not describe <em>what</em> the AI agent should generate — scenario was not a first-class input. Second, the combinatorial expansion created runs the operator did not intend: checking "Healthcare" might enqueue thirty occupations when they only needed two specific ones. Third, the API accepted any string for sector and occupation slugs. A typo in a slug passed client-side validation silently and produced tasks that failed downstream in the pipeline with opaque taxonomy errors.</p>
+
+      <blockquote>
+        Bulk intake is not a form problem. It is a contract problem between operators, the taxonomy registry, and the data generation pipeline.
+      </blockquote>
+
+      <h2>The new design: row-entry with cascading dropdowns</h2>
+
+      <p>I replaced the checkbox grid with a compact table where each row is one intended run. Every row has three required fields: sector, occupation, and scenario. Sector and occupation are cascading dropdowns — selecting a sector filters the occupation list to only valid children from the vendored taxonomy registry. The scenario field is a textarea where the operator describes what the AI agent should generate for that specific row.</p>
+
+      <p>Row controls let operators add, remove, and duplicate rows. Duplicating is the common path when an operator wants the same sector/occupation pair with a different scenario — one click copies the taxonomy selections and clears the scenario for editing. Submit stays disabled until every row passes client-side validation: non-empty occupation, non-empty scenario, and a sector/occupation pair that exists in the registry.</p>
+
+<pre><code class="language-typescript">interface BulkIntakeRow {
+  id: string;
+  sector: string;
+  occupation: string;
+  scenario: string;
+}
+
+function occupationsForSector(
+  sectorSlug: string,
+  registry: TaxonomyRegistry,
+): OccupationOption[] {
+  const sector = registry.sectors.find((s) =&gt; s.slug === sectorSlug);
+  if (!sector) return [];
+  return sector.occupations.map((occ) =&gt; ({
+    slug: occ.slug,
+    label: occ.displayName,
+  }));
+}
+
+function validateRow(row: BulkIntakeRow, registry: TaxonomyRegistry): string[] {
+  const errors: string[] = [];
+  if (!row.sector) errors.push("Sector is required");
+  if (!row.occupation?.trim()) errors.push("Occupation is required");
+  if (!row.scenario?.trim()) errors.push("Scenario is required");
+  if (row.sector &amp;&amp; !registry.hasSector(row.sector)) {
+    errors.push(`Unknown sector: ${row.sector}`);
+  }
+  if (row.sector &amp;&amp; row.occupation &amp;&amp; !registry.hasOccupation(row.sector, row.occupation)) {
+    errors.push(`Unknown occupation for sector`);
+  }
+  return errors;
+}</code></pre>
+
+      <p>The cascading dropdown pattern is straightforward on the client but it eliminates an entire class of user error. Operators cannot select an occupation that does not belong to the chosen sector because the occupation dropdown simply does not offer invalid options.</p>
+
+      <h2>Server-side taxonomy validation</h2>
+
+      <p>Client-side cascading dropdowns are not sufficient. A crafted request could still POST invalid slugs to <code>POST /api/batches</code>. I added server-side validation that checks every sector and occupation slug against the same vendored taxonomy registry before any runs are created.</p>
+
+<pre><code class="language-typescript">const BulkRunCellSchema = z.object({
+  sector: z.string().min(1),
+  occupation: z.string().min(1),
+  scenario: z.string().min(1),
+});
+
+async function validateBulkCells(
+  cells: z.infer&lt;typeof BulkRunCellSchema&gt;[],
+  registry: TaxonomyRegistry,
+): Promise&lt;void&gt; {
+  for (const [index, cell] of cells.entries()) {
+    if (!registry.hasSector(cell.sector)) {
+      throw new ValidationError(
+        `Row ${index + 1}: unknown sector slug "${cell.sector}"`,
+      );
+    }
+    if (!registry.hasOccupation(cell.sector, cell.occupation)) {
+      throw new ValidationError(
+        `Row ${index + 1}: occupation "${cell.occupation}" ` +
+        `is not valid for sector "${cell.sector}"`,
+      );
+    }
+  }
+}</code></pre>
+
+      <p>Previously, bad slugs passed silently and surfaced as pipeline failures hours later. Now the API returns a 400 with a row-indexed error message at submission time. The registry is vendored — a checked-in JSON artifact versioned with the application — so validation is deterministic across environments and does not depend on a live taxonomy service.</p>
+
+      <h2>Scenario threading through the pipeline</h2>
+
+      <p>Making scenario required on the schema was only half the work. The scenario also had to reach the AI agent prompt. I updated <code>BatchManifestService.createBatch</code> to pass each row's scenario through <code>createRun</code> and into the enqueue metadata that the data generation pipeline consumes.</p>
+
+<pre><code class="language-typescript">async createBatch(input: CreateBatchInput): Promise&lt;Batch&gt; {
+  await validateBulkCells(input.cells, this.taxonomyRegistry);
+
+  const batch = await this.db.batch.create({ data: { /* ... */ } });
+
+  for (const cell of input.cells) {
+    const run = await this.createRun({
+      batchId: batch.id,
+      sector: cell.sector,
+      occupation: cell.occupation,
+      scenario: cell.scenario,
+    });
+
+    await this.enqueueService.enqueue({
+      runId: run.id,
+      metadata: {
+        sector: cell.sector,
+        occupation: cell.occupation,
+        scenario: cell.scenario,
+      },
+    });
+  }
+
+  return batch;
+}</code></pre>
+
+      <p>Before this change, the agent prompt received sector and occupation context but not the operator's intent. Operators were describing scenarios in Slack or spreadsheets because the product had no place to put them. Threading scenario through enqueue metadata closed that gap — each run now carries the operator's description from intake through to generation.</p>
+
+      <h3>Dedup compatibility</h3>
+
+      <p>One wrinkle: deduplication callers submit bulk cells with nullable occupation because dedup matching keys off sector alone in some code paths. I used an inline type for those callers instead of the shared <code>BulkRunCell</code> type, keeping the strict schema on the intake path without breaking the dedup service's narrower contract.</p>
+
+      <h2>Companion polish PRs from the same sprint</h2>
+
+      <p>The bulk intake redesign was the headline, but six smaller PRs shipped alongside it. Each one removed friction operators had been working around.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Change</th>
+            <th>What I fixed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Filter panel consolidation</td>
+            <td>Moved five inline filter dropdowns into a single Filters panel with an active-count badge. Same filtering capability, half the toolbar noise.</td>
+          </tr>
+          <tr>
+            <td>Stale cache on detail reopen</td>
+            <td>Reopening a completed task replayed stale client cache data. Removed the cache layer from the detail route so operators see current pipeline state.</td>
+          </tr>
+          <tr>
+            <td>Step filter mapping</td>
+            <td>Gate-approved tasks mapped to "Finished" in the step filter instead of their actual step. Added proper step-to-filter mapping logic.</td>
+          </tr>
+          <tr>
+            <td>Label cleanup</td>
+            <td>Replaced internal label "Open A1" with user-friendly "Assign Trainer" on the row action button.</td>
+          </tr>
+          <tr>
+            <td>Sector column display</td>
+            <td>Task list showed truncated sector slugs. Now renders the full display name from the taxonomy registry.</td>
+          </tr>
+          <tr>
+            <td>GHA Node.js 24 upgrade</td>
+            <td>Upgraded GitHub Actions workflows to Node.js 24-compatible action versions ahead of the runtime deprecation window.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The stale cache fix and step filter mapping are worth highlighting together. Both were invisible bugs — the UI rendered plausible but wrong state. An operator filtering by step would miss gate-approved tasks entirely because they appeared under "Finished." Reopening a completed task from the list would flash old progress data from a client-side cache replay. Neither threw an error. Both made the dashboard feel unreliable.</p>
+
+      <h2>What changed in practice</h2>
+
+      <p>The bulk intake redesign landed at +474 / −288 lines across eight commits. The UI went from a combinatorial checkbox grid to an intentional row-entry workflow. The API went from accepting any slug to rejecting invalid taxonomy at the front door. Scenarios flow from operator input through to the agent prompt instead of living in side channels.</p>
+
+      <p>The companion polish PRs were smaller individually — three lines for the stale cache fix, fifty for the step filter mapping, fourteen for the label rename — but they addressed the kind of friction that erodes trust in an admin dashboard. Operators stopped seeing truncated sector slugs, stopped hunting for tasks that the step filter hid, and stopped wondering why a completed task looked like it was still running.</p>
+
+      <p>The through-line across all seven PRs is the same principle: make the contract explicit at every boundary. Cascading dropdowns enforce valid sector/occupation pairs in the UI. Server-side validation enforces them in the API. Scenario threading enforces operator intent in the pipeline. Filter mapping and cache fixes enforce that what the dashboard shows matches what the system actually did. Bulk intake is the front door, but the whole admin experience has to be trustworthy for operators to move fast without breaking production.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

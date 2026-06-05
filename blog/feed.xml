@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 05 Jun 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,32 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>Building an Events Table for Pipeline Observability</title>
+      <link>https://humzakt.github.io/blog/events-table-pipeline-observability.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/events-table-pipeline-observability.html</guid>
+      <pubDate>Thu, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Unified events timeline aggregating status transitions, admin actions, step traces, and assignment lifecycle from four sources into one diagnostic view with causal ordering and rich detail panels.</description>
+      <category>Observability</category>
+      <category>Pipeline</category>
+      <category>TypeScript</category>
+      <category>GCS</category>
+    </item>
+
+    <item>
+      <title>Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish</title>
+      <link>https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html</guid>
+      <pubDate>Thu, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Replaced a checkbox taxonomy grid with cascading dropdowns, server-side slug validation, per-row scenario threading, and seven companion polish PRs in one sprint.</description>
+      <category>Bulk Intake</category>
+      <category>TypeScript</category>
+      <category>Admin UI</category>
+      <category>React</category>
+    </item>
 
     <item>
       <title>I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers</title>
