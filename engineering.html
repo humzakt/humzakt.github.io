@@ -18,7 +18,7 @@
   <meta name="twitter:title" content="Humza Tareen — AI Engineer &amp; Solutions Architect">
   <meta name="twitter:description" content="Shipped AI solutions for Apple, Meta, Bytedance, and Fortune 500 clients. Built GenAI agents that cut workloads by 60%. Open to new opportunities.">
   <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
-  <meta name="keywords" content="Humza Tareen, AI Engineer, Software Engineer, GTM Engineer, Forward Deployed Engineer, Solutions Architect, LLM Developer, GenAI, Mulesoft, Salesforce, IBM, Python, FastAPI, Cursor, Apple, Meta, Bytedance, Fortune 500, Enterprise AI, Portfolio">
+  <meta name="keywords" content="Humza Tareen, AI Engineer, Software Engineer, Forward Deployed Engineer, Solutions Engineer, LLM Developer, GenAI, Prompt Engineering, RAG, LLM Evaluation, Kubernetes, GCP, Mulesoft, Salesforce, Python, TypeScript, FastAPI, Apple, Meta, Bytedance, Fortune 500, Enterprise AI, Portfolio">
   <link rel="canonical" href="https://humzakt.github.io/engineering.html">
   <script type="application/ld+json">
   {
@@ -262,7 +262,7 @@
           </div>
           <div class="about-detail">
             <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
-            <span>Open to GTM, FDE, Solutions &amp; Full-Time Roles</span>
+            <span>Open to FDE, Solutions, AI Engineer &amp; Full-Time Roles</span>
           </div>
         </div>
       </div>
@@ -323,6 +323,7 @@
 
     <div class="exp-tabs fade-in" role="tablist" aria-label="Company tabs">
       <button class="exp-tab active" data-tab="turing" role="tab" aria-selected="true" aria-controls="panel-turing" id="tab-turing">Turing</button>
+      <button class="exp-tab" data-tab="oirrc" role="tab" aria-selected="false" aria-controls="panel-oirrc" id="tab-oirrc">OIRRC</button>
       <button class="exp-tab" data-tab="royalcyber" role="tab" aria-selected="false" aria-controls="panel-royalcyber" id="tab-royalcyber">Royal Cyber</button>
       <button class="exp-tab" data-tab="ncai" role="tab" aria-selected="false" aria-controls="panel-ncai" id="tab-ncai">NCAI</button>
       <button class="exp-tab" data-tab="inlights" role="tab" aria-selected="false" aria-controls="panel-inlights" id="tab-inlights">InLights</button>
@@ -336,10 +337,10 @@
         <h3 class="exp-role">Software Engineer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">July 2025 &mdash; Present &middot; Palo Alto, CA (Remote)</p>
         <ul class="exp-bullets">
-          <li>Architected and shipped 10 production microservices on GCP (Cloud Run, GKE, AlloyDB, Pub/Sub, Cloud Tasks) powering an AI agent evaluation platform &mdash; including the core evaluation engine, automated LLM scoring service, RAG retrieval pipeline, RL training arena, and authentication gateway.</li>
-          <li>Diagnosed and resolved a critical AlloyDB SSL connection failure affecting 5% of evaluation tasks by tracing it to a connection pool lifecycle mismatch &mdash; reducing failure rate to 0.01%.</li>
+          <li>Architected and shipped 10 production microservices on GCP (Cloud Run, GKE, AlloyDB, Pub/Sub, Cloud Tasks) powering an AI agent evaluation platform &mdash; including the core evaluation engine, LLM-as-judge scoring service, RAG retrieval pipeline with pgvector, RL training arena, and authentication gateway.</li>
+          <li>Designed event-driven data pipelines using Pub/Sub (35 topics with DLQs), Cloud Tasks, and Cloud Scheduler to orchestrate 6-phase evaluation workflows with built-in observability, independent retry, and zero silent failures.</li>
+          <li>Debugged a production AlloyDB SSL connection failure affecting 5% of evaluation tasks by tracing it to a connection pool lifecycle mismatch &mdash; reducing failure rate to 0.01%.</li>
           <li>Built an automated LLM scoring service with idempotent Cloud Tasks delivery, LiteLLM proxy integration for model-agnostic evaluation, and Redis-based real-time state tracking &mdash; handling thousands of evaluations daily with zero duplicates.</li>
-          <li>Designed an event-driven pipeline using Pub/Sub (35 topics with DLQs), Cloud Tasks, and Cloud Scheduler to orchestrate 6-phase evaluation workflows with independent retry and zero silent failures.</li>
           <li>Conducted a systematic security audit across the platform, identifying critical vulnerabilities (SQL injection, hardcoded credentials, unauthenticated endpoints) and implementing fixes via GCP Secret Manager, parameterized queries, and structured logging.</li>
         </ul>
       </div>
@@ -347,8 +348,8 @@
         <h3 class="exp-role">Pod Lead <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">March 2025 &mdash; July 2025 &middot; Palo Alto, CA (Remote)</p>
         <ul class="exp-bullets">
-          <li>Promoted to lead a globally-distributed team of 10+ AI engineers across 3 continents, serving as the primary point of accountability for client delivery.</li>
-          <li>Owned end-to-end execution of high-priority projects for key APAC clients, delivering model evaluations under accelerated timelines while managing client expectations and escalations.</li>
+          <li>Promoted to lead a cross-functional, globally-distributed team of 10+ AI engineers across 3 continents, serving as the primary point of accountability for client-facing delivery.</li>
+          <li>Owned end-to-end execution of high-priority projects for key APAC stakeholders, delivering model evaluations under accelerated timelines while managing client expectations and escalations.</li>
           <li>Built quality control frameworks and onboarding workflows that maintained consistently high output and client satisfaction in a fully remote, async environment.</li>
         </ul>
       </div>
@@ -356,9 +357,21 @@
         <h3 class="exp-role">LLM Python Developer <span class="company">@ <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a></span></h3>
         <p class="exp-meta">September 2024 &mdash; March 2025 &middot; Palo Alto, CA (Remote)</p>
         <ul class="exp-bullets">
-          <li>Developed and evaluated domain-specific LLMs for Apple, Meta, and Bytedance &mdash; directly contributing to the quality of models used by billions.</li>
-          <li>Specialized in RLHF, advanced reasoning tasks, and Code Interpreter development to enhance model capabilities.</li>
-          <li>Engineered complex evaluation suites to identify and resolve subtle model failures, improving final product accuracy and safety.</li>
+          <li>Developed and evaluated domain-specific large language models for Apple, Meta, and Bytedance &mdash; directly contributing to the quality of models used by billions.</li>
+          <li>Specialized in RLHF, prompt engineering, advanced reasoning tasks, and Code Interpreter development to enhance model capabilities.</li>
+          <li>Built custom evaluation harnesses and benchmarking frameworks to identify and resolve subtle model failures, improving final product accuracy and safety.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- OIRRC -->
+    <div class="exp-panel" id="panel-oirrc" role="tabpanel" aria-labelledby="tab-oirrc">
+      <div class="exp-entry fade-in">
+        <h3 class="exp-role">Automation Consultant <span class="company">@ OIRRC</span></h3>
+        <p class="exp-meta">March 2026 &mdash; April 2026 &middot; Islamabad, Pakistan</p>
+        <ul class="exp-bullets">
+          <li>Delivered a technical consulting engagement to diagnose and solve inefficiencies within clinical study startup processes, analyzing existing manual workflows for compliance document generation.</li>
+          <li>Architected a strategic automation plan and developed a proof-of-concept solution that reduced document generation time from 3 weeks to under 24 hours &mdash; a 95%+ reduction in manual effort.</li>
         </ul>
       </div>
     </div>
@@ -371,7 +384,7 @@
         <ul class="exp-bullets">
           <li>Scoped, built, and delivered GenAI solutions directly for Fortune 500 enterprise clients using Mulesoft, Salesforce, and Apache Kafka &mdash; owning the full lifecycle from technical discovery to production deployment.</li>
           <li>Fine-tuned Llama models on AWS Bedrock to build domain-specific copilots for financial services clients, translating complex client requirements into high-accuracy AI products.</li>
-          <li>Co-built 'RC AI OPS', a GenAI agent (Python, LangChain) deployed to client environments that automated error resolution and improved backend operational efficiency by 50%.</li>
+          <li>Co-built 'RC AI OPS', an agentic AI system (Python, LangChain) with LLM integration, deployed to client environments that automated error resolution and improved backend operational efficiency by 50%.</li>
         </ul>
       </div>
       <div class="exp-entry fade-in">
@@ -398,7 +411,7 @@
         <p class="exp-meta">September 2023 &mdash; May 2024 &middot; Islamabad, Pakistan</p>
         <ul class="exp-bullets">
           <li>Authored a peer-reviewed paper published at <a href="https://ieeexplore.ieee.org/document/11253669" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">IEEE EMBC 2025</a> on an award-winning explainable AI system for glaucoma detection (1st Prize, SEECS Open House).</li>
-          <li>Achieved state-of-the-art results using attention-driven CNNs, Grad-CAM explainability, and a custom segmentation pipeline (Python, PyTorch, Detectron2).</li>
+          <li>Built machine learning and computer vision systems using attention-driven CNNs, Grad-CAM explainability, and a custom segmentation pipeline (Python, PyTorch, Detectron2), achieving state-of-the-art results.</li>
         </ul>
       </div>
     </div>
@@ -491,34 +504,41 @@
           <span class="skill-pill">Agentic Systems</span>
           <span class="skill-pill">RAG</span>
           <span class="skill-pill">RLHF</span>
+          <span class="skill-pill">Prompt Engineering</span>
           <span class="skill-pill">LLM Fine-Tuning</span>
-          <span class="skill-pill">Model Evaluation</span>
+          <span class="skill-pill">LLM Evaluation</span>
+          <span class="skill-pill">LLM-as-Judge</span>
           <span class="skill-pill">PyTorch</span>
           <span class="skill-pill">LangChain</span>
-          <span class="skill-pill">Copilot Studio</span>
         </div>
       </div>
       <div class="skill-category fade-in">
         <h3 class="skill-category-title"><i class="fa-solid fa-server" aria-hidden="true"></i> Backend &amp; Infrastructure</h3>
         <div class="skill-pills">
           <span class="skill-pill">Python</span>
+          <span class="skill-pill">TypeScript</span>
+          <span class="skill-pill">SQL</span>
           <span class="skill-pill">FastAPI</span>
-          <span class="skill-pill">PostgreSQL</span>
+          <span class="skill-pill">Next.js</span>
+          <span class="skill-pill">PostgreSQL / AlloyDB</span>
+          <span class="skill-pill">pgvector</span>
           <span class="skill-pill">Redis</span>
-          <span class="skill-pill">Node.js</span>
-          <span class="skill-pill">GCP</span>
-          <span class="skill-pill">AWS (Bedrock)</span>
+          <span class="skill-pill">GCP (Cloud Run, GKE, Pub/Sub)</span>
+          <span class="skill-pill">Kubernetes</span>
+          <span class="skill-pill">AWS Bedrock</span>
           <span class="skill-pill">Docker</span>
+          <span class="skill-pill">Microservices</span>
         </div>
       </div>
       <div class="skill-category fade-in">
-        <h3 class="skill-category-title"><i class="fa-solid fa-handshake" aria-hidden="true"></i> GTM &amp; Client Delivery</h3>
+        <h3 class="skill-category-title"><i class="fa-solid fa-handshake" aria-hidden="true"></i> Client Delivery &amp; Solutions</h3>
         <div class="skill-pills">
           <span class="skill-pill">POC Scoping &amp; Delivery</span>
+          <span class="skill-pill">Technical Consulting</span>
           <span class="skill-pill">Technical Presales</span>
-          <span class="skill-pill">Client Onboarding</span>
+          <span class="skill-pill">Client-Facing Delivery</span>
           <span class="skill-pill">Cross-Functional Collaboration</span>
-          <span class="skill-pill">Agile / Scrum</span>
+          <span class="skill-pill">Stakeholder Management</span>
           <span class="skill-pill">Remote Team Leadership</span>
         </div>
       </div>
@@ -685,7 +705,7 @@
     <p class="contact-number fade-in">06. What's Next?</p>
     <h2 class="contact-heading fade-in">Let's Ship Something Together</h2>
     <p class="contact-text fade-in">
-      I'm actively looking for my next challenge &mdash; whether that's a GTM Engineering, Forward Deployed, Solutions Engineering, or full-stack AI role at a company that ships directly with customers. I bring the rare combination of deep AI engineering chops and hands-on enterprise client delivery experience. Based in Pakistan and ready to relocate worldwide.
+      I'm actively looking for my next challenge &mdash; whether that's a Forward Deployed Engineer, Solutions Engineer, AI Engineer, or full-stack AI role at a company that ships directly with customers. I bring the rare combination of deep AI engineering chops and hands-on enterprise client delivery experience. Based in Pakistan and ready to relocate worldwide.
     </p>
     <div class="contact-cards fade-in">
       <a href="mailto:humzakhawartareen@gmail.com" class="contact-card" aria-label="Email humzakhawartareen@gmail.com">
