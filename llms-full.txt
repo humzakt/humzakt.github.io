@@ -4,6 +4,22 @@
 
 ---
 
+## From Fixed Levels to L(n): Building an Extensible Taxonomy System
+
+URL: https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html
+
+Replaced a rigid 2-level sector/occupation taxonomy with a dynamic L(n) extensible system supporting arbitrary depth. Core is a flat adjacency list of TaxonomyNode objects stored in GCS, reconstructed into trees by pure functions. Zod validates structural integrity (no orphans, no cycles, consistent level labels). Ships with 4-level default (Sector > Sub Vertical > Function > Role) seeded from bundled YAML with version-gated deployment that prevents overwriting admin edits. GCS storage with CAS (conditional generation) writes for concurrent admin safety. Full admin CRUD UI (1,117 lines) with audit history. Bidirectional compat layer maps legacy sector/occupation to new taxonomy map — all existing API consumers work without changes. Cascading UI controls with dynamic filtering and multi-select chips. Agent prompts enriched with full taxonomy context. 7,026 lines, 61 files, 45 commits, 50 tests.
+
+---
+
+## When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer
+
+URL: https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html
+
+Added LLM second-opinion layer to RAG dedup gate to fix false-positive duplicates where tasks share persona/type but differ in subdomain context. Two-threshold band: below 0.75 auto-clears, 0.75-0.80 requires LLM review, above 0.80 RAG says duplicate but LLM gets override opportunity. LLM adjudicator submits candidate + top-K matches to auto-rater service (POST /api/v1/review with custom_evaluation_prompt), polls for structured judgment (isDuplicate, reason, confidence, durationMs). Fail-closed safety: LLM unavailability treats task as duplicate. Feature-flagged with 4 env vars, K8s configmap per environment. Runs in async Cloud Tasks workers, not user request path. 1,309 lines, 109 tests across 6 files.
+
+---
+
 ## Building an Events Table for Pipeline Observability
 
 URL: https://humzakt.github.io/blog/events-table-pipeline-observability.html

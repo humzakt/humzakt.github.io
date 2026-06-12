@@ -18,8 +18,10 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 - [dev-starter-kit](https://github.com/humzakt/dev-starter-kit): Production-ready starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, pre-commit hooks, and AI coding tool configurations (Cursor, Claude Code, Codex, Copilot)
 
-## Blog Articles (44)
+## Blog Articles (46)
 
+- [From Fixed Levels to L(n): Building an Extensible Taxonomy System](https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html): Replaced a rigid 2-level hierarchy with a config-driven L(n) taxonomy — YAML seeding with version-gated deploys, GCS CAS writes, admin CRUD UI, cascading dropdowns, bidirectional backward compatibility, 7,000+ lines
+- [When RAG Says Duplicate but the LLM Disagrees](https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html): Two-threshold band dedup architecture where an LLM second-opinion overrides RAG false positives — feature-flagged, fail-closed safety, auto-rater integration, 109 tests
 - [Building an Events Table for Pipeline Observability](https://humzakt.github.io/blog/events-table-pipeline-observability.html): Unified events timeline aggregating status transitions, admin actions, step traces, and assignment lifecycle — four sources, causal ordering, rich detail panels, and 7,300+ lines across 73 files
 - [Redesigning Bulk Intake: Cascading Dropdowns & Taxonomy Validation](https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html): Replaced a checkbox taxonomy grid with cascading dropdowns, server-side slug validation against a vendored registry, per-row scenario threading, and seven companion polish PRs
 - [Dead Letter Queues for Pipeline Reliability](https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html): DLQ escalation with reason codes, inline and sweep detection paths, GCS manifest fields, and UI skull badges for permanently failed pipeline runs

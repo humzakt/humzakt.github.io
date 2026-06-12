@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>From Fixed Levels to L(n): Building an Extensible Taxonomy System — Humza Tareen</title>
+  <meta name="description" content="How I replaced a rigid two-level sector/occupation taxonomy with an L(n) extensible type system, YAML version-gated seeding, GCS compare-and-swap storage, a full admin tree editor, and backward-compatible API adapters — without breaking existing pipeline consumers.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Taxonomy, TypeScript, YAML, GCS, Zod, React, Admin UI, Next.js">
+  <link rel="canonical" href="https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="From Fixed Levels to L(n): Building an Extensible Taxonomy System">
+  <meta property="og:description" content="How I replaced a rigid two-level sector/occupation taxonomy with an L(n) extensible type system, YAML version-gated seeding, GCS compare-and-swap storage, a full admin tree editor, and backward-compatible API adapters — without breaking existing pipeline consumers.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Taxonomy">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="YAML">
+  <meta property="article:tag" content="GCS">
+  <meta property="article:tag" content="Zod">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="Admin UI">
+  <meta property="article:tag" content="Next.js">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="From Fixed Levels to L(n): Building an Extensible Taxonomy System">
+  <meta name="twitter:description" content="How I replaced a rigid two-level sector/occupation taxonomy with an L(n) extensible type system, YAML version-gated seeding, GCS compare-and-swap storage, a full admin tree editor, and backward-compatible API adapters — without breaking existing pipeline consumers.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "From Fixed Levels to L(n): Building an Extensible Taxonomy System",
+    "description": "How I replaced a rigid two-level sector/occupation taxonomy with an L(n) extensible type system, YAML version-gated seeding, GCS compare-and-swap storage, a full admin tree editor, and backward-compatible API adapters — without breaking existing pipeline consumers.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-12",
+    "dateModified": "2026-06-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html" },
+    "keywords": ["Taxonomy", "TypeScript", "YAML", "GCS", "Zod", "React", "Admin UI", "Next.js"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Extensible Taxonomy System"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">From Fixed Levels to L(n): Building an Extensible Taxonomy System</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-12" itemprop="datePublished">June 12, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Taxonomy</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">YAML</span>
+        <span class="blog-tag">GCS</span>
+        <span class="blog-tag">Zod</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">Admin UI</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The platform I work on generates training data through AI agents. Every run is scoped to a domain taxonomy — the sector, the kind of work, the function within that work — so agents know what kind of task to produce and evaluators know how to score it. When I joined the project, that taxonomy was a hardcoded two-level hierarchy: <strong>Sector</strong> and <strong>Occupation</strong>. It worked for the first wave of use cases. It did not survive contact with scale.</p>
+
+      <p>Retail needed sub-verticals like Softlines and Hardlines. Technology needed frontend/backend function splits. Operations wanted to add roles without a developer deploy. Every new level meant schema migrations, type rewrites, and UI refactors — with no admin surface to make changes safely. Over one intensive week I replaced the fixed model with an <strong>L(n) extensible taxonomy system</strong>: arbitrary depth, YAML-seeded defaults, GCS-backed compare-and-swap storage, a full admin tree editor, backward-compatible API adapters, and cascading UI controls. This post is the architecture story behind that migration.</p>
+
+      <h2>The problem with fixed levels</h2>
+
+      <p>The original taxonomy encoded domain knowledge directly into the application shape. Database columns, Zod schemas, React prop types, and agent prompt templates all assumed exactly two levels. That coupling was invisible until new verticals arrived.</p>
+
+      <p>"Retail" as a sector is not granular enough when Softlines and Hardlines need different agent behaviors. "Software Engineer" as a single occupation cannot express frontend versus backend task generation. Each new dimension forced the same ritual: alter the schema, migrate rows, update every form, redeploy, and hope nothing in the pipeline still assumed the old shape.</p>
+
+      <blockquote>
+        A taxonomy that requires a deploy to add a sub-vertical is not a taxonomy — it is a configuration file disguised as a database schema.
+      </blockquote>
+
+      <p>Worse, there was no admin UI. Product operators who understood the domain could not edit the tree themselves. They filed requests, waited for engineering capacity, and watched stale taxonomy block new data generation campaigns. The system needed a generic tree model, validated seed data that ships with the codebase, safe concurrent writes, and a self-service editor — all while every existing API consumer kept working without modification.</p>
+
+      <h2>L(n) extensible type system</h2>
+
+      <p>The core insight is that a taxonomy is a tree, and trees are best stored as flat adjacency lists with a reconstruction step — not as nested JSON columns with a fixed depth. I introduced a generic <code>TaxonomyNode</code> type and replaced every hardcoded sector/occupation reference with tree operations.</p>
+
+      <p>Each node carries: <code>id</code> (stable UUID), <code>slug</code> (URL-safe identifier used in API payloads), <code>label</code> (human display name), <code>parentId</code> (null for roots), <code>level</code> (zero-indexed depth), and <code>levelLabel</code> (semantic name for that depth, such as "Sector", "Sub Vertical", "Function", or "Role"). The default configuration ships with four levels, but nothing in the type system caps depth — a fifth or sixth level is just another row in the adjacency list.</p>
+
+<pre><code class="language-typescript">export interface TaxonomyNode {
+  id: string;
+  slug: string;
+  label: string;
+  parentId: string | null;
+  level: number;
+  levelLabel: string;
+}
+
+export interface TaxonomyTreeNode extends TaxonomyNode {
+  children: TaxonomyTreeNode[];
+}
+
+export interface TaxonomyDocument {
+  version: number;
+  levelLabels: string[];
+  nodes: TaxonomyNode[];
+  updatedAt: string;
+}</code></pre>
+
+      <p><code>tree-builder.ts</code> contains pure functions for reconstructing nested trees from the flat list. <code>buildTree</code> indexes nodes by id, attaches children to parents, and returns roots sorted by label. <code>getDescendants</code>, <code>getAncestors</code>, and <code>getNodesAtLevel</code> are the primitives every UI dropdown and API validator calls. Keeping these as pure functions made the test surface straightforward: feed an adjacency list, assert the tree shape, no GCS or database required.</p>
+
+      <p><code>taxonomy-schema.ts</code> defines Zod schemas with structural integrity validation on top of per-field parsing. The validator rejects orphan nodes (a <code>parentId</code> pointing to a missing id), cycles (a node that is its own ancestor), inconsistent level labels (a level-2 node labeled "Sector"), and slug collisions within the same parent. These checks run on every write path — YAML seed import, admin save, and API mutation — so corrupt trees never reach storage.</p>
+
+<pre><code class="language-typescript">export const TaxonomyNodeSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  label: z.string().min(1).max(120),
+  parentId: z.string().uuid().nullable(),
+  level: z.number().int().min(0),
+  levelLabel: z.string().min(1),
+});
+
+export const TaxonomyDocumentSchema = TaxonomyNodeSchema
+  .array()
+  .transform((nodes) =&gt; ({ version: 0, levelLabels: [], nodes, updatedAt: "" }))
+  .pipe(
+    z.object({
+      version: z.number().int().positive(),
+      levelLabels: z.array(z.string().min(1)),
+      nodes: z.array(TaxonomyNodeSchema),
+      updatedAt: z.string().datetime(),
+    })
+  )
+  .superRefine(validateNoOrphans)
+  .superRefine(validateNoCycles)
+  .superRefine(validateLevelConsistency);</code></pre>
+
+      <h2>YAML seeding with version-gated deployment</h2>
+
+      <p>Bootstrapping an empty environment with a taxonomy editor and no taxonomy is a chicken-and-egg problem. The solution is vendored seed data: a bundled <code>taxonomy.yaml</code> checked into the repository with nine sectors, their sub-verticals, functions, and roles. The YAML ships with the code, reviews in pull requests, and diffs like any other configuration artifact.</p>
+
+      <p><code>yaml-seed-provider.ts</code> reads and validates the YAML at application startup. Parsing goes through the same Zod schemas as runtime writes, so a malformed seed file fails the build rather than silently corrupting production. The seed document includes a monotonically increasing <code>version</code> field that drives deployment behavior.</p>
+
+      <p>Version-gated seeding is the critical safety valve. The provider only writes to cloud storage if no taxonomy document exists yet, or if the stored version is older than the bundled seed version. If an admin has edited the live taxonomy to version 14 and the bundled seed is version 12, startup is a no-op. Admin edits are never overwritten by a redeploy. If we ship seed version 15 with two new sectors, every environment running version 14 or below picks up the additions automatically on next deploy.</p>
+
+<pre><code class="language-typescript">export async function maybeSeedTaxonomy(
+  storage: TaxonomyStorageProvider,
+  seed: TaxonomyDocument
+): Promise&lt;SeedResult&gt; {
+  const existing = await storage.read();
+
+  if (!existing) {
+    await storage.write(seed, { ifGenerationMatch: 0 });
+    return { action: "created", version: seed.version };
+  }
+
+  if (existing.version &gt;= seed.version) {
+    return { action: "skipped", version: existing.version };
+  }
+
+  await storage.write(seed, { ifGenerationMatch: existing.generation });
+  return { action: "upgraded", version: seed.version };
+}</code></pre>
+
+      <h2>GCS storage with CAS protection</h2>
+
+      <p><code>gcs-taxonomy-provider.ts</code> implements a <code>TaxonomyStorageProvider</code> interface — the same hot-swappable pattern used elsewhere in the platform for task manifests and run metadata. The concrete GCS provider stores the validated document as a single JSON object in a known bucket path. All writes use <strong>compare-and-swap</strong> semantics via GCS conditional generation-match preconditions.</p>
+
+      <p>When an admin saves the taxonomy, the client sends the document along with the generation number it read. The server attempts a conditional write: succeed only if the object's generation still matches. If two admins edit simultaneously, the second write fails with a conflict, the UI surfaces the stale state, and the loser merges or retries. No last-write-wins corruption. No silent clobbering of another operator's subtree reorganization.</p>
+
+      <p>The provider interface is deliberately narrow — <code>read</code>, <code>write</code>, <code>listHistory</code> — so a future migration to a relational database is an implementation swap, not a product rewrite. Services depend on the interface; routes depend on services; the GCS bucket path never leaks past the provider boundary.</p>
+
+      <h2>Admin CRUD UI</h2>
+
+      <p><code>TaxonomyEditor.tsx</code> is the operator-facing surface: roughly 1,100 lines of tree editor supporting add, edit, delete, parent reassignment, and CAS-protected saves with optimistic concurrency. On conflict, the editor fetches the latest document and lets the operator reconcile before retrying. It lives under Admin &gt; Auto-Seeder, with audit history exposed via <code>/api/admin/taxonomy/history</code> — prior generations with timestamps and actor metadata, so operators can trace when a slug entered production.</p>
+
+      <h2>Backward compatibility layer</h2>
+
+      <p>Existing API consumers — run creation, batch intake, pipeline workers, reporting dashboards — all spoke the old <code>sector</code>/<code>occupation</code> dialect. Breaking them during a taxonomy migration would have blocked data generation for days. <code>compat.ts</code> provides bidirectional mapping between legacy fields and the new <code>taxonomy</code> map keyed by level label.</p>
+
+<pre><code class="language-typescript">export function legacyToTaxonomyMap(
+  sector: string,
+  occupation: string,
+  tree: TaxonomyTreeNode[]
+): Record&lt;string, string&gt; | null {
+  const sectorNode = findBySlug(tree, sector);
+  if (!sectorNode) return null;
+
+  const occupationNode = sectorNode.children.find((c) =&gt; c.slug === occupation);
+  if (!occupationNode) return null;
+
+  return {
+    Sector: sectorNode.slug,
+    Occupation: occupationNode.slug,
+  };
+}
+
+export function taxonomyMapToLegacy(
+  taxonomy: Record&lt;string, string&gt;
+): { sector: string; occupation: string } | null {
+  const sector = taxonomy["Sector"];
+  const occupation = taxonomy["Occupation"] ?? taxonomy["Role"];
+  if (!sector || !occupation) return null;
+  return { sector, occupation };
+}</code></pre>
+
+      <p>Run creation API accepts both formats. Zod schemas use <code>.refine()</code> to ensure at least one is present, and a transform normalizes everything to the canonical <code>taxonomy</code> map before the service layer sees it. Pipeline workers that still read <code>sector</code> and <code>occupation</code> from older manifests get populated fields via the reverse mapping. Zero consumer changes required on day one.</p>
+
+      <h2>Cascading UI controls</h2>
+
+      <p>The data model change only matters if operators can navigate the tree intuitively. I rewrote <code>new-run-dialog.tsx</code> with dynamic cascading selects: choosing a sector filters the sub-vertical dropdown to children of that node, which filters functions, which filters roles. At the Function level, multi-select chips let operators tag a run with several functions under the same sub-vertical without creating duplicate rows.</p>
+
+      <p><code>bulk-run-form.tsx</code> received the same treatment — each row in the bulk intake table gets independent L(n) cascading dropdowns driven by the live taxonomy document, not a hardcoded two-level registry. The dropdown component is generic: pass a <code>parentId</code> and a <code>levelLabel</code>, get the filtered options. When admins add a fifth level next quarter, the forms do not need a rewrite — they render another cascade automatically if the level label is present in the document.</p>
+
+      <h2>Agent prompt enrichment</h2>
+
+      <p>Downstream of the UI, the worker payload schema gained a <code>taxonomy</code> field carrying the full level map — not just sector and occupation. Agent prompts now receive context like <code>{ Sector: "retail", "Sub Vertical": "softlines", Function: "inventory-management" }</code> instead of a flat occupation string that obscures the sub-vertical.</p>
+
+      <p>That enrichment directly affects task quality. A generic "Retail" prompt produces shelf-stocking scenarios; a Softlines inventory-management prompt produces size-run complexity and seasonal markdown logic that evaluators actually want to score.</p>
+
+      <h2>Companion work in the same sprint</h2>
+
+      <p>A change this wide rarely ships alone. The same week included several companion improvements that kept the platform stable while the taxonomy migration landed:</p>
+
+      <ul>
+        <li><strong>Pipeline terminal node</strong> — Added a "Finished" terminal node to the pipeline visualization with an emerald checkmark when a run completes, so operators have a clear visual endpoint instead of an ambiguous last-step state.</li>
+        <li><strong>Framework security upgrade</strong> — Bumped the Next.js dependency to a patched release addressing a published vulnerability in the prior version.</li>
+        <li><strong>Author metadata column</strong> — Added an author email column to the task list and removed a redundant versions count that cluttered the view without helping operators.</li>
+        <li><strong>UI cleanup</strong> — Disabled a vestigial "New Task" button that routed nowhere, and updated end-to-end tests to match the current navigation model.</li>
+      </ul>
+
+      <h2>Scale and test coverage</h2>
+
+      <p>The taxonomy migration touched 61 files across 45 commits — roughly 7,000 lines added. That sounds large, but the bulk is the admin editor, cascading form rewrites, and test fixtures rather than exotic algorithms. The core primitives — adjacency list, tree builder, Zod validation, CAS writes — are a few hundred lines each.</p>
+
+      <p>Test coverage reflects where the risk actually lives. Forty unit tests exercise tree construction, orphan detection, cycle detection, compat mapping in both directions, and edge cases like single-node trees and deeply nested branches. Ten YAML validation tests load fixture files — valid seeds, seeds with orphan references, seeds with slug collisions — and assert parse success or failure. The backward compatibility layer has dedicated round-trip tests proving that a legacy API payload and a new-format payload produce identical normalized documents.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Tests</th>
+            <th>What they guard</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tree builder</td>
+            <td>18</td>
+            <td>Reconstruction, descendants, ancestors, level filtering</td>
+          </tr>
+          <tr>
+            <td>Schema validation</td>
+            <td>14</td>
+            <td>Orphans, cycles, level consistency, slug format</td>
+          </tr>
+          <tr>
+            <td>Compat mapping</td>
+            <td>8</td>
+            <td>Bidirectional legacy ↔ taxonomy map conversion</td>
+          </tr>
+          <tr>
+            <td>YAML fixtures</td>
+            <td>10</td>
+            <td>Seed parse success/failure on representative files</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I would do differently</h2>
+
+      <p>I would have introduced the <code>TaxonomyStorageProvider</code> interface on day one — even backed by a hardcoded JSON file — and shipped a read-only tree view before enabling writes. Both would have made the migration incremental rather than a week-long extraction sprint.</p>
+
+      <p>The through-line is the same principle I keep returning to in platform work: <strong>make the contract explicit and the depth extensible at every boundary</strong>. A flat adjacency list does not care whether you have two levels or six. The L(n) taxonomy system turned a deploy-gated configuration problem into a self-service domain model — and every existing pipeline consumer kept working while we got there.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

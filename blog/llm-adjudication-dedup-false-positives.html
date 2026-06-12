@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer — Humza Tareen</title>
+  <meta name="description" content="How I added an LLM second-opinion layer to a RAG deduplication gate, using a two-threshold review band to clear embedding false positives without blocking valid training tasks.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="RAG, LLM, TypeScript, Deduplication, Embeddings, Feature Flags, Cloud Tasks, Auto-Rater">
+  <link rel="canonical" href="https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer">
+  <meta property="og:description" content="How I added an LLM second-opinion layer to a RAG deduplication gate, using a two-threshold review band to clear embedding false positives without blocking valid training tasks.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="RAG">
+  <meta property="article:tag" content="LLM">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Deduplication">
+  <meta property="article:tag" content="Embeddings">
+  <meta property="article:tag" content="Feature Flags">
+  <meta property="article:tag" content="Cloud Tasks">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer">
+  <meta name="twitter:description" content="How I added an LLM second-opinion layer to a RAG deduplication gate, using a two-threshold review band to clear embedding false positives without blocking valid training tasks.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer",
+    "description": "How I added an LLM second-opinion layer to a RAG deduplication gate, using a two-threshold review band to clear embedding false positives without blocking valid training tasks.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-12",
+    "dateModified": "2026-06-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html" },
+    "keywords": ["RAG", "LLM", "TypeScript", "Deduplication", "Embeddings", "Feature Flags", "Cloud Tasks", "Auto-Rater"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"LLM Adjudication for Dedup"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-12" itemprop="datePublished">June 12, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">RAG</span>
+        <span class="blog-tag">LLM</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Deduplication</span>
+        <span class="blog-tag">Embeddings</span>
+        <span class="blog-tag">Feature Flags</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The platform I work on generates training data through AI agents. Before each new task is created, a deduplication gate checks whether something similar already exists. The gate uses RAG — retrieval augmented generation — to embed the candidate task, search a vector index of existing tasks, and block generation when cosine similarity crosses a threshold. It is a sensible first line of defense against redundant training data.</p>
+
+      <p>It was also blocking valid, distinct tasks. Two tasks could share the same persona and task type but differ in subdomain context — for example, a retail softlines scenario versus a retail hardlines scenario — and still score above the duplicate threshold because their embeddings were nearly identical. The semantic overlap was real. The domain-specific distinction was not. A human reviewer would immediately see these as different tasks. The embedding model did not.</p>
+
+      <p>I added an LLM adjudication layer that gives RAG a second opinion on ambiguous matches. The change shipped behind a feature flag across ten files and roughly 1,300 lines of TypeScript, with 109 tests. This post walks through the false-positive problem, the two-threshold band architecture, and why I chose fail-closed semantics when the LLM is unavailable.</p>
+
+      <h2>The false positive problem</h2>
+
+      <p>RAG dedup works by embedding similarity. When a candidate task arrives at the pipeline gate, the system computes its vector representation, queries the index for top-K nearest neighbors, and compares the highest similarity score against a fixed <code>crossThreshold</code> (0.80 in our configuration). Above that line, the task is treated as a duplicate and generation stops.</p>
+
+      <p>The approach is fast and cheap. It also conflates "structurally similar" with "actually duplicate." Tasks that share a persona ("store manager"), a task type ("inventory reconciliation"), and broad domain framing ("retail operations") produce embeddings that cluster tightly in vector space. The subdomain context that makes them meaningfully different — softlines versus hardlines, apparel versus electronics — contributes less signal than the shared scaffolding.</p>
+
+      <blockquote>
+        Embedding similarity captures semantic overlap but misses domain-specific distinctions that humans recognize instantly. That gap is where false positives live.
+      </blockquote>
+
+      <p>We were seeing legitimate new tasks rejected at the gate. Operators would retry with slightly different wording and hit the same wall. The dedup system was doing its job too aggressively, and lowering the global threshold would have let real duplicates through. We needed a way to resolve ambiguity without abandoning the fast path for obvious non-matches.</p>
+
+      <h2>Two-threshold band architecture</h2>
+
+      <p>The fix is not "call an LLM on every dedup check." That would add 10–30 seconds of latency to every task submission and burn inference budget on cases where the answer is already obvious. Instead, I introduced a <strong>review band</strong> between two thresholds:</p>
+
+      <ul>
+        <li><strong>Below <code>llmClearThreshold</code> (default 0.75):</strong> auto-clear. No LLM call. The match is weak enough that we trust RAG's negative signal.</li>
+        <li><strong>Between 0.75 and <code>crossThreshold</code> (0.75–0.80):</strong> LLM review required. RAG is uncertain — this is the ambiguous zone where embeddings lie.</li>
+        <li><strong>At or above <code>crossThreshold</code> (≥ 0.80):</strong> RAG says duplicate, but the LLM gets an override opportunity. A strong embedding match is not automatically a true duplicate.</li>
+      </ul>
+
+      <p>The band means LLM latency is only paid for cases that actually need judgment. Clear non-matches and (after adjudication) clear non-duplicates never touch the model. The architecture looks like this in the dedup flow:</p>
+
+<pre><code class="language-typescript">type DedupClearReason = 'below_threshold' | 'no_matches' | 'llm_cleared';
+
+interface DedupVerdict {
+  isDuplicate: boolean;
+  topScore: number;
+  clearReason?: DedupClearReason;
+  llmAdjudication?: LlmAdjudication;
+}
+
+async function checkForDuplicate(
+  candidate: TaskCandidate,
+  config: DedupConfig,
+): Promise&lt;DedupVerdict&gt; {
+  const matches = await ragSearch(candidate, { topK: 5 });
+  const topScore = matches[0]?.similarity ?? 0;
+
+  if (matches.length === 0) {
+    return { isDuplicate: false, topScore, clearReason: 'no_matches' };
+  }
+
+  if (!config.llmEnabled) {
+    return {
+      isDuplicate: topScore >= config.crossThreshold,
+      topScore,
+      clearReason: topScore &lt; config.crossThreshold ? 'below_threshold' : undefined,
+    };
+  }
+
+  if (topScore &lt; config.llmClearThreshold) {
+    return { isDuplicate: false, topScore, clearReason: 'below_threshold' };
+  }
+
+  // Review band or above crossThreshold — consult the LLM
+  const adjudication = await adjudicateWithLlm(candidate, matches, config);
+  return {
+    isDuplicate: adjudication.isDuplicate,
+    topScore,
+    clearReason: adjudication.isDuplicate ? undefined : 'llm_cleared',
+    llmAdjudication: adjudication,
+  };
+}</code></pre>
+
+      <p>Notice the early returns. The LLM path is the exception, not the default. In production, the vast majority of candidates score below 0.75 and clear in a single RAG round-trip with zero added latency.</p>
+
+      <h2>The LLM adjudicator module</h2>
+
+      <p>Rather than build a new inference endpoint, I integrated with an already-deployed auto-rater service. That service exposes <code>POST /api/v1/review</code> with support for a <code>custom_evaluation_prompt</code>, which is exactly what structured dedup judgment needs. The adjudicator submits the candidate task plus the top-K RAG matches, then polls for the result — submit-and-poll, not synchronous blocking.</p>
+
+<pre><code class="language-typescript">interface LlmAdjudication {
+  isDuplicate: boolean;
+  reason: string;
+  confidence: number;
+  durationMs: number;
+}
+
+async function adjudicateWithLlm(
+  candidate: TaskCandidate,
+  matches: RagMatch[],
+  config: DedupConfig,
+): Promise&lt;LlmAdjudication&gt; {
+  const start = Date.now();
+
+  const reviewId = await submitReview({
+    endpoint: `${config.autoRaterBaseUrl}/api/v1/review`,
+    custom_evaluation_prompt: buildDedupPrompt(candidate, matches),
+    payload: { candidate, matches },
+  });
+
+  const result = await pollForResult(reviewId, {
+    timeoutMs: config.llmTimeoutMs,       // default: 90_000
+    intervalMs: config.llmPollIntervalMs, // default: 5_000
+  });
+
+  return {
+    isDuplicate: parseIsDuplicate(result.classification, result.review_feedback),
+    reason: result.review_feedback ?? result.classification,
+    confidence: result.confidence ?? 0,
+    durationMs: Date.now() - start,
+  };
+}</code></pre>
+
+      <p>The custom evaluation prompt instructs the model to compare the candidate against each retrieved match on persona, task type, and subdomain context. It must return a structured classification — duplicate or not — with a natural-language reason explaining the decision. The parser handles both structured JSON responses and plain-text feedback, with a fallback for malformed output that defaults to duplicate (fail-closed, described below).</p>
+
+      <p>Storing the full <code>LlmAdjudication</code> metadata on the verdict gives operators an audit trail — reason, confidence, and latency — in the pipeline event log.</p>
+
+      <h2>Integration with the existing dedup flow</h2>
+
+      <p>The adjudication layer slots into the existing <code>rag-dedup.ts</code> module without changing its external contract. The gate in <code>step1-gate.ts</code> — the first node in the task generation pipeline — already checks dedup verdicts before authorizing ingest. I added a new clear reason, <code>llm_cleared</code>, alongside the existing <code>below_threshold</code> and <code>no_matches</code>:</p>
+
+<pre><code class="language-typescript">const AUTHORIZED_CLEAR_REASONS: DedupClearReason[] = [
+  'below_threshold',
+  'no_matches',
+  'llm_cleared',
+];
+
+function authorizeTaskIngest(verdict: DedupVerdict): boolean {
+  if (verdict.isDuplicate) return false;
+  if (!verdict.clearReason) return false;
+  return AUTHORIZED_CLEAR_REASONS.includes(verdict.clearReason);
+}</code></pre>
+
+      <p>The gate whitelists clear reasons rather than treating "not duplicate" as sufficient — incomplete verdict objects cannot accidentally bypass the gate.</p>
+
+      <h2>Fail-closed safety</h2>
+
+      <p>When the LLM is unavailable — network error, auto-rater timeout, malformed response — the system falls closed. The task is treated as a duplicate. No silent pass-through on inference failure.</p>
+
+      <p>This was a deliberate product decision, not a technical default. The dedup gate exists to prevent redundant training data from entering the corpus. A false negative (letting a duplicate through) corrupts the dataset silently. A false positive (blocking a valid task) is visible: the operator sees a rejection, can investigate, and can retry. Erring on the side of caution is the right tradeoff for a data quality gate.</p>
+
+      <p>An operator escape hatch env var exists for emergencies — auto-rater downtime, for example — but it is off by default and requires explicit per-environment configuration.</p>
+
+      <h3>Latency analysis</h3>
+
+      <p>The band architecture keeps latency predictable:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Score range</th>
+            <th>LLM called?</th>
+            <th>Added latency</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Below 0.75</td>
+            <td>No</td>
+            <td>0 ms</td>
+          </tr>
+          <tr>
+            <td>0.75 – 0.80 (review band)</td>
+            <td>Yes</td>
+            <td>~10–30 s typical</td>
+          </tr>
+          <tr>
+            <td>≥ 0.80 (override zone)</td>
+            <td>Yes</td>
+            <td>~10–30 s typical</td>
+          </tr>
+          <tr>
+            <td>LLM timeout (90 s)</td>
+            <td>Failed</td>
+            <td>Fail-closed → duplicate</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The 10–30 second range comes from auto-rater submit (~1 s) plus polling at 5-second intervals until the review completes. This is acceptable because dedup runs inside Cloud Tasks workers — asynchronous background jobs, not the user-facing request path. Nobody is staring at a spinner waiting for the LLM.</p>
+
+      <h2>Feature-flagged rollout</h2>
+
+      <p>The entire feature ships disabled by default. Environment variables control every knob:</p>
+
+      <ul>
+        <li><code>AUTO_SEED_DEDUP_LLM_ENABLED</code> — master switch (default: <code>false</code>)</li>
+        <li><code>AUTO_SEED_DEDUP_LLM_CLEAR_THRESHOLD</code> — lower bound of review band (default: <code>0.75</code>)</li>
+        <li><code>AUTO_SEED_DEDUP_LLM_TIMEOUT_MS</code> — max poll duration (default: <code>90000</code>)</li>
+        <li><code>AUTO_SEED_DEDUP_LLM_POLL_INTERVAL_MS</code> — poll frequency (default: <code>5000</code>)</li>
+      </ul>
+
+      <p>Kubernetes configmaps control per-environment rollout. Staging enables first; production follows after clearance rates validate. The config module clamps thresholds and rejects malformed env vars at startup.</p>
+
+      <h2>Testing</h2>
+
+      <p>I wrote 109 tests across six files. The breakdown covers the adjudicator in isolation, the dedup integration, configuration parsing, and gate authorization:</p>
+
+      <ul>
+        <li><strong><code>llm-adjudicator.test.ts</code> (8 tests):</strong> approval, rejection, submit failure, poll timeout, plain-text feedback parsing, empty results, network error, malformed JSON fallback.</li>
+        <li><strong><code>rag-dedup.test.ts</code> (+4 tests):</strong> LLM disabled bypass, below-band auto-clear, in-band LLM clear, above-threshold LLM override, fail-closed on unavailability.</li>
+        <li><strong><code>config.test.ts</code> (+3 tests):</strong> env var parsing, threshold clamping to valid ranges.</li>
+        <li><strong><code>step1-gate.test.ts</code> (+1 test):</strong> <code>llm_cleared</code> authorization path.</li>
+      </ul>
+
+      <p>The fail-closed tests verify that network errors, poll timeouts, and malformed responses all produce <code>isDuplicate: true</code> — never a silent clear.</p>
+
+      <h2>What I learned</h2>
+
+      <p>RAG is an excellent first-pass filter, but it is not a judge. Embeddings compress away the fine-grained distinctions that matter for domain-specific deduplication. When false positives come from structurally similar but contextually different tasks, the fix is a second opinion — not a better embedding model.</p>
+
+      <p>The two-threshold band keeps the LLM off the hot path for obvious cases, concentrates inference budget where ambiguity lives, and pairs every judgment with an audit trail. Fail-closed semantics and feature flags let us ship safely: the gate never silently degrades, and staging validates clearance rates before production.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Thu, 05 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 12 Jun 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,32 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>From Fixed Levels to L(n): Building an Extensible Taxonomy System</title>
+      <link>https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html</guid>
+      <pubDate>Thu, 12 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Replaced a rigid 2-level hierarchy with a config-driven L(n) taxonomy — YAML seeding, GCS CAS writes, admin CRUD UI, cascading dropdowns, and a bidirectional backward compatibility layer.</description>
+      <category>Taxonomy</category>
+      <category>TypeScript</category>
+      <category>GCS</category>
+      <category>React</category>
+    </item>
+
+    <item>
+      <title>When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer</title>
+      <link>https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html</guid>
+      <pubDate>Thu, 12 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Two-threshold band architecture where an LLM second-opinion overrides RAG false positives — feature-flagged, fail-closed, with structured verdicts and 109 tests.</description>
+      <category>RAG</category>
+      <category>LLM</category>
+      <category>TypeScript</category>
+      <category>Deduplication</category>
+    </item>
 
     <item>
       <title>Building an Events Table for Pipeline Observability</title>
