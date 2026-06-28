@@ -4,6 +4,54 @@
 
 ---
 
+## Building an AI Video Generation Pipeline from Scratch
+
+URL: https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html
+
+Five-stage pipeline for generating viral-feel video ads: analyzer (scene detection, story structure, emotion), Claude planner (scene-by-scene with VO budgeting and story spine), Kling clip generation (avatar/product conditioning, checkpointing), FFmpeg stitch (concat, xfade, sidechain-ducked audio bed, color grading), and cross-scene narrative QA (protagonist drift, missing causality, pacing auto-fit). Restructured 72 flat TypeScript files into 5 domain folders (core, swipe, vendors, media, catalog). Tech stack: Next.js, Claude, Kling, ElevenLabs, FFmpeg, Railway, Google Drive checkpointing. 20 PRs, 7,000 lines in 3 days.
+
+---
+
+## Viral Feel Parity: Making AI-Generated Ads Feel Like the Original
+
+URL: https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html
+
+Making AI-generated video ads match the "feel" of the reference viral: avatar consistency (default protagonist across scenes), caption rendering (bundled font, pill backgrounds, emoji stripping), ElevenLabs audio bed with sidechain ducking (volume 0.18→0.40, duck ratio 8:1→3:1), voice-over pacing (timeline stretches to fit VO, never speeds audio), per-scene emotion-driven voice settings, FFmpeg xfade transitions for soft joins, color grading via eq filter. 2,800+ lines across multiple PRs.
+
+---
+
+## Narrative Continuity: Story Spine and L/J-Cut Editing in AI Video
+
+URL: https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html
+
+Solving disjoint AI-generated scenes: story spine enforcement (each scene advances protagonist, sets up next), cross-scene narrative QA (flags protagonist_drift, missing_causality, time_jump), continuous VO over cuts (L/J-cut editing at ~150 wpm), pacing auto-fit (rewrites over-budget VO across ≤3 passes). Later revision back to per-scene audio segments for natural sync. ~850 lines across two PRs.
+
+---
+
+## Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards
+
+URL: https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html
+
+Hardening a multi-provider AI video pipeline: transient error classifier (isTransientError) with exponential backoff 15→120s, Claude model fallback (primary → ANTHROPIC_FALLBACK_MODEL), process crash guards (unhandledRejection → log + keep running, uncaughtException → exit for clean restart), Zod llmOptionalString helper (null → undefined), env-gated local frame hosting via provider's File Upload API. Five PRs totaling ~1,200 lines.
+
+---
+
+## QC Orchestration: Agent-Driven Quality Checks in a Review Pipeline
+
+URL: https://humzakt.github.io/blog/qc-orchestration-agent-driven-quality.html
+
+Config-driven QC orchestration service: submit → check config → qc_pending → Cloud Tasks worker → dispatch to external AI agents → HMAC-signed webhook callback → result processing → approved or qc_error. QcOrchestrationService (829 lines), signed-url.ts with HMAC + expiry, task-data packaging from GCS manifests, three new state machine states, zero-change fallback for unconfigured steps. 3,766 lines, 27 files, 137 tests.
+
+---
+
+## Halving Reviewer Clicks: Feedback Navigator, Keyboard Nav, and Read-Only Context
+
+URL: https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html
+
+51% click reduction in reviewer workflow: independent accordion sections (both open by default), FeedbackNavigator chip strip with status dots and progress label, keyboard navigation (j/k/n/Home/End), auto-advance after decisions, read-only context pattern (model outputs moved to "context" section, renderFeedback returns null → 2-pane layout, context items skipped in progress/navigation/submit). 1,800 lines across 3 PRs, 132 tests.
+
+---
+
 ## From Fixed Levels to L(n): Building an Extensible Taxonomy System
 
 URL: https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html

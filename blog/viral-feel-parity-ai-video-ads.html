@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Viral Feel Parity: Making AI-Generated Ads Feel Like the Original — Humza Tareen</title>
+  <meta name="description" content="How I fixed avatar drift, blank caption boxes, sterile audio, chipmunk VO, and jarring cuts in an AI video ad pipeline so generated ads match the feel of the reference viral.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Video Generation, FFmpeg, Audio Engineering, AI, TypeScript, ElevenLabs">
+  <link rel="canonical" href="https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Viral Feel Parity: Making AI-Generated Ads Feel Like the Original">
+  <meta property="og:description" content="How I fixed avatar drift, blank caption boxes, sterile audio, chipmunk VO, and jarring cuts in an AI video ad pipeline so generated ads match the feel of the reference viral.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-28T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="FFmpeg">
+  <meta property="article:tag" content="Audio Engineering">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="ElevenLabs">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Viral Feel Parity: Making AI-Generated Ads Feel Like the Original">
+  <meta name="twitter:description" content="How I fixed avatar drift, blank caption boxes, sterile audio, chipmunk VO, and jarring cuts in an AI video ad pipeline so generated ads match the feel of the reference viral.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Viral Feel Parity: Making AI-Generated Ads Feel Like the Original",
+    "description": "How I fixed avatar drift, blank caption boxes, sterile audio, chipmunk VO, and jarring cuts in an AI video ad pipeline so generated ads match the feel of the reference viral.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-28",
+    "dateModified": "2026-06-28",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html" },
+    "keywords": ["Video Generation", "FFmpeg", "Audio Engineering", "AI", "TypeScript", "ElevenLabs"],
+    "articleSection": "Video / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Viral Feel Parity for AI Video Ads"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Viral Feel Parity: Making AI-Generated Ads Feel Like the Original</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-28" itemprop="datePublished">June 28, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">FFmpeg</span>
+        <span class="blog-tag">Audio Engineering</span>
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">ElevenLabs</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The video generation platform I work on takes a reference viral ad and produces a new version with swapped product copy, fresh voice-over, and AI-generated scenes. Technically the output was correct — scenes rendered, VO synthesized, timeline stitched. But the editor's feedback was blunt: <em>"the avatar keeps changing, random boxes in the video, no bed sound, doesn't feel the same."</em></p>
+
+      <p>That last phrase — <strong>doesn't feel the same</strong> — is the whole problem. Viral ads work because of accumulated micro-decisions: one consistent face, ambient room tone under the narration, captions that sit naturally on screen, pacing that breathes between beats. Our pipeline was optimizing for structural fidelity to the blueprint while ignoring perceptual fidelity to the reference. Over roughly 2,800 lines across several PRs, I closed that gap. This post walks through eight concrete failure modes and the fixes that made generated ads feel like they belonged to the same family as the original.</p>
+
+      <h2>1. Avatar consistency</h2>
+
+      <p>The protagonist changed appearance between scenes. Scene one showed a woman with short dark hair; scene three had a different face entirely. Root cause: avatar selection was random per scene. Each scene generation call picked from the avatar pool independently, the same way we might pick a background variant — except viewers experience the protagonist as a continuous character, not a per-shot casting decision.</p>
+
+      <p>The fix mirrored how we already handled voice and product: pick once, propagate everywhere. The start route and every runner resolve site now pass a single <code>avatarSlug</code> through the job context. Scene generators read that slug instead of rolling dice.</p>
+
+<pre><code class="language-typescript">interface JobContext {
+  avatarSlug: string;
+  voiceId: string;
+  productSlug: string;
+}
+
+function resolveAvatarForJob(
+  blueprint: VideoBlueprint,
+  overrides?: Partial&lt;JobContext&gt;,
+): string {
+  if (overrides?.avatarSlug) return overrides.avatarSlug;
+  if (blueprint.avatar?.defaultSlug) return blueprint.avatar.defaultSlug;
+  return pickDefaultAvatar(blueprint.demographics);
+}
+
+// Start route + all runner resolve sites
+const ctx: JobContext = {
+  avatarSlug: resolveAvatarForJob(blueprint, req.body),
+  voiceId: resolveVoice(blueprint, req.body),
+  productSlug: resolveProduct(blueprint, req.body),
+};</code></pre>
+
+      <p>One slug, one face, every scene. Simple invariant, large perceptual payoff.</p>
+
+      <h2>2. Caption rendering</h2>
+
+      <p>Editors reported "random white boxes" floating over the video. The caption overlay tried to reproduce the reference's on-screen text by drawing rectangles wherever the analyzer detected text regions. When the analyzer flagged an overlay it could not describe — a stylized graphic, a motion-blurred lower-third — the renderer still drew the pill background with no text inside. Blank boxes.</p>
+
+      <p>I rewrote caption rendering to draw real text on a pill background, driven by <code>blueprint.captions.style</code>: caps vs sentence case, accent color, light-vs-dark pill, vertical position. Undescribable overlays now draw nothing — not a placeholder rectangle. Emoji are stripped before render because our bundled font cannot glyph them reliably. And because Railway containers have no system fonts, I bundled <code>DejaVuSans-Bold.ttf</code> into the asset pipeline so caption typography is deterministic in production.</p>
+
+<pre><code class="language-typescript">interface CaptionStyle {
+  uppercase: boolean;
+  accentColor: string;
+  pillVariant: 'light' | 'dark';
+  position: 'top' | 'center' | 'bottom';
+}
+
+function renderCaptionOverlay(
+  scene: SceneBlueprint,
+  style: CaptionStyle,
+): OverlayCommand[] {
+  const text = scene.caption?.text;
+  if (!text || scene.caption?.undescribable) return [];
+
+  const sanitized = stripEmoji(text);
+  const display = style.uppercase ? sanitized.toUpperCase() : sanitized;
+
+  return [{
+    type: 'text-pill',
+    text: display,
+    fontPath: bundledFont('DejaVuSans-Bold.ttf'),
+    accentColor: style.accentColor,
+    pillVariant: style.pillVariant,
+    position: style.position,
+  }];
+}</code></pre>
+
+      <p>Captions went from broken rectangles to readable, styled text that matched the reference's visual language.</p>
+
+      <h2>3. Audio bed and background sound</h2>
+
+      <p>Output audio was clean VO only — technically pristine, perceptually sterile. The reference viral had ambient room tone, subtle music bed, the sense of a real environment. Our mix sounded like someone recorded voice-over in a vacuum.</p>
+
+      <p>I added an ambience bed generated via the ElevenLabs Sound Effects API, themed from the blueprint's mood and setting descriptors. The bed mixes under the VO with sidechain ducking: the voice-over keys a compressor on the bed track, so speech dips the ambience and gaps between lines let it swell back. Tunable constants evolved through editor feedback — <code>DEFAULT_BED_VOLUME</code> went from 0.18 to 0.30 to 0.40, duck ratio softened from 8:1 to 4:1 to 3:1, threshold adjusted so ducking felt natural rather than pumping.</p>
+
+<pre><code class="language-typescript">interface AudioBedProvider {
+  generateBed(prompt: string, durationSec: number): Promise&lt;Buffer&gt;;
+}
+
+const DEFAULT_BED_VOLUME = 0.40;
+const DUCK_RATIO = 3;
+const DUCK_THRESHOLD_DB = -24;
+
+async function mixVoWithBed(
+  voTrack: AudioBuffer,
+  bedProvider: AudioBedProvider,
+  blueprint: VideoBlueprint,
+  bedVolume = DEFAULT_BED_VOLUME,
+): Promise&lt;Buffer&gt; {
+  const bed = await bedProvider.generateBed(
+    buildBedPrompt(blueprint.style, blueprint.setting),
+    voTrack.durationSec,
+  );
+
+  return ffmpegMix([
+    { input: voTrack, filter: 'anull' },
+    {
+      input: bed,
+      filter: `volume=${bedVolume},acompressor=threshold=${DUCK_THRESHOLD_DB}dB:ratio=${DUCK_RATIO}:sidechain=0`,
+      sidechainFrom: voTrack,
+    },
+  ]);
+}</code></pre>
+
+      <p>The <code>AudioBedProvider</code> interface keeps the ElevenLabs implementation swappable. Editors can also tune <code>audioBedVolume</code> (0..1) per job through the edit API without redeploying.</p>
+
+      <h2>4. Voice-over pacing</h2>
+
+      <p>Early versions sped up the VO to fit the reference's scene timing. When synthesized speech ran longer than the reference clip, the pipeline applied <code>atempo</code> to compress it. The result was chipmunk narration — technically on-beat, obviously wrong.</p>
+
+      <p>The rule is now absolute: <strong>never speed the VO</strong>. Instead, the stitcher sizes the timeline to <code>max(reference total duration, VO length)</code> and stretches the picture to fill. Audio is only ever padded — silence at the tail or scene boundaries — never time-compressed. I also reverted from a single continuous VO track back to per-scene audio segments. Continuous VO sounded like one flat overlay and killed the scene-to-scene rhythm the reference relied on.</p>
+
+<pre><code class="language-typescript">function computeSceneDuration(
+  referenceDurationSec: number,
+  voDurationSec: number,
+): number {
+  // Picture stretches; audio never speeds up
+  return Math.max(referenceDurationSec, voDurationSec);
+}
+
+function buildSceneAudio(segment: VoSegment): AudioFilterGraph {
+  const targetSec = computeSceneDuration(segment.refDurationSec, segment.voDurationSec);
+  if (segment.voDurationSec &gt;= targetSec) {
+    return padSilence(segment.voBuffer, targetSec);
+  }
+  return padSilence(segment.voBuffer, targetSec); // always pad, never atempo
+}</code></pre>
+
+      <h2>5. Emotion-driven audio</h2>
+
+      <p>Flat delivery was another subtle tell. The reference shifted energy scene by scene — urgent hook, calm product explanation, excited CTA. Our analyzer already extracted per-scene <code>emotion</code> from the blueprint; we just were not using it downstream.</p>
+
+      <p>Each scene's emotion now drives ElevenLabs audio tags and voice settings. An "excited" scene gets higher stability variance and expressive tags; "calm" scenes get steadier settings. The mapping is declarative in the synthesis config rather than hard-coded per scene type.</p>
+
+<pre><code class="language-typescript">const EMOTION_VOICE_SETTINGS: Record&lt;SceneEmotion, VoiceSettings&gt; = {
+  excited: { stability: 0.35, similarityBoost: 0.75, style: 0.6 },
+  calm:    { stability: 0.70, similarityBoost: 0.85, style: 0.2 },
+  urgent:  { stability: 0.45, similarityBoost: 0.80, style: 0.5 },
+};
+
+function synthesizeSceneVo(
+  scene: SceneBlueprint,
+  voiceId: string,
+): Promise&lt;Buffer&gt; {
+  const settings = EMOTION_VOICE_SETTINGS[scene.emotion] ?? EMOTION_VOICE_SETTINGS.calm;
+  return elevenLabsTts({
+    text: scene.script,
+    voiceId,
+    voiceSettings: settings,
+    audioTags: [`[${scene.emotion}]`],
+  });
+}</code></pre>
+
+      <h2>6. Transitions</h2>
+
+      <p>Every scene joined with a hard cut. For references that used soft dissolves or morphs between beats — common in lifestyle and beauty virals — our output felt jarring. The blueprint already flagged joins as <code>soft</code> where the analyzer detected them; the stitcher ignored that flag and concatenated with <code>concat</code>.</p>
+
+      <p>Soft transitions now route through FFmpeg's <code>xfade</code> filter when the blueprint marks a join as soft. The feature is env-gated with <code>SOFT_TRANSITIONS=1</code> — default off preserves the validated hard-concat path in production until a job explicitly opts in.</p>
+
+<pre><code class="language-typescript">function buildTransitionFilter(
+  leftClip: string,
+  rightClip: string,
+  join: SceneJoin,
+): string {
+  if (join.type === 'soft' &amp;&amp; process.env.SOFT_TRANSITIONS === '1') {
+    return `xfade=transition=fade:duration=${join.crossfadeSec}:offset=${join.offsetSec}`;
+  }
+  return 'concat';
+}</code></pre>
+
+      <h2>7. Color grading</h2>
+
+      <p>Scene-to-scene color drift was subtle but real — AI-generated clips from different prompts carried slightly different white balance and contrast. I added a light color-grade pass via FFmpeg's <code>eq</code> filter, targeting the tone described in <code>blueprint.style</code> (warm/cool, lifted shadows, muted saturation). It is not cinema-grade grading; it is enough to pull disparate clips toward a unified look so the final ad reads as one piece rather than a montage of unrelated generations.</p>
+
+      <h2>8. Viral hook audio capture</h2>
+
+      <p>The opening hook is where virals earn their name — a specific sound, a verbal tic, ambient texture that stops the scroll. We were regenerating everything from scratch and losing the reference's own hook audio entirely. The generated ad had new VO from frame zero; the reference had <em>that</em> opening gasp, music sting, or ambient clip.</p>
+
+      <p>The fix extracts and preserves the viral's hook audio segment from the reference file and splices it into the generated output for the hook window defined in the blueprint. New VO picks up after the preserved hook. The opening "feel" — the thing editors recognize instantly — survives the remix.</p>
+
+<pre><code class="language-typescript">async function buildFinalAudio(
+  referenceVideo: Buffer,
+  generatedSegments: VoSegment[],
+  blueprint: VideoBlueprint,
+): Promise&lt;Buffer&gt; {
+  const hookAudio = await extractAudioSlice(
+    referenceVideo,
+    blueprint.hook.startSec,
+    blueprint.hook.endSec,
+  );
+
+  const bodyVo = stitchSegments(generatedSegments.filter(s =&gt; !s.isHook));
+  return concatAudio([hookAudio, bodyVo]);
+}</code></pre>
+
+      <h2>What changed in the edit review</h2>
+
+      <p>After these changes shipped, the same editor who flagged avatar drift and blank boxes signed off without requesting a revision pass on feel. The fixes are not glamorous — font bundling, sidechain ratios, refusing to call <code>atempo</code> — but they address what viewers actually notice. Structural parity (correct scenes, correct script) is necessary. Viral feel parity (one face, real captions, ambient bed, natural pacing, preserved hook) is what makes someone believe the ad belongs in the same feed as the original.</p>
+
+      <blockquote>
+        "Doesn't feel the same" is a systems problem. Every perceptual mismatch — avatar drift, blank overlays, sterile mix, sped-up VO — is a bug as real as a crash.
+      </blockquote>
+
+      <p>If you are building AI video pipelines, measure success by editor reaction and scroll-stop rate, not just render success. The last 10% of feel is where the other 90% of the engineering lives.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

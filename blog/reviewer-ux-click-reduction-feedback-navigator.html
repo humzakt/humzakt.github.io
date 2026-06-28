@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Halving Reviewer Clicks: Feedback Navigator, Keyboard Navigation, and Read-Only Context Patterns — Humza Tareen</title>
+  <meta name="description" content="How I cut reviewer clicks in half with a chip-based FeedbackNavigator, keyboard shortcuts, auto-advance after decisions, and read-only context patterns for model outputs.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="UX Engineering, React, TypeScript, Accessibility, Admin UI, Keyboard Navigation">
+  <link rel="canonical" href="https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Halving Reviewer Clicks: Feedback Navigator, Keyboard Navigation, and Read-Only Context Patterns">
+  <meta property="og:description" content="How I cut reviewer clicks in half with a chip-based FeedbackNavigator, keyboard shortcuts, auto-advance after decisions, and read-only context patterns for model outputs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-28T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="UX Engineering">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Accessibility">
+  <meta property="article:tag" content="Admin UI">
+  <meta property="article:tag" content="Keyboard Navigation">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Halving Reviewer Clicks: Feedback Navigator, Keyboard Navigation, and Read-Only Context Patterns">
+  <meta name="twitter:description" content="How I cut reviewer clicks in half with a chip-based FeedbackNavigator, keyboard shortcuts, auto-advance after decisions, and read-only context patterns for model outputs.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Halving Reviewer Clicks: Feedback Navigator, Keyboard Navigation, and Read-Only Context Patterns",
+    "description": "How I cut reviewer clicks in half with a chip-based FeedbackNavigator, keyboard shortcuts, auto-advance after decisions, and read-only context patterns for model outputs.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-28",
+    "dateModified": "2026-06-28",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html" },
+    "keywords": ["UX Engineering", "React", "TypeScript", "Accessibility", "Admin UI", "Keyboard Navigation"],
+    "articleSection": "UX Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Reviewer UX Click Reduction"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Halving Reviewer Clicks: Feedback Navigator, Keyboard Navigation, and Read-Only Context Patterns</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-28" itemprop="datePublished">June 28, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">UX Engineering</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Accessibility</span>
+        <span class="blog-tag">Admin UI</span>
+        <span class="blog-tag">Keyboard Navigation</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The review workflow on the platform I work on asks human reviewers to inspect AI-generated artifacts, read LLM judge outputs, and record approve/reject decisions with structured feedback. The interface was technically complete — every piece of information was reachable — but the path to reach it demanded too many clicks. Accordions enforced single-section viewing, so opening File Artifacts closed LLM Judges and vice versa. Navigation between feedback items was mouse-only. And model outputs sat in the review section, demanding feedback even though they were reference material, not reviewable artifacts.</p>
+
+      <p>I shipped three PRs in the same sprint to fix this. Together they touched roughly 1,800 lines across navigation, layout, and gate-review derive logic. The headline result: reviewers cut their click count in half. This post walks through the click analysis, the FeedbackNavigator component, keyboard shortcuts, auto-advance after decisions, and the read-only context pattern that removed phantom feedback items from the workflow entirely.</p>
+
+      <h2>Measuring the click problem</h2>
+
+      <p>Before writing code, I mapped the reviewer journey click-by-click. A single artifact with one file and three LLM judges required eight clicks to review: open the file accordion, scroll to each judge, open the judge accordion, click into each feedback field, and navigate back. A full session — eight artifacts, three judges each — ballooned to roughly 71 clicks of pure navigation overhead, before any actual judgment.</p>
+
+      <p>After the sprint, the same paths dropped to four clicks per artifact and roughly 35 clicks per session. That is a 50–51% reduction — not from hiding information, but from showing more of it at once and giving reviewers faster ways to move through it.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Before</th>
+            <th>After</th>
+            <th>Improvement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Review single artifact (1 file + 3 judges)</td>
+            <td>8 clicks</td>
+            <td>4 clicks</td>
+            <td>50%</td>
+          </tr>
+          <tr>
+            <td>Full session (8 artifacts, 3 judges each)</td>
+            <td>~71 clicks</td>
+            <td>~35 clicks</td>
+            <td>51%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <blockquote>
+        Clicks are a proxy for cognitive load. Every accordion toggle and scroll hunt is a context switch that pulls attention away from the actual review decision.
+      </blockquote>
+
+      <h2>Independent accordion sections</h2>
+
+      <p>The first fix was embarrassingly simple. The artifact detail panel used a single-open accordion: opening File Artifacts closed LLM Judges, and opening LLM Judges closed File Artifacts. Reviewers constantly toggled back and forth to cross-reference a file against judge feedback — two clicks per comparison, repeated dozens of times per session.</p>
+
+      <p>I changed both sections to open by default and toggle independently. Reviewers can now see file artifacts and judge feedback simultaneously. No architectural change was required — just removing the <code>singleOpen</code> constraint and defaulting both panels to expanded. The impact was immediate: cross-referencing went from a toggle dance to a glance.</p>
+
+      <h2>FeedbackNavigator: progress at a glance</h2>
+
+      <p>Accordion independence solved visibility, but reviewers still needed a way to jump between feedback items without hunting through scroll position. I built a <code>FeedbackNavigator</code> component — 196 lines — that renders a compact chip-based navigator showing every feedback item in the current artifact.</p>
+
+      <p>Each chip displays a status dot: red for required, yellow for in-progress, green for complete. Click a chip and the view scrolls to that item and focuses its input. A progress label — "5 of 11 reviewed" — gives reviewers session-level awareness without opening a separate panel.</p>
+
+<pre><code class="language-typescript">interface FeedbackNavigatorProps {
+  items: FeedbackItem[];
+  activeId: string | null;
+  onSelect: (id: string) =&gt; void;
+}
+
+function FeedbackNavigator({ items, activeId, onSelect }: FeedbackNavigatorProps) {
+  const reviewable = items.filter((item) =&gt; !isContextOnlyStep(item.stepId));
+  const completed = reviewable.filter((item) =&gt; item.status === 'complete').length;
+
+  return (
+    &lt;nav aria-label="Feedback navigation" className="feedback-navigator"&gt;
+      &lt;span className="feedback-navigator__progress"&gt;
+        {completed} of {reviewable.length} reviewed
+      &lt;/span&gt;
+      &lt;div role="listbox" className="feedback-navigator__chips"&gt;
+        {reviewable.map((item) =&gt; (
+          &lt;button
+            key={item.id}
+            role="option"
+            aria-selected={item.id === activeId}
+            className={cn('feedback-chip', item.id === activeId &amp;&amp; 'active')}
+            onClick={() =&gt; onSelect(item.id)}
+          &gt;
+            &lt;StatusIndicator status={item.status} /&gt;
+            {item.label}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/nav&gt;
+  );
+}</code></pre>
+
+      <p>The navigator reuses the existing <code>StatusIndicator</code> component from the reviewer-flow module, keeping visual language consistent across the platform. Chips are keyboard-focusable and wired into the same selection state that drives scroll-and-focus behavior in the feedback column.</p>
+
+      <h2>Keyboard navigation for power users</h2>
+
+      <p>Mouse-driven chip clicking helps casual reviewers. Power users — who process dozens of artifacts per shift — needed something faster. I added a keyboard navigation layer scoped per artifact, so navigation state resets cleanly when the reviewer moves to the next artifact.</p>
+
+      <ul>
+        <li><strong><code>j</code> / <code>k</code></strong> — next / previous feedback item</li>
+        <li><strong><code>n</code></strong> — next incomplete item (skips already-reviewed)</li>
+        <li><strong><code>Home</code> / <code>End</code></strong> — first / last item</li>
+      </ul>
+
+      <p>The hook listens on the artifact panel container, ignores keystrokes when focus is inside a text input, and wraps at list boundaries only for <code>j</code>/<code>k</code> — <code>n</code> always searches forward from the current position.</p>
+
+<pre><code class="language-typescript">function useFeedbackKeyboardNav(
+  items: FeedbackItem[],
+  activeId: string | null,
+  onSelect: (id: string) =&gt; void,
+) {
+  const reviewable = useMemo(
+    () =&gt; items.filter((item) =&gt; !isContextOnlyStep(item.stepId)),
+    [items],
+  );
+
+  useEffect(() =&gt; {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (isEditableTarget(e.target)) return;
+
+      const idx = reviewable.findIndex((item) =&gt; item.id === activeId);
+
+      switch (e.key) {
+        case 'j':
+          onSelect(reviewable[Math.min(idx + 1, reviewable.length - 1)].id);
+          break;
+        case 'k':
+          onSelect(reviewable[Math.max(idx - 1, 0)].id);
+          break;
+        case 'n':
+          onSelect(findNextIncomplete(reviewable, idx)?.id ?? activeId!);
+          break;
+        case 'Home':
+          onSelect(reviewable[0].id);
+          break;
+        case 'End':
+          onSelect(reviewable[reviewable.length - 1].id);
+          break;
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () =&gt; window.removeEventListener('keydown', handleKeyDown);
+  }, [reviewable, activeId, onSelect]);
+}</code></pre>
+
+      <p>Reviewers who learn the shortcuts can complete an entire artifact without touching the mouse — open artifact, tab to first field, approve/reject, auto-advance to next item, repeat.</p>
+
+      <h2>Auto-advance after decisions</h2>
+
+      <p>Even with keyboard navigation, reviewers hit a recurring friction point: after approving or rejecting an item, they paused to figure out what came next. That "what's next?" moment added seconds per decision across hundreds of decisions per day.</p>
+
+      <p>I added an <code>onDecisionComplete</code> callback to the <code>DecisionToggle</code> component. When a reviewer records a decision, the callback fires, maps the decision to a feedback status, and automatically navigates to the next incomplete item.</p>
+
+<pre><code class="language-typescript">function mapDecisionToFeedbackStatus(
+  decision: ReviewDecision,
+): FeedbackStatus {
+  if (decision === 'approved') return 'complete';
+  if (decision === 'rejected') return 'complete';
+  return 'in_progress';
+}
+
+function DecisionToggle({ itemId, onDecisionComplete }: DecisionToggleProps) {
+  const handleDecision = (decision: ReviewDecision) =&gt; {
+    submitDecision(itemId, decision);
+    onDecisionComplete?.(itemId, mapDecisionToFeedbackStatus(decision));
+  };
+
+  return (
+    &lt;div className="decision-toggle"&gt;
+      &lt;button onClick={() =&gt; handleDecision('approved')}&gt;Approve&lt;/button&gt;
+      &lt;button onClick={() =&gt; handleDecision('rejected')}&gt;Reject&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+      <p>The auto-advance reuses the same <code>findNextIncomplete</code> helper from keyboard navigation, so chip selection, keyboard shortcuts, and post-decision flow all converge on one navigation model.</p>
+
+      <h2>Model outputs as read-only context</h2>
+
+      <p>The navigation improvements addressed how reviewers moved through feedback items. A separate problem was <em>which</em> items counted as feedback at all. Model outputs — the raw LLM generations that reviewers read for context — were rendered in the <code>section: "review"</code> group. That placement put them in the feedback column with approve/reject controls, even though they are reference material, not reviewable artifacts.</p>
+
+      <p>Reviewers had to acknowledge phantom feedback slots. Progress counts included them. Submit readiness checks blocked on them. The UI treated context and reviewable content identically because they shared the same section type.</p>
+
+      <p>I moved model output groups from <code>section: "review"</code> to <code>section: "context"</code> and introduced a derive-layer helper to identify context-only steps:</p>
+
+<pre><code class="language-typescript">const CONTEXT_ONLY_STEP_IDS = new Set([
+  'model_output',
+  'generation_preview',
+  'intermediate_reasoning',
+]);
+
+function isContextOnlyStep(stepId: string): boolean {
+  return CONTEXT_ONLY_STEP_IDS.has(stepId);
+}</code></pre>
+
+      <p>Context-only items are excluded from progress counts, keyboard navigation, and submit readiness checks. In the explorer panel, they render with a "Read-only" badge, a lock icon, and muted styling so reviewers understand at a glance that no decision is expected.</p>
+
+      <p>The layout change was equally important. When <code>renderFeedback</code> returns <code>null</code> for a context-only step, the <code>ReviewerFlowContent</code> three-pane shell auto-collapses to two panes — explorer plus preview, with no feedback column. <code>ResizableColumns</code> switches to <code>TWO_PANE_WEIGHTS</code> when the feedback column is dropped, giving the preview pane more horizontal space for reading model output.</p>
+
+<pre><code class="language-typescript">function OutputReviewStep({ step }: StepRendererProps) {
+  if (isContextOnlyStep(step.id)) {
+    return &lt;ContextPreview content={step.output} /&gt;;
+  }
+
+  return (
+    &lt;ReviewerFlowContent
+      explorer={&lt;ArtifactExplorer step={step} /&gt;}
+      preview={&lt;ArtifactPreview step={step} /&gt;}
+      feedback={renderFeedback(step)}
+    /&gt;
+  );
+}
+
+function renderFeedback(step: ReviewStep): React.ReactNode | null {
+  if (isContextOnlyStep(step.id)) return null;
+  return &lt;FeedbackForm step={step} /&gt;;
+}</code></pre>
+
+      <p>Simplifying <code>OutputReviewStep</code> to a pure context viewer — no local state management, no decision handlers — removed an entire class of bugs where context steps accidentally participated in review lifecycle events.</p>
+
+      <h2>Reusable layout patterns</h2>
+
+      <p>These changes compose through existing abstractions rather than one-off conditionals. The <code>StatusIndicator</code> component carries over from reviewer-flow. <code>ReviewerFlowContent</code> already supported a three-pane layout; the new behavior is that it auto-collapses when feedback is null. <code>ResizableColumns</code> already had weight presets — adding <code>TWO_PANE_WEIGHTS</code> for the no-feedback case was a single configuration branch.</p>
+
+      <p>The pattern generalizes: any step that is informational rather than actionable should declare itself context-only at the derive layer, skip feedback machinery, and let the layout shell adapt. Future step types — pipeline logs, intermediate embeddings, debug traces — can follow the same path without new layout code.</p>
+
+      <h2>Testing</h2>
+
+      <p>I wrote 14 unit tests for <code>FeedbackNavigator</code> covering chip rendering, progress counts, active selection, and context-only exclusion. Separate tests cover <code>mapDecisionToFeedbackStatus</code> for each decision type. The gate-review derive logic — including <code>isContextOnlyStep</code> filtering in progress and submit readiness — has 118 tests that guard against regressions where context items creep back into reviewable counts.</p>
+
+      <p>The keyboard navigation hook is tested indirectly through integration tests on the artifact review panel, verifying that keystrokes advance selection and that input fields do not intercept navigation when unfocused.</p>
+
+      <h2>What I learned</h2>
+
+      <p>Admin review UIs accumulate friction in ways that are invisible in demos but brutal in production. Accordions that save vertical space cost cross-reference clicks. Feedback columns that treat every rendered output as reviewable inflate progress counts and block submission. The fix is not one big redesign — it is a set of targeted patterns: show more by default, navigate with chips and keyboard shortcuts, auto-advance after decisions, and separate context from review at the data layer.</p>
+
+      <p>Halving clicks sounds like a UX metric. For reviewers processing hundreds of artifacts per week, it is closer to an hour reclaimed per shift — time spent judging quality instead of hunting through accordions. The patterns shipped in three PRs, but they compose: the FeedbackNavigator respects context-only filtering, keyboard navigation shares the incomplete-item finder with auto-advance, and the two-pane layout activates automatically when feedback is not needed. That composability is what makes the sprint durable rather than a one-off polish pass.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

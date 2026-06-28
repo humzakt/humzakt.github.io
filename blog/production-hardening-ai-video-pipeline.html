@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards — Humza Tareen</title>
+  <meta name="description" content="How I hardened a multi-provider AI video pipeline against transient outages, model failures, process crashes, schema nulls, and local dev networking — across five focused PRs.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Production Hardening, TypeScript, AI Pipeline, Reliability, Error Handling, Retries">
+  <link rel="canonical" href="https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards">
+  <meta property="og:description" content="How I hardened a multi-provider AI video pipeline against transient outages, model failures, process crashes, schema nulls, and local dev networking — across five focused PRs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-28T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Production Hardening">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="AI Pipeline">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="Error Handling">
+  <meta property="article:tag" content="Retries">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards">
+  <meta name="twitter:description" content="How I hardened a multi-provider AI video pipeline against transient outages, model failures, process crashes, schema nulls, and local dev networking — across five focused PRs.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards",
+    "description": "How I hardened a multi-provider AI video pipeline against transient outages, model failures, process crashes, schema nulls, and local dev networking — across five focused PRs.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-28",
+    "dateModified": "2026-06-28",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html" },
+    "keywords": ["Production Hardening", "TypeScript", "AI Pipeline", "Reliability", "Error Handling", "Retries"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Production Hardening AI Video Pipeline"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-28" itemprop="datePublished">June 28, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Production Hardening</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">AI Pipeline</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">Error Handling</span>
+        <span class="blog-tag">Retries</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The video generation platform I work on orchestrates a long chain of AI calls — a video generation provider for clip rendering, Claude for scene planning, ElevenLabs for voiceover — into finished ad creatives. When every provider was healthy, the pipeline worked. When they were not, it failed quietly: a ten-minute backend outage burned through all retries, an unhandled promise rejection took down the Next.js server with a 502 and no stack trace, and a null optional field from Claude crashed plan validation before a single clip was generated.</p>
+
+      <p>These were reliability gaps, not creative logic bugs. I addressed them across five focused pull requests totaling roughly 1,200 lines. This post walks through each one.</p>
+
+      <h2>1. Transient outage hardening for the video provider</h2>
+
+      <p>The first incident was blunt. During a live run, the video generation provider's backend went down for roughly ten minutes. All sixteen clips in the job failed. The retry logic gave up long before the outage ended.</p>
+
+      <p>The old configuration was simple and wrong for provider-scale outages: three retries with a fixed fifteen-second delay between attempts. That is a forty-five-second horizon. A transient backend incident routinely lasts five to fifteen minutes. Retrying three times and declaring failure is not resilience — it is giving up on the first long tail.</p>
+
+      <p>I built an error classifier that separates transient failures from permanent ones. Transient errors — internal server errors, "try again later" messages, rate limits, capacity or overload signals, timeouts, HTTP 5xx, and 429 responses — get retried with exponential backoff. Non-transient errors — bad input, authentication failures, invalid parameters — fail immediately. There is no point burning retry budget on a request that will never succeed.</p>
+
+<pre><code class="language-typescript">const TRANSIENT_PATTERNS = [
+  /internal error/i,
+  /try again later/i,
+  /rate.?limit/i,
+  /capacity|overload/i,
+  /timeout/i,
+];
+
+function isTransientProviderError(msg: string, status?: number): boolean {
+  if (status === 429 || (status !== undefined &amp;&amp; status &gt;= 500)) return true;
+  return TRANSIENT_PATTERNS.some((re) =&gt; re.test(msg));
+}
+
+const BACKOFF_MS = [15_000, 30_000, 60_000, 120_000];
+
+async function generateClipWithRetry(
+  request: ClipRequest,
+  maxAttempts = BACKOFF_MS.length,
+): Promise&lt;ClipResult&gt; {
+  for (let attempt = 0; attempt &lt; maxAttempts; attempt++) {
+    try {
+      return await videoProvider.generate(request);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const status = (err as { status?: number }).status;
+
+      if (!isTransientProviderError(msg, status)) throw err;
+      if (attempt === maxAttempts - 1) throw err;
+
+      await sleep(BACKOFF_MS[attempt]);
+    }
+  }
+  throw new Error('unreachable');
+}</code></pre>
+
+      <p>The backoff schedule spans roughly three and a half minutes per clip — enough runway to survive a mid-length provider outage. Permanent failures still surface immediately, which keeps debugging fast when the problem is on our side.</p>
+
+      <h2>2. Claude model fallback and per-call observability</h2>
+
+      <p>The planning stage calls Claude to produce structured scene blueprints — shot descriptions, timing markers, voiceover cues. That call was wired to a single hardcoded model with no fallback. When the primary model hit a rate limit or returned a 503, the entire job failed. There was also no visibility into cost or latency per call. I could see that planning failed; I could not see whether it failed because of tokens, latency, or a provider-side outage.</p>
+
+      <p>I added a two-tier model strategy. The primary model comes from <code>ANTHROPIC_MODEL</code> (defaulting to <code>claude-opus-4-7</code>). When the primary fails with a transient error — HTTP 5xx, 429 — or is unavailable (404), the client automatically retries with <code>ANTHROPIC_FALLBACK_MODEL</code>. Client-side 4xx bad-request errors do not trigger fallback. If the input is malformed, switching models will not fix it.</p>
+
+<pre><code class="language-typescript">function isTransientAnthropicError(status: number): boolean {
+  return status === 429 || status &gt;= 500;
+}
+
+async function callClaude(messages: Message[]): Promise&lt;AnthropicResponse&gt; {
+  const primary = process.env.ANTHROPIC_MODEL ?? 'claude-opus-4-7';
+  const fallback = process.env.ANTHROPIC_FALLBACK_MODEL;
+
+  const start = Date.now();
+  try {
+    const res = await anthropic.messages.create({ model: primary, messages });
+    logUsage({ model: primary, ...res.usage, latencyMs: Date.now() - start });
+    return res;
+  } catch (err) {
+    const status = (err as { status?: number }).status ?? 0;
+
+    if (!fallback || !isTransientAnthropicError(status)) throw err;
+
+    console.warn(`[anthropic] primary ${primary} failed (${status}), falling back to ${fallback}`);
+    const res = await anthropic.messages.create({ model: fallback, messages });
+    logUsage({ model: fallback, ...res.usage, latencyMs: Date.now() - start, fallback: true });
+    return res;
+  }
+}</code></pre>
+
+      <p>Every call now logs model name, token counts, and latency. Fallback switches are logged explicitly, which made it straightforward to correlate job failures with model outages and estimate per-job inference cost.</p>
+
+      <h2>3. Process crash guards</h2>
+
+      <p>The most frustrating production issue was random 502 responses with nothing in the application logs. The Next.js server was dying silently. Tracing it back, a stray unhandled promise rejection in background pipeline work — fire-and-forget job updates, async callbacks without catch handlers — was terminating the Node process. In development, Node prints a warning and keeps running. In production, an unhandled rejection can crash the entire server.</p>
+
+      <p>I added explicit process-level handlers at startup. Unhandled rejections are logged with the full stack trace and current memory usage, but the process keeps running — these are bugs worth fixing, not worth taking down every in-flight job. Uncaught exceptions are logged and followed by a clean <code>exit(1)</code>, which lets the hosting platform restart the process. Jobs auto-restore from Google Drive checkpoints, so a controlled restart is preferable to a corrupted in-memory state.</p>
+
+<pre><code class="language-typescript">process.on('unhandledRejection', (reason) =&gt; {
+  console.error('[process] unhandledRejection', {
+    reason,
+    stack: reason instanceof Error ? reason.stack : undefined,
+    memory: process.memoryUsage(),
+  });
+  // Keep running — log and alert, do not crash
+});
+
+process.on('uncaughtException', (err) =&gt; {
+  console.error('[process] uncaughtException — exiting for clean restart', {
+    message: err.message,
+    stack: err.stack,
+    memory: process.memoryUsage(),
+  });
+  process.exit(1);
+});</code></pre>
+
+      <p>I also removed seven dead <code>void updateJob;</code> no-ops in the regenerate route and added a <code>/api/health</code> endpoint exempted from auth middleware so Railway health checks stop getting false 401s.</p>
+
+      <h2>4. Planner null-tolerance in Zod schemas</h2>
+
+      <p>After the crash guards shipped, a different class of failure surfaced: plan validation errors. Jobs crashed with messages like <code>plan validation failed: scenes.3.timeMarker: Expected string, received null</code>. Claude was returning <code>null</code> for fields it interpreted as "no value." Our Zod schemas used <code>z.string().optional()</code>, which accepts <code>string</code> or <code>undefined</code> but rejects <code>null</code>. This is a well-known footgun when parsing LLM JSON output.</p>
+
+      <blockquote>
+        LLMs routinely emit null for absent optional fields. Zod's optional() accepts undefined but not null. Without normalization, every null is a crash.
+      </blockquote>
+
+      <p>I built a reusable helper and applied it to every LLM-supplied optional string in the plan and blueprint schemas:</p>
+
+<pre><code class="language-typescript">import { z } from 'zod';
+
+/** Accept string | null | undefined from LLM JSON; normalize null → undefined */
+export const llmOptionalString = z
+  .union([z.string(), z.null()])
+  .optional()
+  .transform((val) =&gt; val ?? undefined);
+
+const sceneSchema = z.object({
+  description: z.string(),
+  timeMarker: llmOptionalString,
+  voiceoverCue: llmOptionalString,
+  cameraNote: llmOptionalString,
+});</code></pre>
+
+      <p>The same PR added a config-driven own-brand allow-list so the planner stops stripping the customer's own product references as "competitor content."</p>
+
+      <h2>5. Local E2E frame hosting</h2>
+
+      <p>The last issue only appeared in local end-to-end testing. Steps one through four of the pipeline passed cleanly, but every step-five clip generation failed with <code>image_load_error</code> or fetch timeouts. The video generation provider could not reach input frame URLs served through an ngrok tunnel from my laptop. Production serves frames from a stable CDN; local dev does not.</p>
+
+      <p>The fix is env-gated and off in production. When <code>UPLOAD_FRAMES_TO_KIE=1</code> is set, the pipeline uploads input frames to the video provider's own CDN via their File Upload API before submitting the generation request. The provider fetches from its own infrastructure — no tunnel, no timeout.</p>
+
+<pre><code class="language-typescript">async function resolveFrameUrl(localPath: string): Promise&lt;string&gt; {
+  if (process.env.UPLOAD_FRAMES_TO_KIE !== '1') {
+    return `${process.env.NGROK_BASE_URL}/frames/${basename(localPath)}`;
+  }
+
+  const uploaded = await videoProvider.uploadFile(localPath);
+  return uploaded.cdnUrl;
+}</code></pre>
+
+      <p>Zero production behavior change — the flag defaults off. Local developers flip one env var and run the full pipeline end-to-end without fighting tunnel networking.</p>
+
+      <h2>What I learned</h2>
+
+      <p>Multi-provider AI pipelines fail in layers, but the fix pattern is consistent: classify the error, retry or fall back only when it makes sense, log enough to diagnose the next incident, and gate dev-only workarounds behind explicit env flags.</p>
+
+      <p>The five PRs were deliberately small — 125 to 381 lines each — so each could be reviewed and shipped independently. Reliability work works better as targeted fixes for failure modes you actually hit in production than as a monolithic hardening sprint.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

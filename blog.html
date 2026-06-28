@@ -92,7 +92,7 @@
       margin: 0 auto;
       padding: 0 20px 80px;
     }
-    .blog-card {
+    a.blog-card {
       background: rgba(17, 34, 64, 0.6);
       border: 1px solid #233554;
       border-radius: 8px;
@@ -101,8 +101,10 @@
       cursor: pointer;
       display: flex;
       flex-direction: column;
+      text-decoration: none;
+      color: inherit;
     }
-    .blog-card:hover {
+    a.blog-card:hover {
       transform: translateY(-4px);
       border-color: #64ffda;
       box-shadow: 0 10px 30px -15px rgba(2,12,27,0.7);
@@ -121,7 +123,7 @@
       margin-bottom: 12px;
       transition: color 0.25s ease;
     }
-    .blog-card:hover h3 {
+    a.blog-card:hover h3 {
       color: #64ffda;
     }
     .blog-card p {
@@ -205,62 +207,60 @@
 
     <!-- Article grid (JS-rendered from article-meta.json) -->
     <div class="blog-grid" id="blog-grid">
-      <p class="blog-empty">Loading articles...</p>
+      <!-- Static HTML links for crawlers — replaced by JS on load -->
+      <a class="blog-card" href="blog/ai-video-generation-pipeline-architecture.html"><h3>Building an AI Video Generation Pipeline from Scratch</h3><p>Five-stage pipeline: analyzer, Claude planner, Kling clip gen, FFmpeg stitch with sidechain-ducked audio, and cross-scene narrative QA.</p></a>
+      <a class="blog-card" href="blog/viral-feel-parity-ai-video-ads.html"><h3>Viral Feel Parity: Making AI-Generated Ads Feel Like the Original</h3><p>Avatar consistency, sidechain-ducked audio beds, emotion-driven VO, caption rendering, color grading, and L/J-cut transitions.</p></a>
+      <a class="blog-card" href="blog/narrative-continuity-story-spine-video-gen.html"><h3>Narrative Continuity: Story Spine and L/J-Cut Editing in AI Video</h3><p>Story spine enforcement, cross-scene narrative QA, continuous VO over cuts, and pacing auto-fit.</p></a>
+      <a class="blog-card" href="blog/production-hardening-ai-video-pipeline.html"><h3>Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards</h3><p>Transient error classifier with exponential backoff, Claude model fallback, process crash guards, and Zod null tolerance.</p></a>
+      <a class="blog-card" href="blog/qc-orchestration-agent-driven-quality.html"><h3>QC Orchestration: Agent-Driven Quality Checks in a Review Pipeline</h3><p>Config-driven QC service dispatching to external AI agents with HMAC-signed webhooks and state machine integration.</p></a>
+      <a class="blog-card" href="blog/reviewer-ux-click-reduction-feedback-navigator.html"><h3>Halving Reviewer Clicks: Feedback Navigator, Keyboard Nav, and Read-Only Context</h3><p>51% click reduction with chip-based feedback navigator, keyboard shortcuts, and a reusable read-only context pattern.</p></a>
+      <a class="blog-card" href="blog/extensible-taxonomy-system-yaml-seeding.html"><h3>From Fixed Levels to L(n): Building an Extensible Taxonomy System</h3><p>Replaced a rigid 2-level hierarchy with a config-driven L(n) taxonomy — YAML seeding, GCS CAS writes, and admin CRUD UI.</p></a>
+      <a class="blog-card" href="blog/llm-adjudication-dedup-false-positives.html"><h3>When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer</h3><p>Two-threshold band architecture where an LLM second-opinion overrides RAG false positives.</p></a>
+      <a class="blog-card" href="blog/events-table-pipeline-observability.html"><h3>Building an Events Table for Pipeline Observability</h3><p>Unified events timeline aggregating four sources into one diagnostic view with causal ordering.</p></a>
+      <a class="blog-card" href="blog/bulk-intake-redesign-taxonomy-validation.html"><h3>Redesigning Bulk Intake: Cascading Dropdowns and Taxonomy Validation</h3><p>Replaced a checkbox taxonomy grid with cascading dropdowns and server-side slug validation.</p></a>
+      <a class="blog-card" href="blog/dead-letter-queue-pipeline-reliability.html"><h3>Dead Letter Queues for Pipeline Reliability</h3><p>DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges.</p></a>
+      <a class="blog-card" href="blog/two-cache-layers-stale-data.html"><h3>When Two Cache Layers Serve Stale Data</h3><p>Server-side unstable_cache plus client-side gcTime — a two-part cache debugging story.</p></a>
+      <a class="blog-card" href="blog/ux-polish-sprint-filter-registry-consolidated-controls.html"><h3>A UX Polish Sprint: 8 PRs in 48 Hours</h3><p>Filter registry, consolidated controls, search validation — eight small PRs compounding into a polished dashboard.</p></a>
+      <a class="blog-card" href="blog/gcs-race-conditions-generation-fenced-leases.html"><h3>GCS Race Conditions: Generation-Fenced Lease Deletion</h3><p>Two race conditions fixed with GCS generation-based optimistic concurrency.</p></a>
+      <a class="blog-card" href="blog/multi-layer-cache-dashboard-latency.html"><h3>Multi-Layer Caching for Dashboard Latency</h3><p>HTTP Cache-Control, server-side cache with tag invalidation, React Query migration.</p></a>
+      <a class="blog-card" href="blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html"><h3>Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown</h3><p>Dispatch registry for configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL.</p></a>
+      <a class="blog-card" href="blog/gcs-backed-auto-seeder-platform.html"><h3>Building a GCS-Backed Auto-Seeder Platform</h3><p>Provider-service architecture with hot-swappable backends and run manifests.</p></a>
+      <a class="blog-card" href="blog/57k-line-merge-rollback-reconsolidation.html"><h3>When 57K Lines Get Rolled Back</h3><p>11 stacked PRs merged as one commit, rolled back, then reconsolidated with strict layering.</p></a>
+      <a class="blog-card" href="blog/invisible-bugs-file-type-bypass-missing-worker-runs.html"><h3>Invisible Bugs: File Type Bypass and Missing Worker Runs</h3><p>Two production bugs invisible during development — file type validation bypass and missing worker runs.</p></a>
+      <a class="blog-card" href="blog/task-lifecycle-v1-schema-api-design.html"><h3>Designing a Task Lifecycle V1 from Scratch</h3><p>10-table schema with composite keys, immutable versioning, and 40+ API routes.</p></a>
+      <a class="blog-card" href="blog/sft-recording-pipeline-docker-sandboxes.html"><h3>Building an SFT Recording Pipeline</h3><p>Docker sandboxes with VNC, trajectory capture, video recording, and review workflows.</p></a>
+      <a class="blog-card" href="blog/unified-status-sort-display-labels.html"><h3>When Display Labels Break Sorting</h3><p>Three bugs in rank computation, date tiebreakers, and deterministic windowing.</p></a>
+      <a class="blog-card" href="blog/enterprise-state-machine-bulk-admin-ops.html"><h3>Taming a State Machine: Bulk Admin Ops</h3><p>Transition matrices, workflow decoupling, unified status resolution, and JSON upload.</p></a>
+      <a class="blog-card" href="blog/claim-timeout-decoupling-expert-review-ux.html"><h3>Decoupling Claim Timeouts from Feature Flags</h3><p>Three-phase countdown UX with urgent and expired states.</p></a>
+      <a class="blog-card" href="blog/bootstrapping-engineering-standards-legacy-codebase.html"><h3>Bootstrapping Engineering Standards on a Legacy Codebase</h3><p>AI tool rules, PR templates, testing mandates, and CI upgrades — layered incrementally.</p></a>
+      <a class="blog-card" href="blog/production-ready-multi-turn-evaluation.html"><h3>Production-Ready Multi-Turn Evaluation</h3><p>Harness testing, snapshots via base64 transfer, crash-resilient resume state.</p></a>
+      <a class="blog-card" href="blog/reverse-engineering-codebase-architecture-docs.html"><h3>Reverse-Engineering a Codebase Into Architecture Docs</h3><p>Mermaid data flow diagrams, conditional logic tables, and three verification passes.</p></a>
+      <a class="blog-card" href="blog/audit-safe-admin-bulk-operations.html"><h3>Audit-Safe Admin Tools with Event Sourcing</h3><p>Atomic Prisma transactions, event sourcing for audit trails, and preview mode.</p></a>
+      <a class="blog-card" href="blog/multi-turn-agent-evaluation-persistent-state.html"><h3>Multi-Turn Agent Evaluation: Persistent State</h3><p>Persistent Docker environments, conversation memory, and progressive hint injection.</p></a>
+      <a class="blog-card" href="blog/docker-image-hardening-ai-benchmarks.html"><h3>Docker Image Hardening for AI Benchmarks</h3><p>Pre-flight validation, runtime layer injection, and skip lists for multi-language images.</p></a>
+      <a class="blog-card" href="blog/responses-api-support-agent-framework.html"><h3>Adding Responses API to an Agent Framework</h3><p>Auto-detection, input conversion, tool schema flattening, and response normalization.</p></a>
+      <a class="blog-card" href="blog/dev-starter-kit-ai-coding-tools.html"><h3>Dev Starter Kit: AI Coding Tools as Senior Engineers</h3><p>CI/CD workflows, test coverage enforcement, and pre-configured AI tool instructions.</p></a>
+      <a class="blog-card" href="blog/building-ai-evaluation-platform-gcp.html"><h3>Building an AI Evaluation Platform on GCP</h3><p>Multi-cluster system spanning Cloud Run, GKE, and managed databases.</p></a>
+      <a class="blog-card" href="blog/event-driven-architecture-gcp-pubsub.html"><h3>Event-Driven Architecture on GCP: Pub/Sub</h3><p>6-phase pipeline with Pub/Sub topics, dead-letter queues, and Cloud Scheduler.</p></a>
+      <a class="blog-card" href="blog/debugging-alloydb-ssl-connection-drops.html"><h3>Debugging AlloyDB SSL Connection Drops</h3><p>Random SSL connection failures causing 5% task failure rate — fixed with 3 config lines.</p></a>
+      <a class="blog-card" href="blog/idempotent-cloud-tasks-handlers-python.html"><h3>Idempotent Cloud Tasks Handlers in Python</h3><p>FastAPI, PostgreSQL, and deterministic UUIDs for at-least-once delivery systems.</p></a>
+      <a class="blog-card" href="blog/rag-embedding-migration-zero-downtime.html"><h3>Zero-Downtime Embedding Migration</h3><p>Switching embedding models in production using pgvector with zero downtime.</p></a>
+      <a class="blog-card" href="blog/rl-training-arena-code-agents.html"><h3>RL Training Arena for Code Agents</h3><p>Gym-style API, Cloud Build sandboxing, Redis episode state, and trajectory recording.</p></a>
+      <a class="blog-card" href="blog/security-audit-ai-platform-25-critical-issues.html"><h3>Security Audit: 25 Critical Issues</h3><p>SQL injection, hardcoded credentials, and secrets in production logs.</p></a>
+      <a class="blog-card" href="blog/atlas-evaluations-core-engine.html"><h3>Building the Core AI Evaluation Engine</h3><p>AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, and headless API.</p></a>
+      <a class="blog-card" href="blog/auto-rater-service-llm-scoring.html"><h3>Automated LLM Scoring Service</h3><p>Idempotent Cloud Tasks, LiteLLM proxy, Redis state, and VPC networking.</p></a>
+      <a class="blog-card" href="blog/guard-service-auth-gateway.html"><h3>Auth Gateway with Admin Dashboard</h3><p>Google OIDC, JWT validation, Kong integration, and notifications admin.</p></a>
+      <a class="blog-card" href="blog/notification-service-event-delivery.html"><h3>Notification Service: Event Delivery</h3><p>Cloud Tasks delivery, circuit breakers, dead-letter queues, and webhook dispatch.</p></a>
+      <a class="blog-card" href="blog/rag-service-embedding-search.html"><h3>RAG Retrieval Service: pgvector and Embeddings</h3><p>Similarity search, emergency embedding migration, and provenance tracking.</p></a>
+      <a class="blog-card" href="blog/rl-arena-executor-preprocessor.html"><h3>RL Arena Executor and Preprocessor</h3><p>Gym-style API, Cloud Build sandboxing, Redis episode management.</p></a>
+      <a class="blog-card" href="blog/workflow-taxonomy-platform-services.html"><h3>Workflow, Taxonomy, and Platform Services</h3><p>HITL workflow orchestration, taxonomy-based routing, and JWT auth fixes.</p></a>
+      <a class="blog-card" href="blog/incident-response-iflow-debugging.html"><h3>Incident Response and CLI Agent Debugging</h3><p>Runbooks with 70+ diagnostic commands and sandbox environment fixes.</p></a>
+      <a class="blog-card" href="blog/systematic-service-hardening-guard-notification.html"><h3>Systematic Service Hardening</h3><p>N+1 queries, race conditions, SSRF vulnerabilities, and 124 new tests.</p></a>
+      <a class="blog-card" href="blog/production-bug-hunting-33-issues.html"><h3>Production Bug Hunting: 33 Issues</h3><p>5-layer audit methodology — path traversal, datetime bugs, CORS misconfigurations.</p></a>
+      <a class="blog-card" href="blog/ci-cd-quality-gates-test-infrastructure.html"><h3>CI/CD Quality Gates That Actually Catch Bugs</h3><p>Test coverage enforcement, dynamic test discovery, and CI gates.</p></a>
+      <a class="blog-card" href="blog/production-logging-safe-debugging.html"><h3>When Your Logging Framework Crashes Production</h3><p>Crash-proof logging infrastructure with safe_log_extra helpers.</p></a>
+      <a class="blog-card" href="blog/headless-api-hardening-production-stability.html"><h3>Hardening a Headless API for Production</h3><p>FastAPI lifecycle hooks, Langfuse integration, and Firestore security rules.</p></a>
     </div>
-
-    <!-- Static article links for search engine crawlers (hidden when JS loads the grid) -->
-    <noscript>
-    <nav aria-label="All blog articles">
-    <ul style="max-width:1100px;margin:0 auto;padding:0 20px 80px;list-style:none;">
-      <li><a href="blog/dead-letter-queue-pipeline-reliability.html">Dead Letter Queues for Pipeline Reliability</a></li>
-      <li><a href="blog/two-cache-layers-stale-data.html">When Two Cache Layers Serve Stale Data</a></li>
-      <li><a href="blog/ux-polish-sprint-filter-registry-consolidated-controls.html">A UX Polish Sprint: 8 PRs in 48 Hours</a></li>
-      <li><a href="blog/gcs-race-conditions-generation-fenced-leases.html">GCS Race Conditions: Generation-Fenced Lease Deletion</a></li>
-      <li><a href="blog/multi-layer-cache-dashboard-latency.html">Multi-Layer Caching for Dashboard Latency</a></li>
-      <li><a href="blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html">Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown</a></li>
-      <li><a href="blog/gcs-backed-auto-seeder-platform.html">Building a GCS-Backed Auto-Seeder Platform</a></li>
-      <li><a href="blog/57k-line-merge-rollback-reconsolidation.html">When 57K Lines Get Rolled Back</a></li>
-      <li><a href="blog/invisible-bugs-file-type-bypass-missing-worker-runs.html">Invisible Bugs: File Type Bypass and Missing Worker Runs</a></li>
-      <li><a href="blog/task-lifecycle-v1-schema-api-design.html">Designing a Task Lifecycle V1 from Scratch</a></li>
-      <li><a href="blog/sft-recording-pipeline-docker-sandboxes.html">Building an SFT Recording Pipeline</a></li>
-      <li><a href="blog/unified-status-sort-display-labels.html">When Display Labels Break Sorting</a></li>
-      <li><a href="blog/enterprise-state-machine-bulk-admin-ops.html">Taming a State Machine: Bulk Admin Ops</a></li>
-      <li><a href="blog/claim-timeout-decoupling-expert-review-ux.html">Decoupling Claim Timeouts from Feature Flags</a></li>
-      <li><a href="blog/bootstrapping-engineering-standards-legacy-codebase.html">Bootstrapping Engineering Standards on a Legacy Codebase</a></li>
-      <li><a href="blog/production-ready-multi-turn-evaluation.html">Production-Ready Multi-Turn Evaluation</a></li>
-      <li><a href="blog/reverse-engineering-codebase-architecture-docs.html">Reverse-Engineering a Codebase Into Architecture Docs</a></li>
-      <li><a href="blog/audit-safe-admin-bulk-operations.html">Audit-Safe Admin Tools with Event Sourcing</a></li>
-      <li><a href="blog/multi-turn-agent-evaluation-persistent-state.html">Multi-Turn Agent Evaluation: Persistent State</a></li>
-      <li><a href="blog/docker-image-hardening-ai-benchmarks.html">Docker Image Hardening for AI Benchmarks</a></li>
-      <li><a href="blog/responses-api-support-agent-framework.html">Adding Responses API to an Agent Framework</a></li>
-      <li><a href="blog/dev-starter-kit-ai-coding-tools.html">Dev Starter Kit: AI Coding Tools as Senior Engineers</a></li>
-      <li><a href="blog/building-ai-evaluation-platform-gcp.html">Building an AI Evaluation Platform on GCP</a></li>
-      <li><a href="blog/event-driven-architecture-gcp-pubsub.html">Event-Driven Architecture on GCP: Pub/Sub</a></li>
-      <li><a href="blog/debugging-alloydb-ssl-connection-drops.html">Debugging AlloyDB SSL Connection Drops</a></li>
-      <li><a href="blog/idempotent-cloud-tasks-handlers-python.html">Idempotent Cloud Tasks Handlers in Python</a></li>
-      <li><a href="blog/rag-embedding-migration-zero-downtime.html">Zero-Downtime Embedding Migration</a></li>
-      <li><a href="blog/rl-training-arena-code-agents.html">RL Training Arena for Code Agents</a></li>
-      <li><a href="blog/security-audit-ai-platform-25-critical-issues.html">Security Audit: 25 Critical Issues</a></li>
-      <li><a href="blog/atlas-evaluations-core-engine.html">Building the Core AI Evaluation Engine</a></li>
-      <li><a href="blog/auto-rater-service-llm-scoring.html">Automated LLM Scoring Service</a></li>
-      <li><a href="blog/guard-service-auth-gateway.html">Auth Gateway with Admin Dashboard</a></li>
-      <li><a href="blog/notification-service-event-delivery.html">Notification Service: Event Delivery</a></li>
-      <li><a href="blog/rag-service-embedding-search.html">RAG Retrieval Service: pgvector and Embeddings</a></li>
-      <li><a href="blog/rl-arena-executor-preprocessor.html">RL Arena Executor and Preprocessor</a></li>
-      <li><a href="blog/workflow-taxonomy-platform-services.html">Workflow, Taxonomy, and Platform Services</a></li>
-      <li><a href="blog/incident-response-iflow-debugging.html">Incident Response and CLI Agent Debugging</a></li>
-      <li><a href="blog/systematic-service-hardening-guard-notification.html">Systematic Service Hardening</a></li>
-      <li><a href="blog/production-bug-hunting-33-issues.html">Production Bug Hunting: 33 Issues</a></li>
-      <li><a href="blog/ci-cd-quality-gates-test-infrastructure.html">CI/CD Quality Gates That Actually Catch Bugs</a></li>
-      <li><a href="blog/production-logging-safe-debugging.html">When Your Logging Framework Crashes Production</a></li>
-      <li><a href="blog/headless-api-hardening-production-stability.html">Hardening a Headless API for Production</a></li>
-      <li><a href="blog/events-table-pipeline-observability.html">Building an Events Table for Pipeline Observability</a></li>
-      <li><a href="blog/bulk-intake-redesign-taxonomy-validation.html">Redesigning Bulk Intake: Cascading Dropdowns and Taxonomy Validation</a></li>
-      <li><a href="blog/extensible-taxonomy-system-yaml-seeding.html">From Fixed Levels to L(n): Building an Extensible Taxonomy System</a></li>
-      <li><a href="blog/llm-adjudication-dedup-false-positives.html">When RAG Says Duplicate but the LLM Disagrees</a></li>
-    </ul>
-    </nav>
-    </noscript>
   </main>
 
   <!-- ===== FOOTER ===== -->
@@ -375,13 +375,15 @@
         var platformUrl = article.platforms ? article.platforms[primaryPlatform] : '#';
         var isInternal = platformUrl.includes('humzakt.github.io/blog/') || platformUrl.startsWith('blog/');
 
-        var card = document.createElement('div');
+        var card = document.createElement('a');
         card.className = 'blog-card';
+        card.href = platformUrl;
         card.setAttribute('data-themes', themes);
-        card.setAttribute('data-href', platformUrl);
-        card.setAttribute('role', 'link');
-        card.setAttribute('tabindex', '0');
         card.setAttribute('aria-label', article.title);
+        if (!isInternal) {
+          card.target = '_blank';
+          card.rel = 'noopener';
+        }
 
         var tagsHtml = (article.components || []).slice(0, 4).map(function(c) {
           return '<span class="blog-card-tag">' + c + '</span>';
@@ -392,20 +394,6 @@
           '<h3>' + article.title + '</h3>' +
           '<p>' + article.summary + '</p>' +
           '<div class="blog-card-tags">' + tagsHtml + '</div>';
-
-        card.addEventListener('click', function() {
-          if (isInternal) {
-            window.location.href = platformUrl;
-          } else {
-            window.open(platformUrl, '_blank', 'noopener');
-          }
-        });
-        card.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            card.click();
-          }
-        });
 
         grid.appendChild(card);
       });

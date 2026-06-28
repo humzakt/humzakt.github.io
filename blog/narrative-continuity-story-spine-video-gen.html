@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Narrative Continuity in AI Video Generation: Story Spine and L/J-Cut Editing — Humza Tareen</title>
+  <meta name="description" content="How I fixed disjoint AI-generated video scenes by adding a story spine planner, cross-scene narrative QA, and L/J-cut voiceover editing — then refined the audio sync model after live testing.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Video Generation, Narrative AI, FFmpeg, Claude, TypeScript, Content Quality">
+  <link rel="canonical" href="https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Narrative Continuity in AI Video Generation: Story Spine and L/J-Cut Editing">
+  <meta property="og:description" content="How I fixed disjoint AI-generated video scenes by adding a story spine planner, cross-scene narrative QA, and L/J-cut voiceover editing — then refined the audio sync model after live testing.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-28T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Narrative AI">
+  <meta property="article:tag" content="FFmpeg">
+  <meta property="article:tag" content="Claude">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Content Quality">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Narrative Continuity in AI Video Generation: Story Spine and L/J-Cut Editing">
+  <meta name="twitter:description" content="How I fixed disjoint AI-generated video scenes by adding a story spine planner, cross-scene narrative QA, and L/J-cut voiceover editing — then refined the audio sync model after live testing.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Narrative Continuity in AI Video Generation: Story Spine and L/J-Cut Editing",
+    "description": "How I fixed disjoint AI-generated video scenes by adding a story spine planner, cross-scene narrative QA, and L/J-cut voiceover editing — then refined the audio sync model after live testing.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-28",
+    "dateModified": "2026-06-28",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html" },
+    "keywords": ["Video Generation", "Narrative AI", "FFmpeg", "Claude", "TypeScript", "Content Quality"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Narrative Continuity in AI Video"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Narrative Continuity in AI Video Generation: Story Spine and L/J-Cut Editing</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-28" itemprop="datePublished">June 28, 2026</time>
+        <span>· 6 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Narrative AI</span>
+        <span class="blog-tag">FFmpeg</span>
+        <span class="blog-tag">Claude</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Content Quality</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The reference videos that go viral on short-form platforms often tell one continuous story — a person waking up, getting ready, commuting, arriving at work. The cuts are fast, but the narrative thread is unmistakable. When I first built the video generation pipeline on the video generation platform, the output looked nothing like that. Each scene was generated independently from a single script line. Scene three had no idea what happened in scene two. The result felt like a montage of unrelated clips stitched together, not a day-in-the-life story.</p>
+
+      <p>I spent roughly 850 lines across two PRs fixing this — adding a story spine to the planner, cross-scene narrative QA, and a continuous voiceover model inspired by L-cut and J-cut editing. Then I revised the audio approach again after live testing revealed sync issues. This post walks through the problem, the architecture, and what I learned shipping narrative continuity into an automated pipeline.</p>
+
+      <h2>The problem: independent scenes, fragmented voiceover</h2>
+
+      <p>The pipeline takes a reference viral video, analyzes its cut rhythm, and regenerates each segment with AI-generated visuals and a new script. The original design treated each cut as an isolated unit: one script line in, one scene out. That worked fine for montage-style content — product showcases, before-and-after reels — but it broke down for continuous narratives.</p>
+
+      <p>Three symptoms showed up consistently in QA:</p>
+
+      <ul>
+        <li><strong>No causal connection between scenes.</strong> A character might be leaving the house in scene two and suddenly be back in bed in scene three, because each scene prompt was built from its own line with no memory of prior context.</li>
+        <li><strong>Visual discontinuity.</strong> Lighting, wardrobe, and setting drifted between cuts even when the reference video maintained a coherent time-of-day progression.</li>
+        <li><strong>Staccato voiceover.</strong> Each narration line was force-fit to its ~2-second reference cut. Sentences broke mid-thought. The VO sounded like a series of fragments rather than someone telling a story at a natural ~150 words per minute.</li>
+      </ul>
+
+      <blockquote>
+        The reference video told one story. Our pipeline was generating twelve unrelated micro-stories and calling it a video.
+      </blockquote>
+
+      <h2>Story spine: teaching the planner about narrative</h2>
+
+      <p>The fix started upstream, in the analyzer and planner. The analyzer now captures a <code>storyStructure</code> object that distinguishes continuous-story content from montage, identifies the protagonist, maps the emotional arc, and tracks time progression across the reference video.</p>
+
+      <p>The planner enforces a <strong>story spine</strong>: every scene must advance the protagonist, and scene N must set up scene N+1. Instead of writing one line per cut in isolation, the script generator works against a whole-script budget — the total word count across all narration — producing flowing, coherent text that reads as a single piece of writing.</p>
+
+      <p>Each scene also gets a <code>timeMarker</code> — morning, midday, evening — that drives consistent lighting and setting prompts. This prevents the jarring time jumps that made generated videos feel like they were filmed across three different days.</p>
+
+<pre><code class="language-typescript">interface StoryStructure {
+  mode: 'continuous-story' | 'montage';
+  protagonist: string;
+  emotionalArc: string[];
+  timeProgression: TimeMarker[];
+}
+
+interface PlannedScene {
+  index: number;
+  scriptLine: string;
+  timeMarker: TimeMarker;
+  setupForNext: string;   // what this scene establishes for N+1
+  followsFromPrev: string; // causal link from N-1
+}
+
+function enforceStorySpine(
+  scenes: PlannedScene[],
+  structure: StoryStructure,
+): PlannedScene[] {
+  if (structure.mode === 'montage') return scenes;
+
+  return scenes.map((scene, i) =&gt; ({
+    ...scene,
+    timeMarker: structure.timeProgression[i] ?? scene.timeMarker,
+    followsFromPrev: i &gt; 0
+      ? `Continues from: ${scenes[i - 1].setupForNext}`
+      : `Opens with protagonist: ${structure.protagonist}`,
+    setupForNext: scene.setupForNext || inferSetup(scene, structure),
+  }));
+}</code></pre>
+
+      <p>The spine does not guarantee perfect continuity — the video model still hallucinates — but it gives every downstream step a shared narrative frame instead of twelve independent prompts.</p>
+
+      <h2>Cross-scene narrative QA</h2>
+
+      <p>Planning improvements are not enough on their own. I added a <code>narrativePlanQa</code> pass that inspects the full scene plan before generation starts. It flags three categories of problems:</p>
+
+      <ul>
+        <li><code>protagonist_drift</code> — the main character changes identity or role mid-story</li>
+        <li><code>missing_causality</code> — scene N does not logically follow from scene N-1</li>
+        <li><code>time_jump</code> — time-of-day markers regress or skip inconsistently</li>
+      </ul>
+
+      <p>These are advisory warnings, not hard blocks. Operators see them in the preflight UI alongside existing timing and content checks. When a warning is actionable, "Resolve with AI" sends the flagged scenes to Claude along with the narrative context; the resolver maps the new QA codes and rewrites only the affected scenes while preserving the story spine.</p>
+
+<pre><code class="language-typescript">type NarrativeQaCode =
+  | 'protagonist_drift'
+  | 'missing_causality'
+  | 'time_jump';
+
+interface NarrativeQaWarning {
+  code: NarrativeQaCode;
+  sceneIndices: number[];
+  message: string;
+  autoFixable: boolean;
+}
+
+function narrativePlanQa(scenes: PlannedScene[]): NarrativeQaWarning[] {
+  const warnings: NarrativeQaWarning[] = [];
+
+  const protagonists = new Set(scenes.map(s =&gt; extractProtagonist(s)));
+  if (protagonists.size &gt; 1) {
+    warnings.push({
+      code: 'protagonist_drift',
+      sceneIndices: scenes.map((_, i) =&gt; i),
+      message: `Multiple protagonists detected: ${[...protagonists].join(', ')}`,
+      autoFixable: true,
+    });
+  }
+
+  for (let i = 1; i &lt; scenes.length; i++) {
+    if (!scenesHaveCausalLink(scenes[i - 1], scenes[i])) {
+      warnings.push({
+        code: 'missing_causality',
+        sceneIndices: [i - 1, i],
+        message: `Scene ${i + 1} does not follow from scene ${i}`,
+        autoFixable: true,
+      });
+    }
+  }
+
+  return warnings;
+}</code></pre>
+
+      <h2>Continuous VO over cuts: L-cut and J-cut editing</h2>
+
+      <p>Fixing the script was half the battle. The other half was audio timing. Real viral videos do not map one sentence to one cut. A narrator might begin a thought over a wide shot, continue through two close-ups, and finish as the scene transitions — classic L-cut and J-cut editing where audio leads or trails the visual change.</p>
+
+      <p>I rebuilt the timing model around this idea. Instead of generating per-scene VO segments aligned to individual cuts, the stitch step builds one continuous narration track. Visual scenes maintain the reference cut rhythm underneath; a single sentence spans several cuts at natural speaking pace.</p>
+
+      <p>Two key changes made this work:</p>
+
+      <ul>
+        <li><code>effectiveSceneDuration</code> stays locked to the reference cut — scenes do not grow per narration line</li>
+        <li><code>computeTimingPreflight</code> runs a single total-VO-versus-reference check instead of per-scene fragment flags</li>
+      </ul>
+
+<pre><code class="language-typescript">interface TimingPreflight {
+  totalReferenceDurationSec: number;
+  totalVoDurationSec: number;
+  withinBudget: boolean;
+  wordsPerMinute: number;
+}
+
+function computeTimingPreflight(
+  scenes: PlannedScene[],
+  voLines: string[],
+  referenceCuts: number[],
+): TimingPreflight {
+  const totalReferenceDurationSec = referenceCuts.reduce((a, b) =&gt; a + b, 0);
+  const totalVoDurationSec = estimateSpeechDuration(voLines.join(' '));
+  const wordCount = voLines.join(' ').split(/\s+/).length;
+  const wordsPerMinute = (wordCount / totalVoDurationSec) * 60;
+
+  return {
+    totalReferenceDurationSec,
+    totalVoDurationSec,
+    withinBudget: totalVoDurationSec &lt;= totalReferenceDurationSec * 1.05,
+    wordsPerMinute,
+  };
+}
+
+// Stitch: one continuous VO track, padded to video length
+async function buildContinuousVoTrack(
+  voLines: string[],
+  videoDurationSec: number,
+): Promise&lt;AudioBuffer&gt; {
+  const raw = await synthesizeSpeech(voLines.join(' '));
+  return padAudioToDuration(raw, videoDurationSec);
+}</code></pre>
+
+      <p>The FFmpeg stitch concatenates raw narration lines into a single track and pads silence at the tail to match total video length. Visually, cuts still land on the reference rhythm. Aurally, the story flows.</p>
+
+      <h2>Revision: back to per-scene audio</h2>
+
+      <p>The continuous VO approach sounded better on paper than in production. In practice, it felt like one overlay track sitting on top of unrelated visuals rather than narration matched to each scene. The L-cut illusion broke when viewers could see a kitchen scene while hearing about a commute.</p>
+
+      <p>I reverted to per-scene voice-driven segments while keeping the story spine intact. The timing model changed:</p>
+
+      <ul>
+        <li><code>effectiveSceneDuration = max(referenceCut, voDuration + tailPadding)</code></li>
+        <li>Stitch builds per-scene <code>audioSegment</code> objects, then concatenates via <code>concatAudio</code></li>
+      </ul>
+
+      <p>This preserved narrative continuity in the script and planning layers while restoring natural audio-visual sync. The story spine ensures the words still connect across scenes; the per-scene segments ensure each cut sounds like it belongs to that cut.</p>
+
+      <h2>Pacing auto-fit and live-testing bugs</h2>
+
+      <p>Per-scene audio reintroduced a pacing constraint: narration must fit each scene's reference cut. The "Resolve with AI" flow handles this by rewriting over-budget VO lines to fit the available seconds, then re-measuring across up to three passes until every scene clears preflight.</p>
+
+      <p>Live testing surfaced two bugs in the resolver itself. First, the critic model echoed QA warnings back as if they were source code — every proposed action was dropped because the parser treated warning text as invalid JSON fields. Second, long resolver responses hit the token limit and returned truncated JSON, causing 500 errors mid-fix. I increased the token budget and added salvage logic that extracts complete action objects from truncated responses rather than failing the entire resolve request.</p>
+
+      <h2>What I learned</h2>
+
+      <p>Narrative continuity in AI video generation is a planning problem before it is a generation problem. Independent scene prompts will always produce montages, no matter how good the video model is. A story spine — protagonist, causality, time progression — gives the entire pipeline a shared context that survives from script through QA through stitch.</p>
+
+      <p>Audio timing is its own discipline. Continuous VO mimics how viral editors work in post-production, but automated pipelines need per-scene sync to feel natural. The right model depends on content type: montage can tolerate overlay narration; continuous story needs scene-matched segments with a coherent script underneath.</p>
+
+      <p>Advisory QA with auto-fix is more useful than hard blocks for narrative issues. Operators want to know when causality breaks, but they also want a one-click path to fix it without restarting the entire generation. The story spine makes those targeted rewrites possible — the resolver rewrites scene five knowing what scenes four and six establish.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

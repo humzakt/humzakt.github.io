@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building an AI Video Generation Pipeline from Scratch — Humza Tareen</title>
+  <meta name="description" content="How I shipped 20 PRs in 3 days building the core architecture of an AI video ad generation platform — from reference video analysis through Claude planning, Kling clip generation, FFmpeg stitching, and narrative QA.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Video Generation, TypeScript, FFmpeg, Claude, AI, Pipeline, Next.js">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building an AI Video Generation Pipeline from Scratch">
+  <meta property="og:description" content="How I shipped 20 PRs in 3 days building the core architecture of an AI video ad generation platform — from reference video analysis through Claude planning, Kling clip generation, FFmpeg stitching, and narrative QA.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-06-28T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="FFmpeg">
+  <meta property="article:tag" content="Claude">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Pipeline">
+  <meta property="article:tag" content="Next.js">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building an AI Video Generation Pipeline from Scratch">
+  <meta name="twitter:description" content="How I shipped 20 PRs in 3 days building the core architecture of an AI video ad generation platform — from reference video analysis through Claude planning, Kling clip generation, FFmpeg stitching, and narrative QA.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building an AI Video Generation Pipeline from Scratch",
+    "description": "How I shipped 20 PRs in 3 days building the core architecture of an AI video ad generation platform — from reference video analysis through Claude planning, Kling clip generation, FFmpeg stitching, and narrative QA.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-06-28",
+    "dateModified": "2026-06-28",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html" },
+    "keywords": ["Video Generation", "TypeScript", "FFmpeg", "Claude", "AI", "Pipeline", "Next.js"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"AI Video Generation Pipeline Architecture"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Building an AI Video Generation Pipeline from Scratch</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-06-28" itemprop="datePublished">June 28, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">FFmpeg</span>
+        <span class="blog-tag">Claude</span>
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">Pipeline</span>
+        <span class="blog-tag">Next.js</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>I joined a new project recently — an AI-powered video ad generation platform. The product promise is deceptively simple: give it a viral reference video and a product or brand, and it produces a new ad that <em>feels like the same viral, just for your brand</em>. Same pacing, same emotional arc, same camera language — but with your protagonist, your product, your voiceover.</p>
+
+      <p>That simplicity hides a brutal engineering problem. A viral short-form video is not a template — it is scene cuts, emotional beats, caption rhythms, and narrative causality that humans parse subconsciously. Replicating that feel with generative models requires a multi-stage pipeline where each stage has different failure modes, latency profiles, and vendor APIs.</p>
+
+      <p>I had three days. I shipped 20 pull requests across 100+ files and roughly 7,000 lines of TypeScript. This post walks through the five-stage pipeline, the domain-driven module layout, and the checkpointing and QA layers that make the whole thing recoverable when a Kling render fails at scene seven of twelve.</p>
+
+      <h2>What the pipeline does</h2>
+
+      <p>The input is a reference video URL plus brand assets: product images, an avatar, a voice profile, and optional brand guidelines. The output is a finished MP4 ready for ad placement — captioned, color-graded, with mixed audio and smooth transitions between scenes.</p>
+
+      <p>The generation flow has five stages, each producing structured artifacts that the next stage consumes:</p>
+
+      <ol>
+        <li><strong>Analyzer</strong> — decomposes the reference video into scenes and narrative metadata</li>
+        <li><strong>Planner</strong> — generates a scene-by-scene script and generation plan via Claude</li>
+        <li><strong>Clip Generation</strong> — renders each scene independently through Kling</li>
+        <li><strong>Stitch</strong> — assembles clips with FFmpeg: captions, audio mix, color grade, transitions</li>
+        <li><strong>QA / Resolve</strong> — cross-scene narrative validation and automated fixes</li>
+      </ol>
+
+      <blockquote>
+        The hard part is not generating a single good clip. It is maintaining narrative continuity, emotional pacing, and visual consistency across twelve independently generated scenes — then stitching them into something that feels like one continuous piece of content.
+      </blockquote>
+
+      <p>Each stage is idempotent and checkpointed. If clip generation fails halfway through, the wizard restores from the last good checkpoint on Google Drive and resumes — it does not restart from the analyzer.</p>
+
+      <h2>Stage 1: The Analyzer</h2>
+
+      <p>The analyzer's job is to reverse-engineer <em>why</em> a reference video works. It runs scene detection to split the video into discrete segments, then enriches each segment with structured metadata:</p>
+
+      <ul>
+        <li><strong>Story structure</strong> — continuous narrative vs. montage (this changes how the planner writes scene transitions)</li>
+        <li><strong>Protagonist arc</strong> — who is on screen, how they change scene to scene</li>
+        <li><strong>Time progression</strong> — morning-to-evening, before-and-after, flashback patterns</li>
+        <li><strong>Emotion per scene</strong> — curiosity, frustration, relief, triumph — mapped to timestamps</li>
+        <li><strong>Caption style</strong> — font placement, word timing, emphasis patterns extracted from the reference</li>
+        <li><strong>Camera moves</strong> — static, push-in, pan, handheld — per scene</li>
+      </ul>
+
+      <p>Scene detection uses FFmpeg frame analysis combined with visual change scoring. The analyzer also extracts keyframes from each scene — these become input references for clip generation later, anchoring the visual composition of each generated scene to the reference.</p>
+
+<pre><code class="language-typescript">interface SceneAnalysis {
+  index: number;
+  startMs: number;
+  endMs: number;
+  keyframeUrl: string;
+  emotion: EmotionTag;
+  cameraMove: CameraMove;
+  captionStyle: CaptionStyle;
+  spokenDurationMs: number;
+}
+
+interface VideoAnalysis {
+  storyStructure: 'continuous' | 'montage';
+  protagonistArc: ProtagonistArc;
+  timeProgression: TimeProgression;
+  scenes: SceneAnalysis[];
+  totalSpokenMs: number;
+  referenceCaptionStyle: CaptionStyle;
+}</code></pre>
+
+      <p>The <code>totalSpokenMs</code> field is critical downstream. The planner budgets voiceover script length to match the reference's total spoken time — a 47-second viral stays a 47-second ad, not a 90-second explainer that kills retention.</p>
+
+      <h2>Stage 2: The Planner</h2>
+
+      <p>The planner is where Claude does the creative heavy lifting. It receives the full <code>VideoAnalysis</code>, the brand's product catalog entry, avatar profile, and voice characteristics. It outputs a scene-by-scene plan where every scene must satisfy two constraints simultaneously:</p>
+
+      <ul>
+        <li><strong>Story spine</strong> — each scene advances the protagonist and sets up the next scene (no orphaned beats)</li>
+        <li><strong>Product placement</strong> — the product appears naturally within the narrative, not as a bolted-on end card</li>
+      </ul>
+
+      <p>Each planned scene includes a VO script line (budgeted to that scene's <code>spokenDurationMs</code>), an emotion tag, time markers, a generation prompt for Kling, and explicit references to which product images and avatar frames to use as conditioning inputs.</p>
+
+<pre><code class="language-typescript">interface PlannedScene {
+  sceneIndex: number;
+  voScript: string;
+  voDurationMs: number;
+  emotion: EmotionTag;
+  storyBeat: string;          // what this scene accomplishes narratively
+  setupForNext: string;       // causality link to scene N+1
+  klingPrompt: string;
+  inputFrames: {
+    referenceKeyframe: string;
+    avatarFrame?: string;
+    productImages: string[];
+  };
+  productPlacement: ProductPlacementSpec;
+}
+
+interface GenerationPlan {
+  scenes: PlannedScene[];
+  totalVoMs: number;
+  storyStructure: 'continuous' | 'montage';
+  warnings: PlanWarning[];
+}</code></pre>
+
+      <p>Plan QA runs immediately after planning. It checks for protagonist drift (scene five introduces a character who was never set up), missing causality (scene three's payoff has no setup), and time jumps that break the reference's pacing rhythm. Warnings surface in the UI before generation starts — the operator can resolve them manually or hit "Resolve with AI."</p>
+
+      <h2>Stage 3: Clip Generation</h2>
+
+      <p>Each planned scene renders independently through Kling, accessed via the kie provider API. This is the slowest and most expensive stage — a twelve-scene ad means twelve sequential (or partially parallelized) video generation calls, each taking 30–90 seconds.</p>
+
+      <p>Every clip generation request includes:</p>
+
+      <ul>
+        <li>Input frames from the reference keyframe (composition anchor)</li>
+        <li>Avatar consistency frames (same face across scenes)</li>
+        <li>Product images locked via the product-fidelity module</li>
+        <li>The scene-specific Kling prompt from the planner</li>
+      </ul>
+
+      <p>Avatar consistency and product fidelity are non-negotiable for ad use. A generated scene where the product label is wrong or the protagonist's face morphs between cuts is unusable. The catalog module runs asset preflight checks before generation starts — verifying image resolution, aspect ratio, and that product-lock metadata matches the catalog entry.</p>
+
+<pre><code class="language-typescript">async function generateSceneClip(
+  scene: PlannedScene,
+  job: GenerationJob,
+): Promise&lt;SceneClipResult&gt; {
+  const preflight = await assetPreflight(scene.inputFrames, job.catalog);
+  if (!preflight.ok) {
+    throw new PreflightError(preflight.failures);
+  }
+
+  const taskId = await kieKling.submit({
+    prompt: scene.klingPrompt,
+    imageUrl: scene.inputFrames.referenceKeyframe,
+    avatarUrl: scene.inputFrames.avatarFrame,
+    productUrls: scene.inputFrames.productImages,
+    durationSec: Math.ceil(scene.voDurationMs / 1000),
+  });
+
+  const clip = await kieKling.pollUntilComplete(taskId, {
+    timeoutMs: 180_000,
+    onProgress: (pct) =&gt; job.checkpoint.updateSceneProgress(scene.sceneIndex, pct),
+  });
+
+  await job.checkpoint.saveSceneClip(scene.sceneIndex, clip);
+  return { sceneIndex: scene.sceneIndex, clipPath: clip.localPath, durationMs: clip.durationMs };
+}</code></pre>
+
+      <p>Checkpoints write each completed clip to Google Drive immediately. If the job crashes at scene eight, scenes one through seven are already persisted. The wizard-runner restores state and resumes from scene eight on the next run.</p>
+
+      <h2>Stage 4: Stitch</h2>
+
+      <p>Individual Kling clips are raw generative output — no captions, no mixed audio, no color consistency across scenes. The stitch module is FFmpeg-based and handles the full post-production stack:</p>
+
+      <ul>
+        <li><strong>Concat</strong> — join scene clips in plan order</li>
+        <li><strong>Transitions</strong> — xfade for soft joins between scenes (cross-dissolve duration tuned per story structure)</li>
+        <li><strong>Captions</strong> — overlay rendered from the planner's VO script and reference caption style</li>
+        <li><strong>Audio mix</strong> — ElevenLabs TTS for VO, mixed with a background music bed using sidechain ducking (VO ducking the bed, not the other way around)</li>
+        <li><strong>Color grade</strong> — LUT application for cross-scene tonal consistency</li>
+      </ul>
+
+      <p>Sidechain ducking ducks the music bed when VO is present and releases when VO pauses — the result sounds professionally mixed, not like a slideshow with a track pasted underneath.</p>
+
+<pre><code class="language-typescript">interface StitchConfig {
+  clips: string[];
+  voTrackPath: string;
+  musicBedPath: string;
+  captions: CaptionOverlay[];
+  transitions: TransitionSpec[];   // xfade duration per join
+  colorGradeLut: string;
+  outputPath: string;
+}
+
+async function stitchFinalVideo(config: StitchConfig): Promise&lt;string&gt; {
+  const concatenated = await ffmpegConcat(config.clips, config.transitions);
+  const withCaptions = await overlayRender(concatenated, config.captions);
+  const voTrack = await voiceEmotion.render(config.voTrackPath);
+  const mixed = await audioBed.mix({
+    voTrack,
+    bedTrack: config.musicBedPath,
+    sidechainDuck: { threshold: -18, ratio: 4, attackMs: 5, releaseMs: 200 },
+  });
+  const graded = await ffmpegApplyLut(withCaptions, config.colorGradeLut);
+  return ffmpegMuxVideoAudio(graded, mixed, config.outputPath);
+}</code></pre>
+
+      <h2>Stage 5: QA and Resolve</h2>
+
+      <p>Per-scene generation QA catches visual defects — wrong product, face drift, truncated clips. Cross-scene narrative QA catches problems that only emerge after assembly:</p>
+
+      <ul>
+        <li><strong>Protagonist drift</strong> — the character's appearance or role shifts mid-video</li>
+        <li><strong>Missing causality</strong> — a scene references an event that was never shown</li>
+        <li><strong>Time jumps</strong> — the narrative timeline breaks (morning scene followed by "later that morning" with no visual transition)</li>
+        <li><strong>Pacing mismatch</strong> — VO lines exceed their scene's spoken duration budget</li>
+      </ul>
+
+      <p>Pacing auto-fit handles over-budget VO lines. When a script line runs longer than its scene's <code>spokenDurationMs</code>, the resolver rewrites it across up to three passes — tightening language while preserving the story beat. If three passes still exceed budget, it flags the scene for manual review rather than silently truncating.</p>
+
+      <p>"Resolve with AI" is the operator escape hatch. Each warning type maps to a targeted fix prompt — regenerate a single scene with adjusted conditioning, rewrite a VO line, or reorder scene transitions. The warning resolver module dispatches the fix, re-runs the affected pipeline stages, and updates the checkpoint.</p>
+
+      <h2>Domain-driven module layout</h2>
+
+      <p>When I joined, the codebase had 72 flat <code>lib/*.ts</code> files with no clear ownership boundaries. Finding where clip generation interacted with checkpointing meant grep archaeology. I reorganized everything into five domain folders:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Domain</th>
+            <th>Responsibility</th>
+            <th>Key modules</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>core/</code></td>
+            <td>Job lifecycle, persistence, validation</td>
+            <td>jobs, checkpoint, drive, wizard-restore, logger, process-guards, validators</td>
+          </tr>
+          <tr>
+            <td><code>swipe/</code></td>
+            <td>Pipeline orchestration and planning</td>
+            <td>wizard-runner, swipe-analyzer, swipe-planner, swipe-vo, plan QA, warning resolver</td>
+          </tr>
+          <tr>
+            <td><code>vendors/</code></td>
+            <td>External API adapters</td>
+            <td>anthropic, openai-image, kie/Kling, fal, elevenlabs</td>
+          </tr>
+          <tr>
+            <td><code>media/</code></td>
+            <td>FFmpeg and audio processing</td>
+            <td>stitch, audio-bed, music-bed, overlay-render, voice-emotion, scene-detector</td>
+          </tr>
+          <tr>
+            <td><code>catalog/</code></td>
+            <td>Brand asset management</td>
+            <td>products, avatars, voices, product-lock, product-fidelity, asset-preflight</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The <code>wizard-runner</code> orchestrates analyzer → planner → clip gen → stitch → QA, saving checkpoints after each stage boundary and consulting <code>wizard-restore</code> on retry.</p>
+
+<pre><code class="language-typescript">type WizardStage = 'analyze' | 'plan' | 'generate' | 'stitch' | 'qa';
+
+async function runWizard(job: GenerationJob): Promise&lt;WizardResult&gt; {
+  const restored = await wizardRestore(job.id);
+  let stage: WizardStage = restored?.lastCompletedStage
+    ? nextStage(restored.lastCompletedStage)
+    : 'analyze';
+
+  while (stage !== 'done') {
+    await processGuards.assertNotCancelled(job.id);
+    const artifact = await runStage(stage, job, restored?.artifacts);
+    await job.checkpoint.saveStage(stage, artifact);
+    stage = nextStage(stage);
+  }
+
+  return job.checkpoint.loadFinalResult();
+}</code></pre>
+
+      <p>Vendor adapters live in isolation under <code>vendors/</code>. Swapping Kling for a different video generation model means changing the kie adapter — the planner, stitch, and QA modules never import vendor-specific types.</p>
+
+      <h2>Tech stack and deployment</h2>
+
+      <p>The platform runs on Next.js with TypeScript throughout. Long-running generation jobs execute as background processes on Railway, not in serverless request handlers — a twelve-scene Kling run can take 15+ minutes and cannot fit in a Vercel function timeout.</p>
+
+      <ul>
+        <li><strong>Claude (Anthropic)</strong> — scene planning, narrative QA, VO rewrite, warning resolution</li>
+        <li><strong>Kling via kie</strong> — per-scene video generation with image conditioning</li>
+        <li><strong>ElevenLabs</strong> — TTS voiceover and sound effects</li>
+        <li><strong>FFmpeg</strong> — scene detection, concat, xfade transitions, LUT color grade, audio mux</li>
+        <li><strong>Google Drive</strong> — checkpoint persistence (clips, plans, analysis artifacts)</li>
+        <li><strong>fal</strong> — lipsync and queue management for alternate generation paths</li>
+      </ul>
+
+      <p>Process guards wrap every stage with cancellation checks and timeout enforcement. If an operator cancels a job mid-generation, the guard raises before the next Kling call fires — preventing orphaned API charges on a job nobody wants.</p>
+
+      <h2>What 20 PRs in 3 days looked like</h2>
+
+      <p>The work broke down roughly like this:</p>
+
+      <ul>
+        <li><strong>Days 1–2:</strong> Analyzer and planner modules, Claude integration, plan QA, domain folder restructure</li>
+        <li><strong>Day 2–3:</strong> Kling clip generation with checkpointing, FFmpeg stitch pipeline, audio mix with sidechain ducking</li>
+        <li><strong>Day 3:</strong> Cross-scene narrative QA, pacing auto-fit, warning resolver, wizard-restore, process guards</li>
+      </ul>
+
+      <p>Several PRs were refactors — vendor adapters, validator consolidation, FFmpeg helper dedup. The domain restructure happened early; navigating 72 flat files while shipping in parallel would have been slower than half a day on folder boundaries.</p>
+
+      <h2>What I learned</h2>
+
+      <p>Generative video ads are a pipeline problem, not a model problem. Kling produces impressive individual clips, but the product value lives in orchestration — narrative continuity across independently generated scenes, VO pacing matched to the reference, and graceful recovery when scene seven times out.</p>
+
+      <p>Checkpointing at every stage boundary was the highest-leverage decision. A 15-minute job that fails at minute fourteen becomes a resume from scene eight, not a full restart.</p>
+
+      <p>Plan QA catches structural narrative problems before Kling credits are spent. Pacing auto-fit rewrites over-budget lines before TTS renders them. Every expensive operation has a cheap validation gate upstream.</p>
+
+      <p>Three days, 20 PRs, 7,000 lines. The pipeline generates ads that feel like the reference went viral for a different brand — which is exactly the point.</p>
+
+    </div>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    <p>Designed &amp; Built by Humza Tareen</p>
+  </footer>
+</body>
+</html>

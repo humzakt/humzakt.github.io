@@ -1,5 +1,71 @@
 [
   {
+    "id": "ai-video-generation-pipeline-architecture",
+    "title": "Building an AI Video Generation Pipeline from Scratch",
+    "summary": "Five-stage pipeline: analyzer, Claude planner, Kling clip gen, FFmpeg stitch with sidechain-ducked audio, and cross-scene narrative QA. 20 PRs in 3 days.",
+    "date": "2026-06-28",
+    "themes": ["ml-ai", "infrastructure"],
+    "components": ["Video Generation", "TypeScript", "FFmpeg", "Claude", "AI", "Pipeline", "Next.js"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html"
+    }
+  },
+  {
+    "id": "viral-feel-parity-ai-video-ads",
+    "title": "Viral Feel Parity: Making AI-Generated Ads Feel Like the Original",
+    "summary": "Avatar consistency, sidechain-ducked audio beds, emotion-driven VO, caption rendering, color grading, and L/J-cut transitions — 2,800 lines of feel engineering.",
+    "date": "2026-06-28",
+    "themes": ["ml-ai", "performance"],
+    "components": ["Video Generation", "FFmpeg", "Audio Engineering", "AI", "TypeScript", "ElevenLabs"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html"
+    }
+  },
+  {
+    "id": "narrative-continuity-story-spine-video-gen",
+    "title": "Narrative Continuity: Story Spine and L/J-Cut Editing in AI Video",
+    "summary": "Story spine enforcement, cross-scene narrative QA, continuous VO over cuts, pacing auto-fit — making AI video feel like one story, not disjoint scenes.",
+    "date": "2026-06-28",
+    "themes": ["ml-ai", "api-design"],
+    "components": ["Video Generation", "Narrative AI", "FFmpeg", "Claude", "TypeScript", "Content Quality"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html"
+    }
+  },
+  {
+    "id": "production-hardening-ai-video-pipeline",
+    "title": "Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards",
+    "summary": "Transient error classifier with exponential backoff, Claude model fallback, process crash guards, Zod null tolerance, and env-gated local frame hosting.",
+    "date": "2026-06-28",
+    "themes": ["devops", "infrastructure"],
+    "components": ["Production Hardening", "TypeScript", "AI Pipeline", "Reliability", "Error Handling", "Retries"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html"
+    }
+  },
+  {
+    "id": "qc-orchestration-agent-driven-quality",
+    "title": "QC Orchestration: Agent-Driven Quality Checks in a Review Pipeline",
+    "summary": "Config-driven QC service dispatching to external AI agents with HMAC-signed webhooks, state machine integration, and zero-change fallback for unconfigured steps.",
+    "date": "2026-06-28",
+    "themes": ["infrastructure", "devops"],
+    "components": ["QC Orchestration", "TypeScript", "Webhooks", "Cloud Tasks", "State Machine", "Quality Assurance"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/qc-orchestration-agent-driven-quality.html"
+    }
+  },
+  {
+    "id": "reviewer-ux-click-reduction-feedback-navigator",
+    "title": "Halving Reviewer Clicks: Feedback Navigator, Keyboard Nav, and Read-Only Context",
+    "summary": "51% click reduction with chip-based feedback navigator, j/k/n keyboard shortcuts, auto-advance after decisions, and a reusable read-only context pattern.",
+    "date": "2026-06-28",
+    "themes": ["frontend", "ux-engineering"],
+    "components": ["UX Engineering", "React", "TypeScript", "Accessibility", "Admin UI", "Keyboard Navigation"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html"
+    }
+  },
+  {
     "id": "extensible-taxonomy-system-yaml-seeding",
     "title": "From Fixed Levels to L(n): Building an Extensible Taxonomy System",
     "summary": "Replaced a rigid 2-level hierarchy with a config-driven L(n) taxonomy — YAML seeding, GCS CAS writes, admin CRUD UI, cascading dropdowns, and a bidirectional backward compatibility layer.",

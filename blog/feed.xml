@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,97 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>Building an AI Video Generation Pipeline from Scratch</title>
+      <link>https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Five-stage pipeline: analyzer, Claude planner, Kling clip gen, FFmpeg stitch with sidechain-ducked audio, and cross-scene narrative QA. 20 PRs, 7,000 lines in 3 days.</description>
+      <category>Video Generation</category>
+      <category>TypeScript</category>
+      <category>FFmpeg</category>
+      <category>Claude</category>
+      <category>AI</category>
+      <category>Pipeline</category>
+      <category>Next.js</category>
+    </item>
+
+    <item>
+      <title>Viral Feel Parity: Making AI-Generated Ads Feel Like the Original</title>
+      <link>https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Avatar consistency, sidechain-ducked audio beds, emotion-driven VO, caption rendering, color grading, and L/J-cut transitions — 2,800 lines of feel engineering.</description>
+      <category>Video Generation</category>
+      <category>FFmpeg</category>
+      <category>Audio Engineering</category>
+      <category>AI</category>
+      <category>TypeScript</category>
+      <category>ElevenLabs</category>
+    </item>
+
+    <item>
+      <title>Narrative Continuity: Story Spine and L/J-Cut Editing in AI Video</title>
+      <link>https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Story spine enforcement, cross-scene narrative QA, continuous VO over cuts, pacing auto-fit — making AI video feel like one story, not disjoint scenes.</description>
+      <category>Video Generation</category>
+      <category>Narrative AI</category>
+      <category>FFmpeg</category>
+      <category>Claude</category>
+      <category>TypeScript</category>
+      <category>Content Quality</category>
+    </item>
+
+    <item>
+      <title>Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards</title>
+      <link>https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Transient error classifier with exponential backoff, LLM model fallback, process crash guards, Zod null tolerance, and env-gated local frame hosting.</description>
+      <category>Production Hardening</category>
+      <category>TypeScript</category>
+      <category>AI Pipeline</category>
+      <category>Reliability</category>
+      <category>Error Handling</category>
+      <category>Retries</category>
+    </item>
+
+    <item>
+      <title>QC Orchestration: Agent-Driven Quality Checks in a Review Pipeline</title>
+      <link>https://humzakt.github.io/blog/qc-orchestration-agent-driven-quality.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/qc-orchestration-agent-driven-quality.html</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Config-driven QC service dispatching to external AI agents with HMAC-signed webhooks, state machine integration, and zero-change fallback for unconfigured steps.</description>
+      <category>QC Orchestration</category>
+      <category>TypeScript</category>
+      <category>Webhooks</category>
+      <category>Cloud Tasks</category>
+      <category>State Machine</category>
+      <category>Quality Assurance</category>
+    </item>
+
+    <item>
+      <title>Halving Reviewer Clicks: Feedback Navigator, Keyboard Nav, and Read-Only Context</title>
+      <link>https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>51% click reduction with chip-based feedback navigator, j/k/n keyboard shortcuts, auto-advance after decisions, and a reusable read-only context pattern.</description>
+      <category>UX Engineering</category>
+      <category>React</category>
+      <category>TypeScript</category>
+      <category>Accessibility</category>
+      <category>Admin UI</category>
+      <category>Keyboard Navigation</category>
+    </item>
 
     <item>
       <title>From Fixed Levels to L(n): Building an Extensible Taxonomy System</title>
