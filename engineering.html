@@ -983,8 +983,9 @@
         displayArticles.forEach(function(article) {
           const themes = (article.themes || []).join(' ');
           const date = article.date ? new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-          const primaryPlatform = Object.keys(article.platforms || {})[0] || 'medium';
-          const platformUrl = article.platforms ? article.platforms[primaryPlatform] : '#';
+          const platforms = article.platforms || {};
+          const primaryPlatform = Object.keys(platforms)[0];
+          const platformUrl = (primaryPlatform && platforms[primaryPlatform]) || '#';
           const isInternal = platformUrl.includes('humzakt.github.io/blog/') || platformUrl.startsWith('blog/');
 
           const card = document.createElement('a');

@@ -18,7 +18,15 @@ jobs:
         run: |
           KEY=$(cat indexnow-key.txt)
           URLS=$(grep -oP 'https://humzakt\.github\.io[^<]+' sitemap.xml | head -50)
-          URL_JSON=$(echo "$URLS" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read().strip().split('\n')))")
+          if [ -z "$URLS" ]; then
+            echo "No URLs found in sitemap.xml, skipping."
+            exit 0
+          fi
+          URL_JSON=$(echo "$URLS" | python3 -c "
+          import sys, json
+          lines = [l for l in sys.stdin.read().strip().split('\n') if l]
+          print(json.dumps(lines))
+          ")
           COUNT=$(echo "$URLS" | wc -l | tr -d ' ')
           echo "Submitting $COUNT URLs to IndexNow..."
           HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" \
