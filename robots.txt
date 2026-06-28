@@ -1,5 +1,5 @@
 # Humza Tareen Portfolio — robots.txt
-# Last updated: 2026-02-08
+# Last updated: 2026-06-28
 
 User-agent: *
 Allow: /
@@ -15,6 +15,19 @@ Sitemap: https://humzakt.github.io/sitemap.xml
 # LLMs: https://humzakt.github.io/llms.txt
 # LLMs-full: https://humzakt.github.io/llms-full.txt
 
+# Major search engine crawlers — explicitly allowed
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
 # AI Search Crawlers — explicitly allowed
 User-agent: GPTBot
 Allow: /
@@ -29,6 +42,9 @@ User-agent: Anthropic-ai
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
 Allow: /
 
 User-agent: Bytespider
