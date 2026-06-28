@@ -157,6 +157,14 @@ LIMIT 10;</code></pre>
         <p>The service runs on Cloud SQL PostgreSQL 17 with the pgvector extension. We use an IVFFlat index with cosine similarity, tuned with 100 lists for our dataset size. The index gets rebuilt daily via Cloud Scheduler to maintain query performance as new evaluations arrive.</p>
         <p>Deployment is straightforward: Cloud Run with autoscaling based on request volume. The embedding model runs via OpenAI's API (configurable to any compatible provider), and the service handles rate limiting and retries internally.</p>
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="rag-embedding-migration-zero-downtime.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Zero-Downtime Embedding Migration</a><br><span style="color:#8892b0;font-size:13px;">Migrating the embedding model in this service</span></li>
+          <li style="margin-bottom:12px;"><a href="llm-adjudication-dedup-false-positives.html" style="color:#64ffda;text-decoration:none;font-size:15px;">When RAG Says Duplicate but the LLM Disagrees</a><br><span style="color:#8892b0;font-size:13px;">Dedup layer built on this RAG service</span></li>
+          <li style="margin-bottom:12px;"><a href="auto-rater-service-llm-scoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Automated LLM Scoring Service</a><br><span style="color:#8892b0;font-size:13px;">Scorer that consumes this RAG pipeline</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
         <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>

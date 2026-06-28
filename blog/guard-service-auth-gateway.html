@@ -158,6 +158,14 @@
         <p>Console.log statements throughout the codebase were leaking sensitive data—user IDs, API keys, request payloads—into browser console logs. In production, these logs could be captured by browser extensions or developer tools, exposing sensitive information. Removing these debug statements and implementing proper logging infrastructure eliminated the data leak.</p>
         <p>Each finding represented a lesson in defense-in-depth security. No single vulnerability would have been catastrophic on its own, but together they represented a significant attack surface. Addressing them systematically made the platform more resilient to both known and unknown threats.</p>
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="notification-service-event-delivery.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Notification Service: Event Delivery</a><br><span style="color:#8892b0;font-size:13px;">Service sharing the same auth patterns</span></li>
+          <li style="margin-bottom:12px;"><a href="systematic-service-hardening-guard-notification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Service Hardening</a><br><span style="color:#8892b0;font-size:13px;">Hardening applied to this auth gateway</span></li>
+          <li style="margin-bottom:12px;"><a href="headless-api-hardening-production-stability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Headless API for Production</a><br><span style="color:#8892b0;font-size:13px;">API hardening including auth fixes</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
         <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>

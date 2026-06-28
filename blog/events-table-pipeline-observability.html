@@ -373,6 +373,15 @@ function compareEvents(a: PipelineEvent, b: PipelineEvent): number {
       <p>Pipeline observability is a read-side and write-side problem. The events table is the read side — aggregation, enrichment, ordering, and a UI that respects how operators actually debug. The <code>statusHistory</code> instrumentation is the write side — making sure every transition is recorded at the moment it happens, with the actor, reason, and error context that make the timeline trustworthy. Neither works without the other. Together, they turned a platform that hoarded observability data across disconnected storage into one where the causal chain is a first-class product surface.</p>
 
     </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="pipeline-hardening-timeouts-traceability-graceful-shutdown.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Pipeline Hardening</a><br><span style="color:#8892b0;font-size:13px;">The pipeline this events table monitors</span></li>
+        <li style="margin-bottom:12px;"><a href="qc-orchestration-agent-driven-quality.html" style="color:#64ffda;text-decoration:none;font-size:15px;">QC Orchestration Service</a><br><span style="color:#8892b0;font-size:13px;">QC events visible in this timeline</span></li>
+        <li style="margin-bottom:12px;"><a href="dead-letter-queue-pipeline-reliability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Dead Letter Queues for Pipeline Reliability</a><br><span style="color:#8892b0;font-size:13px;">DLQ events shown in this table</span></li>
+      </ul>
+    </section>
   </article>
   </main>
 

@@ -187,6 +187,14 @@ WITH (lists = 100);</code></pre>
         <p>Total impact: 48 hours, zero downtime, zero data loss. The entire platform's learning system migrated to a new embedding model without breaking a single production workflow. The key was planning for failure: feature flags for instant rollback, concurrent index creation for zero downtime, batch processing with checkpoints for resilience, and validation to catch issues before they reach production.</p>
         
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="rag-service-embedding-search.html" style="color:#64ffda;text-decoration:none;font-size:15px;">RAG Retrieval Service: pgvector and Embeddings</a><br><span style="color:#8892b0;font-size:13px;">The RAG service being migrated</span></li>
+          <li style="margin-bottom:12px;"><a href="llm-adjudication-dedup-false-positives.html" style="color:#64ffda;text-decoration:none;font-size:15px;">When RAG Says Duplicate but the LLM Disagrees</a><br><span style="color:#8892b0;font-size:13px;">RAG dedup built on top of these embeddings</span></li>
+          <li style="margin-bottom:12px;"><a href="auto-rater-service-llm-scoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Automated LLM Scoring Service</a><br><span style="color:#8892b0;font-size:13px;">Service that consumes the RAG pipeline</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author">
           <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">

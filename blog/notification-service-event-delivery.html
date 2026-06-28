@@ -178,6 +178,14 @@ async def validation_handler(request, exc):
         <p>Overly permissive CORS headers allowed any origin to make requests to the notification service. While the service still required authentication, the permissive CORS policy was unnecessary and increased the attack surface. Restricting CORS to known origins reduced risk without affecting legitimate clients.</p>
         <p>These issues are lessons about what breaks under production load that you don't catch in development. Race conditions only appear with concurrent requests. Memory leaks only show up over time. Fire-and-forget patterns only fail when the external service has issues. The audit process—systematic load testing, code review, and security scanning—surfaced these issues before they became production incidents.</p>
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="guard-service-auth-gateway.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Auth Gateway with Admin Dashboard</a><br><span style="color:#8892b0;font-size:13px;">The auth layer notifications route through</span></li>
+          <li style="margin-bottom:12px;"><a href="idempotent-cloud-tasks-handlers-python.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Idempotent Cloud Tasks Handlers</a><br><span style="color:#8892b0;font-size:13px;">Delivery patterns used in this service</span></li>
+          <li style="margin-bottom:12px;"><a href="systematic-service-hardening-guard-notification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Service Hardening</a><br><span style="color:#8892b0;font-size:13px;">Hardening applied to this notification service</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
         <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>

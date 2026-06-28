@@ -334,6 +334,14 @@ function TaskStatusBadge({ summary }: { summary: TaskSummary }) {
         <p>If I were shipping this again from scratch, I would add the manifest fields and the registry before the first production incident—schema migration is cheap early and expensive when thousands of ambiguous rows already exist. I would also alert on <code>STEP_DEAD_LETTERED</code> rate by reason so spikes in <code>STUCK_IN_PROGRESS</code> surface worker or dispatch issues before operators open the task list. Reliability is not only recovering from failure; it is making failure impossible to ignore.</p>
 
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="pipeline-hardening-timeouts-traceability-graceful-shutdown.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Pipeline Hardening: Timeouts and Graceful Shutdown</a><br><span style="color:#8892b0;font-size:13px;">Hardening the same pipeline</span></li>
+          <li style="margin-bottom:12px;"><a href="event-driven-architecture-gcp-pubsub.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Event-Driven Architecture on GCP</a><br><span style="color:#8892b0;font-size:13px;">Pub/Sub event system using DLQs</span></li>
+          <li style="margin-bottom:12px;"><a href="idempotent-cloud-tasks-handlers-python.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Idempotent Cloud Tasks Handlers</a><br><span style="color:#8892b0;font-size:13px;">Handling retries before DLQ escalation</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author">
           <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">

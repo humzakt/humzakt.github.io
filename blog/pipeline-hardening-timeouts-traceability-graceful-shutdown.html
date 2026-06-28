@@ -313,6 +313,14 @@ const lease = await acquireLease(step.id, { ttlMs });</code></pre>
         <p>Pipeline reliability is not one feature. It is the accumulation of dozens of small correctness fixes—each one closing a gap between what the system assumes and what production actually does. A dispatch registry, a SIGTERM handler, and a dynamic lease TTL are not glamorous. They are the difference between a pipeline that silently loses work and one that recovers on its own.</p>
 
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="dead-letter-queue-pipeline-reliability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Dead Letter Queues for Pipeline Reliability</a><br><span style="color:#8892b0;font-size:13px;">DLQ patterns for the same pipeline</span></li>
+          <li style="margin-bottom:12px;"><a href="gcs-race-conditions-generation-fenced-leases.html" style="color:#64ffda;text-decoration:none;font-size:15px;">GCS Race Conditions: Generation-Fenced Leases</a><br><span style="color:#8892b0;font-size:13px;">Race conditions in the same pipeline</span></li>
+          <li style="margin-bottom:12px;"><a href="events-table-pipeline-observability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an Events Table for Pipeline Observability</a><br><span style="color:#8892b0;font-size:13px;">Observability for this pipeline</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author">
           <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">

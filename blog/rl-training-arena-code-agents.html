@@ -187,6 +187,14 @@ GET /episodes/{episode_id}/reward
         <p>Domain logic is decoupled from GCP infrastructure. Switching Cloud Build for local Docker? Change the adapter, not the domain. This isn't academic—it made testing actually possible. We can run the entire RL loop locally without spinning up Cloud Build containers. The domain doesn't know about GCP. It knows about code execution, state management, and reward computation. The infrastructure adapters handle the details.</p>
         
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="rl-arena-executor-preprocessor.html" style="color:#64ffda;text-decoration:none;font-size:15px;">RL Arena Executor and Preprocessor</a><br><span style="color:#8892b0;font-size:13px;">The executor component of this arena</span></li>
+          <li style="margin-bottom:12px;"><a href="multi-turn-agent-evaluation-persistent-state.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Multi-Turn Agent Evaluation: Persistent State</a><br><span style="color:#8892b0;font-size:13px;">Evaluating the agents trained in this arena</span></li>
+          <li style="margin-bottom:12px;"><a href="docker-image-hardening-ai-benchmarks.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Docker Image Hardening for AI Benchmarks</a><br><span style="color:#8892b0;font-size:13px;">Hardening the containers these agents run in</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author">
           <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">

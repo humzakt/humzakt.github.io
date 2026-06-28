@@ -269,6 +269,14 @@ function computeUnifiedRank(
         <p>Display labels and sort order are separate concerns, but they must consume the <em>same</em> facts whenever a label is computed from derived state. If the UI shows “Quality Check Failed” because a review row says so, the sort key must consult that same review signal. When it does not, you get the most insidious class of bug: the feature appears implemented—headers click, arrows flip, cells read well—while the ordering is meaningless. Investing in deterministic data windows, intentional tiebreakers, and exhaustive tests turns that ambiguity into ordinary, reviewable correctness work.</p>
 
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="enterprise-state-machine-bulk-admin-ops.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Taming a State Machine: Bulk Admin Ops</a><br><span style="color:#8892b0;font-size:13px;">The state machine producing these statuses</span></li>
+          <li style="margin-bottom:12px;"><a href="ux-polish-sprint-filter-registry-consolidated-controls.html" style="color:#64ffda;text-decoration:none;font-size:15px;">A UX Polish Sprint: 8 PRs in 48 Hours</a><br><span style="color:#8892b0;font-size:13px;">Related admin UI polish</span></li>
+          <li style="margin-bottom:12px;"><a href="invisible-bugs-file-type-bypass-missing-worker-runs.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Invisible Bugs in Production</a><br><span style="color:#8892b0;font-size:13px;">Bugs invisible in the same display layer</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author">
           <img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img">

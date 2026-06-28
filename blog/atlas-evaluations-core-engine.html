@@ -187,6 +187,14 @@ collection = db.collection('scores')</code></pre>
         <p>The Firestore rules were the most concerning — anyone could read or write evaluation data. We locked down rules to require authentication and proper IAM roles. The <code>:latest</code> tags meant deployments weren't reproducible — we moved to semantic versioning.</p>
         <p>The conflicting autoscaling was subtle: both HPA and KEDA were trying to scale the same pods, causing thrashing. We disabled HPA and let KEDA handle it.</p>
       </div>
+      <section style="margin-top:48px;padding-top:32px;border-top:1px solid #233554;">
+        <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+        <ul style="list-style:none;padding:0;">
+          <li style="margin-bottom:12px;"><a href="building-ai-evaluation-platform-gcp.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an AI Evaluation Platform on GCP</a><br><span style="color:#8892b0;font-size:13px;">The overall platform architecture</span></li>
+          <li style="margin-bottom:12px;"><a href="debugging-alloydb-ssl-connection-drops.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Debugging AlloyDB SSL Connection Drops</a><br><span style="color:#8892b0;font-size:13px;">SSL fix within this engine</span></li>
+          <li style="margin-bottom:12px;"><a href="auto-rater-service-llm-scoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Automated LLM Scoring Service</a><br><span style="color:#8892b0;font-size:13px;">The scoring component connected to this engine</span></li>
+        </ul>
+      </section>
       <footer class="blog-footer">
         <div class="blog-author"><img src="../suit-blue-bg.jpg" alt="Humza Tareen" class="blog-author-img"><div class="blog-author-info"><h4>Humza Tareen</h4><p>AI Engineer building production systems at scale. <a href="../engineering.html">View full portfolio</a></p></div></div>
         <div class="blog-cta"><a href="../engineering.html#articles">Read More Articles</a></div>
