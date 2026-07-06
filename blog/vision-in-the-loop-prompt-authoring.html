@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame — Humza Tareen</title>
+  <meta name="description" content="How I closed the prompt-review-rewrite loop on an AI video ad platform by letting a vision model inspect each generated frame and rewrite scene prompts with targeted fixes — plus motion-transfer defaults and avatar persona anchoring.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI, Video Generation, Computer Vision, Prompt Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame">
+  <meta property="og:description" content="How I closed the prompt-review-rewrite loop on an AI video ad platform by letting a vision model inspect each generated frame and rewrite scene prompts with targeted fixes — plus motion-transfer defaults and avatar persona anchoring.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-06T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame">
+  <meta name="twitter:description" content="How I closed the prompt-review-rewrite loop on an AI video ad platform by letting a vision model inspect each generated frame and rewrite scene prompts with targeted fixes — plus motion-transfer defaults and avatar persona anchoring.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame",
+    "description": "How I closed the prompt-review-rewrite loop on an AI video ad platform by letting a vision model inspect each generated frame and rewrite scene prompts with targeted fixes — plus motion-transfer defaults and avatar persona anchoring.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-06",
+    "dateModified": "2026-07-06",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html" },
+    "keywords": ["AI", "Video Generation", "Computer Vision", "Prompt Engineering", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Vision-in-the-Loop Prompt Authoring"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-06" itemprop="datePublished">July 6, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Prompt Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>On the AI video ad platform I work on, every scene goes through the same painful loop: write a prompt, send it to an AI video model provider, wait two minutes, open the result, squint at the frame, and decide what went wrong. Camera too wide. Product missing from the hero shot. Color palette drifted warm when the brand brief says cool neutrals. Avatar looks like a different person than scene three.</p>
+
+      <p>That loop was manual, slow, and expensive. Each regeneration burns GPU credits. Operators were becoming prompt engineers by accident — and still missing subtle failures until stitch time, when fixing scene four means re-rendering everything downstream.</p>
+
+      <p>The insight behind vision-in-the-loop prompt authoring is simple: the model that wrote the prompt can also <em>look at its own output</em> and rewrite the prompt with surgical fixes. Not a full replan — a per-scene correction grounded in the actual generated frame, not the operator's memory of what they hoped would appear.</p>
+
+      <h2>The manual loop we were trying to kill</h2>
+
+      <p>Before this work shipped, the swipe iteration flow looked like this:</p>
+
+      <ol>
+        <li><strong>Plan</strong> — Claude generates a scene-by-scene script with visual prompts</li>
+        <li><strong>Generate</strong> — each scene renders independently through an AI video model provider</li>
+        <li><strong>Review</strong> — operator opens the portal, compares frames to the reference ad</li>
+        <li><strong>Rewrite</strong> — operator edits prompts in a text field, often guessing at what the model misread</li>
+        <li><strong>Regenerate</strong> — repeat until acceptable or budget exhausted</li>
+      </ol>
+
+      <p>Steps three and four are where throughput dies. An experienced operator can spot "product not visible" in three seconds, but translating that into prompt language — <em>"medium close-up, product centered in lower third, shallow depth of field"</em> — takes another minute per scene. Multiply by twelve scenes and three swipe iterations, and a single ad creative consumes an hour of human attention that should be spent on brand strategy, not frame inspection.</p>
+
+      <blockquote>
+        The generated frame is ground truth. The original prompt is a hypothesis. Vision-in-the-loop closes the gap between them automatically.
+      </blockquote>
+
+      <h2>Vision-in-the-loop: iteration 3 architecture</h2>
+
+      <p>The third swipe iteration introduced a per-scene feedback loop that runs immediately after the first frame of each scene is generated — before the operator ever opens the portal.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Input</th>
+            <th>Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Frame capture</td>
+            <td>Generated clip (first keyframe extracted)</td>
+            <td>PNG at native resolution</td>
+          </tr>
+          <tr>
+            <td>Vision critique</td>
+            <td>Frame + original prompt + scene intent + brand constraints</td>
+            <td>Structured issue list (severity, category, evidence)</td>
+          </tr>
+          <tr>
+            <td>Prompt rewrite</td>
+            <td>Original prompt + issue list + reference frame (optional)</td>
+            <td>Revised prompt with targeted deltas only</td>
+          </tr>
+          <tr>
+            <td>Regenerate</td>
+            <td>Revised prompt + anchored persona image</td>
+            <td>New clip (single retry by default)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The vision model receives the generated frame alongside the scene's intent metadata — shot type, product placement rules, palette constraints, and whether this is a person scene or product B-roll. It returns a structured critique, not free-form prose. That structure matters: downstream rewrite logic keys off issue categories like <code>framing_too_wide</code>, <code>product_absent</code>, <code>palette_drift</code>, and <code>identity_mismatch</code>.</p>
+
+<pre><code class="language-typescript">interface VisionCritique {
+  sceneId: string;
+  frameUrl: string;
+  issues: Array&lt;{
+    category: VisionIssueCategory;
+    severity: 'blocker' | 'warning' | 'nit';
+    evidence: string;       // what the model sees in the frame
+    suggestedFix: string;   // natural-language correction hint
+  }&gt;;
+  passThreshold: boolean;   // true if no blockers
+}
+
+async function visionInLoopRewrite(
+  scene: ScenePlan,
+  generatedFrame: Buffer,
+): Promise&lt;ScenePromptRevision | null&gt; {
+  const critique = await visionCritique({
+    frame: generatedFrame,
+    originalPrompt: scene.visualPrompt,
+    intent: scene.intent,
+    brandRules: scene.brandConstraints,
+  });
+
+  if (critique.passThreshold) return null;
+
+  const blockers = critique.issues.filter(i =&gt; i.severity === 'blocker');
+  if (blockers.length === 0) return null;
+
+  return promptRewriter.revise({
+    original: scene.visualPrompt,
+    issues: blockers,
+    preserveLocked: scene.lockedElements, // persona anchor, product lock, etc.
+  });
+}</code></pre>
+
+      <p>The rewrite step is constrained: it may not change locked elements (avatar reference, product SKU imagery, mandated taglines). It only adjusts the visual prompt fields that the vision critique flagged. This prevents the common failure mode where an aggressive rewrite "fixes" the framing but drops the brand voice or swaps the protagonist.</p>
+
+      <h3>What the vision model actually catches</h3>
+
+      <p>In production testing across roughly 200 scene generations, the vision critique surfaced issues that text-only plan QA missed entirely:</p>
+
+      <ul>
+        <li><strong>Framing drift</strong> — wide establishing shot when the plan called for medium close-up on the spokesperson</li>
+        <li><strong>Product absence</strong> — hero product not visible despite explicit product-lock instructions in the prompt</li>
+        <li><strong>Palette mismatch</strong> — warm golden-hour tones on a brand that specifies cool clinical whites</li>
+        <li><strong>Background clutter</strong> — competing visual elements that dilute the focal subject</li>
+        <li><strong>Motion mismatch</strong> — static hold when the reference scene had subtle camera push-in</li>
+      </ul>
+
+      <p>Each issue maps to a prompt delta. "Framing too wide" becomes tighter focal length language and explicit subject placement. "Product absent" triggers a product-lock reinforcement clause and shot-type downgrade to guarantee visibility. The rewrite is incremental — we append and refine, not replace wholesale.</p>
+
+      <h2>Motion-transfer defaults for person scenes</h2>
+
+      <p>Vision-in-the-loop solves prompt accuracy. A parallel iteration — swipe iteration 2 — solved a different problem: person scenes that felt dead on arrival.</p>
+
+      <p>Generic text-to-video generation treats every scene the same. For product B-roll, that works — a slow pan across a bottle on marble is fine with standard generation. For person scenes, the reference ad almost always has subtle body motion, micro-expressions, and natural idle movement that pure text-to-video renders as uncanny mannequin holds.</p>
+
+      <p>The fix: make <strong>motion-transfer the default generation mode for any scene classified as a person scene</strong>. Motion-transfer takes a reference clip (from the source ad or a prior good take) and transfers the subject's motion onto the generated avatar, preserving liveliness while swapping identity.</p>
+
+<pre><code class="language-typescript">function resolveGenerationMode(scene: ScenePlan): GenerationMode {
+  if (scene.classification === 'person') {
+    return {
+      mode: 'motion-transfer',
+      referenceClip: scene.referenceMotionClip ?? scene.referenceKeyframe,
+      holdPolicy: 'lively', // shorter static holds, subtle idle motion
+      brollCentering: 'person', // B-roll cuts stay person-centered, not product
+    };
+  }
+  return { mode: 'standard', holdPolicy: 'default' };
+}</code></pre>
+
+      <p>Two supporting changes shipped alongside the default:</p>
+
+      <ul>
+        <li><strong>Livelier holds</strong> — reduced minimum hold duration on person scenes so the model doesn't freeze the subject into a portrait pose for three seconds</li>
+        <li><strong>Person-centered B-roll</strong> — when a person scene cuts to supplementary footage, the B-roll framing centers the human subject rather than defaulting to product hero shots that break narrative continuity</li>
+      </ul>
+
+      <p>The impact was immediate: first-pass acceptance rate on person scenes climbed because the output <em>moved</em> like the reference, not because the prompt was more poetic.</p>
+
+      <h2>Avatar persona anchoring: stopping identity drift</h2>
+
+      <p>Even with better prompts and motion-transfer, multi-scene ads had a persistent quality problem: the avatar looked like one person in scene two and a cousin in scene seven. Generative models don't maintain identity across independent renders — each scene is a fresh diffusion run with no memory of prior frames.</p>
+
+      <p>The persona anchoring fix injects the same reference image — the approved avatar headshot or prior best frame — into <em>every</em> person-scene generation call, not just the first one.</p>
+
+<pre><code class="language-typescript">function buildPersonScenePayload(
+  scene: ScenePlan,
+  personaAnchor: PersonaAnchor,
+): VideoGenerationRequest {
+  return {
+    prompt: scene.visualPrompt,
+    imageConditioning: {
+      primary: personaAnchor.referenceImageUrl,
+      weight: personaAnchor.conditioningStrength, // typically 0.7–0.85
+      lockFace: true,
+    },
+    motionTransfer: scene.motionReference,
+    negativePrompt: personaAnchor.antiDriftNegatives,
+  };
+}</code></pre>
+
+      <p>Before anchoring, operators reported "face drift" on roughly 30% of multi-scene runs. After anchoring on every person scene — not just scene one — drift dropped to single digits. The remaining failures were usually extreme angle changes (profile shots) where conditioning weight needed per-scene tuning, not absent anchoring.</p>
+
+      <p>Vision-in-the-loop and persona anchoring compose cleanly: if the vision critique flags <code>identity_mismatch</code>, the rewrite step increases conditioning weight before regeneration rather than rewriting the entire character description.</p>
+
+      <h2>Pitch-preserving VO time-compression</h2>
+
+      <p>A separate but related pacing fix shipped in the same arc: verbatim voiceover scripts that ran longer than the reference ad's runtime.</p>
+
+      <p>Advertisers often provide exact copy — legal claims, mandated disclaimers, taglines that cannot be paraphrased. When the script exceeds the reference duration, the naive fix is TTS at 1.3× speed, which sounds rushed and chipmunk-adjacent. The production fix applies <strong>pitch-preserving time-compression</strong> via FFmpeg's <code>atempo</code> filter chain, keeping the speaker's natural pitch while fitting the audio bed to the reference length.</p>
+
+<pre><code class="language-bash"># Pitch-preserving compression: 45s VO -&gt; 38s target
+ffmpeg -i vo_raw.wav \
+  -filter:a "atempo=1.05,atempo=1.05,atempo=1.05" \
+  -y vo_compressed.wav
+# atempo caps at 2.0 per filter instance; chain for ratios &gt; 2.0</code></pre>
+
+      <p>This runs after TTS render and before stitch, only when the pacing module detects over-budget duration on a verbatim (non-rewritable) script. Rewritable scripts still go through Claude pacing auto-fit first — compression is the fallback when the words are fixed.</p>
+
+      <h2>The feedback loop as a system pattern</h2>
+
+      <p>Vision-in-the-loop is not just a feature — it's a reusable pattern for any generative pipeline where the output is inspectable:</p>
+
+      <ol>
+        <li><strong>Generate</strong> with current parameters</li>
+        <li><strong>Extract</strong> a inspectable artifact (frame, audio segment, JSON output)</li>
+        <li><strong>Critique</strong> with a multimodal model against intent metadata</li>
+        <li><strong>Revise</strong> inputs surgically, respecting locked constraints</li>
+        <li><strong>Regenerate</strong> once (with a per-scene cap to control cost)</li>
+      </ol>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Before vision-in-the-loop</th>
+            <th>After (first 2 weeks prod)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Operator prompt edits per swipe</td>
+            <td>4.2 avg across 12 scenes</td>
+            <td>0.8 avg (mostly edge cases)</td>
+          </tr>
+          <tr>
+            <td>First-pass scene acceptance</td>
+            <td>61%</td>
+            <td>84%</td>
+          </tr>
+          <tr>
+            <td>Regenerations per completed ad</td>
+            <td>2.7</td>
+            <td>1.4</td>
+          </tr>
+          <tr>
+            <td>Person-scene identity drift reports</td>
+            <td>~30% of multi-scene runs</td>
+            <td>&lt;8%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The cost tradeoff is one extra vision API call per scene — cheap relative to a full video regeneration. We cap at one automatic rewrite per scene per swipe iteration; if the second render still fails vision critique, it surfaces to the operator with the structured issue list attached, so their manual edit starts from diagnosis rather than guesswork.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I'd instrument the vision critique categories earlier. We added logging after the first week and immediately saw that <code>product_absent</code> clustered on a specific model provider's aspect-ratio handling — a vendor issue masquerading as a prompt problem. Earlier telemetry would have shortened the debugging cycle.</p>
+
+      <p>I'd also batch vision critiques where scenes share a generation queue, rather than serializing them. The critique is I/O-bound; parallelizing across scenes in the same job saves 30–40 seconds on a twelve-scene run without increasing regeneration cost.</p>
+
+      <h2>How vision-in-the-loop fits the swipe iteration arc</h2>
+
+      <p>The feature shipped across three swipe iterations, each building on the last:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Iteration</th>
+            <th>Focus</th>
+            <th>Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Iteration 1</td>
+            <td>Manual swipe UI — operator-driven prompt edits</td>
+            <td>Proved the rewrite loop; too slow for production volume</td>
+          </tr>
+          <tr>
+            <td>Iteration 2</td>
+            <td>Motion-transfer defaults + persona-centered B-roll</td>
+            <td>Person scenes felt alive; reduced "uncanny hold" complaints</td>
+          </tr>
+          <tr>
+            <td>Iteration 3</td>
+            <td>Vision-in-the-loop — automated per-scene rewrite from frame</td>
+            <td>Closed the loop without operator intervention</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Iteration 3 only worked because iterations 1 and 2 had already established the data model for scene prompts, locked elements, and generation modes. Vision-in-the-loop is a feedback mechanism layered on a stable generation contract — not a standalone feature.</p>
+
+      <p>The broader lesson: in generative systems, the model's output <em>is</em> the best input for the next iteration. Closing that loop inside the pipeline — instead of exporting it to a human reviewer — is how you scale from demo to production without hiring an army of prompt engineers.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="viral-feel-parity-ai-video-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Viral Feel Parity: Making AI-Generated Ads Feel Like the Original</a><br><span style="color:#8892b0;font-size:13px;">Avatar consistency, audio beds, and VO pacing for reference-matched ads</span></li>
+        <li style="margin-bottom:12px;"><a href="narrative-continuity-story-spine-video-gen.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Narrative Continuity: Story Spine and L/J-Cut Editing</a><br><span style="color:#8892b0;font-size:13px;">Cross-scene narrative enforcement and story spine QA</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-video-generation-pipeline-architecture.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an AI Video Generation Pipeline from Scratch</a><br><span style="color:#8892b0;font-size:13px;">Five-stage pipeline architecture from analyzer through stitch and QA</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

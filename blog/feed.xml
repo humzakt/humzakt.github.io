@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,76 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame</title>
+      <link>https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html</guid>
+      <pubDate>Sun, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>The AI generates a frame, inspects its own output with vision, and rewrites the prompt to fix camera, color, or composition issues — a closed-loop feedback system for video generation.</description>
+      <category>AI</category>
+      <category>Video Generation</category>
+      <category>Computer Vision</category>
+      <category>Prompt Engineering</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider</title>
+      <link>https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html</guid>
+      <pubDate>Sun, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A single polling abstraction with heartbeats, timeouts, and exponential backoff that wraps every AI vendor's status endpoint — replacing duplicated polling logic across five providers.</description>
+      <category>Reliability</category>
+      <category>TypeScript</category>
+      <category>AI Infrastructure</category>
+      <category>Polling</category>
+      <category>Vendor Abstraction</category>
+    </item>
+
+    <item>
+      <title>Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours</title>
+      <link>https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html</guid>
+      <pubDate>Sun, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Systematic post-launch triage across reliability regressions, UX confusion, and data honesty — batched into themed fix rounds with a living roadmap doc.</description>
+      <category>Production Engineering</category>
+      <category>Post-Launch</category>
+      <category>Reliability</category>
+      <category>UX</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Streaming AI-Generated Video from Cloud Storage to Browser</title>
+      <link>https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html</guid>
+      <pubDate>Sun, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Range-request streaming from Google Drive through Next.js route handlers, index-first run history, and the Safari black-video fix that required poster frames and H.264 re-encoding.</description>
+      <category>Performance</category>
+      <category>Cloud Storage</category>
+      <category>Streaming</category>
+      <category>TypeScript</category>
+      <category>Next.js</category>
+    </item>
+
+    <item>
+      <title>Validate Before Building: A Technical Discovery Framework for Startup Clients</title>
+      <link>https://humzakt.github.io/blog/validate-before-building-technical-discovery.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/validate-before-building-technical-discovery.html</guid>
+      <pubDate>Sun, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How a discovery call with a startup founder pivoted from an 8-phase fixed-price MVP build to problem validation first — and why refusing to design immediately built more trust.</description>
+      <category>Consulting</category>
+      <category>Architecture</category>
+      <category>Startups</category>
+      <category>Technical Discovery</category>
+      <category>Engineering Leadership</category>
+    </item>
 
     <item>
       <title>Building an AI Video Generation Pipeline from Scratch</title>

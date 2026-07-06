@@ -25,6 +25,36 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/validate-before-building-technical-discovery.html</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html</loc>
     <lastmod>2026-03-04</lastmod>
     <changefreq>monthly</changefreq>

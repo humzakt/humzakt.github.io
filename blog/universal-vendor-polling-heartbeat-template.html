@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider — Humza Tareen</title>
+  <meta name="description" content="How I replaced five incompatible vendor poll loops with a single heartbeat-aware polling abstraction — fixing watchdog kills on live jobs, inconsistent timeouts, and runaway regeneration on an AI video platform.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Reliability, TypeScript, AI Infrastructure, Polling, Vendor Abstraction">
+  <link rel="canonical" href="https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider">
+  <meta property="og:description" content="How I replaced five incompatible vendor poll loops with a single heartbeat-aware polling abstraction — fixing watchdog kills on live jobs, inconsistent timeouts, and runaway regeneration on an AI video platform.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-06T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="AI Infrastructure">
+  <meta property="article:tag" content="Polling">
+  <meta property="article:tag" content="Vendor Abstraction">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider">
+  <meta name="twitter:description" content="How I replaced five incompatible vendor poll loops with a single heartbeat-aware polling abstraction — fixing watchdog kills on live jobs, inconsistent timeouts, and runaway regeneration on an AI video platform.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider",
+    "description": "How I replaced five incompatible vendor poll loops with a single heartbeat-aware polling abstraction — fixing watchdog kills on live jobs, inconsistent timeouts, and runaway regeneration on an AI video platform.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-06",
+    "dateModified": "2026-07-06",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html" },
+    "keywords": ["Reliability", "TypeScript", "AI Infrastructure", "Polling", "Vendor Abstraction"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Universal Vendor Polling Heartbeat Template"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-06" itemprop="datePublished">July 6, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">AI Infrastructure</span>
+        <span class="blog-tag">Polling</span>
+        <span class="blog-tag">Vendor Abstraction</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The AI video generation platform I work on does not bet on a single model vendor. Clip generation might route through Replicate one week and a direct Kling integration the next. Voiceover runs through ElevenLabs. Image conditioning hits fal. Planning and QA call Claude. Each vendor exposes a different async contract — webhooks, REST polling, SSE streams, queue IDs with opaque status enums.</p>
+
+      <p>When we had three vendors, each adapter shipped its own poll loop. Copy-paste with minor tweaks. When we hit five, the duplication became a reliability hazard: inconsistent timeout handling, no shared failure classification, and — most painfully — a watchdog process that killed jobs the poll loop claimed were hung but were actually still rendering on Replicate's GPU cluster.</p>
+
+      <p>I refactored all vendor polling into a single universal template with automatic heartbeats, configurable timeouts, exponential backoff, and structured failure classification. One abstraction, every model.</p>
+
+      <h2>Five vendors, five polling dialects</h2>
+
+      <p>Before the refactor, each vendor adapter owned its own waiting logic. The surface area looked like this:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>Async model</th>
+            <th>Status API</th>
+            <th>Typical render time</th>
+            <th>Pre-refactor pain</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Replicate</td>
+            <td>Prediction ID + poll</td>
+            <td>GET /predictions/:id</td>
+            <td>90s–8min</td>
+            <td>No heartbeat → watchdog kill</td>
+          </tr>
+          <tr>
+            <td>Kling (direct)</td>
+            <td>Task ID + poll</td>
+            <td>POST status endpoint</td>
+            <td>2–6min</td>
+            <td>Hard-coded 5min timeout too short</td>
+          </tr>
+          <tr>
+            <td>fal</td>
+            <td>Queue + webhook optional</td>
+            <td>GET queue status</td>
+            <td>30s–3min</td>
+            <td>Webhook fallback never tested</td>
+          </tr>
+          <tr>
+            <td>ElevenLabs</td>
+            <td>Synchronous-ish TTS</td>
+            <td>Streaming response</td>
+            <td>5–30s</td>
+            <td>Treated as sync, no poll wrapper</td>
+          </tr>
+          <tr>
+            <td>Claude</td>
+            <td>SSE stream</td>
+            <td>Stream events</td>
+            <td>10–60s</td>
+            <td>Different error shape entirely</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Each row was a separate <code>while</code> loop with different sleep intervals, different terminal states, and different ideas of what "failed" meant. Replicate returns <code>status: "failed"</code> with an error string. Kling returns numeric error codes. fal returns HTTP 503 on queue saturation that should retry, not abort.</p>
+
+      <h2>The watchdog kill incident</h2>
+
+      <p>The production incident that forced this refactor: a background watchdog monitors long-running generation jobs. If a job doesn't emit a heartbeat within 120 seconds, the watchdog assumes the worker crashed and marks the job failed, releasing resources and notifying the portal.</p>
+
+      <p>Replicate clip renders routinely take three to eight minutes. The Replicate adapter's poll loop looked like this:</p>
+
+<pre><code class="language-typescript">// BEFORE — no heartbeat, fixed 3s sleep, silent hang
+async function pollReplicate(predictionId: string): Promise&lt;ReplicateOutput&gt; {
+  while (true) {
+    const prediction = await replicate.predictions.get(predictionId);
+    if (prediction.status === 'succeeded') return prediction.output;
+    if (prediction.status === 'failed') throw new Error(prediction.error);
+    if (prediction.status === 'canceled') throw new CancelledError();
+    await sleep(3000);
+  }
+}</code></pre>
+
+      <p>The loop was alive — hitting Replicate's API every three seconds — but it never told the watchdog. After 120 seconds of silence, the watchdog killed a job whose clip was 60% rendered on Replicate's side. The operator saw "failed" in the portal. Replicate still charged for the completed render we never retrieved.</p>
+
+      <p>The fix was not "increase the watchdog timeout globally." That would mask actual worker crashes on fast vendors. The fix was: <strong>every poll loop must emit a heartbeat on every iteration, automatically, via shared infrastructure.</strong></p>
+
+      <h2>The universal poll template</h2>
+
+      <p>The refactor extracted a generic <code>pollUntilTerminal</code> function that wraps any vendor-specific status check:</p>
+
+<pre><code class="language-typescript">type PollStatus = 'pending' | 'running' | 'succeeded' | 'failed' | 'cancelled';
+
+interface PollConfig&lt;T&gt; {
+  vendorName: string;
+  jobId: string;
+  checkStatus: () =&gt; Promise&lt;{ status: PollStatus; result?: T; error?: VendorError }&gt;;
+  timeoutMs: number;
+  initialIntervalMs: number;
+  maxIntervalMs: number;
+  backoffMultiplier: number;
+  onHeartbeat: () =&gt; void;
+  classifyError: (error: VendorError) =&gt; FailureClass;
+}
+
+type FailureClass = 'retryable' | 'fatal' | 'vendor_outage' | 'quota_exceeded';
+
+async function pollUntilTerminal&lt;T&gt;(config: PollConfig&lt;T&gt;): Promise&lt;T&gt; {
+  const deadline = Date.now() + config.timeoutMs;
+  let interval = config.initialIntervalMs;
+
+  while (Date.now() &lt; deadline) {
+    config.onHeartbeat(); // EVERY iteration, before the vendor call
+
+    const { status, result, error } = await config.checkStatus();
+
+    if (status === 'succeeded' &amp;&amp; result !== undefined) return result;
+    if (status === 'cancelled') throw new CancelledError(config.jobId);
+    if (status === 'failed' &amp;&amp; error) {
+      throw classifyAsPollError(config.classifyError(error), error);
+    }
+
+    await sleep(interval);
+    interval = Math.min(interval * config.backoffMultiplier, config.maxIntervalMs);
+  }
+
+  throw new PollTimeoutError(config.vendorName, config.jobId, config.timeoutMs);
+}</code></pre>
+
+      <p>Vendor adapters shrink to two functions: one that maps vendor-specific API responses to the normalized <code>PollStatus</code>, and one that classifies vendor errors into retryable vs fatal. All timing, backoff, heartbeat, and timeout logic lives in the template.</p>
+
+      <h3>After: Replicate adapter</h3>
+
+<pre><code class="language-typescript">// AFTER — 12 lines, heartbeat automatic, timeout configurable per model
+async function pollReplicate(
+  predictionId: string,
+  ctx: JobContext,
+): Promise&lt;ReplicateOutput&gt; {
+  return pollUntilTerminal({
+    vendorName: 'replicate',
+    jobId: predictionId,
+    checkStatus: async () =&gt; {
+      const p = await replicate.predictions.get(predictionId);
+      return {
+        status: mapReplicateStatus(p.status),
+        result: p.status === 'succeeded' ? p.output : undefined,
+        error: p.status === 'failed' ? { message: p.error, code: 'REPLICATE_FAIL' } : undefined,
+      };
+    },
+    timeoutMs: ctx.modelConfig.maxWaitMs ?? 600_000, // 10min for video models
+    initialIntervalMs: 2_000,
+    maxIntervalMs: 10_000,
+    backoffMultiplier: 1.5,
+    onHeartbeat: () =&gt; ctx.heartbeat.emit('poll:replicate'),
+    classifyError: classifyReplicateError,
+  });
+}</code></pre>
+
+      <p>Every vendor adapter follows the same shape. Adding a sixth vendor means writing <code>checkStatus</code> and <code>classifyError</code> — not reinventing backoff math and heartbeat wiring.</p>
+
+      <h2>Failure classification: retry vs abort vs escalate</h2>
+
+      <p>Normalized polling is only half the value. The template also centralizes failure classification so upstream retry logic makes consistent decisions:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Failure class</th>
+            <th>Examples</th>
+            <th>Pipeline behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>retryable</code></td>
+            <td>HTTP 503, queue full, transient GPU unavailable</td>
+            <td>Retry with backoff, same vendor</td>
+          </tr>
+          <tr>
+            <td><code>vendor_outage</code></td>
+            <td>5xx sustained, status endpoint down</td>
+            <td>Fail over to alternate vendor adapter</td>
+          </tr>
+          <tr>
+            <td><code>quota_exceeded</code></td>
+            <td>Rate limit, billing cap, concurrency limit</td>
+            <td>Queue for later, notify operator</td>
+          </tr>
+          <tr>
+            <td><code>fatal</code></td>
+            <td>Invalid input, content policy violation, corrupt output</td>
+            <td>Abort scene, surface to operator with context</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Before classification was centralized, the Kling adapter retried content-policy failures three times (burning credits), while the Replicate adapter aborted immediately on the same class of error. Operators saw inconsistent behavior depending on which vendor routed the scene.</p>
+
+      <h2>Exponential backoff without over-polling</h2>
+
+      <p>Fixed-interval polling is either too aggressive (API rate limits on fast jobs) or too slow (added latency on jobs that finish between polls). The template uses exponential backoff with a cap:</p>
+
+      <ul>
+        <li><strong>Initial interval:</strong> 2 seconds — catch fast TTS and image jobs quickly</li>
+        <li><strong>Backoff multiplier:</strong> 1.5× per iteration</li>
+        <li><strong>Max interval:</strong> 10 seconds — never go silent long enough to worry operators</li>
+        <li><strong>Heartbeat:</strong> every iteration regardless of interval — watchdog stays satisfied</li>
+      </ul>
+
+      <p>For a six-minute video render, the poll cadence ramps from 2s → 3s → 4.5s → 6.75s → 10s (held). Total API calls: roughly 40, down from 120 at fixed 3-second intervals, with zero watchdog false positives.</p>
+
+      <h2>Capping feel-regeneration runs</h2>
+
+      <p>A related reliability fix shipped in the same arc: the "feel regeneration" path — which re-renders challenger clips to match reference pacing and energy — was regenerating every challenger on every quality pass with no cap.</p>
+
+      <p>A twelve-scene ad with three challengers per scene could trigger 36 extra video renders on a single feel-regen pass. Most of those rerenders targeted challengers that were already within quality threshold — the regen was running primary-only checks against all challengers indiscriminately.</p>
+
+<pre><code class="language-typescript">interface FeelRegenPolicy {
+  scope: 'primary-only';       // don't regen challengers unless primary fails
+  maxRegensPerRun: number;       // hard cap, default 3
+  qualityThreshold: number;      // skip regen if score &gt;= threshold
+}
+
+async function runFeelRegen(
+  scenes: SceneResult[],
+  policy: FeelRegenPolicy,
+): Promise&lt;SceneResult[]&gt; {
+  let regenCount = 0;
+  const updated: SceneResult[] = [];
+
+  for (const scene of scenes) {
+    const primary = scene.challengers.find(c =&gt; c.role === 'primary');
+    if (!primary || primary.feelScore &gt;= policy.qualityThreshold) {
+      updated.push(scene);
+      continue;
+    }
+    if (regenCount &gt;= policy.maxRegensPerRun) {
+      updated.push(scene); // cap hit — ship best available
+      continue;
+    }
+    const regen = await regenPrimary(scene, primary);
+    regenCount++;
+    updated.push(applyRegen(scene, regen));
+  }
+
+  return updated;
+}</code></pre>
+
+      <p>Primary-only scope plus a per-run cap of three regenerations cut feel-regen GPU spend by roughly 70% without measurable quality regression — because most challenger rerenders were fixing problems the primary didn't have.</p>
+
+      <h2>Before and after: what changed in production</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Before universal template</th>
+            <th>After</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Watchdog false kills (Replicate jobs)</td>
+            <td>~4 per day</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>Poll loop code (lines across vendors)</td>
+            <td>~340 duplicated</td>
+            <td>~80 template + ~25 per vendor adapter</td>
+          </tr>
+          <tr>
+            <td>Mean time to diagnose vendor timeout</td>
+            <td>45 min (which adapter?)</td>
+            <td>5 min (structured logs with vendor + jobId)</td>
+          </tr>
+          <tr>
+            <td>Feel-regen GPU calls per run</td>
+            <td>Up to 36</td>
+            <td>Max 3 (primary-only)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Design principles for multi-vendor async</h2>
+
+      <p>If you're integrating multiple AI model providers into one pipeline, these rules saved us repeated incidents:</p>
+
+      <ol>
+        <li><strong>Normalize early.</strong> Map vendor status enums to your own terminal states at the adapter boundary, not in business logic.</li>
+        <li><strong>Heartbeat is not optional.</strong> Any loop that can run longer than your watchdog interval must emit heartbeats — bake it into the template so adapter authors can't forget.</li>
+        <li><strong>Timeout per model, not per vendor.</strong> Video generation gets ten minutes. TTS gets two. Image gen gets five. Store timeouts in model config, not hard-coded in adapters.</li>
+        <li><strong>Classify failures once.</strong> Upstream retry and failover logic should consume <code>FailureClass</code>, not parse vendor error strings.</li>
+        <li><strong>Cap expensive recovery paths.</strong> Regeneration, failover, and retry loops all need per-run budgets or costs compound silently.</li>
+      </ol>
+
+      <p>The universal poll template isn't glamorous infrastructure. Nobody demos it to investors. But it's the difference between a pipeline that survives vendor outages gracefully and one that burns credits on phantom failures while the watchdog murders live jobs.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="production-hardening-ai-video-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Production Hardening an AI Video Pipeline</a><br><span style="color:#8892b0;font-size:13px;">Retries, fallbacks, and crash guards for multi-provider pipelines</span></li>
+        <li style="margin-bottom:12px;"><a href="pipeline-hardening-timeouts-traceability-graceful-shutdown.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown</a><br><span style="color:#8892b0;font-size:13px;">Process guards and shutdown semantics for long-running jobs</span></li>
+        <li style="margin-bottom:12px;"><a href="idempotent-cloud-tasks-handlers-python.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Idempotent Cloud Tasks Handlers in Python</a><br><span style="color:#8892b0;font-size:13px;">Safe retries when poll timeouts trigger task redelivery</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

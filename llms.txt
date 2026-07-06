@@ -18,8 +18,13 @@ Humza Tareen is an AI Engineer based in Islamabad, Pakistan. He has delivered Ge
 
 - [dev-starter-kit](https://github.com/humzakt/dev-starter-kit): Production-ready starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, pre-commit hooks, and AI coding tool configurations (Cursor, Claude Code, Codex, Copilot)
 
-## Blog Articles (52)
+## Blog Articles (57)
 
+- [Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame](https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html): Closed-loop prompt authoring where a vision model inspects each generated frame and rewrites scene prompts to fix camera, color, and composition — plus motion-transfer defaults and avatar persona anchoring
+- [Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider](https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html): One heartbeat-aware polling abstraction replacing five incompatible vendor poll loops — fixing watchdog kills on live jobs, inconsistent timeouts, and runaway regeneration
+- [Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours](https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html): Systematic 48-hour post-launch triage across reliability regressions, UX leaks, and data honesty — 20 PRs batched by theme with every fix recorded in a living roadmap doc
+- [Streaming AI-Generated Video from Cloud Storage to Browser](https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html): Range-request streaming from Google Drive through Next.js route handlers, index-first run history, and Safari black-video fixes for 500MB+ AI renders
+- [Validate Before Building: A Technical Discovery Framework for Startup Clients](https://humzakt.github.io/blog/validate-before-building-technical-discovery.html): Redirecting a startup from a $27K fixed-price MVP to problem validation first — challenging on-prem assumptions and the instinct to design before the problem statement was proven
 - [Building an AI Video Generation Pipeline from Scratch](https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html): Five-stage pipeline (analyzer, Claude planner, Kling clip gen, FFmpeg stitch, narrative QA) for generating viral-feel video ads — 20 PRs, 7,000 lines, domain-folder architecture
 - [Viral Feel Parity: Making AI-Generated Ads Feel Like the Original](https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html): Avatar consistency, sidechain-ducked audio beds, emotion-driven VO, caption rendering, color grading, and L/J-cut transitions — 2,800 lines of feel engineering
 - [Narrative Continuity: Story Spine and L/J-Cut Editing](https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html): Story spine enforcement, cross-scene narrative QA, continuous VO over cuts, pacing auto-fit — making AI video feel like one story

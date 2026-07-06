@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours — Humza Tareen</title>
+  <meta name="description" content="How I ran a systematic 48-hour post-launch audit on an AI video platform — triaging reliability regressions, UX leaks, and data honesty issues across 20 PRs batched by theme, with every fix recorded in a living roadmap doc.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Production Engineering, Post-Launch, Reliability, UX, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours">
+  <meta property="og:description" content="How I ran a systematic 48-hour post-launch audit on an AI video platform — triaging reliability regressions, UX leaks, and data honesty issues across 20 PRs batched by theme, with every fix recorded in a living roadmap doc.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-06T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Production Engineering">
+  <meta property="article:tag" content="Post-Launch">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="UX">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours">
+  <meta name="twitter:description" content="How I ran a systematic 48-hour post-launch audit on an AI video platform — triaging reliability regressions, UX leaks, and data honesty issues across 20 PRs batched by theme, with every fix recorded in a living roadmap doc.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours",
+    "description": "How I ran a systematic 48-hour post-launch audit on an AI video platform — triaging reliability regressions, UX leaks, and data honesty issues across 20 PRs batched by theme, with every fix recorded in a living roadmap doc.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-06",
+    "dateModified": "2026-07-06",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html" },
+    "keywords": ["Production Engineering", "Post-Launch", "Reliability", "UX", "TypeScript"],
+    "articleSection": "Production Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Post-Launch Audit 20 PRs 48 Hours"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-06" itemprop="datePublished">July 6, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Production Engineering</span>
+        <span class="blog-tag">Post-Launch</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">UX</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>We launched the operator portal for the AI video ad generation platform on a Thursday. By Saturday morning, real users had surfaced twelve distinct issues — some broken, some confusing, some quietly leaking the wrong data into the UI. I shipped twenty pull requests in forty-eight hours, batched by theme, and recorded every fix in a living roadmap document with shipped/planned status flips.</p>
+
+      <p>This post is the playbook for that sprint: how to triage post-launch feedback without drowning in one-off patches, and why the "honest default" pattern matters as much as the reliability fixes.</p>
+
+      <h2>Day zero: what launch actually reveals</h2>
+
+      <p>Pre-launch testing covered happy paths. Launch exposed:</p>
+
+      <ul>
+        <li><strong>Reliability regressions</strong> — jobs that restored on prod but not staging, navigation state lost on refresh</li>
+        <li><strong>Data leaks in the UI</strong> — the reference (competitor) frame appearing in every model column of the scene grid</li>
+        <li><strong>Honesty gaps</strong> — thumbnails falling back silently to wrong assets, status chips implying success when generation partially failed</li>
+        <li><strong>UX friction</strong> — run-detail pages that hid real failures, run-history tables where long names destroyed column layout</li>
+        <li><strong>Recovery gaps</strong> — no way to reopen old runs from cloud storage after a state wipe</li>
+      </ul>
+
+      <p>The instinct is to fix everything immediately in random order. That produces twenty PRs that are hard to review, hard to rollback, and impossible to summarize for stakeholders. Instead, I sorted every issue into three buckets and batched fixes by bucket.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Bucket</th>
+            <th>Question</th>
+            <th>Examples from launch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Broken</td>
+            <td>Does it fail or lose data?</td>
+            <td>Reliability regressions, old runs won't reopen, verbatim script not preserved</td>
+          </tr>
+          <tr>
+            <td>Confusing</td>
+            <td>Does it work but mislead?</td>
+            <td>Reference frame in model columns, dishonest default chips, jargon-heavy create form</td>
+          </tr>
+          <tr>
+            <td>Missing</td>
+            <td>Does the user need something we didn't build?</td>
+            <td>Folder-driven run history, run-detail charts, breadcrumb navigation</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Batch 1: reliability regressions + persistent navigation</h2>
+
+      <p>The first batch targeted failures that made the product unusable, not merely ugly.</p>
+
+      <p><strong>Persistent navigation.</strong> Operators lost their place when refreshing mid-run — the portal reset to the run list instead of the run-detail view they were inspecting. The fix stored the active run ID and tab selection in URL search params, not React state alone. Refresh became idempotent: same URL, same view.</p>
+
+<pre><code class="language-typescript">// URL-driven nav state — survives refresh and share
+const runDetailUrl = (runId: string, tab: RunDetailTab) =&gt;
+  `/portal/runs/${runId}?tab=${tab}`;
+
+function RunDetailPage({ runId }: { runId: string }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get('tab') as RunDetailTab) ?? 'overview';
+
+  const setTab = (tab: RunDetailTab) =&gt; {
+    setSearchParams({ tab }, { replace: true });
+  };
+  // ...
+}</code></pre>
+
+      <p><strong>Reliability regressions.</strong> Two launch-week changes had introduced subtle breakage: restore-on-retry consulted stale checkpoint metadata, and cancellation signals weren't propagating to in-flight vendor polls. Both were fixed before touching any portal UX — users can't evaluate a redesign if jobs silently fail.</p>
+
+      <h2>Batch 2: the reference frame leak</h2>
+
+      <p>The most embarrassing launch bug: the scene comparison grid showed the reference (competitor) video's keyframe in <em>every</em> model column, not just the reference column.</p>
+
+      <p>Root cause was a shared thumbnail resolver that defaulted to <code>referenceKeyframeUrl</code> when a model-specific generated frame wasn't cached yet. During poll-in-progress states, every column rendered the competitor's frame. Operators thought all models had produced identical output — or worse, that our platform was just repackaging the reference video.</p>
+
+<pre><code class="language-typescript">// BEFORE — wrong default poisons every column
+function resolveSceneThumbnail(scene: SceneGridCell): string {
+  return scene.generatedFrameUrl
+    ?? scene.referenceKeyframeUrl  // leak: competitor frame everywhere
+    ?? PLACEHOLDER;
+}
+
+// AFTER — honest per-column state
+function resolveSceneThumbnail(scene: SceneGridCell, column: GridColumn): string {
+  if (column.role === 'reference') {
+    return scene.referenceKeyframeUrl ?? PLACEHOLDER;
+  }
+  if (scene.generationStatus === 'pending') {
+    return PLACEHOLDER; // spinner, not competitor frame
+  }
+  return scene.generatedFrameUrl ?? PLACEHOLDER;
+}</code></pre>
+
+      <p>This is the <strong>honest default</strong> pattern: when data isn't available, show a placeholder or explicit status — never silently substitute data from a different context. Users assume the UI is truthful. Violating that assumption erodes trust faster than a loading spinner.</p>
+
+      <h2>Batch 3: verbatim scripts and prod restore</h2>
+
+      <p>Two data-integrity fixes shipped together:</p>
+
+      <ul>
+        <li><strong>Verbatim provided-script</strong> — when an operator pasted an exact legal script, the planner was paraphrasing it during pacing auto-fit. The fix added a <code>verbatim: true</code> flag that bypasses rewrite and routes overflow to pitch-preserving time-compression instead.</li>
+        <li><strong>Old runs reopen on prod</strong> — production had migrated to state-only restore (metadata in DB, artifacts in Google Drive) but the restore path still expected local disk paths from dev. The fix implemented on-demand Drive streaming for artifact hydration on reopen.</li>
+      </ul>
+
+<pre><code class="language-typescript">async function restoreRun(runId: string): Promise&lt;RestoredRun&gt; {
+  const meta = await db.runs.findById(runId);
+  if (!meta) throw new RunNotFoundError(runId);
+
+  // State-only: metadata from DB, blobs streamed from Drive on demand
+  const artifacts = await driveArtifacts.list(meta.driveFolderId);
+
+  return {
+    ...meta,
+    clips: artifacts.clips.map(a =&gt; ({
+      sceneId: a.sceneId,
+      streamUrl: `/api/media/stream?fileId=${a.fileId}`, // no full download
+    })),
+    plan: await driveArtifacts.readJson(meta.driveFolderId, 'plan.json'),
+  };
+}</code></pre>
+
+      <p>Operators who had completed runs before the migration could finally reopen them in production without a manual re-import.</p>
+
+      <h2>Batch 4: thumbnails, chips, and breadcrumbs</h2>
+
+      <p>This batch was pure honesty and navigation polish:</p>
+
+      <ul>
+        <li><strong>Reference-thumbnail Drive fallback</strong> — when the reference keyframe wasn't locally cached, fetch from Drive instead of showing a broken image</li>
+        <li><strong>Honest default chip</strong> — status chips now distinguish "generating," "partial failure," and "complete" instead of a green "done" badge when two of twelve scenes failed</li>
+        <li><strong>Breadcrumbs</strong> — run list → run detail → scene drill-down, each level linked</li>
+      </ul>
+
+      <p>The default chip change was small in code but large in operator trust:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Run state</th>
+            <th>Old chip</th>
+            <th>New chip</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>12/12 scenes succeeded</td>
+            <td>Complete ✓</td>
+            <td>Complete ✓</td>
+          </tr>
+          <tr>
+            <td>10/12 succeeded, 2 failed</td>
+            <td>Complete ✓</td>
+            <td>Partial — 2 failed</td>
+          </tr>
+          <tr>
+            <td>Still generating scene 8</td>
+            <td>Complete ✓ (premature)</td>
+            <td>Generating… 7/12</td>
+          </tr>
+          <tr>
+            <td>Cancelled mid-run</td>
+            <td>Complete ✓</td>
+            <td>Cancelled at scene 5</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Batch 5: run-detail redesign mid-flight</h2>
+
+      <p>Operators needed to diagnose failures, not just see a red badge. The run-detail page got a tabbed redesign:</p>
+
+      <ul>
+        <li><strong>Overview</strong> — run metadata, honest status chip, timing summary</li>
+        <li><strong>Scenes</strong> — grid with per-model columns (reference frame leak fixed)</li>
+        <li><strong>Timeline</strong> — Recharts visualization of stage durations and vendor calls</li>
+        <li><strong>Reference</strong> — embedded reference clip for side-by-side comparison</li>
+        <li><strong>Failures</strong> — real error messages with vendor, scene, and retry history — not a generic "something went wrong"</li>
+      </ul>
+
+      <p>Restore speedup shipped in the same PR: lazy-loading scene artifacts instead of blocking the detail page on a full Drive folder scan. The overview tab renders in under 500ms from DB metadata; thumbnails stream in as they're resolved.</p>
+
+      <h2>Batch 6: run-history table and folder recovery</h2>
+
+      <p><strong>Bound cells.</strong> Long run names and folder paths were blowing out the run-history table, hiding the status and date columns entirely. Fixed with <code>text-overflow: ellipsis</code>, max-width constraints, and full-name tooltips on hover.</p>
+
+      <p><strong>Folder-driven run history.</strong> Before this fix, run history came only from the application database — runs created before a DB migration or wiped by a bad deploy were gone. The recovery path indexed Google Drive folders directly: each run's artifact folder name encodes the run ID and timestamp. A background indexer reconciled Drive folders against DB records and surfaced "orphan" runs in the history table with a "recovered from storage" badge.</p>
+
+<pre><code class="language-typescript">async function indexRunHistory(): Promise&lt;RunHistoryEntry[]&gt; {
+  const dbRuns = await db.runs.listRecent({ limit: 100 });
+  const driveFolders = await drive.listRunFolders({ parentId: RUNS_ROOT });
+
+  const dbIds = new Set(dbRuns.map(r =&gt; r.id));
+  const orphans = driveFolders
+    .filter(f =&gt; !dbIds.has(parseRunId(f.name)))
+    .map(f =&gt; ({
+      id: parseRunId(f.name),
+      source: 'drive-recovery' as const,
+      recoveredAt: new Date(),
+      // metadata parsed from folder manifest if present
+    }));
+
+  return mergeAndSort(dbRuns, orphans);
+}</code></pre>
+
+      <p>Nav declutter shipped alongside: removed duplicate links to the same run-list view and consolidated "create" and "history" into a single sidebar section.</p>
+
+      <h2>Batch 7: editor-facing form copy</h2>
+
+      <p>The create-run form used internal jargon — "swipe iteration," "challenger pool," "feel regen" — labels that made sense to engineers but not to the video editors who were the primary operators.</p>
+
+      <p>A docs pass rewrote every form field description in plain language:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Old label</th>
+            <th>New label</th>
+            <th>Old description</th>
+            <th>New description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Swipe iteration</td>
+            <td>Revision pass</td>
+            <td>Increment swipe counter for VIL loop</td>
+            <td>How many automatic review-and-fix passes to run on each scene</td>
+          </tr>
+          <tr>
+            <td>Challenger pool</td>
+            <td>Alternate versions</td>
+            <td>Max challengers per scene slot</td>
+            <td>Number of backup versions to generate per scene (for comparison)</td>
+          </tr>
+          <tr>
+            <td>Feel regen</td>
+            <td>Energy matching</td>
+            <td>Re-run feel-regen on sub-threshold clips</td>
+            <td>Re-render scenes that don't match the reference video's pacing and energy</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>The roadmap doc discipline</h2>
+
+      <p>Every fix was recorded in a roadmap markdown doc before the PR merged. Each entry has:</p>
+
+      <ul>
+        <li>Issue description (user-visible symptom)</li>
+        <li>Root cause (one sentence)</li>
+        <li>PR link</li>
+        <li>Status: <code>planned</code> → <code>shipped</code></li>
+        <li>Batch tag for grouping</li>
+      </ul>
+
+      <p>When batch 4 shipped, five items flipped from planned to shipped in the same commit as the roadmap update. Stakeholders could read one doc and see exactly what launch feedback produced — no archaeology through twenty PR titles.</p>
+
+      <blockquote>
+        The post-launch audit isn't a fire drill. It's the first real user test. Treat it like a structured sprint, not a panic.
+      </blockquote>
+
+      <h2>Numbers from the 48-hour sprint</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pull requests merged</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>Distinct user-visible fixes</td>
+            <td>12</td>
+          </tr>
+          <tr>
+            <td>Batches (themed PR groups)</td>
+            <td>7</td>
+          </tr>
+          <tr>
+            <td>Reliability fixes</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>UX / honesty fixes</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <td>Recovery / infrastructure fixes</td>
+            <td>3</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd repeat next launch</h2>
+
+      <ol>
+        <li><strong>Pre-write the roadmap doc template</strong> before launch day, with bucket categories ready</li>
+        <li><strong>Assign a "honest defaults" reviewer</strong> — one person whose only job is asking "what does the user think this UI element means?"</li>
+        <li><strong>Batch by theme, not by reporter</strong> — three users reporting navigation issues becomes one batch, not three PRs</li>
+        <li><strong>Fix data leaks before polish</strong> — the reference frame bug eroded trust; breadcrumb styling can wait</li>
+        <li><strong>Flip shipped status in the same commit</strong> — roadmap drift is how you lose track of what's actually in prod</li>
+      </ol>
+
+      <p>Launch is not the finish line. It's the start of the audit where real operators tell you what you actually built — and the forty-eight hours after determine whether they trust it enough to come back Monday.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ai-video-generation-pipeline-architecture.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an AI Video Generation Pipeline from Scratch</a><br><span style="color:#8892b0;font-size:13px;">Core pipeline architecture that the portal exposes to operators</span></li>
+        <li style="margin-bottom:12px;"><a href="systematic-service-hardening-guard-notification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Service Hardening: Guard and Notification</a><br><span style="color:#8892b0;font-size:13px;">Structured hardening patterns applied post-launch</span></li>
+        <li style="margin-bottom:12px;"><a href="ux-polish-sprint-filter-registry-consolidated-controls.html" style="color:#64ffda;text-decoration:none;font-size:15px;">UX Polish Sprint: Filter Registry and Consolidated Controls</a><br><span style="color:#8892b0;font-size:13px;">Portal UX patterns from a focused polish sprint</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

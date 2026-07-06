@@ -4,6 +4,46 @@
 
 ---
 
+## Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame
+
+URL: https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html
+
+Closed-loop prompt authoring for an AI video ad platform: the pipeline generates a frame, a vision model inspects its own output, and rewrites scene prompts with targeted fixes for camera angle, color grading, and composition. Covers the prompt-review-rewrite loop, motion-transfer defaults, and avatar persona anchoring so regenerated scenes stay visually consistent. A closed-loop feedback system for video generation where the AI critiques and improves its own prompts from the generated frame.
+
+---
+
+## Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider
+
+URL: https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html
+
+Replaced five incompatible vendor poll loops with a single heartbeat-aware polling abstraction wrapping every AI vendor's status endpoint. Unified heartbeats, timeouts, and exponential backoff — fixing watchdog kills on live jobs, inconsistent timeouts across providers, and runaway regeneration on an AI video platform. One template for Kling, Claude, ElevenLabs, and other async AI providers.
+
+---
+
+## Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours
+
+URL: https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html
+
+Systematic 48-hour post-launch audit on an AI video platform: triaging reliability regressions, UX confusion, and data honesty issues across 20 PRs batched into themed fix rounds. Every fix recorded in a living roadmap doc. Covers post-launch triage methodology, reliability regression patterns, UX leak detection, and production engineering discipline after a major launch.
+
+---
+
+## Streaming AI-Generated Video from Cloud Storage to Browser
+
+URL: https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html
+
+Replaced in-memory buffering with Range-request streaming from Google Drive through Next.js route handlers for 500MB+ AI-generated video renders. Index-first run history for fast dashboard loads. Safari black-video fix requiring poster frames and H.264 re-encoding. Performance engineering for cloud-stored AI video delivery to browsers.
+
+---
+
+## Validate Before Building: A Technical Discovery Framework for Startup Clients
+
+URL: https://humzakt.github.io/blog/validate-before-building-technical-discovery.html
+
+How a discovery call with a startup founder pivoted from an 8-phase fixed-price MVP build to problem validation first — and why refusing to design immediately built more trust. Redirected a client from a $27K fixed-price MVP to problem validation, challenging on-prem assumptions, compliance over-engineering, and the instinct to design before the problem statement was proven. Technical discovery framework for consulting with early-stage startups.
+
+---
+
 ## Building an AI Video Generation Pipeline from Scratch
 
 URL: https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html

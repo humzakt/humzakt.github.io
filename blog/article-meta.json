@@ -1,5 +1,60 @@
 [
   {
+    "id": "vision-in-the-loop-prompt-authoring",
+    "title": "Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame",
+    "summary": "The AI generates a frame, inspects its own output with vision, and rewrites the prompt to fix camera, color, or composition issues — a closed-loop feedback system for video generation.",
+    "date": "2026-07-06",
+    "themes": ["ml-ai"],
+    "components": ["AI", "Video Generation", "Computer Vision", "Prompt Engineering", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html"
+    }
+  },
+  {
+    "id": "universal-vendor-polling-heartbeat-template",
+    "title": "Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider",
+    "summary": "A single polling abstraction with heartbeats, timeouts, and exponential backoff that wraps every AI vendor's status endpoint — replacing duplicated polling logic across five providers.",
+    "date": "2026-07-06",
+    "themes": ["infrastructure"],
+    "components": ["Reliability", "TypeScript", "AI Infrastructure", "Polling", "Vendor Abstraction"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html"
+    }
+  },
+  {
+    "id": "post-launch-audit-20-prs-48-hours",
+    "title": "Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours",
+    "summary": "Systematic post-launch triage across reliability regressions, UX confusion, and data honesty — batched into themed fix rounds with a living roadmap doc.",
+    "date": "2026-07-06",
+    "themes": ["production"],
+    "components": ["Production Engineering", "Post-Launch", "Reliability", "UX", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html"
+    }
+  },
+  {
+    "id": "streaming-ai-video-cloud-storage",
+    "title": "Streaming AI-Generated Video from Cloud Storage to Browser",
+    "summary": "Range-request streaming from Google Drive through Next.js route handlers, index-first run history, and the Safari black-video fix that required poster frames and H.264 re-encoding.",
+    "date": "2026-07-06",
+    "themes": ["performance"],
+    "components": ["Performance", "Cloud Storage", "Streaming", "TypeScript", "Next.js"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html"
+    }
+  },
+  {
+    "id": "validate-before-building-technical-discovery",
+    "title": "Validate Before Building: A Technical Discovery Framework for Startup Clients",
+    "summary": "How a discovery call with a startup founder pivoted from an 8-phase fixed-price MVP build to problem validation first — and why refusing to design immediately built more trust.",
+    "date": "2026-07-06",
+    "themes": ["api-design"],
+    "components": ["Consulting", "Architecture", "Startups", "Technical Discovery", "Engineering Leadership"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/validate-before-building-technical-discovery.html"
+    }
+  },
+  {
     "id": "ai-video-generation-pipeline-architecture",
     "title": "Building an AI Video Generation Pipeline from Scratch",
     "summary": "Five-stage pipeline: analyzer, Claude planner, Kling clip gen, FFmpeg stitch with sidechain-ducked audio, and cross-scene narrative QA. 20 PRs in 3 days.",
