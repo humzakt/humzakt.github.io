@@ -1,5 +1,27 @@
 [
   {
+    "id": "ai-writing-markers-huggingface-dataset",
+    "title": "AI Writing Markers: Building an Open Dataset and Checker on Hugging Face",
+    "summary": "87+ source-backed markers of AI-generated writing, structured as a Hugging Face dataset with a zero-dependency Python checker — a transparency tool, not a detector.",
+    "date": "2026-07-21",
+    "themes": ["ml-ai"],
+    "components": ["AI", "NLP", "Hugging Face", "Open Source", "Python", "Dataset"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html"
+    }
+  },
+  {
+    "id": "psx-investor-fastapi-stock-tool",
+    "title": "PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange",
+    "summary": "A local FastAPI tool that pulls live PSX prices and generates whole-share buy plans for a Shariah/KMI30 portfolio with purchase history tracking and resilient price fallback.",
+    "date": "2026-07-21",
+    "themes": ["infrastructure"],
+    "components": ["FastAPI", "Python", "Finance", "Open Source", "PSX", "API Design"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html"
+    }
+  },
+  {
     "id": "ugc-pipeline-script-first-video-generation",
     "title": "UGC Pipeline: Script-First AI Video Generation",
     "summary": "Paradigm shift from reference-first to script-first video generation — wizard UX, scene-level review gates, candidate frame selection, and batch approve-and-render.",
@@ -41,17 +63,6 @@
     "components": ["Admin Controls", "AI Training", "Enterprise", "TypeScript", "React"],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html"
-    }
-  },
-  {
-    "id": "webhook-relay-pr-preview-environments",
-    "title": "Webhook Relay: Routing External Callbacks to PR Preview Environments",
-    "summary": "A lightweight proxy that receives external webhooks and fans them out to the correct PR preview environment, with signature verification forwarding and opt-in routing.",
-    "date": "2026-07-21",
-    "themes": ["infrastructure"],
-    "components": ["Webhooks", "DevOps", "Microservices", "Node.js", "Infrastructure"],
-    "platforms": {
-      "medium": "https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html"
     }
   },
   {

@@ -4,6 +4,22 @@
 
 ---
 
+## AI Writing Markers: Building an Open Dataset and Checker on Hugging Face
+
+URL: https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html
+
+87+ source-backed markers of AI-generated writing, curated from published research and structured as an open Hugging Face dataset. Includes a zero-dependency Python checker that scores text against marker categories — designed as a transparency tool for surfacing stylistic patterns, not a binary AI detector. Covers dataset schema design, marker taxonomy, and how to use the checker locally without external API calls.
+
+---
+
+## PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange
+
+URL: https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html
+
+A local FastAPI tool for disciplined stock investing on the Pakistan Stock Exchange. Pulls live PSX prices, generates whole-share buy plans for a Shariah/KMI30 portfolio, tracks purchase history, and implements resilient price fallback when primary data sources fail. Covers API design, portfolio allocation logic, and building a personal finance tool that runs entirely on your machine.
+
+---
+
 ## UGC Pipeline: Script-First AI Video Generation
 
 URL: https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html
@@ -33,14 +49,6 @@ Using Google Drive as a runtime-configurable asset catalog for avatars and produ
 URL: https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html
 
 Governance layer for an AI training pipeline: kill-switches per quality gate, reviewer attribution tracking who approved what, admin impersonation with full audit trails, and configurable claim timeouts per workflow stage. The controls that turn a prototype auto-seeder into an enterprise product with compliance-ready auditability.
-
----
-
-## Webhook Relay: Routing External Callbacks to PR Preview Environments
-
-URL: https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html
-
-A lightweight Node.js proxy that receives external webhooks from third-party services and fans them out to the correct PR preview environment URL. Signature verification headers are forwarded intact, routing is opt-in per preview deployment, and the relay handles the many-to-one mapping problem when multiple PRs need isolated webhook endpoints.
 
 ---
 

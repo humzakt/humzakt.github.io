@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>AI Writing Markers: Building an Open Dataset and Checker on Hugging Face — Humza Tareen</title>
+  <meta name="description" content="A source-backed catalogue of AI-writing markers with a zero-dependency Python checker, published as an open Hugging Face dataset and browser-only Gradio Space — a transparency aid, not an AI detector.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI, NLP, Hugging Face, Open Source, Python, Dataset">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="AI Writing Markers: Building an Open Dataset and Checker on Hugging Face">
+  <meta property="og:description" content="A source-backed catalogue of AI-writing markers with a zero-dependency Python checker, published as an open Hugging Face dataset and browser-only Gradio Space — a transparency aid, not an AI detector.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="NLP">
+  <meta property="article:tag" content="Hugging Face">
+  <meta property="article:tag" content="Open Source">
+  <meta property="article:tag" content="Python">
+  <meta property="article:tag" content="Dataset">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI Writing Markers: Building an Open Dataset and Checker on Hugging Face">
+  <meta name="twitter:description" content="A source-backed catalogue of AI-writing markers with a zero-dependency Python checker, published as an open Hugging Face dataset and browser-only Gradio Space — a transparency aid, not an AI detector.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "AI Writing Markers: Building an Open Dataset and Checker on Hugging Face",
+    "description": "A source-backed catalogue of AI-writing markers with a zero-dependency Python checker, published as an open Hugging Face dataset and browser-only Gradio Space — a transparency aid, not an AI detector.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html" },
+    "keywords": ["AI", "NLP", "Hugging Face", "Open Source", "Python", "Dataset"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"AI Writing Markers"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">AI Writing Markers: Building an Open Dataset and Checker on Hugging Face</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-21" itemprop="datePublished">July 21, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">NLP</span>
+        <span class="blog-tag">Hugging Face</span>
+        <span class="blog-tag">Open Source</span>
+        <span class="blog-tag">Python</span>
+        <span class="blog-tag">Dataset</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>Commercial AI detectors promise a percentage score and a verdict. Turnitin, GPTZero, and dozens of startups sell certainty to educators and employers. The problem is that certainty is fiction. Independent studies report false-positive rates from roughly 5% to over 60% on genuine human writing. Non-native English speakers and formal academic prose get flagged most often — Liang et al. (<em>Patterns</em>, 2023) showed GPT detectors are systematically biased against non-native writers.</p>
+
+      <p>I built <a href="https://github.com/humzakt/ai-writing-markers">ai-writing-markers</a> as the opposite of that model: a source-backed catalogue of concrete textual patterns associated with LLM output, plus a zero-dependency checker anyone can run locally. It is a transparency and self-editing aid, not an AI detector. Every marker cites a public source. Every report says so upfront.</p>
+
+      <blockquote>
+        The honest thing a tool can do is point at the patterns that make writing <em>read</em> as machine-generated — so a human can decide whether to change them. That is a different product category from "AI probability: 87%."
+      </blockquote>
+
+      <h2>Why opaque detectors fail</h2>
+
+      <p>Most AI detectors are black boxes. They output a score without explaining which features drove it, which training data shaped the classifier, or what the error rate is on your specific population. That opacity matters because the stakes are high: academic misconduct accusations, hiring decisions, content moderation.</p>
+
+      <p>The underlying metrics — perplexity (how predictable word choice is) and burstiness (how much sentence length varies) — are real stylometric signals. Classical detectors lean on them. But they are weak signals, not proof. A formal essay from a non-native speaker can have low burstiness and elevated perplexity scores for entirely human reasons. A short passage dense with overused LLM vocabulary might be a human imitating chatbot prose.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Detector approach</th>
+            <th>What it hides</th>
+            <th>Who gets hurt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Proprietary classifier</td>
+            <td>Training data, threshold, feature weights</td>
+            <td>Anyone without appeal path</td>
+          </tr>
+          <tr>
+            <td>Perplexity-only scoring</td>
+            <td>Reference model choice, domain mismatch</td>
+            <td>Technical and academic writers</td>
+          </tr>
+          <tr>
+            <td>Lexical n-gram matching</td>
+            <td>Which words count as "AI" and why</td>
+            <td>Non-native English speakers</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Wikipedia's WikiProject AI Cleanup produced the best public reference on this problem: the <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing">Signs of AI writing</a> field guide. Volunteers documenting real cleanup work catalogued the vocabulary, transitions, structural tells, and formatting habits that make LLM drafts obvious to a trained eye. That guide became the primary source for this dataset.</p>
+
+      <h2>The honest alternative: show the patterns</h2>
+
+      <p>Instead of collapsing stylometric complexity into a single score, ai-writing-markers surfaces individual hits grouped by category. A report might show that your draft contains three overused vocabulary terms, two cliche phrases, and a burstiness reading below the human-typical range. You see exactly what triggered the flag. You decide whether each hit is worth fixing.</p>
+
+      <p>Markers are <strong>weak signals</strong>. One instance of "delve" means almost nothing. A cluster of overused vocabulary, formulaic transitions, stock shells, and low burstiness in a short passage is a stronger hint — still not proof, but a useful prompt for a closer human read. The tool's job is to make that cluster visible, not to render a verdict.</p>
+
+      <h2>Dataset structure: six categories, 87+ markers</h2>
+
+      <p>The source of truth is <code>markers.json</code>. It defines six categories, each with a detector signal type, remediation guidance, and an array of individual markers. Every marker links back to one or more source IDs defined in a top-level <code>sources</code> array — full citations live in <code>SOURCES.md</code>.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Signal type</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Overused vocabulary</td>
+            <td>Lexical frequency</td>
+            <td><code>delve</code>, <code>tapestry</code>, <code>leverage</code></td>
+          </tr>
+          <tr>
+            <td>Formulaic transitions</td>
+            <td>Sentence-initial n-grams</td>
+            <td><code>moreover</code>, <code>furthermore</code>, <code>in conclusion</code></td>
+          </tr>
+          <tr>
+            <td>Cliche phrases</td>
+            <td>Multi-word n-grams</td>
+            <td><code>in today's fast-paced world</code>, <code>a testament to</code></td>
+          </tr>
+          <tr>
+            <td>Structural tells</td>
+            <td>Classifier features</td>
+            <td>Rule of Three, vague attribution, outline-like conclusions</td>
+          </tr>
+          <tr>
+            <td>Punctuation / formatting</td>
+            <td>Character statistics</td>
+            <td>Spaced em dashes, curly quotes, leftover chatbot markup</td>
+          </tr>
+          <tr>
+            <td>Statistical signals</td>
+            <td>Perplexity / burstiness</td>
+            <td>Low sentence-length variance, uniform pacing</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Overused vocabulary entries carry an <code>era</code> tag because LLM habits drift. "Delve" peaked in 2023–early 2024 and faded by 2025. "Underscore" in figurative use persists through 2026 — Grok still overuses it. A marker catalogue frozen at one moment in time would miss that evolution; the schema supports retiring and re-dating terms as models change.</p>
+
+      <p>The full schema wraps everything in a versioned document with metadata, licensing, and an explicit disclaimer field that downstream tools can surface programmatically:</p>
+
+<pre><code class="language-json">{
+  "schema_version": "1.0",
+  "name": "ai-writing-markers",
+  "updated": "2026-07-15",
+  "license": "CC0-1.0 (data) / MIT (code)",
+  "disclaimer": "Do not use these markers as sole evidence of misconduct.",
+  "sources": [
+    {
+      "id": "wikipedia_aisigns",
+      "title": "Wikipedia: Signs of AI writing",
+      "url": "https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing"
+    }
+  ],
+  "categories": [ "... six category objects ..." ]
+}</code></pre>
+
+      <p>Each category object carries <code>detector_signal</code> (what kind of feature this is), <code>description</code> (what the pattern looks like in the wild), and <code>remediation</code> (how to fix it without cargo-cult synonym swaps). That structure makes the dataset usable as training material for explainable classifiers, writing-assistant lint rules, or classroom curriculum — not just as input to a single CLI tool.</p>
+
+      <h3>Example marker entry</h3>
+
+<pre><code class="language-json">{
+  "term": "delve",
+  "kind": "word",
+  "era": "2023-mid2024",
+  "note": "The canonical tell; usage in academic papers spiked ~25x post-ChatGPT.",
+  "sources": ["wikipedia_aisigns", "alston"]
+}</code></pre>
+
+      <p>Structural markers can include regex patterns for mechanical detection — negative parallelisms like "not only X but Y", vague attribution phrases like "studies show", and leftover chatbot markup (<code>contentReference</code>, <code>oaicite</code>, <code>turn0search0</code>). The statistical category documents burstiness thresholds (human prose typically 0.65–0.85; AI-typical below 0.30) with explicit notes that true perplexity requires a reference language model the checker cannot load locally.</p>
+
+      <h2>Zero-dependency checker: no pip install</h2>
+
+      <p><code>check.py</code> is stdlib-only Python 3.8+. No virtual environment, no Hugging Face token, no GPU. Clone the repo and scan:</p>
+
+<pre><code class="language-bash">git clone https://github.com/humzakt/ai-writing-markers.git
+cd ai-writing-markers
+
+# Scan a file
+python3 check.py essay.md
+
+# Pipe from stdin
+cat essay.txt | python3 check.py -
+
+# Machine-readable output for downstream tooling
+python3 check.py essay.md --json</code></pre>
+
+      <p>The checker loads <code>markers.json</code>, runs lexical matching per category, applies regex patterns for structural and formatting tells, and computes burstiness plus type-token ratio as perplexity proxies. It prints per-category hit counts normalized to per-1,000-words density — because density matters more than raw counts. A handful of hits in a long document is ordinary human writing; a dense cluster in a short passage is the real signal.</p>
+
+      <p>Example output on an intentionally AI-flavoured sentence:</p>
+
+<pre><code class="language-text">$ echo "In today's fast-paced world, we must delve into the rich tapestry of innovation." | python3 check.py -
+  Overused vocabulary: 2 hit(s)
+      - delve: 1
+      - tapestry: 1
+  Cliche phrases and stock shells: 2 hit(s)
+      - in today's fast-paced world: 1
+      - rich tapestry: 1</code></pre>
+
+      <p>The report header repeats the disclaimer on every run: this is not an AI detector. Markers are weak signals, not proof. That is not legal boilerplate — it shapes how you read the output.</p>
+
+      <h3>How the analyzer works</h3>
+
+      <p>The core logic in <code>check.py</code> separates lexical categories from pattern categories. Vocabulary, transitions, and cliche phrases use literal string matching with optional sentence-start anchoring for words like "moreover" and "furthermore." Structural and punctuation categories iterate regex patterns from the JSON. Rule-of-three detection runs a separate triple-pattern pass because it is too structural for a single static regex.</p>
+
+<pre><code class="language-python">LEXICAL_CATEGORIES = {"vocabulary", "transitions", "phrases"}
+
+def analyze(text, markers):
+    n_words = max(word_count(text), 1)
+    sentences = split_sentences(text)
+    lengths = [word_count(s) for s in sentences] or [0]
+
+    for cat in markers["categories"]:
+        if cat["id"] in LEXICAL_CATEGORIES:
+            # literal word/phrase matching
+            ...
+        elif cat["id"] in ("structural", "punctuation_format"):
+            # regex-based pattern matching
+            ...
+
+    burstiness = pstdev(lengths) / mean(lengths)
+    return results</code></pre>
+
+      <p>After category hits, the checker computes burstiness (standard deviation of sentence length divided by mean) and type-token ratio as local proxies. True perplexity needs a reference language model — the checker reports the proxies and says so explicitly rather than faking a score.</p>
+
+      <h3>Known limitations</h3>
+
+      <ul>
+        <li><strong>Markdown noise</strong> — tables and <code>**bold**</code> labels legitimately trip formatting checks; strip formatting for the cleanest read</li>
+        <li><strong>Naive sentence splitting</strong> — a table row becomes one long "sentence," skewing burstiness</li>
+        <li><strong>Literal matching only</strong> — the checker cannot judge tone, hedging quality, or factual grounding</li>
+        <li><strong>English LLM output, mid-2026</strong> — the dataset will age as models shift their default voice</li>
+      </ul>
+
+      <h2>Publishing on Hugging Face: dataset + Space</h2>
+
+      <p>The project ships in two Hugging Face surfaces:</p>
+
+      <ul>
+        <li><strong><a href="https://huggingface.co/datasets/humzakt/ai-writing-markers">Dataset</a></strong> — the marker catalogue as a reusable, CC0-licensed dataset with metadata for discovery under tags like <code>ai-detection</code>, <code>stylometry</code>, and <code>writing-style</code></li>
+        <li><strong><a href="https://huggingface.co/spaces/humzakt/ai-writing-markers">Space</a></strong> — a browser-only checker where you paste text and scan; nothing leaves your machine</li>
+      </ul>
+
+      <p>The repo contains two Space implementations. <code>space/</code> is a Gradio app — full Python server, but Hugging Face requires a PRO plan to host Gradio Spaces on the free tier. <code>space-static/</code> is the deployed version: client-side JavaScript that loads the marker data and runs matching in the browser. Same catalogue, no server round-trip, free to host. Publishing steps are documented in <code>HUGGINGFACE.md</code>.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Surface</th>
+            <th>URL</th>
+            <th>Runtime</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GitHub repo</td>
+            <td><a href="https://github.com/humzakt/ai-writing-markers">humzakt/ai-writing-markers</a></td>
+            <td>Local Python CLI</td>
+          </tr>
+          <tr>
+            <td>HF Dataset</td>
+            <td><a href="https://huggingface.co/datasets/humzakt/ai-writing-markers">humzakt/ai-writing-markers</a></td>
+            <td>JSONL rows, CC0 data</td>
+          </tr>
+          <tr>
+            <td>HF Space (static)</td>
+            <td><a href="https://huggingface.co/spaces/humzakt/ai-writing-markers">humzakt/ai-writing-markers</a></td>
+            <td>Browser-only JS</td>
+          </tr>
+          <tr>
+            <td>HF Space (Gradio)</td>
+            <td><code>space/</code> in repo</td>
+            <td>Python server (PRO to host)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The dataset card on Hugging Face includes YAML front matter — license, language, tags, task categories — so it surfaces in searches for stylometry, academic integrity tooling, and lexicon datasets. Tags like <code>ai-detection</code>, <code>llm</code>, <code>burstiness</code>, and <code>wikipedia</code> connect the catalogue to the communities most likely to need cited, explainable markers rather than opaque scores.</p>
+
+      <h2>Why markers.jsonl exists alongside markers.json</h2>
+
+      <p>Hugging Face's dataset viewer expects tabular data — one row per record, flat columns. Nested JSON with category arrays and marker objects does not render cleanly in the viewer. So <code>markers.jsonl</code> is a generated, flattened view: one line per marker with denormalized category labels, source IDs as comma-separated strings, and empty-string placeholders for fields that do not apply.</p>
+
+<pre><code class="language-json">{"category": "vocabulary", "category_label": "Overused vocabulary", "term": "delve", "kind": "word", "era": "2023-mid2024", "position": "", "regex": "", "note": "The canonical tell; usage in academic papers spiked ~25x post-ChatGPT.", "sources": "wikipedia_aisigns, alston"}</code></pre>
+
+      <p><code>markers.json</code> remains the source of truth — richer structure, nested sources array, category-level remediation text, statistical thresholds. <code>markers.jsonl</code> is a build artifact optimized for HF dataset viewer compatibility and programmatic row-wise consumption. Edit the JSON; regenerate the JSONL. The checker reads only <code>markers.json</code>.</p>
+
+      <h2>Ethical framing: never sole evidence of misconduct</h2>
+
+      <p>This project exists in the gap between "ignore AI writing entirely" and "trust a black-box percentage." Both extremes fail. Ignoring the patterns leaves editors and reviewers without vocabulary for what they are already noticing. Trusting opaque scores produces false accusations against the writers least able to defend themselves.</p>
+
+      <p>The dataset's top-level disclaimer is explicit:</p>
+
+      <blockquote>
+        Do not use these markers, or any tool built on them, as sole evidence of misconduct. Treat every result as a prompt for a closer human read.
+      </blockquote>
+
+      <p>Legitimate uses: auditing your own drafts before submission, teaching what "AI voice" looks like in a writing workshop, building explainable tooling that shows its work, feeding a richer classifier with cited features instead of mystery weights. Illegitimate uses: automated rejection, academic integrity verdicts based on marker density alone, hiring filters that penalize formal non-native prose.</p>
+
+      <p>Swapping flagged words for synonyms does not work either — synonyms are also high-probability tokens, and synonym swaps do nothing for burstiness. What actually helps:</p>
+
+      <ol>
+        <li><strong>Vary sentence length deliberately</strong> — drop a 3–8 word sentence between long ones; allow fragments</li>
+        <li><strong>Replace generic claims with specifics</strong> — names, numbers, examples tied to your actual subject</li>
+        <li><strong>Cut stock shells</strong> — delete "it is important to note that" and state the point directly</li>
+        <li><strong>Take a position</strong> — replace "there are pros and cons" hedging with an actual stance</li>
+        <li><strong>Break parallel structures</strong> — the Rule of Three reads as filler; two items or four breaks the rhythm</li>
+      </ol>
+
+      <p>The per-category remediation fields in <code>markers.json</code> and the human-readable explainers in <code>data/</code> encode that guidance with citations. The checker points; the explainers teach.</p>
+
+      <h3>Licensing and attribution</h3>
+
+      <p>Code ships under MIT. Data (<code>markers.json</code>, <code>data/</code>) is CC0 — public domain dedication. Underlying observations come from public sources credited in <code>SOURCES.md</code>; Wikipedia content is CC BY-SA. That split lets researchers fork the dataset without license friction while keeping the checker embeddable in commercial tooling.</p>
+
+      <h2>What I would build next</h2>
+
+      <p>Markers evolve with models. The contributing guide accepts PRs that add, retire, or re-date markers — each change must cite a source. I would like a small CI step that validates JSON schema, regenerates JSONL, and checks that every marker's source ID resolves in the sources array. I would also expose era-filtering in the checker so you can scan against "2024-era ChatGPT" vocabulary separately from current-model tells.</p>
+
+      <p>The broader lesson applies beyond writing: when a system's output affects people, transparency beats confidence scores. Show the features. Cite the sources. Let humans decide.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="llm-adjudication-dedup-false-positives.html" style="color:#64ffda;text-decoration:none;font-size:15px;">When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer</a><br><span style="color:#8892b0;font-size:13px;">LLM second-opinion layer for embedding false positives with structured verdicts</span></li>
+        <li style="margin-bottom:12px;"><a href="auto-rater-service-llm-scoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">LLM Scoring: Prototype to Production</a><br><span style="color:#8892b0;font-size:13px;">Automated rating service for LLM outputs with idempotent Cloud Tasks and Redis state</span></li>
+        <li style="margin-bottom:12px;"><a href="vision-in-the-loop-prompt-authoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame</a><br><span style="color:#8892b0;font-size:13px;">Closed-loop prompt rewrite from generated frames for video quality</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

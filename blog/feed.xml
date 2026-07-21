@@ -20,6 +20,36 @@
     </image>
 
     <item>
+      <title>AI Writing Markers: Building an Open Dataset and Checker on Hugging Face</title>
+      <link>https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>87+ source-backed markers of AI-generated writing, structured as a Hugging Face dataset with a zero-dependency Python checker — a transparency tool, not a detector.</description>
+      <category>AI</category>
+      <category>NLP</category>
+      <category>Hugging Face</category>
+      <category>Open Source</category>
+      <category>Python</category>
+      <category>Dataset</category>
+    </item>
+
+    <item>
+      <title>PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange</title>
+      <link>https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A local FastAPI tool that pulls live PSX prices and generates whole-share buy plans for a Shariah/KMI30 portfolio with purchase history tracking and resilient price fallback.</description>
+      <category>FastAPI</category>
+      <category>Python</category>
+      <category>Finance</category>
+      <category>Open Source</category>
+      <category>PSX</category>
+      <category>API Design</category>
+    </item>
+
+    <item>
       <title>UGC Pipeline: Script-First AI Video Generation</title>
       <link>https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html</guid>
@@ -74,20 +104,6 @@
       <category>Enterprise</category>
       <category>TypeScript</category>
       <category>React</category>
-    </item>
-
-    <item>
-      <title>Webhook Relay: Routing External Callbacks to PR Preview Environments</title>
-      <link>https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html</link>
-      <guid isPermaLink="true">https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html</guid>
-      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
-      <dc:creator>Humza Tareen</dc:creator>
-      <description>A lightweight proxy that receives external webhooks and fans them out to the correct PR preview environment, with signature verification forwarding and opt-in routing.</description>
-      <category>Webhooks</category>
-      <category>DevOps</category>
-      <category>Microservices</category>
-      <category>Node.js</category>
-      <category>Infrastructure</category>
     </item>
 
     <item>

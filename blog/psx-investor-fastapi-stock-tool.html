@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange — Humza Tareen</title>
+  <meta name="description" content="How a local FastAPI app pulls live PSX prices, computes whole-share buy plans for a Shariah/KMI30 portfolio, and keeps personal finance data on your machine — with resilient price fetching and no frontend build step.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="FastAPI, Python, Finance, Open Source, PSX, API Design">
+  <link rel="canonical" href="https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange">
+  <meta property="og:description" content="How a local FastAPI app pulls live PSX prices, computes whole-share buy plans for a Shariah/KMI30 portfolio, and keeps personal finance data on your machine — with resilient price fetching and no frontend build step.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="FastAPI">
+  <meta property="article:tag" content="Python">
+  <meta property="article:tag" content="Finance">
+  <meta property="article:tag" content="Open Source">
+  <meta property="article:tag" content="PSX">
+  <meta property="article:tag" content="API Design">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange">
+  <meta name="twitter:description" content="How a local FastAPI app pulls live PSX prices, computes whole-share buy plans for a Shariah/KMI30 portfolio, and keeps personal finance data on your machine — with resilient price fetching and no frontend build step.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange",
+    "description": "How a local FastAPI app pulls live PSX prices, computes whole-share buy plans for a Shariah/KMI30 portfolio, and keeps personal finance data on your machine — with resilient price fetching and no frontend build step.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html" },
+    "keywords": ["FastAPI", "Python", "Finance", "Open Source", "PSX", "API Design"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"PSX Investor: A FastAPI Tool for Disciplined Stock Investing"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-21" itemprop="datePublished">July 21, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">FastAPI</span>
+        <span class="blog-tag">Python</span>
+        <span class="blog-tag">Finance</span>
+        <span class="blog-tag">Open Source</span>
+        <span class="blog-tag">PSX</span>
+        <span class="blog-tag">API Design</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>Every month I invest a fixed PKR amount into a Shariah-compliant portfolio aligned with the KMI30 index. The discipline is simple: same amount, same target weights, buy whole shares only. The execution is not. I was opening a spreadsheet, looking up twelve tickers on the PSX data portal, dividing PKR 50,000 by each live price, flooring to whole shares, summing the costs, and manually checking that leftover cash was acceptable. One mistyped price or forgotten ticker skewed the allocation for the month.</p>
+
+      <p><a href="https://github.com/humzakt/psx-investor">PSX Investor</a> is the local tool I built to automate that workflow. It is a FastAPI backend plus a single self-contained HTML page: enter an amount, get a buy plan with live prices, record what you actually purchased, and track positions at cost and market value. It never places trades. It is decision support, not a brokerage.</p>
+
+      <blockquote>
+        The hard part of disciplined investing is not picking stocks — it is doing the same correct arithmetic every month without letting friction erode the habit.
+      </blockquote>
+
+      <h2>The problem: manual math does not scale with discipline</h2>
+
+      <p>Target-weight investing on the PSX has constraints that generic portfolio calculators ignore:</p>
+
+      <ul>
+        <li><strong>Whole shares only</strong> — you cannot buy 3.7 shares of ENGRO; you buy 3 and carry leftover cash.</li>
+        <li><strong>Live prices matter</strong> — intraday quotes shift the share count materially on a PKR 50,000 ticket.</li>
+        <li><strong>Many holdings</strong> — a KMI30-aligned portfolio might hold a dozen names; each needs a price lookup and a floor division.</li>
+        <li><strong>Tracking over time</strong> — after the buy, you need average cost, market value, and unrealized P/L at next month's prices.</li>
+      </ul>
+
+      <p>Spreadsheets work until they do not. A stale price cell propagates through every row. Copy-paste from the PSX portal breaks when the page layout changes. And every month you repeat the same twelve lookups instead of clicking one button.</p>
+
+      <h2>Why local, not SaaS</h2>
+
+      <p>Personal finance data — target weights, purchase history, average cost basis, thesis notes — belongs on your machine. A SaaS portfolio tracker would need accounts, cloud storage, privacy policies, and ongoing maintenance for a tool I use once a month for twenty minutes.</p>
+
+      <p>PSX Investor runs on <code>localhost:8787</code>. Portfolio config and transaction history resolve to local JSON files (or a mounted private repo). No API keys, no signup, no data leaving the network except price fetches to the PSX data portal. The public GitHub repo ships a generic example allocation; your real weights and purchase history stay git-ignored or in a separate private repository.</p>
+
+      <p>This is infrastructure thinking applied to personal tooling: minimize moving parts, keep the trust boundary on your laptop, and make the default path safe for open-source sharing.</p>
+
+      <h2>Architecture</h2>
+
+      <p>The request path for the core workflow is straightforward:</p>
+
+<pre><code>browser  -&gt;  GET /api/plan?amount=50000
+             |
+             FastAPI (app/main.py)
+             |-&gt; load_portfolio()      data/portfolio.json
+             |-&gt; psx.get_prices()      dps.psx.com.pk  (async, cached, fallback)
+             |-&gt; build_plan()          floor(amount * weight / price)
+             &lt;-  JSON: rows + totals</code></pre>
+
+      <p>The browser never talks to PSX directly. The Python backend loads portfolio weights, fetches prices concurrently, computes the plan, and returns structured JSON the frontend renders as a table. Purchase recording and position aggregation follow the same pattern — local JSON in, enriched JSON out.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GET</td>
+            <td><code>/api/plan?amount=&amp;optimize=&amp;refresh=</code></td>
+            <td>Full buy plan for a PKR amount</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td><code>/api/prices?refresh=</code></td>
+            <td>Latest prices for portfolio tickers</td>
+          </tr>
+          <tr>
+            <td>GET / PUT</td>
+            <td><code>/api/portfolio</code></td>
+            <td>Read or save edited holdings and weights</td>
+          </tr>
+          <tr>
+            <td>GET / POST / DELETE</td>
+            <td><code>/api/transactions[/{id}]</code></td>
+            <td>Purchase history CRUD</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td><code>/api/positions?refresh=</code></td>
+            <td>Accumulated holdings at live prices</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>The PSX price proxy pattern</h2>
+
+      <p>The PSX data portal at <code>dps.psx.com.pk</code> exposes undocumented JSON endpoints — intraday ticks at <code>/timeseries/int/{symbol}</code> and end-of-day history at <code>/timeseries/eod/{symbol}</code>. Both return <code>{"status": 1, "data": [[epoch, price, ...], ...]}</code> with the newest row first.</p>
+
+      <p>These endpoints send <strong>no CORS headers</strong>. A browser fetch from <code>localhost</code> fails before the response arrives. The fix is not a browser extension or a CORS proxy service — it is server-side fetching in Python, which is exactly what FastAPI is for.</p>
+
+<pre><code class="language-python">async def _fetch_one(client: httpx.AsyncClient, ticker: str) -&gt; PriceInfo | None:
+    """Fetch a single ticker: try intraday, then EOD."""
+    for url, source in ((INT_URL, "intraday"), (EOD_URL, "eod")):
+        try:
+            resp = await client.get(url.format(symbol=ticker))
+            resp.raise_for_status()
+            parsed = _parse_series(resp.json())
+        except (httpx.HTTPError, json.JSONDecodeError, ValueError):
+            parsed = None
+        if parsed is not None:
+            price, epoch = parsed
+            return PriceInfo(
+                ticker=ticker, price=price, source=source, as_of=epoch, stale=False
+            )
+    return None</code></pre>
+
+      <p>PSX may reject requests without a browser-like User-Agent, so the client sends standard browser headers. All tickers fetch concurrently via <code>asyncio.gather</code>. The frontend sees a clean JSON price map; it never needs to know about CORS, referer headers, or the intraday-vs-EOD fallback chain.</p>
+
+      <h2>Whole-share math and leftover optimization</h2>
+
+      <p>The buy plan core is intentionally boring — that is the point. For each holding, target PKR is <code>amount * weight / 100</code>, shares are <code>floor(target_pkr / price)</code>, and cost is <code>shares * price</code>. Actual weight is whatever you actually spent divided by the total amount.</p>
+
+<pre><code class="language-python">for h in portfolio.holdings:
+    info = prices.get(h.ticker, PriceInfo(ticker=h.ticker))
+    target_pkr = amount * h.weight / 100.0
+    if info.price and info.price &gt; 0:
+        shares = int(math.floor(target_pkr / info.price))
+        cost = shares * info.price
+    else:
+        shares, cost = 0, 0.0
+    rows.append(PlanRow(
+        ticker=h.ticker,
+        weight=h.weight,
+        price=info.price,
+        stale=info.stale,
+        target_pkr=round(target_pkr, 2),
+        shares=shares,
+        cost=round(cost, 2),
+        actual_weight=round((cost / amount * 100) if amount else 0.0, 2),
+    ))</code></pre>
+
+      <p>Flooring guarantees whole shares but leaves leftover cash — often 3–8% of the ticket on a diversified portfolio. An optional <code>optimize=true</code> flag runs a greedy leftover pass: buy one share at a time on the most underweight affordable name until cash runs out.</p>
+
+<pre><code class="language-python">def _optimize_leftover(rows: list[PlanRow], amount: float, prices: dict) -&gt; None:
+    """Spend residual cash on the most-underweight affordable holding."""
+    leftover = amount - sum(r.cost for r in rows)
+    for _ in range(10_000):
+        best, best_gap = None, 0.0
+        for row in rows:
+            if not row.price or row.price &gt; leftover:
+                continue
+            gap = row.weight - row.actual_weight
+            if gap &gt; best_gap:
+                best_gap, best = gap, row
+        if best is None:
+            break
+        best.shares += 1
+        best.cost += best.price
+        best.actual_weight = (best.cost / amount * 100) if amount else 0.0
+        leftover -= best.price</code></pre>
+
+      <p>The optimizer is not mean-variance rebalancing — it is a practical way to deploy cash that would otherwise sit idle until next month. The UI shows both target and actual weight per row so you can see exactly where the drift is before you place orders with your broker.</p>
+
+      <h2>Resilient price fetching: cache, stale fallback, flag</h2>
+
+      <p>A buy-plan tool that errors out when PSX hiccups is worse than a spreadsheet. PSX Investor treats price availability as a reliability problem, not a binary success/failure.</p>
+
+      <p>The fetch pipeline has three layers:</p>
+
+      <ol>
+        <li><strong>In-memory TTL cache</strong> — 60-second window avoids hammering PSX on rapid refreshes.</li>
+        <li><strong>Persistent disk cache</strong> — <code>data/prices_cache.json</code> mirrors last-good prices across restarts.</li>
+        <li><strong>Stale fallback</strong> — if live fetch fails, return the cached price with <code>stale=True</code> instead of breaking the plan.</li>
+      </ol>
+
+<pre><code class="language-python">for ticker, info in zip(to_fetch, fetched, strict=True):
+    if isinstance(info, PriceInfo):
+        result[ticker] = info
+        _memory_cache[ticker] = (info, time.monotonic())
+        persistent[ticker] = {"price": info.price, "source": info.source, "as_of": info.as_of}
+    else:
+        prev = persistent.get(ticker)
+        if prev and prev.get("price"):
+            result[ticker] = PriceInfo(
+                ticker=ticker, price=prev["price"], source="cache",
+                as_of=prev.get("as_of"), stale=True,
+            )
+        else:
+            result[ticker] = PriceInfo(ticker=ticker)  # unavailable</code></pre>
+
+      <p>The plan response includes <code>any_stale: true</code> when any row used a fallback price. The UI can surface a warning; you decide whether to refresh or proceed with last-known quotes. Unavailable tickers get zero shares rather than a 500 error — the plan still renders for the names that priced successfully.</p>
+
+      <h2>Private vs public repo split</h2>
+
+      <p>Open-sourcing a portfolio tool creates a tension: you want others to clone and run it, but you cannot commit your real allocation or purchase history. PSX Investor resolves config through a priority chain:</p>
+
+<pre><code class="language-python">def _read_path() -&gt; Path:
+    """Resolve which config to read: private repo -&gt; local data -&gt; shipped example."""
+    for path in (PRIVATE_DIR / "portfolio.json", DATA_DIR / "portfolio.json", EXAMPLE_FILE):
+        if path.exists():
+            return path
+    return EXAMPLE_FILE
+
+def _write_path() -&gt; Path:
+    """Where edits are saved: into the private repo if it exists, else local data/."""
+    target_dir = PRIVATE_DIR if PRIVATE_DIR.exists() else DATA_DIR
+    return target_dir / "portfolio.json"</code></pre>
+
+      <p>A fresh clone reads <code>data/portfolio.example.json</code> — a generic KMI30-style allocation with placeholder weights. When you edit in the browser, saves go to <code>data/portfolio.json</code>, which is git-ignored. If you mount a separate private repository at <code>private/</code>, that takes priority for both reads and writes — portfolio config, thesis notes, and transaction history stay out of the public repo entirely.</p>
+
+      <p>Transactions follow the same pattern: <code>private/transactions.json</code> → <code>data/transactions.json</code>, both git-ignored, no committed example. The public repo demonstrates the tool; the private repo holds your actual financial state.</p>
+
+      <h2>One-page frontend, no build step</h2>
+
+      <p>PSX Investor deliberately avoids a Node toolchain. The frontend is a single <code>static/index.html</code> with inline CSS and vanilla JavaScript — fetch calls to <code>/api/plan</code>, table rendering, an edit-weights modal, and a transaction recorder prefilled from the plan rows.</p>
+
+      <p>FastAPI serves it directly:</p>
+
+<pre><code class="language-python">@app.get("/")
+async def index() -&gt; FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")</code></pre>
+
+      <p>One <code>bash run.sh</code> creates a venv, installs dependencies, and starts uvicorn on port 8787. Interactive API docs live at <code>/docs</code> for debugging. For a personal tool used monthly, zero build step means zero "npm audit fix" before you can check your allocation.</p>
+
+      <h3>Positions and purchase tracking</h3>
+
+      <p>After placing orders with your broker, you record what you actually bought — shares and fill price, prefilled from the plan. The <code>/api/positions</code> endpoint aggregates transactions into holdings with average cost, market value at live prices, and unrealized P/L. This closes the loop: plan → execute → record → measure drift over months.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Responsibility</th>
+            <th>Failure mode handled</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Price proxy</td>
+            <td>Server-side PSX fetch, CORS bypass</td>
+            <td>Browser cannot reach PSX JSON endpoints</td>
+          </tr>
+          <tr>
+            <td>Plan engine</td>
+            <td>Whole-share floor + optional optimizer</td>
+            <td>Fractional-share fantasy allocations</td>
+          </tr>
+          <tr>
+            <td>Cache tier</td>
+            <td>Memory TTL + disk + stale flag</td>
+            <td>Transient PSX outage breaks monthly workflow</td>
+          </tr>
+          <tr>
+            <td>Config resolution</td>
+            <td>private/ → data/ → example</td>
+            <td>Real allocation committed to public repo</td>
+          </tr>
+          <tr>
+            <td>Static UI</td>
+            <td>Single HTML, no bundler</td>
+            <td>Tool rot from abandoned frontend deps</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Running it locally</h2>
+
+      <p>The repo is intentionally small — Python 3.12, FastAPI, httpx, and Pydantic models. Clone, run, open the browser:</p>
+
+<pre><code class="language-bash">git clone https://github.com/humzakt/psx-investor.git
+cd psx-investor
+bash run.sh
+# open http://localhost:8787</code></pre>
+
+      <p>The plan endpoint accepts query parameters directly, which makes curl-based sanity checks easy before you trust the UI:</p>
+
+<pre><code class="language-bash">curl "http://localhost:8787/api/plan?amount=50000&amp;optimize=true"</code></pre>
+
+      <p>Interactive OpenAPI docs at <code>/docs</code> expose every route — useful when debugging stale-price flags or validating a portfolio edit before saving.</p>
+
+      <h2>What I would extend next</h2>
+
+      <p>The current tool stops where a brokerage API would begin — it computes and records, never executes. Reasonable extensions: export the plan as CSV for broker order entry, add dividend reinvestment tracking, or wire a scheduled price refresh for end-of-day batch planning. Each would stay local-first.</p>
+
+      <p>The pattern generalizes beyond PSX: any market with a scrapeable or undocumented price feed, whole-share constraints, and a desire to keep personal data off someone else's cloud is a candidate for the same FastAPI-proxy-plus-static-UI architecture.</p>
+
+      <p><strong>Disclaimer:</strong> PSX Investor is not financial advice. Prices come from unofficial endpoints and may be delayed or wrong. Do your own research and consult a licensed advisor before investing.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="event-driven-architecture-gcp-pubsub.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Event-Driven Architecture on GCP Pub/Sub</a><br><span style="color:#8892b0;font-size:13px;">Decoupled services, async messaging, and reliable event delivery patterns</span></li>
+        <li style="margin-bottom:12px;"><a href="streaming-ai-video-cloud-storage.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Streaming AI Video to Cloud Storage</a><br><span style="color:#8892b0;font-size:13px;">Resumable uploads and chunked streaming for large generated assets</span></li>
+        <li style="margin-bottom:12px;"><a href="drive-backed-asset-catalogs-runtime.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Drive-Backed Asset Catalogs at Runtime</a><br><span style="color:#8892b0;font-size:13px;">External data sources as live catalogs without redeploying configuration</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>
