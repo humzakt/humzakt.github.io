@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways — Humza Tareen</title>
+  <meta name="description" content="How b-roll on the AI ad platform evolved through three phases — manual beat placement, reference timing swipe, and vision-authored AI cutaways — with feature-flag gating and people-free constraints.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI, Video Generation, B-Roll, Computer Vision, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways">
+  <meta property="og:description" content="How b-roll on the AI ad platform evolved through three phases — manual beat placement, reference timing swipe, and vision-authored AI cutaways — with feature-flag gating and people-free constraints.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="B-Roll">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways">
+  <meta name="twitter:description" content="How b-roll on the AI ad platform evolved through three phases — manual beat placement, reference timing swipe, and vision-authored AI cutaways — with feature-flag gating and people-free constraints.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways",
+    "description": "How b-roll on the AI ad platform evolved through three phases — manual beat placement, reference timing swipe, and vision-authored AI cutaways — with feature-flag gating and people-free constraints.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html" },
+    "keywords": ["AI", "Video Generation", "B-Roll", "Computer Vision", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Three Phases of AI B-Roll"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-21" itemprop="datePublished">July 21, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">B-Roll</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>B-roll is what makes a UGC testimonial feel edited rather than generated. The presenter talks to camera; cutaways show the product in hand, the label close-up, the lifestyle context. Without b-roll, AI ads read as a single static talking head — technically correct, emotionally flat.</p>
+
+      <p>On the AI ad platform, b-roll capability did not arrive fully formed. It evolved through three deliberate phases inside the tool's scene planner, each solving the limitations of the last. Phase 1 gave editors control. Phase 2 automated timing from references. Phase 3 generated the cutaways themselves with vision-authored prompts. A power-user feature flag gated the progression so we could ship incrementally without breaking production swipe flows.</p>
+
+      <blockquote>
+        B-roll is not decoration — it is narrative punctuation. The pipeline had to learn where to punctuate before it could learn what to show.
+      </blockquote>
+
+      <h2>Why b-roll needed its own evolution arc</h2>
+
+      <p>Main-scene generation and b-roll generation are different problems. Person scenes need identity anchoring, motion transfer, and VO sync. B-roll cutaways need product visibility, pacing that matches the A-roll beat, and — critically — <strong>no competing human faces</strong> that confuse the viewer about who the protagonist is.</p>
+
+      <p>Early swipe iterations treated b-roll as an afterthought: if the reference had cutaways, copy the timestamps; if not, skip them. Script-first UGC mode made that insufficient. Editors writing original scripts still needed cutaways, but had no reference timing to swipe. The three-phase arc was the structured response.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Editor action</th>
+            <th>System responsibility</th>
+            <th>Requires reference video?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Phase 1</td>
+            <td>Manually mark b-roll beats on timeline</td>
+            <td>Insert placeholder cutaway slots</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Phase 2</td>
+            <td>Review auto-placed beats</td>
+            <td>Extract b-roll timing from reference</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>Phase 3</td>
+            <td>Brief + approve generated cutaways</td>
+            <td>Vision-authored prompts + AI generation</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Phase 1: Manual b-roll beat placement</h2>
+
+      <p>Phase 1 shipped inside the tool's scene planner as cutaway beat markers. Editors scrubbed the A-roll timeline and dropped b-roll insertion points — the same mental model as marking ad breaks in a non-linear editor, simplified to click-to-insert.</p>
+
+<pre><code class="language-typescript">interface BrollBeat {
+  id: string;
+  insertAfterSceneId: string;
+  offsetMs: number;           // within-scene offset
+  durationMs: number;         // target cutaway length
+  brief?: string;             // optional editor hint
+  source: 'manual';
+}
+
+function insertManualBeat(
+  plan: ScenePlan,
+  afterSceneId: string,
+  offsetMs: number,
+): ScenePlan {
+  const beat: BrollBeat = {
+    id: generateId(),
+    insertAfterSceneId: afterSceneId,
+    offsetMs,
+    durationMs: DEFAULT_BROLL_DURATION_MS,
+    source: 'manual',
+  };
+  return { ...plan, brollBeats: [...plan.brollBeats, beat] };
+}</code></pre>
+
+      <p>Phase 1 proved the data model. Every subsequent phase reuses <code>BrollBeat</code> — only the <code>source</code> field and prompt generation logic change. Beats could be inserted between scenes (not just mid-scene), which mattered for script-first runs where scene boundaries align with script paragraphs rather than reference cuts.</p>
+
+      <p>The limitation was obvious: manual placement scales poorly. A twelve-scene ad with three cutaways each meant thirty-six click decisions per run. Editors wanted the system to propose timing, not just slots.</p>
+
+      <h2>Phase 2: Auto-placement from reference timing</h2>
+
+      <p>Phase 2 activated when a reference video existed. The analyzer extracted b-roll segments from the reference — moments where the camera cut away from the presenter to product or lifestyle footage — and the planner mapped those timestamps onto the generated A-roll timeline.</p>
+
+      <p>The "swipe" metaphor is literal: b-roll timing swipes from reference to generated plan, adjusted for duration differences between reference VO and generated VO.</p>
+
+<pre><code class="language-typescript">interface ReferenceBrollSegment {
+  startMs: number;
+  endMs: number;
+  classification: 'product' | 'lifestyle' | 'detail';
+}
+
+function swipeBrollTiming(
+  referenceSegments: ReferenceBrollSegment[],
+  generatedPlan: ScenePlan,
+  referenceDurationMs: number,
+  generatedDurationMs: number,
+): BrollBeat[] {
+  const scale = generatedDurationMs / referenceDurationMs;
+  return referenceSegments.map(seg =&gt; ({
+    id: generateId(),
+    insertAfterSceneId: mapTimestampToScene(seg.startMs * scale, generatedPlan),
+    offsetMs: sceneLocalOffset(seg.startMs * scale, generatedPlan),
+    durationMs: (seg.endMs - seg.startMs) * scale,
+    classification: seg.classification,
+    source: 'reference-swipe',
+  }));
+}</code></pre>
+
+      <p>Phase 2 dramatically reduced editor labor on reference-first runs. It did nothing for script-first runs — which is exactly why Phase 3 existed.</p>
+
+      <h2>Phase 3: AI-generated cutaways with vision-authored prompts</h2>
+
+      <p>Phase 3 is the full solution: the system generates b-roll clips, not just timing slots. The pipeline:</p>
+
+      <ol>
+        <li><strong>Beat proposal</strong> — LLM reads the script and proposes cutaway moments (product reveal, usage demo, lifestyle context)</li>
+        <li><strong>Vision-authored prompts</strong> — vision model inspects the adjacent A-roll frame and writes a b-roll prompt grounded in what is actually visible</li>
+        <li><strong>Generation</strong> — cutaway renders through the video model with people-free constraints</li>
+        <li><strong>Editor brief</strong> — optional override text merged into the vision prompt</li>
+        <li><strong>Cloned-voice VO</strong> — b-roll segments can carry supplementary narration when the script calls for it</li>
+      </ol>
+
+<pre><code class="language-typescript">async function authorBrollPrompt(
+  aRollFrame: Buffer,
+  beat: BrollBeat,
+  product: ProductCatalogEntry,
+  editorBrief?: string,
+): Promise&lt;string&gt; {
+  const visionContext = await visionModel.describe({
+    frame: aRollFrame,
+    focus: ['visible product', 'setting', 'lighting', 'palette'],
+    exclude: ['faces', 'presenter identity'],
+  });
+
+  return promptComposer.compose({
+    template: 'broll-cutaway',
+    visionContext,
+    productLock: product.heroImageUrl,
+    editorBrief,
+    constraints: PEOPLE_FREE_CONSTRAINTS,
+  });
+}</code></pre>
+
+      <p>Vision-authored prompts solved a subtle quality problem. Text-only b-roll prompts hallucinate context — "woman in sunny kitchen holding product" when the A-roll frame shows a bathroom vanity with cool lighting. Grounding the prompt in the actual frame produces cutaways that match the established scene geography.</p>
+
+      <h3>People-free b-roll: identity protection</h3>
+
+      <p>The most important constraint in Phase 3 is <strong>people-free b-roll</strong>. If a cutaway shows a human face — even a generic stock-looking person — viewers subconsciously reassign protagonist identity. Scene four's presenter no longer matches scene seven's because the b-roll face became a competing anchor.</p>
+
+      <p>People-free constraints apply at three layers:</p>
+
+      <ul>
+        <li><strong>Prompt negatives</strong> — explicit exclusion of faces, hands with identifiable features, and full human figures</li>
+        <li><strong>Vision QA</strong> — post-generation frame scan rejects clips with detected faces above confidence threshold</li>
+        <li><strong>Product-only fallback</strong> — if people-free generation fails twice, fall back to product hero animation without lifestyle context</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Constraint layer</th>
+            <th>Failure mode prevented</th>
+            <th>Fallback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Prompt negatives</td>
+            <td>Model generates presenter lookalike in b-roll</td>
+            <td>Retry with stronger negatives</td>
+          </tr>
+          <tr>
+            <td>Vision QA face detection</td>
+            <td>Subtle partial face in background</td>
+            <td>Regenerate or product-only fallback</td>
+          </tr>
+          <tr>
+            <td>Captioned Drive link validation</td>
+            <td>Editor-uploaded reference with wrong subject</td>
+            <td>Block upload, surface error in planner</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The captioned Google Drive link fix addressed a specific bug: editors pasted Drive URLs to reference b-roll footage, but the link preview showed the wrong thumbnail. We added caption validation and people-free checks on uploaded reference clips before they entered the prompt chain.</p>
+
+      <h2>Feature flag gating and progressive rollout</h2>
+
+      <p>All three phases coexist behind a power flag — <code>UGC_BROLL_ENABLED</code> — with sub-flags for each phase tier. Production reference-first runs stayed on Phase 2 by default. Internal testers and script-first beta users got Phase 3.</p>
+
+<pre><code class="language-typescript">function resolveBrollPhase(flags: FeatureFlags, run: RunConfig): BrollPhase {
+  if (!flags.UGC_BROLL_ENABLED) return 'disabled';
+  if (run.mode === 'script-first' &amp;&amp; flags.UGC_BROLL_PHASE_3) return 'ai-generated';
+  if (run.referenceVideoUrl &amp;&amp; flags.UGC_BROLL_PHASE_2) return 'reference-swipe';
+  if (flags.UGC_BROLL_PHASE_1) return 'manual';
+  return 'disabled';
+}</code></pre>
+
+      <p>Gating also controlled UI surface area. Phase 1 exposed beat markers in the planner. Phase 2 added a "swipe timing from reference" button. Phase 3 added cutaway preview tiles, editor brief fields, and insert-between-scenes handles. Shipping all three UI surfaces at once would have overwhelmed editors who only needed manual markers.</p>
+
+      <h3>Insert-between-scenes control</h3>
+
+      <p>A late addition to the gating PR: b-roll beats are not only mid-scene offsets. Editors can insert cutaways <em>between</em> scene boundaries — useful when the script has a natural paragraph break that does not map to a mid-scene timestamp. The planner renders these as bridge segments in the stitch timeline, with J-cut audio overlap from the adjacent A-roll.</p>
+
+      <h2>End-to-end fixes in Phase 3</h2>
+
+      <p>Phase 3 was not just generation — it required stitch-time and VO pipeline changes:</p>
+
+      <ul>
+        <li><strong>Cloned-voice VO on cutaways</strong> — supplementary lines use the same ElevenLabs voice clone as the presenter, with shorter pacing targets</li>
+        <li><strong>Stitch ordering</strong> — b-roll segments interleave with A-roll clips using explicit timeline indices, not filename sort order</li>
+        <li><strong>Duration sync</strong> — cutaway length clamped to beat duration; overflow triggers trim, underflow triggers hold-frame extension</li>
+        <li><strong>E2E test coverage</strong> — full run with b-roll beats through stitch export validated in CI</li>
+      </ul>
+
+      <h2>Phase comparison metrics</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Phase 1 (manual)</th>
+            <th>Phase 2 (reference swipe)</th>
+            <th>Phase 3 (AI-generated)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Editor time per run (b-roll setup)</td>
+            <td>8–12 min</td>
+            <td>2–3 min (review only)</td>
+            <td>3–5 min (brief + approve)</td>
+          </tr>
+          <tr>
+            <td>Works without reference</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>Identity confusion incidents</td>
+            <td>Low (no gen faces)</td>
+            <td>Low</td>
+            <td>6% → &lt;1% after people-free QA</td>
+          </tr>
+          <tr>
+            <td>Cutaway-script relevance score (internal QA)</td>
+            <td>N/A (manual slots)</td>
+            <td>Moderate</td>
+            <td>High (vision-grounded)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would define the people-free constraint in the shared prompt library from Phase 1, not Phase 3. We retrofitted it after identity confusion reports, but manual-phase editors were already inserting placeholder slots that Phase 3 later filled with face-containing clips.</p>
+
+      <p>I would also expose phase tier in the run manifest for debugging. Support tickets saying "my b-roll looks wrong" required log diving to discover whether the run used manual beats, reference swipe, or AI generation.</p>
+
+      <h2>The pattern: phased capability with shared data model</h2>
+
+      <p>The three-phase b-roll arc is a reusable template for complex generative features:</p>
+
+      <ol>
+        <li><strong>Manual control</strong> — prove the data model and editor mental model</li>
+        <li><strong>Automated inference</strong> — reduce editor labor when structured input exists</li>
+        <li><strong>Full generation</strong> — AI produces the artifact, grounded by vision and constrained by domain rules</li>
+      </ol>
+
+      <p>Each phase reuses the same <code>BrollBeat</code> structure. Feature flags gate progression. Domain constraints — people-free b-roll, product lock, captioned link validation — apply regardless of phase. That separation let us ship Phase 1 to all editors while Phase 3 baked in beta, without forking the stitch pipeline.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="narrative-continuity-story-spine-video-gen.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Narrative Continuity: Story Spine and L/J-Cut Editing</a><br><span style="color:#8892b0;font-size:13px;">Cross-scene narrative enforcement and story spine QA</span></li>
+        <li style="margin-bottom:12px;"><a href="vision-in-the-loop-prompt-authoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame</a><br><span style="color:#8892b0;font-size:13px;">Automated per-scene prompt rewrite from generated frames</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-video-generation-pipeline-architecture.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an AI Video Generation Pipeline from Scratch</a><br><span style="color:#8892b0;font-size:13px;">Five-stage pipeline architecture from analyzer through stitch and QA</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

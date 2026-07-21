@@ -4,6 +4,46 @@
 
 ---
 
+## UGC Pipeline: Script-First AI Video Generation
+
+URL: https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html
+
+Paradigm shift from reference-first to script-first video generation for UGC ad production. Covers wizard UX flow, scene-level review gates where creators approve prompts before render, candidate frame selection from multiple generations, and batch approve-and-render for throughput. Script-first means the narrative drives clip generation rather than reverse-engineering from a reference viral.
+
+---
+
+## Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways
+
+URL: https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html
+
+The b-roll system evolved through three phases: Phase 1 manual beat placement on a timeline, Phase 2 AI-swiped timing extracted from reference video, and Phase 3 vision-authored cutaway prompts where a vision model inspects the main frame and writes targeted b-roll insert prompts. Progressive feature-flag rollout allowed safe migration without disrupting live production.
+
+---
+
+## Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys
+
+URL: https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html
+
+Using Google Drive as a runtime-configurable asset catalog for avatars and product images. JSON index files live alongside media in Drive folders, auto-save on upload keeps the index in sync, and multi-product support lets marketing teams add new assets without code deploys. Next.js route handlers serve catalog data with cache invalidation on index changes.
+
+---
+
+## Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline
+
+URL: https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html
+
+Governance layer for an AI training pipeline: kill-switches per quality gate, reviewer attribution tracking who approved what, admin impersonation with full audit trails, and configurable claim timeouts per workflow stage. The controls that turn a prototype auto-seeder into an enterprise product with compliance-ready auditability.
+
+---
+
+## Webhook Relay: Routing External Callbacks to PR Preview Environments
+
+URL: https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html
+
+A lightweight Node.js proxy that receives external webhooks from third-party services and fans them out to the correct PR preview environment URL. Signature verification headers are forwarded intact, routing is opt-in per preview deployment, and the relay handles the many-to-one mapping problem when multiple PRs need isolated webhook endpoints.
+
+---
+
 ## Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame
 
 URL: https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html

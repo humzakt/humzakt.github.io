@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys — Humza Tareen</title>
+  <meta name="description" content="How I replaced hardcoded avatars and products with Google Drive-backed runtime catalogs — JSON index files, auto-save on upload, multi-product script support, and folder conventions that scale without redeploying.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Google Drive, Asset Management, TypeScript, Next.js, Product Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys">
+  <meta property="og:description" content="How I replaced hardcoded avatars and products with Google Drive-backed runtime catalogs — JSON index files, auto-save on upload, multi-product script support, and folder conventions that scale without redeploying.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Google Drive">
+  <meta property="article:tag" content="Asset Management">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Next.js">
+  <meta property="article:tag" content="Product Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys">
+  <meta name="twitter:description" content="How I replaced hardcoded avatars and products with Google Drive-backed runtime catalogs — JSON index files, auto-save on upload, multi-product script support, and folder conventions that scale without redeploying.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys",
+    "description": "How I replaced hardcoded avatars and products with Google Drive-backed runtime catalogs — JSON index files, auto-save on upload, multi-product script support, and folder conventions that scale without redeploying.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html" },
+    "keywords": ["Google Drive", "Asset Management", "TypeScript", "Next.js", "Product Engineering"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Drive-Backed Asset Catalogs"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-21" itemprop="datePublished">July 21, 2026</time>
+        <span>· 6 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Google Drive</span>
+        <span class="blog-tag">Asset Management</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Next.js</span>
+        <span class="blog-tag">Product Engineering</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>Every new avatar on the AI ad platform used to require a pull request. Product hero images, presenter headshots, brand metadata — all hardcoded in TypeScript constants, reviewed in CI, deployed through the normal release train. When the creative team wanted to add a sunscreen SKU on Tuesday afternoon, they filed a ticket and waited until Thursday's deploy.</p>
+
+      <p>The fix was not a CMS. It was a Google Drive folder.</p>
+
+      <p>We built Drive-backed runtime catalogs for avatars and products: a JSON index file alongside media assets in a shared folder, read at request time with short TTL caching. Editors upload photos that auto-save as reusable avatars. Product managers drop new SKUs into a products subfolder. The generation pipeline reads the catalog on every run — no code deploy required.</p>
+
+      <blockquote>
+        A catalog is an index plus media, not a database migration. Drive gives non-engineers write access with audit history built in.
+      </blockquote>
+
+      <h2>The hardcoded asset problem</h2>
+
+      <p>Early platform versions stored assets inline:</p>
+
+<pre><code class="language-typescript">// Before: every new avatar was a code change
+const AVATARS = [
+  { id: 'presenter-1', name: 'Alex', imageUrl: '/assets/avatars/alex.jpg' },
+  { id: 'presenter-2', name: 'Jordan', imageUrl: '/assets/avatars/jordan.jpg' },
+] as const;
+
+const PRODUCTS = [
+  { id: 'product-a', name: 'Serum X', heroUrl: '/assets/products/serum-x.png' },
+] as const;</code></pre>
+
+      <p>This pattern fails for three reasons on a production creative tool:</p>
+
+      <ul>
+        <li><strong>Velocity</strong> — creative ops cannot move at the speed of deploys</li>
+        <li><strong>Uploaded photos</strong> — script-first UGC runs let editors upload custom headshots that should become reusable, not one-off blobs</li>
+        <li><strong>Multi-product</strong> — the same generation flow must work for any product in the catalog, not one hardcoded SKU</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Approach</th>
+            <th>Non-engineer writable?</th>
+            <th>Version history?</th>
+            <th>Deploy required?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hardcoded constants</td>
+            <td>No</td>
+            <td>Git only</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>Admin CMS panel</td>
+            <td>Yes (with login)</td>
+            <td>DB audit log</td>
+            <td>No (but build the CMS)</td>
+          </tr>
+          <tr>
+            <td>Drive-backed catalog</td>
+            <td>Yes (shared folder)</td>
+            <td>Drive revision history</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Folder structure convention</h2>
+
+      <p>Two environment variables anchor the system: <code>AVATARS_DRIVE_FOLDER_ID</code> and <code>PRODUCTS_DRIVE_FOLDER_ID</code>. Each root folder follows the same internal layout:</p>
+
+<pre><code class="language-text">AVATARS_DRIVE_FOLDER_ID/
+├── index.json                 # catalog metadata
+├── avatars/
+│   ├── presenter-alex/
+│   │   ├── headshot.jpg
+│   │   └── metadata.json    # optional per-avatar overrides
+│   ├── presenter-jordan/
+│   │   └── headshot.jpg
+│   └── uploaded-20260721-a3f2/
+│       └── photo.jpg          # auto-saved from editor upload
+
+PRODUCTS_DRIVE_FOLDER_ID/
+├── index.json
+├── products/
+│   ├── sunscreen-spf50/
+│   │   ├── hero.png
+│   │   ├── label-closeup.jpg
+│   │   └── metadata.json
+│   └── vitamin-c-serum/
+│       └── hero.png</code></pre>
+
+      <p>The index file is the contract. Media files alone are not enough — the index carries display names, tags, conditioning weights, and enabled flags.</p>
+
+<pre><code class="language-typescript">interface AvatarIndexEntry {
+  id: string;
+  displayName: string;
+  photoDriveFileId: string;
+  source: 'catalog' | 'uploaded';
+  conditioningStrength?: number;
+  enabled: boolean;
+  createdAt: string;
+  createdBy?: string;
+}
+
+interface AvatarCatalog {
+  version: number;
+  updatedAt: string;
+  avatars: AvatarIndexEntry[];
+}</code></pre>
+
+      <h2>Runtime catalog loader</h2>
+
+      <p>The Next.js API route loads catalogs through a cached Drive provider. Index JSON parses first; photo URLs resolve lazily via Drive file IDs.</p>
+
+<pre><code class="language-typescript">class DriveCatalogProvider&lt;T extends CatalogIndex&gt; {
+  constructor(
+    private folderId: string,
+    private cacheTtlMs: number = 60_000,
+  ) {}
+
+  async loadIndex(): Promise&lt;T&gt; {
+    const cached = cache.get(this.folderId);
+    if (cached &amp;&amp; Date.now() - cached.fetchedAt &lt; this.cacheTtlMs) {
+      return cached.index;
+    }
+    const indexFile = await drive.files.get({
+      fileId: await this.resolveIndexFileId(),
+      alt: 'media',
+    });
+    const index = JSON.parse(indexFile.data as string) as T;
+    cache.set(this.folderId, { index, fetchedAt: Date.now() });
+    return index;
+  }
+
+  async resolveMediaUrl(fileId: string): Promise&lt;string&gt; {
+    return driveMediaUrl(fileId, { ttl: 3600 });
+  }
+}</code></pre>
+
+      <p>Sixty-second TTL on the index balances freshness against Drive API quota. Individual media URLs get longer-lived signed links because they are immutable per file revision.</p>
+
+      <h2>Auto-save uploaded photos as reusable avatars</h2>
+
+      <p>Script-first UGC runs encourage custom headshot uploads. Before auto-save, those photos lived in a run-scoped temp bucket — usable once, invisible to other editors. The auto-save flow:</p>
+
+      <ol>
+        <li>Editor uploads photo during character selection step</li>
+        <li>Pipeline validates face detection and minimum resolution</li>
+        <li>Photo copies to <code>avatars/uploaded-{timestamp}-{hash}/</code> in the Drive folder</li>
+        <li>Index appends a new entry with <code>source: 'uploaded'</code></li>
+        <li>Avatar appears in the global picker on next catalog refresh</li>
+      </ol>
+
+<pre><code class="language-typescript">async function persistUploadedAvatar(
+  upload: Buffer,
+  meta: { editorId: string; runId: string },
+): Promise&lt;AvatarIndexEntry&gt; {
+  const avatarId = `uploaded-${Date.now()}-${hashShort(upload)}`;
+  const folderPath = `avatars/${avatarId}`;
+
+  const fileId = await driveUpload({
+    folderId: AVATARS_DRIVE_FOLDER_ID,
+    path: `${folderPath}/photo.jpg`,
+    content: upload,
+  });
+
+  const entry: AvatarIndexEntry = {
+    id: avatarId,
+    displayName: `Uploaded ${formatDate(new Date())}`,
+    photoDriveFileId: fileId,
+    source: 'uploaded',
+    conditioningStrength: 0.82,
+    enabled: true,
+    createdAt: new Date().toISOString(),
+    createdBy: meta.editorId,
+  };
+
+  await appendToIndex(AVATARS_DRIVE_FOLDER_ID, entry);
+  return entry;
+}</code></pre>
+
+      <p>Index updates use optimistic locking on the version field. Concurrent uploads retry on version mismatch — rare in practice because creative teams do not upload fifty avatars simultaneously, but necessary for correctness.</p>
+
+      <h2>Multi-product catalog and product-agnostic scripts</h2>
+
+      <p>Adding products at runtime was the second catalog. The initial rollout seeded eight avatars and three products from the AI ad platform's existing SKU library. Subsequent additions — three presenter avatars, three more products — happened entirely through Drive folder updates.</p>
+
+      <p>Multi-product Phase 1 made scripts product-agnostic. Instead of hardcoding <em>"this serum changed my skin"</em> in prompt templates, scripts reference product placeholders resolved at plan time:</p>
+
+<pre><code class="language-typescript">function resolveScriptPlaceholders(
+  script: string,
+  product: ProductCatalogEntry,
+): string {
+  return script
+    .replace(/\{\{product_name\}\}/g, product.displayName)
+    .replace(/\{\{product_category\}\}/g, product.category)
+    .replace(/\{\{product_claim\}\}/g, product.primaryClaim ?? '');
+}
+
+// Editor writes:
+// "I've been using {{product_name}} for two weeks and {{product_claim}}"
+// Resolves differently per productId without script rewrite</code></pre>
+
+      <p>The product catalog entry carries everything the planner needs:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Used by</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>heroDriveFileId</code></td>
+            <td>Scene generation (product lock)</td>
+            <td>Bottle on white background</td>
+          </tr>
+          <tr>
+            <td><code>displayName</code></td>
+            <td>Script placeholder + UI picker</td>
+            <td>"Daily SPF 50"</td>
+          </tr>
+          <tr>
+            <td><code>category</code></td>
+            <td>LLM scene planning context</td>
+            <td>"sunscreen"</td>
+          </tr>
+          <tr>
+            <td><code>primaryClaim</code></td>
+            <td>Script placeholder</td>
+            <td>"no white cast"</td>
+          </tr>
+          <tr>
+            <td><code>enabled</code></td>
+            <td>Picker visibility</td>
+            <td>false for deprecated SKUs</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Frontend integration: picker UX</h2>
+
+      <p>The avatar picker reads the catalog API and renders larger character previews with loading skeletons while Drive URLs resolve. Product picker shows inline hero preview on hover. Both pickers poll the catalog endpoint with <code>stale-while-revalidate</code> semantics — show cached catalog immediately, refresh in background.</p>
+
+      <p>A stuck deploy banner bug surfaced during catalog rollout: the frontend cached an empty catalog when Drive was momentarily unreachable, then never refreshed. The fix added explicit cache busting on catalog version mismatch and a manual refresh control for ops.</p>
+
+      <h2>Operational workflow for creative teams</h2>
+
+      <p>Adding a new product without engineering:</p>
+
+      <ol>
+        <li>Create subfolder under <code>products/</code> with hero image and optional label closeup</li>
+        <li>Add entry to <code>index.json</code> with metadata fields</li>
+        <li>Set <code>enabled: true</code></li>
+        <li>Wait up to 60 seconds for cache TTL, or trigger manual cache bust via admin endpoint</li>
+        <li>Product appears in picker — same generation flow, product-agnostic script templates</li>
+      </ol>
+
+      <p>Drive revision history provides rollback. If a bad hero image ships, ops reverts the file in Drive — no git revert, no deploy.</p>
+
+      <h2>Tradeoffs and limits</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Benefit</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>No deploy for asset changes</td>
+            <td>Drive API quota and latency on cold cache</td>
+          </tr>
+          <tr>
+            <td>Non-engineer writable</td>
+            <td>Index JSON can be hand-edited incorrectly — schema validation required</td>
+          </tr>
+          <tr>
+            <td>Auto-save from uploads</td>
+            <td>Catalog grows unbounded — periodic cleanup policy needed</td>
+          </tr>
+          <tr>
+            <td>Revision history via Drive</td>
+            <td>No relational queries — filter/search is client-side over index</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>We validate index JSON against Zod schemas on every load. Invalid entries log errors and skip gracefully — one bad product entry does not crash the entire picker.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would ship index schema validation before the first catalog migration, not after a hand-edited JSON typo took down the product picker for twenty minutes.</p>
+
+      <p>I would also add a lightweight admin UI for index edits eventually. Drive is the right storage layer, but editing JSON in a shared folder is error-prone for non-technical users. The catalog provider abstraction makes a future admin panel a thin wrapper — the Drive folder remains source of truth.</p>
+
+      <h2>The pattern</h2>
+
+      <p>Drive-backed catalogs work when:</p>
+
+      <ul>
+        <li>Assets change frequently but fit a flat index structure</li>
+        <li>Non-engineers need write access without a full CMS build</li>
+        <li>Media files are immutable per revision (Drive handles versioning)</li>
+        <li>Read volume is high but write volume is low (cache-friendly)</li>
+      </ul>
+
+      <p>For the AI ad platform, avatars and products checked every box. The same pattern could extend to music beds, brand palettes, or disclaimer templates — any catalog where deploy latency is the enemy and relational queries are overkill.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="streaming-ai-video-cloud-storage.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Streaming AI Video Through Cloud Storage</a><br><span style="color:#8892b0;font-size:13px;">GCS streaming patterns for large video artifacts</span></li>
+        <li style="margin-bottom:12px;"><a href="gcs-backed-auto-seeder-platform.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building a GCS-Backed Auto-Seeder Platform</a><br><span style="color:#8892b0;font-size:13px;">Provider-service architecture with hot-swappable cloud backends</span></li>
+        <li style="margin-bottom:12px;"><a href="production-hardening-ai-video-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Production Hardening an AI Video Pipeline</a><br><span style="color:#8892b0;font-size:13px;">Reliability patterns for GPU-heavy generation workloads</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

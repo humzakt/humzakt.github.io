@@ -1,5 +1,60 @@
 [
   {
+    "id": "ugc-pipeline-script-first-video-generation",
+    "title": "UGC Pipeline: Script-First AI Video Generation",
+    "summary": "Paradigm shift from reference-first to script-first video generation — wizard UX, scene-level review gates, candidate frame selection, and batch approve-and-render.",
+    "date": "2026-07-21",
+    "themes": ["ml-ai"],
+    "components": ["UGC", "Video Generation", "TypeScript", "Next.js", "AI", "Product Engineering"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html"
+    }
+  },
+  {
+    "id": "ai-broll-three-phases-vision-authored",
+    "title": "Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways",
+    "summary": "The b-roll system evolved through three phases: manual beat placement, AI-swiped timing from reference, and vision-authored cutaway prompts with progressive feature-flag rollout.",
+    "date": "2026-07-21",
+    "themes": ["ml-ai"],
+    "components": ["AI", "Video Generation", "B-Roll", "Computer Vision", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html"
+    }
+  },
+  {
+    "id": "drive-backed-asset-catalogs-runtime",
+    "title": "Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys",
+    "summary": "Using Google Drive as a runtime-configurable asset catalog — JSON index alongside media, auto-save on upload, multi-product support without code deploys.",
+    "date": "2026-07-21",
+    "themes": ["infrastructure"],
+    "components": ["Google Drive", "Asset Management", "TypeScript", "Next.js", "Product Engineering"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html"
+    }
+  },
+  {
+    "id": "auto-seed-admin-controls-ai-training",
+    "title": "Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline",
+    "summary": "Kill-switches per gate, reviewer attribution, admin impersonation audit trails, configurable claim timeouts — the governance layer that turns a prototype into an enterprise product.",
+    "date": "2026-07-21",
+    "themes": ["production"],
+    "components": ["Admin Controls", "AI Training", "Enterprise", "TypeScript", "React"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html"
+    }
+  },
+  {
+    "id": "webhook-relay-pr-preview-environments",
+    "title": "Webhook Relay: Routing External Callbacks to PR Preview Environments",
+    "summary": "A lightweight proxy that receives external webhooks and fans them out to the correct PR preview environment, with signature verification forwarding and opt-in routing.",
+    "date": "2026-07-21",
+    "themes": ["infrastructure"],
+    "components": ["Webhooks", "DevOps", "Microservices", "Node.js", "Infrastructure"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html"
+    }
+  },
+  {
     "id": "vision-in-the-loop-prompt-authoring",
     "title": "Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame",
     "summary": "The AI generates a frame, inspects its own output with vision, and rewrites the prompt to fix camera, color, or composition issues — a closed-loop feedback system for video generation.",

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Webhook Relay: Routing External Callbacks to PR Preview Environments — Humza Tareen</title>
+  <meta name="description" content="How a lightweight webhook relay service routes inbound callbacks from external providers to the correct PR preview environment — signature forwarding, opt-in fan-out, health checks, and deploy-detection patterns for the internal dev platform.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Webhooks, DevOps, Microservices, Node.js, Infrastructure">
+  <link rel="canonical" href="https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Webhook Relay: Routing External Callbacks to PR Preview Environments">
+  <meta property="og:description" content="How a lightweight webhook relay service routes inbound callbacks from external providers to the correct PR preview environment — signature forwarding, opt-in fan-out, health checks, and deploy-detection patterns for the internal dev platform.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Webhooks">
+  <meta property="article:tag" content="DevOps">
+  <meta property="article:tag" content="Microservices">
+  <meta property="article:tag" content="Node.js">
+  <meta property="article:tag" content="Infrastructure">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Webhook Relay: Routing External Callbacks to PR Preview Environments">
+  <meta name="twitter:description" content="How a lightweight webhook relay service routes inbound callbacks from external providers to the correct PR preview environment — signature forwarding, opt-in fan-out, health checks, and deploy-detection patterns for the internal dev platform.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Webhook Relay: Routing External Callbacks to PR Preview Environments",
+    "description": "How a lightweight webhook relay service routes inbound callbacks from external providers to the correct PR preview environment — signature forwarding, opt-in fan-out, health checks, and deploy-detection patterns for the internal dev platform.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html" },
+    "keywords": ["Webhooks", "DevOps", "Microservices", "Node.js", "Infrastructure"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Webhook Relay PR Preview Environments"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Webhook Relay: Routing External Callbacks to PR Preview Environments</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-21" itemprop="datePublished">July 21, 2026</time>
+        <span>· 6 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Webhooks</span>
+        <span class="blog-tag">DevOps</span>
+        <span class="blog-tag">Microservices</span>
+        <span class="blog-tag">Node.js</span>
+        <span class="blog-tag">Infrastructure</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The internal dev platform spins up an isolated backend for every pull request — its own database, its own service URLs, its own frontend preview. That works beautifully until an external service tries to call you back.</p>
+
+      <p>Replicate sends a webhook when your video generation completes. Stripe sends one when a test payment settles. Your AI model provider sends status updates on long-running jobs. In production, there is one webhook URL registered with each provider. In PR preview land, there are forty — one per open pull request — and none of them are reachable from the public internet without exposing every preview to every callback.</p>
+
+      <p>We built a webhook relay service: a lightweight Node.js proxy that receives inbound external webhooks at a stable public endpoint, inspects routing metadata, and fans them out to opted-in PR preview environments. It solved the callback routing problem without registering per-PR URLs with every external provider.</p>
+
+      <blockquote>
+        Production has one door. Preview environments need forty doors behind one address — the relay is the lobby.
+      </blockquote>
+
+      <h2>The problem in production vs preview</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Production</th>
+            <th>PR preview</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Webhook URL count</td>
+            <td>1 per provider</td>
+            <td>1 per PR × N providers</td>
+          </tr>
+          <tr>
+            <td>URL stability</td>
+            <td>Permanent</td>
+            <td>Ephemeral (PR lifetime)</td>
+          </tr>
+          <tr>
+            <td>Provider registration</td>
+            <td>Manual, audited</td>
+            <td>Impossible at PR scale</td>
+          </tr>
+          <tr>
+            <td>Signature verification</td>
+            <td>Against known secret</td>
+            <td>Must forward original signature</td>
+          </tr>
+          <tr>
+            <td>Routing key</td>
+            <td>Implicit (only one backend)</td>
+            <td>Must extract from payload or header</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Naive approaches fail quickly. Registering each PR preview URL with Replicate does not scale and leaves stale URLs when PRs close. Tunneling every preview through ngrok is a security nightmare. Polling instead of webhooks adds latency and wastes API quota on a GPU-heavy platform where generation status matters in seconds, not minutes.</p>
+
+      <h2>Architecture: the webhook relay service</h2>
+
+      <p>The relay is a standalone repo — a small Fastify service deployed to the dev stack alongside the internal dev platform. It exposes one public endpoint per webhook provider type:</p>
+
+<pre><code class="language-text">External provider (Replicate, Stripe, etc.)
+        │
+        ▼
+┌─────────────────────────┐
+│   Webhook Relay Service  │  ← stable public URL
+│   (signature verify)     │
+└───────────┬─────────────┘
+            │ route by payload/header
+     ┌──────┼──────┐
+     ▼      ▼      ▼
+  PR-142  PR-187  dev-stack
+  preview preview  (default)</code></pre>
+
+      <p>Three responsibilities, kept deliberately separate:</p>
+
+      <ol>
+        <li><strong>Receive and verify</strong> — validate provider signature against the relay's shared secret</li>
+        <li><strong>Route</strong> — extract target environment from payload field or custom header</li>
+        <li><strong>Forward</strong> — POST to the target preview URL with original headers preserved</li>
+      </ol>
+
+<pre><code class="language-typescript">interface RelayTarget {
+  environmentId: string;       // e.g. "pr-142" or "dev"
+  webhookUrl: string;          // internal preview backend URL
+  optedIn: boolean;
+  lastHealthCheck?: ISO8601;
+  healthy: boolean;
+}
+
+async function handleInboundWebhook(
+  provider: WebhookProvider,
+  req: IncomingMessage,
+  rawBody: Buffer,
+): Promise&lt;RelayResult&gt; {
+  verifySignature(provider, req.headers, rawBody);
+
+  const routeKey = extractRouteKey(provider, req.headers, rawBody);
+  const targets = await registry.getTargets(provider, routeKey);
+
+  const results = await Promise.allSettled(
+    targets
+      .filter(t =&gt; t.optedIn &amp;&amp; t.healthy)
+      .map(t =&gt; forwardWebhook(t, req.headers, rawBody)),
+  );
+
+  return summarizeResults(results);
+}</code></pre>
+
+      <h2>Routing vs fan-out: two delivery modes</h2>
+
+      <p>Not every webhook should reach every preview. The relay supports two modes:</p>
+
+      <h3>Targeted routing</h3>
+
+      <p>When the outbound request included a routing key — typically a run ID or job ID embedded in the webhook payload metadata — the relay delivers to exactly one environment. The preview backend registered that key when it initiated the external job.</p>
+
+<pre><code class="language-typescript">// Preview backend registers intent before calling Replicate
+await relayRegistry.register({
+  routeKey: `run-${runId}`,
+  environmentId: 'pr-142',
+  webhookUrl: 'https://pr-142.preview.internal/api/webhooks/replicate',
+  ttlMs: 3_600_000,  // auto-expire after 1 hour
+});
+
+// Replicate callback includes run ID in payload
+// Relay extracts run-abc123 → forwards only to pr-142</code></pre>
+
+      <h3>Opt-in fan-out</h3>
+
+      <p>For providers where routing keys are unavailable or for debugging, environments opt in to receive <em>all</em> callbacks of a given type. The dev stack is always opted in. PR previews opt in explicitly via a CLI flag or PR label.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>When to use</th>
+            <th>Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Targeted routing</td>
+            <td>Production-like flows with registered job IDs</td>
+            <td>Miss if registration TTL expires before callback</td>
+          </tr>
+          <tr>
+            <td>Opt-in fan-out</td>
+            <td>Debugging, integration testing, dev stack</td>
+            <td>Duplicate processing if multiple envs opt in</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Fan-out is intentionally opt-in, not opt-out. Early versions fanned to all active previews by default — forty environments processing the same Stripe test event caused race conditions and confused debugging sessions.</p>
+
+      <h2>Signature verification forwarding</h2>
+
+      <p>Webhook providers sign payloads with a shared secret. The relay verifies at the public boundary, then forwards the raw body and original signature headers to the target. Preview backends re-verify independently — defense in depth.</p>
+
+<pre><code class="language-typescript">function forwardWebhook(
+  target: RelayTarget,
+  originalHeaders: IncomingHttpHeaders,
+  rawBody: Buffer,
+): Promise&lt;Response&gt; {
+  const forwardHeaders = {
+    ...pickSignatureHeaders(originalHeaders, target.provider),
+    'X-Relay-Environment': target.environmentId,
+    'X-Relay-Forwarded-At': new Date().toISOString(),
+    'Content-Type': originalHeaders['content-type'] ?? 'application/json',
+  };
+
+  return fetch(target.webhookUrl, {
+    method: 'POST',
+    headers: forwardHeaders,
+    body: rawBody,  // never re-serialize — preserves signature bytes
+  });
+}</code></pre>
+
+      <p>Re-serializing JSON breaks signatures. The relay stores and forwards the raw body buffer untouched. This bit us once during development when an eager middleware parsed and re-stringified — HMAC mismatch on every forwarded webhook.</p>
+
+      <h2>Opt-in mechanism for PR environments</h2>
+
+      <p>PR previews register with the relay at deploy time. The deploy pipeline checks for an opt-in label or environment variable:</p>
+
+<pre><code class="language-bash"># PR preview deploy script excerpt
+if [ "$WEBHOOK_RELAY_OPT_IN" = "true" ]; then
+  curl -X POST "$RELAY_REGISTRY_URL/environments" \
+    -H "Authorization: Bearer $RELAY_TOKEN" \
+    -d "{
+      \"environmentId\": \"pr-${PR_NUMBER}\",
+      \"webhookUrl\": \"https://pr-${PR_NUMBER}.preview.internal/api/webhooks\",
+      \"optedIn\": true,
+      \"providers\": [\"replicate\", \"stripe\"]
+    }"
+fi</code></pre>
+
+      <p>Deregistration happens on PR close — a GitHub Action removes the environment from the relay registry. Stale entries auto-expire via TTL regardless, but explicit cleanup prevents ghost forwards to torn-down infrastructure.</p>
+
+      <h2>Health checks and unhealthy target skipping</h2>
+
+      <p>Preview environments die without ceremony — PR merged, deploy failed, pod OOMKilled. The relay health-checks registered targets before forwarding:</p>
+
+<pre><code class="language-typescript">async function healthCheckLoop(): Promise&lt;void&gt; {
+  const targets = await registry.getAll();
+  for (const target of targets) {
+    try {
+      const res = await fetch(`${target.webhookUrl}/health`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      target.healthy = res.ok;
+      target.lastHealthCheck = new Date().toISOString();
+    } catch {
+      target.healthy = false;
+    }
+  }
+  await registry.persist(targets);
+}
+
+// Runs every 60 seconds; unhealthy targets skipped until next pass</code></pre>
+
+      <p>Failed forwards log to the relay's observability stack with environment ID, provider, route key, and HTTP status. The cost dashboard for the dev platform — tracking spend across dev stack and per-PR previews — includes relay forward volume as a line item, which surfaced one PR that opted in and processed 12,000 callbacks over a weekend.</p>
+
+      <h2>Dev access controls: HUB_GATE_DISABLED escape hatch</h2>
+
+      <p>Preview environments sit behind an auth hub in normal operation. For webhook forwarding and CI health checks, direct non-prod access must bypass the hub without disabling it globally.</p>
+
+      <p>The middleware exposes a <code>HUB_GATE_DISABLED</code> escape hatch — set per-environment, never in production — that lets internal service-to-service calls (relay → preview backend) skip interactive auth while browser traffic still routes through the hub.</p>
+
+      <h2>Deploy-detection refresh banner</h2>
+
+      <p>Webhook relay solved inbound callbacks. A related problem was outbound freshness: developers staring at a preview tab while a new deploy rolled underneath them.</p>
+
+      <p>The deploy-detection pattern adds a lightweight polling endpoint that returns the current deploy SHA. The frontend compares against the SHA baked into the loaded HTML:</p>
+
+<pre><code class="language-typescript">// API route — no-store to prevent CDN caching deploy SHA
+export async function GET() {
+  return Response.json(
+    { deploySha: process.env.DEPLOY_SHA },
+    { headers: { 'Cache-Control': 'no-store' } },
+  );
+}
+
+// Frontend banner component
+useEffect(() =&gt; {
+  const interval = setInterval(async () =&gt; {
+    const { deploySha } = await fetch('/api/deploy-info').then(r =&gt; r.json());
+    if (deploySha !== window.__DEPLOY_SHA__) {
+      setShowRefreshBanner(true);
+    }
+  }, 30_000);
+  return () =&gt; clearInterval(interval);
+}, []);</code></pre>
+
+      <p>HTML responses carry <code>Cache-Control: no-store</code> so the initial page load always reflects the current deploy. The refresh banner nudges developers to reload after push — preventing "my webhook handler isn't firing" reports that were actually stale JavaScript.</p>
+
+      <h2>Operational considerations</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Concern</th>
+            <th>Mitigation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Relay becomes single point of failure</td>
+            <td>Health-checked deployment, 2 replicas min, fail-open logging</td>
+          </tr>
+          <tr>
+            <td>Route key collision across PRs</td>
+            <td>Prefix keys with environment ID at registration</td>
+          </tr>
+          <tr>
+            <td>Stale registrations after PR close</td>
+            <td>GitHub Action deregistration + 1h TTL fallback</td>
+          </tr>
+          <tr>
+            <td>Signature mismatch on forward</td>
+            <td>Raw body passthrough, never re-serialize</td>
+          </tr>
+          <tr>
+            <td>Runaway fan-out costs</td>
+            <td>Opt-in only, per-environment forward quotas in cost dashboard</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would add a relay debug UI earlier. For the first month, forward failures were grep-through-logs debugging. A simple dashboard showing registered environments, last forward status, and route key mappings would have saved hours.</p>
+
+      <p>I would also enforce registration TTL more aggressively on targeted routes. A one-hour default seemed generous until a Replicate callback arrived ninety minutes later on a cold-start model — the registration had expired, the webhook hit dev stack instead of the PR that initiated the job, and the developer spent an afternoon thinking their handler was broken.</p>
+
+      <h2>When you need a webhook relay</h2>
+
+      <p>Build one when:</p>
+
+      <ul>
+        <li>External providers allow only one or few registered callback URLs</li>
+        <li>PR preview environments need to receive real callbacks, not mocks</li>
+        <li>Signature verification must survive proxy forwarding</li>
+        <li>You want opt-in fan-out for debugging without exposing all previews by default</li>
+      </ul>
+
+      <p>Skip it when previews can use mock webhook injectors, or when all external integrations support dynamic callback URL registration per request. Most GPU and payment providers do not.</p>
+
+      <p>The relay is boring infrastructure — receive, verify, route, forward. That boredom is the point. Developers testing webhook handlers on PR previews should not think about networking. They should opt in, push code, and watch callbacks arrive.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="event-driven-architecture-gcp-pubsub.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Event-Driven Architecture with GCP Pub/Sub</a><br><span style="color:#8892b0;font-size:13px;">Async event routing patterns for microservice pipelines</span></li>
+        <li style="margin-bottom:12px;"><a href="guard-service-auth-gateway.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Guard Service: Auth Gateway for Microservices</a><br><span style="color:#8892b0;font-size:13px;">Centralized authentication and access control for service mesh</span></li>
+        <li style="margin-bottom:12px;"><a href="systematic-service-hardening-guard-notification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Service Hardening: Guard and Notification</a><br><span style="color:#8892b0;font-size:13px;">Production hardening patterns for platform services</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

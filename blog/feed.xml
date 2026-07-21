@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Sun, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 21 Jul 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,77 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>UGC Pipeline: Script-First AI Video Generation</title>
+      <link>https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Paradigm shift from reference-first to script-first video generation — wizard UX, scene-level review gates, candidate frame selection, and batch approve-and-render.</description>
+      <category>UGC</category>
+      <category>Video Generation</category>
+      <category>TypeScript</category>
+      <category>Next.js</category>
+      <category>AI</category>
+      <category>Product Engineering</category>
+    </item>
+
+    <item>
+      <title>Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways</title>
+      <link>https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>The b-roll system evolved through three phases: manual beat placement, AI-swiped timing from reference, and vision-authored cutaway prompts with progressive feature-flag rollout.</description>
+      <category>AI</category>
+      <category>Video Generation</category>
+      <category>B-Roll</category>
+      <category>Computer Vision</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys</title>
+      <link>https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Using Google Drive as a runtime-configurable asset catalog — JSON index alongside media, auto-save on upload, multi-product support without code deploys.</description>
+      <category>Google Drive</category>
+      <category>Asset Management</category>
+      <category>TypeScript</category>
+      <category>Next.js</category>
+      <category>Product Engineering</category>
+    </item>
+
+    <item>
+      <title>Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline</title>
+      <link>https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Kill-switches per gate, reviewer attribution, admin impersonation audit trails, configurable claim timeouts — the governance layer that turns a prototype into an enterprise product.</description>
+      <category>Admin Controls</category>
+      <category>AI Training</category>
+      <category>Enterprise</category>
+      <category>TypeScript</category>
+      <category>React</category>
+    </item>
+
+    <item>
+      <title>Webhook Relay: Routing External Callbacks to PR Preview Environments</title>
+      <link>https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html</guid>
+      <pubDate>Mon, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A lightweight proxy that receives external webhooks and fans them out to the correct PR preview environment, with signature verification forwarding and opt-in routing.</description>
+      <category>Webhooks</category>
+      <category>DevOps</category>
+      <category>Microservices</category>
+      <category>Node.js</category>
+      <category>Infrastructure</category>
+    </item>
 
     <item>
       <title>Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame</title>

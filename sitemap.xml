@@ -25,6 +25,36 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/webhook-relay-pr-preview-environments.html</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>monthly</changefreq>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline — Humza Tareen</title>
+  <meta name="description" content="Kill-switches per pipeline gate, reviewer attribution, admin impersonation audit trails, role-based claim timeouts, and User Dashboard V1 — governance features that turned an AI training prototype into an enterprise product.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Admin Controls, AI Training, Enterprise, TypeScript, React">
+  <link rel="canonical" href="https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline">
+  <meta property="og:description" content="Kill-switches per pipeline gate, reviewer attribution, admin impersonation audit trails, role-based claim timeouts, and User Dashboard V1 — governance features that turned an AI training prototype into an enterprise product.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Admin Controls">
+  <meta property="article:tag" content="AI Training">
+  <meta property="article:tag" content="Enterprise">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="React">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline">
+  <meta name="twitter:description" content="Kill-switches per pipeline gate, reviewer attribution, admin impersonation audit trails, role-based claim timeouts, and User Dashboard V1 — governance features that turned an AI training prototype into an enterprise product.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline",
+    "description": "Kill-switches per pipeline gate, reviewer attribution, admin impersonation audit trails, role-based claim timeouts, and User Dashboard V1 — governance features that turned an AI training prototype into an enterprise product.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html" },
+    "keywords": ["Admin Controls", "AI Training", "Enterprise", "TypeScript", "React"],
+    "articleSection": "Production Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Auto-Seed Admin Controls"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-21" itemprop="datePublished">July 21, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Admin Controls</span>
+        <span class="blog-tag">AI Training</span>
+        <span class="blog-tag">Enterprise</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">React</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The enterprise workflow platform's auto-seed pipeline generates AI training data through a multi-gate review flow: content creation, quality checks, expert review, golden-data validation, and export. When I joined the governance sprint, the pipeline worked — for happy-path demos. It did not work for production operations where admins need to pause a broken gate, auditors need to know who approved what, and reviewers need dashboards that show only tasks they can actually claim.</p>
+
+      <p>Over ten pull requests, we built the admin control layer that separates a prototype from an enterprise product: per-gate kill-switches, reviewer attribution, impersonation audit trails, configurable claim timeouts, access-controlled detail views, and a user-facing dashboard that filters invalid tasks before they reach reviewers.</p>
+
+      <blockquote>
+        Governance is not a feature you add at the end. It is the layer that makes every other feature trustworthy in production.
+      </blockquote>
+
+      <h2>The auto-seed pipeline in one paragraph</h2>
+
+      <p>Auto-seed tasks flow through sequential gates. Each gate has a queue reviewers claim from, a timeout window, and pass/fail criteria. Tasks emit events at every transition — claimed, reviewed, released, escalated, exported. The admin surface sits alongside the reviewer surface, with elevated permissions to toggle gates, impersonate users for debugging, and inspect pipeline internals.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Gate</th>
+            <th>Reviewer role</th>
+            <th>Typical SLA</th>
+            <th>Kill-switch use case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Content creation</td>
+            <td>Creator</td>
+            <td>24h claim</td>
+            <td>Pause intake during schema migration</td>
+          </tr>
+          <tr>
+            <td>QC review</td>
+            <td>QC reviewer</td>
+            <td>4h claim</td>
+            <td>Disable while golden-data rules update</td>
+          </tr>
+          <tr>
+            <td>Expert review</td>
+            <td>Domain expert</td>
+            <td>8h claim</td>
+            <td>Pause during expert pool onboarding</td>
+          </tr>
+          <tr>
+            <td>Golden-data validation</td>
+            <td>Senior reviewer</td>
+            <td>2h claim</td>
+            <td>Stop export of bad batch</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Per-gate kill-switches: disable claiming without stopping the pipeline</h2>
+
+      <p>The first governance feature was admin toggles to disable claiming per gate. Not "stop the pipeline" — stop <em>new claims</em> at a specific gate while in-flight tasks continue.</p>
+
+<pre><code class="language-typescript">interface GateConfig {
+  gateId: string;
+  claimingEnabled: boolean;
+  disabledReason?: string;
+  disabledBy?: string;
+  disabledAt?: ISO8601;
+}
+
+async function claimTask(
+  taskId: string,
+  reviewerId: string,
+  gateId: string,
+): Promise&lt;ClaimResult&gt; {
+  const gate = await gateConfigService.get(gateId);
+  if (!gate.claimingEnabled) {
+    throw new ClaimingDisabledError(gate.disabledReason ?? 'Gate temporarily closed');
+  }
+  return taskQueue.claim(taskId, reviewerId, gateId);
+}</code></pre>
+
+      <p>Admins flip toggles from a settings panel. The UI shows which gates are open, who closed them, and why. Existing claims are unaffected — a reviewer mid-review on QC can finish even if claiming is disabled for new QC tasks.</p>
+
+      <p>This shipped because of a real incident: golden-data validation rules changed mid-batch, and reviewers were approving tasks against stale criteria. Disabling claiming at the golden-data gate for two hours while rules propagated prevented a bad export — without stopping the upstream gates that were still producing valid content.</p>
+
+      <h2>Reviewer attribution: who approved what</h2>
+
+      <p>Before the attribution fix, review decisions logged the task's assigned reviewer, not the acting reviewer. When admins impersonated a user to debug a stuck task, or when a senior reviewer completed a claim on behalf of a trainee, the events table showed the wrong name.</p>
+
+<pre><code class="language-typescript">interface ReviewDecisionEvent {
+  taskId: string;
+  gateId: string;
+  decision: 'approve' | 'reject' | 'escalate';
+  assignedReviewerId: string;
+  actingReviewerId: string;      // who actually clicked approve
+  impersonatorId?: string;       // admin if acting via impersonation
+  timestamp: ISO8601;
+}
+
+function recordReviewDecision(ctx: ReviewContext, decision: Decision): void {
+  events.emit({
+    type: 'review_decision',
+    assignedReviewerId: ctx.task.assignedReviewerId,
+    actingReviewerId: ctx.session.userId,
+    impersonatorId: ctx.session.impersonatorId,
+    decision,
+  });
+}</code></pre>
+
+      <p>Attribution matters for audit. Training data pipelines feed model fine-tuning — knowing that reviewer A approved 200 tasks and reviewer B rejected 80 with specific feedback patterns is operational intelligence, not bureaucracy.</p>
+
+      <h2>Admin impersonation audit trails</h2>
+
+      <p>Admins impersonate reviewers to reproduce bugs: "I claimed this task, clicked approve, and nothing happened." Impersonation is necessary for support. Untracked impersonation is a compliance liability.</p>
+
+      <p>Every run event during impersonation records the admin's identity alongside the impersonated user:</p>
+
+<pre><code class="language-typescript">interface RunEvent {
+  id: string;
+  taskId: string;
+  type: string;
+  payload: Record&lt;string, unknown&gt;;
+  actorId: string;
+  impersonatorId?: string;  // present when admin is impersonating
+  createdAt: ISO8601;
+}
+
+// Events table renders impersonation clearly:
+// "Review approved by Jordan (via admin: Casey)"</code></pre>
+
+      <p>The events table readability pass added distinct styling for impersonated actions, MOR (manager override review) events, and gate transition events — so support engineers scanning a task timeline can parse it in seconds, not minutes.</p>
+
+      <h2>Configurable claim timeouts per role</h2>
+
+      <p>Default claim timeout was global: eight hours for everyone. That failed two ways — expert reviewers needed longer windows for complex domain tasks, and QC reviewers needed shorter windows to prevent queue stagnation.</p>
+
+<pre><code class="language-typescript">interface RoleTimeoutConfig {
+  role: ReviewerRole;
+  claimTimeoutMs: number;
+  releaseOnTimeout: boolean;
+  notifyBeforeMs?: number;
+}
+
+const DEFAULT_TIMEOUTS: RoleTimeoutConfig[] = [
+  { role: 'creator', claimTimeoutMs: 86_400_000, releaseOnTimeout: true },
+  { role: 'qc_reviewer', claimTimeoutMs: 14_400_000, releaseOnTimeout: true, notifyBeforeMs: 3_600_000 },
+  { role: 'expert', claimTimeoutMs: 28_800_000, releaseOnTimeout: true },
+  { role: 'golden_data', claimTimeoutMs: 7_200_000, releaseOnTimeout: true, notifyBeforeMs: 1_800_000 },
+];</code></pre>
+
+      <p>Admins configure timeouts from the same settings panel as gate kill-switches. Changes apply to new claims only — in-flight claims keep their original deadline.</p>
+
+      <h2>Access control: admin-only pipeline internals</h2>
+
+      <p>Task detail pages had grown to include pipeline visualization and raw events tabs — useful for admins debugging stuck tasks, overwhelming for reviewers who just need to approve or reject.</p>
+
+      <p>We restricted pipeline and events tabs to admin role. Reviewers see content, feedback, and action buttons. Admins see the full state machine, event log, and gate configuration.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tab</th>
+            <th>Reviewer access</th>
+            <th>Admin access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Content</td>
+            <td>Read + edit feedback</td>
+            <td>Read + edit + QC retry triggers</td>
+          </tr>
+          <tr>
+            <td>Feedback</td>
+            <td>Read + write</td>
+            <td>Read + write</td>
+          </tr>
+          <tr>
+            <td>Pipeline</td>
+            <td>Hidden</td>
+            <td>Full state machine visualization</td>
+          </tr>
+          <tr>
+            <td>Events</td>
+            <td>Hidden</td>
+            <td>Full event log with impersonation markers</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>User Dashboard V1: show only valid tasks</h2>
+
+      <p>Reviewers logged into a dashboard that listed every task in the system — including tasks in wrong states, tasks assigned to other gates, and tasks that failed validation but hadn't been cleaned up. Clicking any row led to error pages or empty claim flows.</p>
+
+      <p>User Dashboard V1 filters aggressively:</p>
+
+      <ul>
+        <li>Only tasks the reviewer's role can claim at the current gate</li>
+        <li>Only tasks in claimable state (not in-flight by another reviewer unless released)</li>
+        <li>Excludes tasks failing pre-claim validation (schema errors, missing attachments)</li>
+        <li>Surfaces claim timeout countdown per row</li>
+      </ul>
+
+<pre><code class="language-typescript">function buildUserDashboardQuery(
+  reviewer: Reviewer,
+): TaskListQuery {
+  return {
+    gateIds: reviewer.eligibleGates,
+    states: ['pending_claim', 'released'],
+    excludeInvalid: true,
+    sortBy: 'priority_then_age',
+    pageSize: 50,
+  };
+}</code></pre>
+
+      <p>The unified All Tasks list table (admin view) kept unfiltered access with column sorting and bulk actions. User dashboard and admin table share the same table component — different query presets, same rendering.</p>
+
+      <h2>Golden-data QC retries and feedback in Content tab</h2>
+
+      <p>Golden-data validation failures previously dead-ended tasks. Reviewers rejected, task stalled, admin manually requeued. The QC retry feature lets senior reviewers trigger a re-validation from the Content tab with structured feedback attached to the retry request.</p>
+
+      <p>Feedback surfaces inline — not buried in the events log. Reviewers see why a prior attempt failed before investing time in another review cycle.</p>
+
+      <h2>Origin-aware breadcrumbs</h2>
+
+      <p>Task detail pages are reachable from three contexts: user dashboard, admin All Tasks list, and direct URL. Breadcrumbs now reflect origin — "Dashboard → Task #4821" vs "Admin → All Tasks → Task #4821" — so back navigation returns to the correct list, not a generic landing page.</p>
+
+      <h2>Governance impact metrics</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Before governance sprint</th>
+            <th>After</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bad-batch exports caught pre-export</td>
+            <td>Manual audit (weekly)</td>
+            <td>Gate kill-switch (same-day)</td>
+          </tr>
+          <tr>
+            <td>Attribution errors in events log</td>
+            <td>~15% of impersonated sessions</td>
+            <td>0% (acting + impersonator logged)</td>
+          </tr>
+          <tr>
+            <td>Reviewer clicks to dead-end tasks</td>
+            <td>~22% of dashboard clicks</td>
+            <td>&lt;3% (valid-task filter)</td>
+          </tr>
+          <tr>
+            <td>Support time to parse task timeline</td>
+            <td>8–12 min avg</td>
+            <td>2–4 min (readable events table)</td>
+          </tr>
+          <tr>
+            <td>Stale claims auto-released</td>
+            <td>Global 8h only</td>
+            <td>Per-role configurable</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would build the events schema with <code>actingReviewerId</code> and <code>impersonatorId</code> from day one. Retrofitting attribution meant a one-time backfill script that marked pre-fix events as <code>attribution: unknown</code> — acceptable for launch, awkward for auditors.</p>
+
+      <p>I would also ship User Dashboard V1 before opening the pipeline to external reviewers. The first week of beta sent twelve reviewers to a list of 400 tasks, 340 of which they couldn't claim. First impressions matter.</p>
+
+      <h2>Prototype vs enterprise: the governance gap</h2>
+
+      <p>The auto-seed pipeline's core loop — generate, review, validate, export — was buildable in weeks. The governance layer took nearly as long again:</p>
+
+      <ol>
+        <li><strong>Control</strong> — kill-switches, timeouts, access restrictions</li>
+        <li><strong>Accountability</strong> — attribution, impersonation trails, event readability</li>
+        <li><strong>Usability</strong> — filtered dashboards, origin-aware navigation, inline feedback</li>
+      </ol>
+
+      <p>Skip any leg and the system works in demos but fails in operations. Kill-switches without attribution means you can stop bad exports but can't investigate who caused them. Dashboards without valid-task filtering means reviewers lose trust in the tool on day one.</p>
+
+      <p>Governance features are the difference between a prototype and an enterprise product. They are also the hardest to demo — no screenshot captures "this events table correctly attributes impersonated review decisions." But they are what operations teams remember when the pipeline handles its first real incident without a engineer on call.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="claim-timeout-decoupling-expert-review-ux.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Decoupling Claim Timeouts from Feature Flags</a><br><span style="color:#8892b0;font-size:13px;">Three-phase countdown UX and timeout enforcement independent of pool toggles</span></li>
+        <li style="margin-bottom:12px;"><a href="qc-orchestration-agent-driven-quality.html" style="color:#64ffda;text-decoration:none;font-size:15px;">QC Orchestration: Agent-Driven Quality Control</a><br><span style="color:#8892b0;font-size:13px;">Automated quality gates in the training data pipeline</span></li>
+        <li style="margin-bottom:12px;"><a href="reviewer-ux-click-reduction-feedback-navigator.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Reviewer UX: Click Reduction and Feedback Navigator</a><br><span style="color:#8892b0;font-size:13px;">Streamlining expert review workflows for throughput</span></li>
+        <li style="margin-bottom:12px;"><a href="events-table-pipeline-observability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Events Table Pipeline Observability</a><br><span style="color:#8892b0;font-size:13px;">Structured event logging for multi-gate pipeline debugging</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>
