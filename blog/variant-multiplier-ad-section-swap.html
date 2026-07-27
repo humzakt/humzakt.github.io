@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants — Humza Tareen</title>
+  <meta name="description" content="How I built Variant Multiplier from scratch across 23 PRs — swap one section of a winning ad into a fresh variant with rewritten lines, regenerated B-roll, and seamless re-stitching.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI, Video Generation, TypeScript, Next.js, Product Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants">
+  <meta property="og:description" content="How I built Variant Multiplier from scratch across 23 PRs — swap one section of a winning ad into a fresh variant with rewritten lines, regenerated B-roll, and seamless re-stitching.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-27T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Next.js">
+  <meta property="article:tag" content="Product Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants">
+  <meta name="twitter:description" content="How I built Variant Multiplier from scratch across 23 PRs — swap one section of a winning ad into a fresh variant with rewritten lines, regenerated B-roll, and seamless re-stitching.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants",
+    "description": "How I built Variant Multiplier from scratch across 23 PRs — swap one section of a winning ad into a fresh variant with rewritten lines, regenerated B-roll, and seamless re-stitching.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-27",
+    "dateModified": "2026-07-27",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html" },
+    "keywords": ["AI", "Video Generation", "TypeScript", "Next.js", "Product Engineering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Variant Multiplier: Ad Section Swap"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-27" itemprop="datePublished">July 27, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Next.js</span>
+        <span class="blog-tag">Product Engineering</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>Performance marketers do not need another full ad from scratch. They need <strong>controlled variation</strong> — keep the hook that converts, swap the middle section that fatigued, leave the CTA intact. Variant Multiplier is the tool I built on the AI ad platform to do exactly that: take a winning ad, isolate one section, rewrite the lines, regenerate B-roll, and re-stitch the result into a fresh variant that still feels like the same ad.</p>
+
+      <p>The product shipped across 23 merged PRs, from hardened core foundation through a six-workstream studio build. This post covers the concept, the studio architecture, and the technical patterns — waveform section picking, word-level transcript selection, grade-match splicing, end-frame interpolation, batch queue, and live cost estimation — that made section-swapping production-ready.</p>
+
+      <blockquote>
+        Full regeneration is expensive and risky. Section swap is surgical: one cut, one rewrite, one re-stitch — the rest of the winning ad stays untouched.
+      </blockquote>
+
+      <h2>The product concept</h2>
+
+      <p>A typical winning UGC ad has three structural sections: hook (0–3s), body (product proof + testimonial), and close (offer + CTA). When the body fatigues in Meta's auction, editors want a new body without touching the hook that earned the click or the close that drives conversion.</p>
+
+      <p>Variant Multiplier's pipeline:</p>
+
+      <ol>
+        <li><strong>Upload</strong> — editor drops the winning ad (Google Drive or local)</li>
+        <li><strong>Select section</strong> — scrub waveform, pick start/end via silence peaks or word-level transcript</li>
+        <li><strong>Rewrite</strong> — LLM rewrites lines for the selected section only</li>
+        <li><strong>Regenerate</strong> — B-roll and VO for the swapped section through video + TTS APIs</li>
+        <li><strong>Re-stitch</strong> — grade-match + end-frame interpolation at splice points</li>
+        <li><strong>Compare</strong> — side-by-side A/B of original vs variant</li>
+      </ol>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Editor action</th>
+            <th>System responsibility</th>
+            <th>Typical cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Section pick</td>
+            <td>Scrub + drag handles</td>
+            <td>Waveform, silence detection, transcript alignment</td>
+            <td>$0</td>
+          </tr>
+          <tr>
+            <td>Rewrite</td>
+            <td>Review / edit lines</td>
+            <td>LLM section rewrite with product context</td>
+            <td>~$0.02</td>
+          </tr>
+          <tr>
+            <td>B-roll regen</td>
+            <td>Approve look-match frame</td>
+            <td>Nano Banana Pro look-match + Veo/fal generation</td>
+            <td>$0.40–$1.80</td>
+          </tr>
+          <tr>
+            <td>VO regen</td>
+            <td>Pre-spend QA listen</td>
+            <td>ElevenLabs clone + FFmpeg sync</td>
+            <td>~$0.08</td>
+          </tr>
+          <tr>
+            <td>Stitch</td>
+            <td>Download or push to Drive</td>
+            <td>Grade-match, end-frame, concat</td>
+            <td>$0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Foundation: hardened core and roadmap</h2>
+
+      <p>The first PRs rebuilt Variant Multiplier on a hardened core shared with sibling video-editing tools on the platform. That meant Docker build fixes, consistent error boundaries, structured logging, and a shared Next.js app shell. Roadmap docs defined six studio workstreams before any UI shipped — a deliberate choice to avoid building features that could not compose.</p>
+
+<pre><code class="language-typescript">// Core run manifest — every section-swap run carries this shape
+interface SectionSwapRun {
+  id: string;
+  name: string;                    // collision-proof, set at upload
+  sourceVideoUrl: string;
+  section: {
+    startMs: number;
+    endMs: number;
+    transcriptSpan?: WordSpan[];   // word-level selection
+    mode: 'rewrite-broll' | 'rewrite-vo' | 'full-regen';
+  };
+  rewrite: SectionRewrite;
+  estimate: CostEstimate;          // live preview before spend
+  status: RunStatus;
+  outputs: { variantA?: string; variantB?: string };
+}</code></pre>
+
+      <p>Naming at upload (<code>feat/run-naming-rename</code>) solved a storage collision problem early. Editors name runs when they upload; renames propagate to Google Drive mirrors; collision-proof storage keys prevent overwrites when two editors swap sections on the same source ad simultaneously.</p>
+
+      <h2>The six-workstream studio build</h2>
+
+      <p>The studio UI shipped as six parallel workstreams, each a focused PR cluster:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Workstream</th>
+            <th>PR</th>
+            <th>Deliverable</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>WS1 — Backend</td>
+            <td><code>feat/studio-ws1-backend</code></td>
+            <td>Silence/peak API, cost estimator, config/estimate endpoint</td>
+          </tr>
+          <tr>
+            <td>WS2 — Transcript</td>
+            <td><code>feat/studio-ws2-transcript</code></td>
+            <td>Transcript selection + waveform/silence timeline</td>
+          </tr>
+          <tr>
+            <td>WS3 — Modes + cost</td>
+            <td><code>feat/studio-ws3-modes-cost</code></td>
+            <td>Per-section modes + live cost preview</td>
+          </tr>
+          <tr>
+            <td>WS4 — Section picker UX</td>
+            <td><code>feat/ux-section-picker</code></td>
+            <td>Watch-and-scrub picker, no-auto-spend, progress/cancel</td>
+          </tr>
+          <tr>
+            <td>WS5–6 — Compare + onboarding</td>
+            <td><code>feat/studio-ws5-6</code></td>
+            <td>Variant A/B compare + first-run onboarding</td>
+          </tr>
+          <tr>
+            <td>Cross-cutting</td>
+            <td><code>feat/ui-consistency</code></td>
+            <td>Design system alignment with sibling VE tools</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>WS1 exposed backend primitives the UI could compose without tight coupling. Silence detection and peak extraction ran server-side on uploaded audio; the cost estimator consumed section duration, selected mode, and engine config to return a dollar estimate before any API call fired.</p>
+
+<pre><code class="language-typescript">// POST /api/runs/:id/config/estimate
+async function estimateSectionSwapCost(
+  section: SectionBounds,
+  mode: SectionMode,
+  engines: EngineConfig,
+): Promise&lt;CostEstimate&gt; {
+  const durationSec = (section.endMs - section.startMs) / 1000;
+  const brollCost = mode.includesBroll
+    ? engines.video.pricePerSecond * durationSec
+    : 0;
+  const voCost = mode.includesVo
+    ? engines.tts.pricePerCharacter * estimateCharCount(section)
+    : 0;
+  const rewriteCost = engines.llm.pricePer1kTokens * REWRITE_TOKEN_BUDGET;
+  return {
+    totalUsd: brollCost + voCost + rewriteCost,
+    breakdown: { broll: brollCost, vo: voCost, rewrite: rewriteCost },
+    engines: resolveEngines(mode, engines),
+  };
+}</code></pre>
+
+      <h2>Waveform and silence timeline for section selection</h2>
+
+      <p>Editors think in beats, not milliseconds. The section picker overlays a waveform with silence gaps highlighted — natural cut points where the presenter pauses between sentences. Peaks mark emphasis; valleys mark breath gaps.</p>
+
+<pre><code class="language-typescript">interface SilenceSegment {
+  startMs: number;
+  endMs: number;
+  confidence: number;
+}
+
+function snapHandlesToSilence(
+  startMs: number,
+  endMs: number,
+  silences: SilenceSegment[],
+  snapThresholdMs = 120,
+): SectionBounds {
+  const snapStart = silences.find(s =&gt;
+    Math.abs(s.startMs - startMs) &lt; snapThresholdMs
+  );
+  const snapEnd = silences.find(s =&gt;
+    Math.abs(s.endMs - endMs) &lt; snapThresholdMs
+  );
+  return {
+    startMs: snapStart?.startMs ?? startMs,
+    endMs: snapEnd?.endMs ?? endMs,
+  };
+}</code></pre>
+
+      <p>The watch-and-scrub UX (<code>feat/ux-section-picker</code>) plays video synchronized to handle drag. Editors see exactly what they are cutting. No-auto-spend means scrubbing and selecting never triggers generation — spend only happens on explicit "Run" after cost preview confirmation.</p>
+
+      <h2>Word-level transcript selection</h2>
+
+      <p>Silence snapping gets editors close, but copywriters think in words. Word-level (karaoke-style) transcript selection lets editors click individual words to set section boundaries — "from 'actually' through 'results'" rather than "from 12.4s through 18.7s."</p>
+
+<pre><code class="language-typescript">interface WordSpan {
+  word: string;
+  startMs: number;
+  endMs: number;
+  index: number;
+}
+
+function selectionFromWordRange(
+  words: WordSpan[],
+  startIndex: number,
+  endIndex: number,
+): SectionBounds {
+  return {
+    startMs: words[startIndex].startMs,
+    endMs: words[endIndex].endMs,
+    transcriptSpan: words.slice(startIndex, endIndex + 1),
+  };
+}</code></pre>
+
+      <p>Word spans feed the rewrite step with exact transcript context. The LLM receives the selected words plus surrounding lines for continuity, not a raw timestamp range.</p>
+
+      <h2>Look-match with Nano Banana Pro</h2>
+
+      <p>Regenerated B-roll must match the source ad's visual language — lighting, palette, setting. The <code>feat/gemini-image</code> PR added a Nano Banana Pro (Gemini) look-match backend: extract a reference frame from the section boundary, generate a style-locked seed frame, and pass it to the video engine as the first-frame anchor.</p>
+
+      <p>This prevents the classic section-swap failure mode: regenerated middle looks like a different shoot entirely while hook and close remain warm UGC.</p>
+
+      <h2>Grade-match and end-frame interpolation</h2>
+
+      <p>Even with look-match, splice points show colour discontinuity. Two PRs addressed this:</p>
+
+      <ul>
+        <li><strong>Grade-match</strong> (<code>feat/grade-match</code>) — deterministic colour transfer from source boundary frame to generated section's first/last frame</li>
+        <li><strong>End-frame interpolation</strong> (<code>feat/end-frame</code>) — generate a transition frame that smoothly bridges the cut-back to original footage</li>
+      </ul>
+
+      <p>I cover the colour science in depth in <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a>. The short version: deterministic histogram matching beats neural colour grading at production scale because it is reproducible, fast, and does not hallucinate.</p>
+
+      <h2>Pre-spend voiceover QA</h2>
+
+      <p>VO regeneration is cheap relative to video, but bad VO ruins an otherwise good variant. <code>feat/vo-qa</code> added a listen-before-spend step: generate VO preview, surface waveform + transcript alignment, block stitch until editor approves or regenerates.</p>
+
+      <h2>Batch queue and recent runs</h2>
+
+      <p>Editors rarely swap one section. They batch: new body for variant A, new hook-adjacent transition for variant B, new close for variant C. <code>feat/batch-queue</code> runs section swaps back-to-back with shared source upload and independent cost estimates per job.</p>
+
+      <p><code>feat/recent-runs</code> surfaces live runs unioned with Google Drive mirrors — if a run completed while the editor was in another tab, it appears in recent history without a refresh. Drive durability PRs (<code>feat/drive-durability-and-api-fixes</code>, streaming fixes) ensured large video files stream without crashing the Node process on memory pressure.</p>
+
+      <h2>Reliability fixes</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Problem</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>fix/drive-media-streaming</code></td>
+            <td>Full file buffered in memory</td>
+            <td>Chunked streaming from Drive API</td>
+          </tr>
+          <tr>
+            <td><code>fix/drive-stream-crashsafe</code></td>
+            <td>Process crash on stream abort</td>
+            <td>Crash-safe stream teardown + retry</td>
+          </tr>
+          <tr>
+            <td><code>fix/fal-veo-transient-422</code></td>
+            <td>fal Veo soft-reject on busy periods</td>
+            <td>Exponential backoff retry on 422</td>
+          </tr>
+          <tr>
+            <td><code>fix/e2e-variant-assert</code></td>
+            <td>Stitch regressions undetected</td>
+            <td>E2E assertion on variant output duration</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would ship word-level selection in WS2 instead of as a follow-up PR. Editors who tried silence snapping first developed a mental model that word selection partially contradicted — click-to-word felt like a different tool until we unified the timeline UI.</p>
+
+      <p>I would also embed cost estimate in the section picker handles — showing estimated spend as the editor drags section boundaries longer, not only on the review screen before run.</p>
+
+      <h2>The pattern: surgical variation over full regeneration</h2>
+
+      <p>Variant Multiplier encodes a product principle: <strong>preserve what wins, vary what fatigues</strong>. The engineering follows — section-bounded rewrites, look-matched regeneration, deterministic splice repair, and fail-before-spend guards at every API boundary. Twenty-three PRs sounds like a lot for one tool; most of them are the unglamorous infrastructure that makes a three-click editor workflow possible.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ugc-pipeline-script-first-video-generation.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Script-First UGC: Generating Video Ads Without a Reference</a><br><span style="color:#8892b0;font-size:13px;">Original-script UGC pipeline without reference video dependency</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-broll-three-phases-vision-authored.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways</a><br><span style="color:#8892b0;font-size:13px;">B-roll evolution from manual beats to vision-authored cutaways</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-video-generation-pipeline-architecture.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an AI Video Generation Pipeline from Scratch</a><br><span style="color:#8892b0;font-size:13px;">Five-stage pipeline architecture from analyzer through stitch and QA</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

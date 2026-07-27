@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline — Humza Tareen</title>
+  <meta name="description" content="How I integrated automated QC orchestration into the trainer review gate on the enterprise workflow platform — claim lifecycle edge cases, manifest transitions, spinner scoping, and force-pass guardrails.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Enterprise, Quality Control, TypeScript, React, Pipeline Architecture">
+  <link rel="canonical" href="https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline">
+  <meta property="og:description" content="How I integrated automated QC orchestration into the trainer review gate on the enterprise workflow platform — claim lifecycle edge cases, manifest transitions, spinner scoping, and force-pass guardrails.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-27T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Enterprise">
+  <meta property="article:tag" content="Quality Control">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="Pipeline Architecture">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline">
+  <meta name="twitter:description" content="How I integrated automated QC orchestration into the trainer review gate on the enterprise workflow platform — claim lifecycle edge cases, manifest transitions, spinner scoping, and force-pass guardrails.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline",
+    "description": "How I integrated automated QC orchestration into the trainer review gate on the enterprise workflow platform — claim lifecycle edge cases, manifest transitions, spinner scoping, and force-pass guardrails.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-27",
+    "dateModified": "2026-07-27",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html" },
+    "keywords": ["Enterprise", "Quality Control", "TypeScript", "React", "Pipeline Architecture"],
+    "articleSection": "Production Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Trainer Gate QC"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-27" itemprop="datePublished">July 27, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Enterprise</span>
+        <span class="blog-tag">Quality Control</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">Pipeline Architecture</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>AI training data pipelines do not end at model output. Human reviewers — trainers — validate, correct, and approve data before it enters the training set. The trainer gate is that checkpoint. Integrating automated QC into it means checks run at the right moment in the review lifecycle: not so early that reviewers cannot fix issues, not so late that bad data ships.</p>
+
+      <p>On the enterprise workflow platform, I shipped QC orchestration into the trainer review gate across a cluster of PRs — from the core integration (AGT-770) through spinner scoping, manifest transitions, claim lifecycle edge cases, and force-pass guardrails. This post covers what that integration looks like and why the edge cases matter more than the happy path.</p>
+
+      <blockquote>
+        Multi-stage pipeline UIs look simple in diagrams. They are hard because every stage has its own claim, timeout, and release semantics — and they interact.
+      </blockquote>
+
+      <h2>The trainer gate in context</h2>
+
+      <p>A typical task on the platform moves through stages:</p>
+
+      <ol>
+        <li><strong>Intake</strong> — task created, assigned to queue</li>
+        <li><strong>Model output</strong> — AI generates initial training data</li>
+        <li><strong>Trainer gate</strong> — human reviewer claims, edits, approves</li>
+        <li><strong>QC orchestration</strong> — automated checks validate the reviewer's output</li>
+        <li><strong>Release</strong> — approved data enters the training corpus</li>
+      </ol>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Actor</th>
+            <th>Manifest state</th>
+            <th>QC involvement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Model output finalize</td>
+            <td>System</td>
+            <td><code>model_output → trainer_gate/pending</code></td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>Trainer claims task</td>
+            <td>Human reviewer</td>
+            <td><code>trainer_gate/claimed</code></td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>Trainer submits review</td>
+            <td>Human reviewer</td>
+            <td><code>trainer_gate/submitted</code></td>
+            <td>Auto-QC triggered</td>
+          </tr>
+          <tr>
+            <td>QC passes</td>
+            <td>QC agent</td>
+            <td><code>trainer_gate/qc_passed</code></td>
+            <td>Checks complete</td>
+          </tr>
+          <tr>
+            <td>QC fails</td>
+            <td>QC agent</td>
+            <td><code>trainer_gate/qc_failed</code></td>
+            <td>Returned to reviewer</td>
+          </tr>
+          <tr>
+            <td>Release</td>
+            <td>System</td>
+            <td><code>released</code></td>
+            <td>Final validation</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>AGT-770: Integrating QC orchestration</h2>
+
+      <p>The core feature wired the existing QC orchestration service into the trainer gate submission flow. Before AGT-770, QC ran as a separate post-release step — too late to catch issues reviewers could fix. After AGT-770, submitting a trainer review triggers QC automatically:</p>
+
+<pre><code class="language-typescript">async function onTrainerSubmit(
+  taskId: string,
+  review: TrainerReview,
+  manifest: TaskManifest,
+): Promise&lt;SubmitResult&gt; {
+  // Advance manifest to submitted
+  await manifest.transition('trainer_gate', 'submitted', {
+    reviewerId: review.reviewerId,
+    submittedAt: Date.now(),
+  });
+
+  // Dispatch QC orchestration
+  const qcJob = await qcOrchestrator.dispatch({
+    taskId,
+    stage: 'trainer_gate',
+    payload: review.output,
+    checks: manifest.qcConfig.trainerGateChecks,
+  });
+
+  return { status: 'qc_pending', qcJobId: qcJob.id };
+}</code></pre>
+
+      <p>QC orchestration runs configured checks — format validation, golden data comparison, LLM adjudication — asynchronously via Cloud Tasks workers. The trainer sees results in the Task Details UI when checks complete.</p>
+
+      <h2>Manifest state transitions</h2>
+
+      <p>AGT-865 ensured manifest advances to <code>trainer_gate/pending</code> when model output finalizes — the handoff point where tasks become claimable by trainers. Without this transition, tasks sat in limbo between model completion and trainer visibility.</p>
+
+<pre><code class="language-typescript">async function onModelOutputFinalize(
+  taskId: string,
+  output: ModelOutput,
+): Promise&lt;void&gt; {
+  const manifest = await manifestStore.get(taskId);
+  await manifest.transition('model_output', 'finalized', { outputHash: hash(output) });
+  await manifest.transition('trainer_gate', 'pending', {
+    claimableAt: Date.now(),
+    autoSeedStatus: manifest.autoSeed?.status ?? null,
+  });
+  await eventBus.emit('task.trainer_gate.pending', { taskId });
+}</code></pre>
+
+      <h2>Spinner scoping: progress only when QC runs</h2>
+
+      <p>AGT-1082 fixed a UX bug where the auto-seed status spinner appeared for every manifest state change — not just when Auto-QC was actually in progress. Reviewers saw spinning indicators during unrelated transitions (claim, release, draft save) and could not tell whether QC was running.</p>
+
+<pre><code class="language-typescript">function shouldShowQcSpinner(manifest: TaskManifest): boolean {
+  const stage = manifest.currentStage;
+  const status = manifest.currentStatus;
+  // Only show spinner when Auto-QC is actively running
+  return stage === 'trainer_gate'
+    &amp;&amp; status === 'submitted'
+    &amp;&amp; manifest.qcJob?.state === 'in_progress';
+}
+
+// Before AGT-1082: spinner on ANY trainer_gate status change
+// After AGT-1082: spinner ONLY on submitted + qc in_progress</code></pre>
+
+      <p>Spinner scoping sounds trivial. In a pipeline where status changes fire every few seconds (claim timeout checks, webhook callbacks, draft auto-save), unscoped spinners erode trust in the UI — reviewers stop believing any spinner means something is actually happening.</p>
+
+      <h2>Claim lifecycle edge cases</h2>
+
+      <p>The hardest part of multi-stage pipeline UIs is not the happy path. It is what happens when things go sideways:</p>
+
+      <h3>Claim timeout and release</h3>
+
+      <p>When a trainer claims a task but does not submit within the timeout window, the claim expires. AGT-1103 (in progress) addresses draft and manifest reset at release time — both manual release and auto-timeout:</p>
+
+<pre><code class="language-typescript">async function onClaimRelease(
+  taskId: string,
+  reason: 'manual' | 'timeout',
+  manifest: TaskManifest,
+): Promise&lt;void&gt; {
+  // Reset in-progress draft
+  await draftStore.delete(taskId, manifest.claimedBy);
+
+  // Reset manifest to pending (reclaimable)
+  await manifest.transition('trainer_gate', 'pending', {
+    releasedAt: Date.now(),
+    releaseReason: reason,
+    previousClaimer: manifest.claimedBy,
+  });
+
+  // Preserve submission history for audit
+  await auditLog.record('claim.released', { taskId, reason });
+}</code></pre>
+
+      <h3>Released tasks remain in My Tasks</h3>
+
+      <p>AGT-1145 fixes a redirect bug: after releasing a task, it disappeared from the reviewer's "My Tasks" list even though the release was intentional (not a completion). Reviewers lost visibility into tasks they had started but chose to return to the queue.</p>
+
+      <h3>Force-pass with incomplete golden data</h3>
+
+      <p>AGT-898 blocks force-pass QC when the golden data form is incomplete. Force-pass is an admin escape hatch — bypass QC checks when they are known to be wrong for a specific task. Without the guard, admins could force-pass tasks missing required golden data fields, shipping incomplete training examples.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Edge case</th>
+            <th>Ticket</th>
+            <th>Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Claim times out</td>
+            <td>AGT-1103</td>
+            <td>Reset draft + manifest to pending</td>
+          </tr>
+          <tr>
+            <td>Manual release</td>
+            <td>AGT-1103</td>
+            <td>Same reset, preserve audit trail</td>
+          </tr>
+          <tr>
+            <td>Post-release visibility</td>
+            <td>AGT-1145</td>
+            <td>Task stays in My Tasks after redirect</td>
+          </tr>
+          <tr>
+            <td>Force-pass without golden data</td>
+            <td>AGT-898</td>
+            <td>Block with validation error</td>
+          </tr>
+          <tr>
+            <td>QC spinner on wrong state</td>
+            <td>AGT-1082</td>
+            <td>Spinner only during active QC</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Admin-only pipeline observability</h2>
+
+      <p>AGT-886 restricted Task Details pipeline and events tabs to admin users. Trainers saw raw manifest JSON and webhook event logs that created confusion ("why is my task stuck?") without providing actionable information. Admins need pipeline observability for debugging; trainers need a simplified status view.</p>
+
+<pre><code class="language-typescript">function TaskDetailsTabs({ task, user }: Props) {
+  const tabs = [
+    { id: 'review', label: 'Review', visible: true },
+    { id: 'qc-results', label: 'QC Results', visible: true },
+    { id: 'pipeline', label: 'Pipeline', visible: user.role === 'admin' },
+    { id: 'events', label: 'Events', visible: user.role === 'admin' },
+  ];
+  return &lt;TabBar tabs={tabs.filter(t =&gt; t.visible)} /&gt;;
+}</code></pre>
+
+      <h2>QC orchestration interaction model</h2>
+
+      <p>The trainer gate integration follows a request-async-respond pattern:</p>
+
+      <ol>
+        <li>Trainer submits review → manifest transitions to <code>submitted</code></li>
+        <li>QC orchestrator dispatches checks to configured agents</li>
+        <li>Cloud Tasks worker polls agent webhooks for results</li>
+        <li>On pass → manifest transitions to <code>qc_passed</code>, task proceeds to release</li>
+        <li>On fail → manifest transitions to <code>qc_failed</code>, task returns to reviewer with failure details</li>
+      </ol>
+
+      <p>Reviewers never wait synchronously for QC. The spinner (scoped by AGT-1082) indicates progress; results appear when ready. This decoupling is essential — QC checks involving LLM adjudication can take 30–90 seconds.</p>
+
+      <h2>Why edge cases dominate pipeline UI work</h2>
+
+      <p>The happy path — claim, review, submit, QC pass, release — is straightforward to implement. It accounts for maybe 60% of task volume. The remaining 40% is edge cases:</p>
+
+      <ul>
+        <li>Trainer claims, gets distracted, claim times out</li>
+        <li>Trainer submits, QC fails, trainer reclaims and resubmits</li>
+        <li>Admin force-passes a task with known QC false positive</li>
+        <li>Auto-seed generates draft data while trainer is mid-review</li>
+        <li>Two trainers attempt to claim the same task simultaneously</li>
+      </ul>
+
+      <p>Each edge case requires manifest state consistency, draft cleanup, audit trail preservation, and UI feedback that matches the actual system state. Getting any one wrong produces "ghost tasks" — tasks that appear claimed but are not, or appear released but still hold a draft lock.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would define claim lifecycle as an explicit state machine diagram in the repo before implementing AGT-770. We discovered edge cases incrementally through production tickets rather than modeling them upfront. A formal state machine with documented transitions would have caught AGT-1145 (post-release visibility) during design.</p>
+
+      <p>I would also emit structured events for every manifest transition from day one, not as a follow-up (AGT-886's events tab). Pipeline observability should be built into the transition layer, not bolted onto the UI.</p>
+
+      <h2>The pattern: integrate QC at the gate, not after release</h2>
+
+      <p>QC orchestration existed before the trainer gate integration. The value of AGT-770 was placement — running checks when the reviewer submits, while they can still fix issues, rather than after release when bad data is already in the corpus. Spinner scoping, claim lifecycle resets, and force-pass guardrails are the unglamorous work that makes the integration trustworthy in production.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="qc-orchestration-agent-driven-quality.html" style="color:#64ffda;text-decoration:none;font-size:15px;">QC Orchestration: Integrating Agent-Driven Quality Checks into a Review Pipeline</a><br><span style="color:#8892b0;font-size:13px;">The QC orchestration service that powers trainer gate checks</span></li>
+        <li style="margin-bottom:12px;"><a href="auto-seed-admin-controls-ai-training.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Auto-Seed Admin Controls for AI Training Data Pipelines</a><br><span style="color:#8892b0;font-size:13px;">Auto-seed status and admin controls adjacent to trainer gate</span></li>
+        <li style="margin-bottom:12px;"><a href="claim-timeout-decoupling-expert-review-ux.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Claim Timeout Decoupling for Expert Review UX</a><br><span style="color:#8892b0;font-size:13px;">Claim lifecycle patterns for human review workflows</span></li>
+        <li style="margin-bottom:12px;"><a href="events-table-pipeline-observability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Events Table Pipeline Observability</a><br><span style="color:#8892b0;font-size:13px;">Admin-only events tab for pipeline debugging</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

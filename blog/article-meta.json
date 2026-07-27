@@ -1,5 +1,60 @@
 [
   {
+    "id": "variant-multiplier-ad-section-swap",
+    "title": "Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants",
+    "summary": "23 PRs building a new AI video tool from scratch — 6-workstream studio, waveform timeline, word-level transcript selection, grade-match colour transfer, batch queue.",
+    "date": "2026-07-27",
+    "themes": ["ml-ai"],
+    "components": ["AI", "Video Generation", "TypeScript", "Next.js", "Product Engineering"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html"
+    }
+  },
+  {
+    "id": "hook-machine-3s-ad-openers",
+    "title": "Hook Machine: Scoring and Ranking 3-Second AI Ad Openers",
+    "summary": "21 PRs building a hook generation tool — scorer algorithm, content-aware video engine routing, karaoke captions, seed frame dispatch, winner loop pattern.",
+    "date": "2026-07-27",
+    "themes": ["ml-ai"],
+    "components": ["AI", "Video Generation", "Hooks", "TypeScript", "FFmpeg"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html"
+    }
+  },
+  {
+    "id": "seam-free-video-splicing-grade-match",
+    "title": "Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions",
+    "summary": "Deterministic colour transfer at splice points, end-frame interpolation for smooth cut-backs, and karaoke captions with libass rendering and FFmpeg drawtext fallback.",
+    "date": "2026-07-27",
+    "themes": ["infrastructure"],
+    "components": ["FFmpeg", "Video Processing", "Computer Vision", "Color Science", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html"
+    }
+  },
+  {
+    "id": "trainer-gate-qc-claim-lifecycle",
+    "title": "Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline",
+    "summary": "Automated QC orchestration in a human review pipeline — claim lifecycle edge cases, spinner scoping, manifest state transitions, force-pass guards.",
+    "date": "2026-07-27",
+    "themes": ["production"],
+    "components": ["Enterprise", "Quality Control", "TypeScript", "React", "Pipeline Architecture"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html"
+    }
+  },
+  {
+    "id": "pre-spend-guards-content-aware-routing",
+    "title": "Pre-Spend Guards and Content-Aware Routing for AI Video APIs",
+    "summary": "Validate before spending on $2/generation AI video APIs — content-aware engine routing, content-policy self-healing, live cost preview, transient error retries.",
+    "date": "2026-07-27",
+    "themes": ["production"],
+    "components": ["AI", "Cost Optimization", "API Design", "Video Generation", "TypeScript"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html"
+    }
+  },
+  {
     "id": "ai-writing-markers-huggingface-dataset",
     "title": "AI Writing Markers: Building an Open Dataset and Checker on Hugging Face",
     "summary": "87+ source-backed markers of AI-generated writing, structured as a Hugging Face dataset with a zero-dependency Python checker — a transparency tool, not a detector.",

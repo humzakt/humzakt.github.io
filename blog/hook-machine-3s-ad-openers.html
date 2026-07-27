@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Hook Machine: Scoring and Ranking 3-Second AI Ad Openers — Humza Tareen</title>
+  <meta name="description" content="How I built Hook Machine across 21 PRs — generate, score, and rank 3-second ad openers with content-aware routing, karaoke captions, seed frame dispatch, and a winner loop UX.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI, Video Generation, Hooks, TypeScript, FFmpeg">
+  <link rel="canonical" href="https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Hook Machine: Scoring and Ranking 3-Second AI Ad Openers">
+  <meta property="og:description" content="How I built Hook Machine across 21 PRs — generate, score, and rank 3-second ad openers with content-aware routing, karaoke captions, seed frame dispatch, and a winner loop UX.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-27T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Hooks">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="FFmpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hook Machine: Scoring and Ranking 3-Second AI Ad Openers">
+  <meta name="twitter:description" content="How I built Hook Machine across 21 PRs — generate, score, and rank 3-second ad openers with content-aware routing, karaoke captions, seed frame dispatch, and a winner loop UX.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Hook Machine: Scoring and Ranking 3-Second AI Ad Openers",
+    "description": "How I built Hook Machine across 21 PRs — generate, score, and rank 3-second ad openers with content-aware routing, karaoke captions, seed frame dispatch, and a winner loop UX.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-27",
+    "dateModified": "2026-07-27",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html" },
+    "keywords": ["AI", "Video Generation", "Hooks", "TypeScript", "FFmpeg"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Hook Machine: 3s Ad Openers"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Hook Machine: Scoring and Ranking 3-Second AI Ad Openers</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-27" itemprop="datePublished">July 27, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Hooks</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">FFmpeg</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>The first three seconds of a UGC ad decide whether a thumb stops scrolling. Everything after is irrelevant if the hook fails. Hook Machine is the tool I built on the video generation platform to generate, score, and rank 3-second ad openers — not full ads, not 15-second spots, specifically the interrupt moment that earns the next twelve seconds of attention.</p>
+
+      <p>Twenty-one merged PRs took Hook Machine from research roadmap to production tool. This post covers the hook scorer algorithm, prompt principles, content-aware engine routing, karaoke captions, seed frame dispatch, pre-spend guards, and the four UX workstreams that shaped the editor experience.</p>
+
+      <blockquote>
+        A hook is not a shorter ad. It is a different artifact with different constraints: interrupt-first, in-budget, maximum motion, zero setup time.
+      </blockquote>
+
+      <h2>The 3-second hook problem</h2>
+
+      <p>Full ad generation optimizes for narrative arc — hook, body, close. Hook generation optimizes for a single metric: <strong>pattern interrupt in under three seconds</strong>. That changes every design decision:</p>
+
+      <ul>
+        <li><strong>Duration ceiling</strong> — hard cap at 3000ms; no scene transitions within the hook</li>
+        <li><strong>Copy budget</strong> — 8–15 words max; longer copy guarantees VO overrun</li>
+        <li><strong>Motion priority</strong> — static product shots fail; hooks need movement in frame one</li>
+        <li><strong>Ranking</strong> — editors generate 5–10 candidates and need best-first ordering, not chronological</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Full ad generation</th>
+            <th>Hook Machine (3s openers)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Target duration</td>
+            <td>15–60s</td>
+            <td>≤3s</td>
+          </tr>
+          <tr>
+            <td>Primary output</td>
+            <td>Stitched multi-scene video</td>
+            <td>Ranked hook clips</td>
+          </tr>
+          <tr>
+            <td>Editor workflow</td>
+            <td>Script → plan → generate → stitch</td>
+            <td>Brief → batch generate → score → pick winner</td>
+          </tr>
+          <tr>
+            <td>Cost per candidate</td>
+            <td>$1.50–$4.00</td>
+            <td>$0.15–$0.80</td>
+          </tr>
+          <tr>
+            <td>Success metric</td>
+            <td>Ad completion rate</td>
+            <td>Thumb-stop proxy score</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Refocus and infrastructure hardening</h2>
+
+      <p>The first major PR — <code>feat/hook-openers-refocus-and-hardening</code> — stripped Hook Machine down to 3-second openers only. Earlier prototypes tried to be a general short-form generator; refocus eliminated scope creep and let every subsequent PR optimize for the hook use case. Full infra hardening followed: structured error types, retry policies, Docker build parity, and shared logging with sibling tools.</p>
+
+      <p>Roadmap docs (<code>docs/roadmap-from-video-gen-research</code>, <code>docs/roadmap-readiness-and-p1-spec</code>) translated video-gen research into a P1 spec before code shipped. Lessons from prior video-gen failures — documented in <code>docs/lessons-from-video-gen</code> — became explicit guardrails in the spec.</p>
+
+      <h2>Hook scorer: rank candidates best-first</h2>
+
+      <p>P1's core feature (<code>feat/hook-scorer-ranking</code>) scores each generated hook and returns candidates sorted best-first. The scorer combines heuristic signals — no ML model training required:</p>
+
+<pre><code class="language-typescript">interface HookScoreSignals {
+  motionDensity: number;       // optical flow magnitude, normalized 0–1
+  copyFit: number;             // spoken duration vs 3000ms ceiling
+  firstFrameImpact: number;    // contrast + edge density in frame 0
+  audioPeakTiming: number;     // first emphasis within first 800ms
+  captionReadability: number;  // chars visible per second
+}
+
+function scoreHook(signals: HookScoreSignals): number {
+  const weights = {
+    motionDensity: 0.30,
+    copyFit: 0.25,
+    firstFrameImpact: 0.20,
+    audioPeakTiming: 0.15,
+    captionReadability: 0.10,
+  };
+  return Object.entries(weights).reduce(
+    (sum, [key, w]) =&gt; sum + signals[key as keyof HookScoreSignals] * w,
+    0,
+  );
+}
+
+function rankCandidates(hooks: GeneratedHook[]): GeneratedHook[] {
+  return hooks
+    .map(h =&gt; ({ ...h, score: scoreHook(analyzeHook(h)) }))
+    .sort((a, b) =&gt; b.score - a.score);
+}</code></pre>
+
+      <p>Motion density is the highest-weight signal because static hooks lose in feed environments. Copy fit penalizes hooks where TTS VO exceeds 3 seconds — a common failure when the LLM writes 25-word hooks for a 3-second slot.</p>
+
+      <h2>Prompt principles: interrupt-first, in-budget, more motion</h2>
+
+      <p><code>feat/hook-prompt-principles</code> codified three rules in the prompt template:</p>
+
+      <ol>
+        <li><strong>Interrupt-first</strong> — open mid-action or mid-sentence, never with setup ("Hi, I'm…")</li>
+        <li><strong>In-budget</strong> — copy must speak in ≤2.8s at target WPM; template enforces word count</li>
+        <li><strong>More motion</strong> — camera or subject movement in the first frame; static = reject</li>
+      </ol>
+
+<pre><code class="language-typescript">const HOOK_PROMPT_TEMPLATE = `
+Generate a 3-second UGC ad hook. Rules:
+- INTERRUPT: start mid-action, no greetings or introductions
+- BUDGET: exactly {{wordCount}} words, must speak in under 2.8 seconds
+- MOTION: subject or camera must move in frame 1 — no static product shots
+- PRODUCT: {{productName}} visible within first 500ms
+- TONE: {{tone}} — match target demographic
+`;</code></pre>
+
+      <h2>Content-aware routing</h2>
+
+      <p>Not every hook should hit the most expensive video engine. <code>feat/content-aware-routing</code> inspects the generation brief and routes to the cheapest engine that can handle the content:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Content profile</th>
+            <th>Engine</th>
+            <th>Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Product-only, no human</td>
+            <td>Seedance</td>
+            <td>Cheapest for object motion</td>
+          </tr>
+          <tr>
+            <td>UGC presenter, talking head</td>
+            <td>Kling</td>
+            <td>Better lip sync + identity</td>
+          </tr>
+          <tr>
+            <td>High motion, lifestyle</td>
+            <td>fal Veo</td>
+            <td>Best motion quality</td>
+          </tr>
+          <tr>
+            <td>Policy-sensitive category</td>
+            <td>Replicate fallback</td>
+            <td>Looser content policy</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Content-policy self-healing: when an engine rejects content (422 or policy block), the router automatically retries with the next engine in the fallback chain — no editor intervention required.</p>
+
+<pre><code class="language-typescript">async function routeWithSelfHeal(
+  brief: HookBrief,
+  engines: EngineChain,
+): Promise&lt;GenerationResult&gt; {
+  for (const engine of engines.orderedFor(brief)) {
+    try {
+      return await engine.generate(brief);
+    } catch (err) {
+      if (isContentPolicyRejection(err)) continue;
+      if (isTransient422(err)) {
+        await backoffRetry(() =&gt; engine.generate(brief));
+        return /* result */;
+      }
+      throw err;
+    }
+  }
+  throw new AllEnginesRejectedError(brief.id);
+}</code></pre>
+
+      <h2>Pre-spend guards</h2>
+
+      <p><code>feat/pre-spend-guards</code> validates before any API spend fires:</p>
+
+      <ul>
+        <li><strong>Copy-length preflight</strong> — estimate spoken duration from word count + WPM; block if &gt;3s</li>
+        <li><strong>Clip health check</strong> — verify seed frame resolution, aspect ratio, and file integrity</li>
+      </ul>
+
+      <p>These guards saved meaningful spend during beta — editors pasted long product descriptions that the LLM condensed poorly, producing 5-second VO for 3-second hooks.</p>
+
+      <h2>Seed frame dispatch chain</h2>
+
+      <p>P3 (<code>feat/seed-frame-dispatcher</code>) added high-quality seed frame generation with a fallback chain:</p>
+
+      <ol>
+        <li><strong>Nano Banana Pro</strong> (Gemini) — primary, best look-match from product catalog</li>
+        <li><strong>gpt-image</strong> — fallback on Gemini timeout</li>
+        <li><strong>Seedream</strong> — last resort for policy-blocked categories</li>
+      </ol>
+
+      <p>Seed frames anchor the first video frame. A bad seed produces a bad hook regardless of prompt quality. Dispatch order optimizes for quality first, with automatic degradation on failure.</p>
+
+      <h2>Karaoke captions</h2>
+
+      <p>P2 (<code>feat/karaoke-captions</code>) renders word-level timed captions using libass, with drawtext FFmpeg fallback when libass fonts are unavailable in the container:</p>
+
+<pre><code class="language-typescript">async function renderCaptions(
+  hook: GeneratedHook,
+  words: WordSpan[],
+): Promise&lt;string&gt; {
+  if (await libassAvailable()) {
+    return renderLibassKaraoke(hook.videoPath, words, {
+      font: 'Inter Bold',
+      highlightColor: '#64ffda',
+      position: 'bottom-center',
+    });
+  }
+  return renderDrawtextFallback(hook.videoPath, words);
+}</code></pre>
+
+      <p>Karaoke captions serve double duty: they improve thumb-stop (text movement draws the eye) and feed the caption readability signal in the hook scorer.</p>
+
+      <h2>Four UX workstreams</h2>
+
+      <p>Hook Machine's editor UX shipped as four sequential workstreams:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Workstream</th>
+            <th>PR</th>
+            <th>Capability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PR-A: Incremental reveal</td>
+            <td><code>feat/ux-incremental-reveal</code></td>
+            <td>Results appear as each candidate completes; live progress + cost tally</td>
+          </tr>
+          <tr>
+            <td>PR-B: Persistence</td>
+            <td><code>feat/ux-persistence-history</code></td>
+            <td>Recent runs + <code>?job=</code> URL resume after tab close</td>
+          </tr>
+          <tr>
+            <td>PR-C: Winner loop</td>
+            <td><code>feat/ux-winner-loop</code></td>
+            <td>Per-variant actions: regenerate, promote, decision log</td>
+          </tr>
+          <tr>
+            <td>PR-D: Smarter input</td>
+            <td><code>feat/ux-smarter-input</code></td>
+            <td>URL→brief extraction + saved product library</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>The winner loop pattern</h3>
+
+      <p>The winner loop is Hook Machine's core retention mechanic. After scoring ranks candidates, the editor:</p>
+
+      <ol>
+        <li><strong>Promotes</strong> the top scorer to "winner" status</li>
+        <li><strong>Regenerates</strong> variants near the winner with mutated prompts</li>
+        <li><strong>Logs decisions</strong> — which hook shipped, why, and what was rejected</li>
+      </ol>
+
+      <p>Decision logs feed back into prompt tuning. If editors consistently reject high-motion hooks for a product category, the prompt template adjusts motion emphasis downward for that category.</p>
+
+      <h2>Drive reliability</h2>
+
+      <p><code>feat/drive-reliability-rca</code> added RCA tooling for Google Drive upload failures — structured error codes, retry with chunked upload, and admin-visible failure reasons. Hook clips are small (3s ≈ 2–5MB) but batch runs of 10 candidates stress concurrent upload paths.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would integrate the hook scorer into generation — aborting candidates that fail copy-fit preflight before video generation, not scoring them after spend. Post-generation scoring still costs $0.15–$0.80 per rejected candidate.</p>
+
+      <p>I would also ship smarter input (PR-D) before winner loop (PR-C). Editors wanted URL→brief from day one; the winner loop was useless without fast brief entry.</p>
+
+      <h2>The pattern: generate many, rank fast, iterate winners</h2>
+
+      <p>Hook Machine treats hooks as a search problem, not a generation problem. Generate many cheap candidates, score and rank instantly, let editors iterate on winners. Content-aware routing and pre-spend guards keep the search affordable; karaoke captions and seed frame dispatch keep the winners quality-competitive with manually edited hooks.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="variant-multiplier-ad-section-swap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</a><br><span style="color:#8892b0;font-size:13px;">Section swap workflow for surgical ad variation</span></li>
+        <li style="margin-bottom:12px;"><a href="vision-in-the-loop-prompt-authoring.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame</a><br><span style="color:#8892b0;font-size:13px;">Automated per-scene prompt rewrite from generated frames</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-video-generation-pipeline-architecture.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an AI Video Generation Pipeline from Scratch</a><br><span style="color:#8892b0;font-size:13px;">Five-stage pipeline architecture from analyzer through stitch and QA</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

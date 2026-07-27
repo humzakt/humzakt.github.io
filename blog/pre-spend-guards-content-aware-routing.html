@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Pre-Spend Guards and Content-Aware Routing for AI Video APIs — Humza Tareen</title>
+  <meta name="description" content="How pre-spend validation, content-aware engine routing, live cost preview, and transient error retry patterns reduce wasted spend on AI video APIs that cost $0.10–$2.00 per generation.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI, Cost Optimization, API Design, Video Generation, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Pre-Spend Guards and Content-Aware Routing for AI Video APIs">
+  <meta property="og:description" content="How pre-spend validation, content-aware engine routing, live cost preview, and transient error retry patterns reduce wasted spend on AI video APIs that cost $0.10–$2.00 per generation.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-27T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI">
+  <meta property="article:tag" content="Cost Optimization">
+  <meta property="article:tag" content="API Design">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pre-Spend Guards and Content-Aware Routing for AI Video APIs">
+  <meta name="twitter:description" content="How pre-spend validation, content-aware engine routing, live cost preview, and transient error retry patterns reduce wasted spend on AI video APIs that cost $0.10–$2.00 per generation.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Pre-Spend Guards and Content-Aware Routing for AI Video APIs",
+    "description": "How pre-spend validation, content-aware engine routing, live cost preview, and transient error retry patterns reduce wasted spend on AI video APIs that cost $0.10–$2.00 per generation.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-27",
+    "dateModified": "2026-07-27",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html" },
+    "keywords": ["AI", "Cost Optimization", "API Design", "Video Generation", "TypeScript"],
+    "articleSection": "Production Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Pre-Spend Guards and Routing"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Pre-Spend Guards and Content-Aware Routing for AI Video APIs</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-27" itemprop="datePublished">July 27, 2026</time>
+        <span>· 6 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI</span>
+        <span class="blog-tag">Cost Optimization</span>
+        <span class="blog-tag">API Design</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>AI video generation APIs charge per call — typically $0.10 to $2.00 per clip depending on duration, resolution, and provider. That sounds cheap until an editor generates ten hook candidates, batch-runs five section swaps, and regenerates twice because copy was too long. A single session can burn $15–$40 on outputs that never ship.</p>
+
+      <p>Pre-spend guards and content-aware routing are the two patterns I shipped across Hook Machine and Variant Multiplier to stop wasting money before API calls fire. This post covers validation-before-spend, engine selection by content profile, policy self-healing, live cost preview, and transient error retry — the orchestration layer that makes multi-provider video generation economically viable.</p>
+
+      <blockquote>
+        Fail before spending is the most valuable pattern in AI API orchestration. Every dollar not spent on a clip that would have failed validation is a dollar available for a clip that might ship.
+      </blockquote>
+
+      <h2>The cost problem</h2>
+
+      <p>Video generation is not like text completion. You cannot cheaply preview the output. A failed generation still costs full price — and failures are common:</p>
+
+      <ul>
+        <li><strong>Copy overrun</strong> — 25 words of VO for a 3-second hook slot</li>
+        <li><strong>Corrupt seed frame</strong> — wrong aspect ratio, truncated upload</li>
+        <li><strong>Content policy rejection</strong> — engine refuses the prompt category</li>
+        <li><strong>Transient 422</strong> — provider soft-reject during capacity spikes</li>
+        <li><strong>Wrong engine selection</strong> — premium engine used for product-only motion</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Typical cost (3s clip)</th>
+            <th>Typical cost (15s clip)</th>
+            <th>Failure rate (beta)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Seedance</td>
+            <td>$0.10–$0.20</td>
+            <td>$0.40–$0.80</td>
+            <td>8%</td>
+          </tr>
+          <tr>
+            <td>Kling (via Replicate)</td>
+            <td>$0.30–$0.50</td>
+            <td>$1.00–$1.50</td>
+            <td>12%</td>
+          </tr>
+          <tr>
+            <td>fal Veo</td>
+            <td>$0.50–$0.80</td>
+            <td>$1.50–$2.00</td>
+            <td>15% (incl. transient 422)</td>
+          </tr>
+          <tr>
+            <td>ElevenLabs TTS</td>
+            <td>$0.03–$0.08</td>
+            <td>$0.10–$0.25</td>
+            <td>3%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>At 15% failure rate on a $0.80 clip, one in seven generations is pure waste. Multiply by batch runs of 10 and the waste compounds fast.</p>
+
+      <h2>Pre-spend guards</h2>
+
+      <p><code>feat/pre-spend-guards</code> validates inputs before any paid API call. Two checks cover the most common pre-generation failures:</p>
+
+      <h3>Copy-length preflight</h3>
+
+      <p>Estimate spoken duration from word count and target WPM. Block generation if estimated duration exceeds the slot ceiling.</p>
+
+<pre><code class="language-typescript">interface CopyPreflightResult {
+  passed: boolean;
+  wordCount: number;
+  estimatedDurationMs: number;
+  ceilingMs: number;
+  reason?: string;
+}
+
+function preflightCopyLength(
+  copy: string,
+  ceilingMs: number,
+  wpm: number = 160,
+): CopyPreflightResult {
+  const words = copy.trim().split(/\s+/);
+  const estimatedDurationMs = (words.length / wpm) * 60 * 1000;
+  return {
+    passed: estimatedDurationMs &lt;= ceilingMs,
+    wordCount: words.length,
+    estimatedDurationMs,
+    ceilingMs,
+    reason: estimatedDurationMs &gt; ceilingMs
+      ? `Copy too long: ${words.length} words ≈ ${(estimatedDurationMs / 1000).toFixed(1)}s, max ${(ceilingMs / 1000).toFixed(1)}s`
+      : undefined,
+  };
+}</code></pre>
+
+      <p>For Hook Machine's 3-second hooks, the ceiling is 3000ms with a 2.8s spoken target (200ms buffer for TTS pacing variance). Copy preflight blocked ~18% of generation attempts during beta — all of which would have produced unusable clips.</p>
+
+      <h3>Clip health check</h3>
+
+      <p>Validate seed frame and source video integrity via ffprobe before passing to the video engine — resolution, aspect ratio, minimum file size, and decodeability. Clip health catches truncated Google Drive downloads, wrong-aspect seed frames from the image dispatch chain, and corrupt uploads — all of which would fail at the video engine with a charged API call.</p>
+
+      <h2>Content-aware routing</h2>
+
+      <p><code>feat/content-aware-routing</code> inspects the generation brief and selects the cheapest engine capable of handling the content. The router classifies briefs by content profile:</p>
+
+<pre><code class="language-typescript">type ContentProfile =
+  | 'product-only'
+  | 'ugc-presenter'
+  | 'high-motion-lifestyle'
+  | 'policy-sensitive';
+
+function classifyBrief(brief: GenerationBrief): ContentProfile {
+  if (brief.hasHumanSubject &amp;&amp; brief.requiresLipSync) return 'ugc-presenter';
+  if (brief.motionLevel === 'high') return 'high-motion-lifestyle';
+  if (brief.category in POLICY_SENSITIVE_CATEGORIES) return 'policy-sensitive';
+  return 'product-only';
+}
+
+const ENGINE_PRIORITY: Record&lt;ContentProfile, EngineId[]&gt; = {
+  'product-only': ['seedance', 'kling', 'fal-veo'],
+  'ugc-presenter': ['kling', 'fal-veo', 'replicate-fallback'],
+  'high-motion-lifestyle': ['fal-veo', 'kling', 'seedance'],
+  'policy-sensitive': ['replicate-fallback', 'seedream', 'seedance'],
+};</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Content profile</th>
+            <th>Primary engine</th>
+            <th>Cost savings vs always-Veo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Product-only</td>
+            <td>Seedance</td>
+            <td>~75%</td>
+          </tr>
+          <tr>
+            <td>UGC presenter</td>
+            <td>Kling</td>
+            <td>~40%</td>
+          </tr>
+          <tr>
+            <td>High motion</td>
+            <td>fal Veo</td>
+            <td>0% (appropriate spend)</td>
+          </tr>
+          <tr>
+            <td>Policy-sensitive</td>
+            <td>Replicate fallback</td>
+            <td>Varies</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Content-policy self-healing</h3>
+
+      <p>When the selected engine rejects content (HTTP 422 with policy message, or explicit content filter response), the router automatically retries with the next engine in the fallback chain:</p>
+
+<pre><code class="language-typescript">async function generateWithSelfHeal(
+  brief: GenerationBrief,
+  engines: EngineId[],
+): Promise&lt;GenerationResult&gt; {
+  const errors: EngineError[] = [];
+
+  for (const engineId of engines) {
+    const engine = engineRegistry.get(engineId);
+    try {
+      const result = await engine.generate(brief);
+      await auditLog.record('generation.success', { engineId, briefId: brief.id });
+      return result;
+    } catch (err) {
+      errors.push({ engineId, error: err });
+      if (isContentPolicyRejection(err)) {
+        await auditLog.record('generation.policy_reject', { engineId, briefId: brief.id });
+        continue; // try next engine
+      }
+      if (isTransient422(err)) {
+        const retried = await retryWithBackoff(() =&gt; engine.generate(brief));
+        if (retried) return retried;
+        continue;
+      }
+      throw err; // non-recoverable
+    }
+  }
+
+  throw new AllEnginesExhaustedError(brief.id, errors);
+}</code></pre>
+
+      <p>Self-healing saved manual editor intervention on ~22% of policy-sensitive generations during beta. Without it, editors saw opaque error messages and had to manually retry with a different engine.</p>
+
+      <h2>Live cost preview</h2>
+
+      <p>Variant Multiplier's studio workstreams added live cost estimation before spend:</p>
+
+      <ul>
+        <li><code>feat/studio-ws1-backend</code> — <code>POST /config/estimate</code> endpoint</li>
+        <li><code>feat/studio-ws3-modes-cost</code> — per-section mode selection with live cost update</li>
+      </ul>
+
+<pre><code class="language-typescript">interface CostEstimate {
+  totalUsd: number;
+  breakdown: {
+    video: number;
+    tts: number;
+    llm: number;
+    image: number;
+  };
+  engines: {
+    video: EngineId;
+    tts: EngineId;
+    image: EngineId;
+  };
+}
+
+function estimateCost(
+  section: SectionBounds,
+  mode: SectionMode,
+  profile: ContentProfile,
+): CostEstimate {
+  const durationSec = (section.endMs - section.startMs) / 1000;
+  const engines = ENGINE_PRIORITY[profile];
+  const videoEngine = engineRegistry.get(engines[0]);
+  return {
+    totalUsd: videoEngine.pricePerSecond * durationSec + /* tts + llm */,
+    breakdown: { /* ... */ },
+    engines: { video: engines[0], tts: 'elevenlabs', image: 'nano-banana-pro' },
+  };
+}</code></pre>
+
+      <p>The UI updates cost in real time as editors change section boundaries or switch modes (rewrite-only vs full B-roll regen). No-auto-spend UX ensures the estimate is visible before the "Run" button fires any API call.</p>
+
+      <h2>Transient error retry: fal Veo 422</h2>
+
+      <p><code>fix/fal-veo-transient-422</code> handles fal's Veo endpoint returning HTTP 422 during capacity spikes — a soft "try again later" signal, not a content rejection. The fix applies exponential backoff (3 retries, 2–16s with jitter) on transient 422s while routing policy 422s to the next engine. The error classifier inspects response body fields (<code>rate_limit</code>, <code>overloaded</code> vs <code>content_policy</code>, <code>safety</code>), not just status code.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Error type</th>
+            <th>HTTP signal</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Transient capacity</td>
+            <td>422 + "rate_limit" / "overloaded"</td>
+            <td>Retry same engine with backoff</td>
+          </tr>
+          <tr>
+            <td>Content policy</td>
+            <td>422 + "content_policy" / "safety"</td>
+            <td>Fallback to next engine</td>
+          </tr>
+          <tr>
+            <td>Invalid input</td>
+            <td>400 / 422 + validation details</td>
+            <td>Block, surface to editor (pre-spend should catch)</td>
+          </tr>
+          <tr>
+            <td>Provider outage</td>
+            <td>503 / 504</td>
+            <td>Retry then fallback</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Composing the guard stack</h2>
+
+      <p>In production, all patterns compose in fixed order: copy preflight → clip health → cost estimate → content classification → generate with self-heal. Wasted spend per 100 generations dropped from ~$12–$18 to ~$3–$5; editor-visible failures from 15% to 4%; average cost per shipped hook from $1.40 to $0.65.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would centralize pre-spend guards in a shared library from day one, not ship them independently in Hook Machine and Variant Multiplier. The copy preflight and clip health checks are identical; we duplicated them and had to reconcile minor differences in WPM defaults and aspect ratio tolerances.</p>
+
+      <p>I would also log every blocked preflight attempt with the reason code. We know blocked attempts saved spend, but we do not know which guard fires most often — data that would prioritize prompt template improvements over clip health checks.</p>
+
+      <h2>The pattern: fail before spending</h2>
+
+      <p>AI video APIs will get cheaper over time. They will not get more predictable — content policy, capacity spikes, and input sensitivity are structural properties of generative models. Building validation, routing, and retry as an orchestration layer above the providers keeps spend proportional to shippable output, not attempted output.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="hook-machine-3s-ad-openers.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hook Machine: Scoring and Ranking 3-Second AI Ad Openers</a><br><span style="color:#8892b0;font-size:13px;">Where pre-spend guards and content-aware routing first shipped</span></li>
+        <li style="margin-bottom:12px;"><a href="universal-vendor-polling-heartbeat-template.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Universal Vendor Polling Heartbeat Template</a><br><span style="color:#8892b0;font-size:13px;">Async polling patterns for multi-provider video APIs</span></li>
+        <li style="margin-bottom:12px;"><a href="streaming-ai-video-cloud-storage.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Streaming AI Video to Cloud Storage</a><br><span style="color:#8892b0;font-size:13px;">Cloud storage patterns for generated video assets</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

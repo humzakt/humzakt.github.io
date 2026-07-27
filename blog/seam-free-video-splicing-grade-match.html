@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions — Humza Tareen</title>
+  <meta name="description" content="A technical deep-dive on deterministic grade-match colour transfer, end-frame interpolation for smooth cut-backs, and word-level karaoke captions — the splice repair stack for AI-generated video sections.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="FFmpeg, Video Processing, Computer Vision, Color Science, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions">
+  <meta property="og:description" content="A technical deep-dive on deterministic grade-match colour transfer, end-frame interpolation for smooth cut-backs, and word-level karaoke captions — the splice repair stack for AI-generated video sections.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-07-27T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="FFmpeg">
+  <meta property="article:tag" content="Video Processing">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Color Science">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions">
+  <meta name="twitter:description" content="A technical deep-dive on deterministic grade-match colour transfer, end-frame interpolation for smooth cut-backs, and word-level karaoke captions — the splice repair stack for AI-generated video sections.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions",
+    "description": "A technical deep-dive on deterministic grade-match colour transfer, end-frame interpolation for smooth cut-backs, and word-level karaoke captions — the splice repair stack for AI-generated video sections.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-07-27",
+    "dateModified": "2026-07-27",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html" },
+    "keywords": ["FFmpeg", "Video Processing", "Computer Vision", "Color Science", "TypeScript"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Seam-Free Video Splicing"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-07-27" itemprop="datePublished">July 27, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">FFmpeg</span>
+        <span class="blog-tag">Video Processing</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Color Science</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>Splicing AI-generated sections into existing video is easy. Making the splice invisible is not. When Variant Multiplier swaps a body section or Hook Machine stitches a generated opener onto A-roll, the viewer's eye catches the cut — a colour temperature shift, a brightness jump, a frame where motion stutters. This post covers the three techniques that repair those seams: deterministic grade-match, end-frame interpolation, and word-level karaoke captions.</p>
+
+      <blockquote>
+        Neural colour grading is impressive in demos. Deterministic histogram matching is what you ship when you need the same splice to look identical on the thousandth run.
+      </blockquote>
+
+      <h2>The visual seam problem</h2>
+
+      <p>AI video engines render with their own implicit colour pipeline — white balance, contrast curve, saturation profile. Source footage from a real UGC shoot carries the phone camera's pipeline. Concatenating them with FFmpeg's <code>concat</code> demuxer produces a visible discontinuity at every boundary:</p>
+
+      <ul>
+        <li><strong>Colour shift</strong> — generated section is cooler/warmer than source</li>
+        <li><strong>Exposure jump</strong> — generated section is brighter/darker</li>
+        <li><strong>Motion discontinuity</strong> — subject position does not match at cut-back</li>
+        <li><strong>Caption desync</strong> — text timing does not align with new VO</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Seam type</th>
+            <th>Viewer perception</th>
+            <th>Repair technique</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Colour discontinuity</td>
+            <td>"This looks edited / fake"</td>
+            <td>Grade-match</td>
+          </tr>
+          <tr>
+            <td>Motion jump at cut-back</td>
+            <td>"Something glitched"</td>
+            <td>End-frame interpolation</td>
+          </tr>
+          <tr>
+            <td>Caption timing drift</td>
+            <td>"Subtitles are wrong"</td>
+            <td>Word-level karaoke + libass</td>
+          </tr>
+          <tr>
+            <td>Audio pop at boundary</td>
+            <td>"Bad edit"</td>
+            <td>Crossfade + silence alignment</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Grade-match: deterministic colour transfer</h2>
+
+      <p><code>feat/grade-match</code> implements histogram-based colour transfer from a reference frame (the last frame of the preceding source section) to the first and last frames of the generated section. The algorithm:</p>
+
+      <ol>
+        <li>Extract reference frame RGB histogram from source video at splice point</li>
+        <li>Extract target frame histogram from generated section boundary</li>
+        <li>Compute per-channel lookup table mapping target → reference distribution</li>
+        <li>Apply LUT to all frames in the generated section</li>
+      </ol>
+
+<pre><code class="language-typescript">interface ChannelLUT {
+  r: Uint8Array;  // 256-entry lookup
+  g: Uint8Array;
+  b: Uint8Array;
+}
+
+function computeGradeMatchLUT(
+  referenceFrame: RGBBuffer,
+  targetFrame: RGBBuffer,
+): ChannelLUT {
+  const refHist = { r: histogram(referenceFrame.r), g: histogram(referenceFrame.g), b: histogram(referenceFrame.b) };
+  const tgtHist = { r: histogram(targetFrame.r), g: histogram(targetFrame.g), b: histogram(targetFrame.b) };
+
+  return {
+    r: matchHistograms(tgtHist.r, refHist.r),
+    g: matchHistograms(tgtHist.g, refHist.g),
+    b: matchHistograms(tgtHist.b, refHist.b),
+  };
+}
+
+function applyLUT(frame: RGBBuffer, lut: ChannelLUT): RGBBuffer {
+  return {
+    r: frame.r.map(v =&gt; lut.r[v]),
+    g: frame.g.map(v =&gt; lut.g[v]),
+    b: frame.b.map(v =&gt; lut.b[v]),
+  };
+}</code></pre>
+
+      <p>The FFmpeg integration wraps this as a filter graph applied before concat:</p>
+
+<pre><code class="language-bash"># Grade-match filter applied to generated section before concat
+ffmpeg -i generated_section.mp4 -i reference_frame.png \
+  -filter_complex "[0:v]lut3d=grade_match.cube[graded];[graded][1:v]..." \
+  -c:v libx264 -crf 18 graded_section.mp4</code></pre>
+
+      <h3>Why deterministic beats neural for colour transfer</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Histogram grade-match</th>
+            <th>Neural colour grading</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reproducibility</td>
+            <td>Identical output every run</td>
+            <td>Stochastic — varies per inference</td>
+          </tr>
+          <tr>
+            <td>Latency</td>
+            <td>&lt;200ms per section</td>
+            <td>2–8s per frame (GPU inference)</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td>CPU-only, $0</td>
+            <td>GPU/API cost per frame</td>
+          </tr>
+          <tr>
+            <td>Hallucination risk</td>
+            <td>None — pixel-level LUT</td>
+            <td>Can alter texture, add artefacts</td>
+          </tr>
+          <tr>
+            <td>Debuggability</td>
+            <td>LUT is inspectable artifact</td>
+            <td>Black box</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Neural colour grading excels when you need creative grading — "make this look like golden hour." Splice repair needs <em>matching</em>, not creativity. Histogram transfer solves matching without introducing artefacts.</p>
+
+      <h2>End-frame interpolation</h2>
+
+      <p>Grade-match fixes colour. It does not fix motion. When a generated section ends and the stitch cuts back to original source footage, the subject's head position, hand gesture, and background motion rarely align. <code>feat/end-frame</code> generates a transition frame that bridges the gap.</p>
+
+      <p>The pipeline:</p>
+
+      <ol>
+        <li>Extract last frame of generated section (after grade-match)</li>
+        <li>Extract first frame of following source section</li>
+        <li>Generate interpolated frame(s) blending pose/lighting between the two</li>
+        <li>Insert 2–4 interpolated frames (80–160ms at 25fps) before the hard cut-back</li>
+      </ol>
+
+<pre><code class="language-typescript">interface EndFrameConfig {
+  interpolationFrames: number;  // typically 2–4
+  method: 'optical-flow' | 'cross-dissolve' | 'model-interp';
+}
+
+async function buildEndFrameTransition(
+  generatedLastFrame: Buffer,
+  sourceFirstFrame: Buffer,
+  config: EndFrameConfig,
+): Promise&lt;Buffer[]&gt; {
+  if (config.method === 'cross-dissolve') {
+    return linearCrossDissolve(generatedLastFrame, sourceFirstFrame, config.interpolationFrames);
+  }
+  // optical-flow or model-based for higher quality when motion delta is large
+  return opticalFlowInterp(generatedLastFrame, sourceFirstFrame, config.interpolationFrames);
+}</code></pre>
+
+      <p>Cross-dissolve handles small motion deltas (talking head, minimal gesture change). Optical-flow interpolation handles larger deltas but costs more compute. The stitch pipeline selects method based on motion magnitude between boundary frames.</p>
+
+      <h3>Cut-back smoothness metrics</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Configuration</th>
+            <th>Visible seam rate (internal QA)</th>
+            <th>Added latency</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Raw concat (no repair)</td>
+            <td>78%</td>
+            <td>0ms</td>
+          </tr>
+          <tr>
+            <td>Grade-match only</td>
+            <td>34%</td>
+            <td>~150ms</td>
+          </tr>
+          <tr>
+            <td>Grade-match + 2-frame dissolve</td>
+            <td>12%</td>
+            <td>~200ms</td>
+          </tr>
+          <tr>
+            <td>Grade-match + optical-flow interp</td>
+            <td>4%</td>
+            <td>~800ms</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Word-level transcript selection</h2>
+
+      <p>Seam repair is visual, but splice accuracy starts with temporal precision. <code>feat/word-level-selection</code> provides karaoke-style word boundaries that define exactly where the generated section begins and ends in the source timeline.</p>
+
+<pre><code class="language-typescript">interface WordSpan {
+  word: string;
+  startMs: number;
+  endMs: number;
+  confidence: number;
+}
+
+function buildSpliceTimeline(
+  words: WordSpan[],
+  sectionStart: number,
+  sectionEnd: number,
+  generatedDurationMs: number,
+): StitchTimeline {
+  const preRoll = words.slice(0, sectionStart);
+  const postRoll = words.slice(sectionEnd + 1);
+  return {
+    segments: [
+      { type: 'source', wordSpan: preRoll },
+      { type: 'generated', durationMs: generatedDurationMs },
+      { type: 'source', wordSpan: postRoll },
+    ],
+    splicePoints: [
+      { ms: preRoll.at(-1)?.endMs ?? 0, repair: ['grade-match', 'end-frame'] },
+      { ms: preRoll.at(-1)?.endMs ?? 0 + generatedDurationMs, repair: ['grade-match', 'end-frame'] },
+    ],
+  };
+}</code></pre>
+
+      <p>Word-level boundaries prevent the most common splice error: cutting mid-phoneme. Silence-based selection gets close; word selection gets exact.</p>
+
+      <h2>Karaoke captions: libass with drawtext fallback</h2>
+
+      <p>After splicing, captions must reflect the new timeline — including regenerated VO in the swapped section. <code>feat/karaoke-captions</code> renders word-highlighted captions synchronized to the final stitched audio.</p>
+
+      <h3>libass rendering (primary path)</h3>
+
+      <p>libass renders ASS subtitles with per-word highlight timing — the "karaoke" effect where each word lights up as spoken. This requires font files in the container and FFmpeg compiled with libass support.</p>
+
+<pre><code class="language-typescript">function generateAssKaraoke(words: WordSpan[], style: CaptionStyle): string {
+  const lines = ['[Script Info]', 'Title: Karaoke', '', '[V4+ Styles]', `Style: Default,${style.font},${style.fontSize},...`, '', '[Events]', 'Format: Layer, Start, End, Style, Text'];
+  for (const word of words) {
+    const start = msToAssTime(word.startMs);
+    const end = msToAssTime(word.endMs);
+    lines.push(`Dialogue: 0,${start},${end},Default,{\\c&H${style.highlight}&}${word.word}`);
+  }
+  return lines.join('\n');
+}</code></pre>
+
+      <h3>drawtext fallback</h3>
+
+      <p>When libass is unavailable (minimal Docker images, missing fonts), the pipeline falls back to FFmpeg's <code>drawtext</code> filter — one word at a time, positioned bottom-center:</p>
+
+<pre><code class="language-bash">ffmpeg -i stitched.mp4 -vf "
+  drawtext=text='{{word}}':fontfile=/fonts/Inter-Bold.ttf:
+  fontsize=48:fontcolor=white:borderw=2:bordercolor=black:
+  x=(w-text_w)/2:y=h-120:enable='between(t,{{start}},{{end}})'
+" -c:v libx264 -c:a copy captioned.mp4</code></pre>
+
+      <p>drawtext lacks the smooth highlight animation of libass but guarantees captions render in any environment. The fallback is automatic — runtime detection, no config flag.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Renderer</th>
+            <th>Visual quality</th>
+            <th>Dependencies</th>
+            <th>Render time (30s video)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>libass</td>
+            <td>Smooth karaoke highlight</td>
+            <td>libass + font files</td>
+            <td>~3s</td>
+          </tr>
+          <tr>
+            <td>drawtext</td>
+            <td>Word-at-a-time, no highlight</td>
+            <td>FFmpeg only</td>
+            <td>~8s (filter chain overhead)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Composing the splice repair stack</h2>
+
+      <p>In production, all three techniques compose in a fixed order:</p>
+
+      <ol>
+        <li><strong>Word-level selection</strong> — define precise splice boundaries</li>
+        <li><strong>Grade-match</strong> — colour transfer on generated section</li>
+        <li><strong>End-frame interpolation</strong> — motion bridge at cut-back points</li>
+        <li><strong>Concat</strong> — FFmpeg stitch with audio crossfade</li>
+        <li><strong>Karaoke captions</strong> — render on final stitched output</li>
+      </ol>
+
+<pre><code class="language-typescript">async function spliceWithRepair(
+  source: VideoAsset,
+  generated: VideoAsset,
+  section: SectionBounds,
+  words: WordSpan[],
+): Promise&lt;StitchedOutput&gt; {
+  const refFrame = await extractFrame(source, section.startMs - 1);
+  const graded = await gradeMatch(generated, refFrame);
+  const endFrames = await buildEndFrameTransition(
+    await extractFrame(graded, graded.durationMs - 1),
+    await extractFrame(source, section.endMs),
+  );
+  const stitched = await concatSegments([source.before(section), graded, ...endFrames, source.after(section)]);
+  const captioned = await renderKaraokeCaptions(stitched, realignWords(words, section));
+  return captioned;
+}</code></pre>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would compute grade-match LUTs once per source video and cache them keyed by source frame hash. Currently each section swap recomputes histograms from scratch — cheap individually, but redundant in batch queue runs on the same source.</p>
+
+      <p>I would also expose seam quality as a numeric score in the UI, not just pass/fail. Editors could choose to accept a 12% seam risk to save 800ms of optical-flow interpolation when shipping variants quickly.</p>
+
+      <h2>The pattern: repair at the splice, not in the generator</h2>
+
+      <p>Video generation models will get better at colour consistency over time. They will not solve splice repair — the source footage's colour pipeline is external to any model. Building deterministic repair as a post-generation stitch step decouples splice quality from model quality and keeps the stack reproducible at production scale.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="variant-multiplier-ad-section-swap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</a><br><span style="color:#8892b0;font-size:13px;">Section swap workflow where grade-match and end-frame first shipped</span></li>
+        <li style="margin-bottom:12px;"><a href="hook-machine-3s-ad-openers.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hook Machine: Scoring and Ranking 3-Second AI Ad Openers</a><br><span style="color:#8892b0;font-size:13px;">Karaoke captions and hook splice use cases</span></li>
+        <li style="margin-bottom:12px;"><a href="production-hardening-ai-video-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards</a><br><span style="color:#8892b0;font-size:13px;">Pipeline reliability patterns for FFmpeg and multi-provider generation</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

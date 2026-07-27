@@ -4,6 +4,46 @@
 
 ---
 
+## Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants
+
+URL: https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html
+
+23 PRs building a new AI video tool from scratch on an ad platform. Take a proven winning ad, swap exactly one section with fresh creative, and re-stitch so the viewer never feels the seam. Covers a 6-workstream studio layout, waveform timeline for precise section selection, word-level transcript selection for dialogue boundaries, grade-match colour transfer at splice points, and a batch queue for generating multiple variants from one winner.
+
+---
+
+## Hook Machine: Scoring and Ranking 3-Second AI Ad Openers
+
+URL: https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html
+
+21 PRs building a hook generation tool from scratch. Generates dozens of 3-second ad openers, scores each one with a custom algorithm, ranks them, and loops the winner back into production. Covers content-aware video engine routing to pick the right model per hook type, karaoke captions synced to the opener, seed frame dispatch for visual continuity, and a winner loop pattern that feeds top performers back into the generation pipeline.
+
+---
+
+## Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions
+
+URL: https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html
+
+Technical deep-dive into three problems that make section swaps visible to viewers: colour shifts at splice points, jarring cut-backs, and captions drifting out of sync. Covers deterministic colour transfer using grade-match at splice boundaries, end-frame interpolation for smooth cut-back transitions, and karaoke captions with libass rendering plus an FFmpeg drawtext fallback when libass is unavailable.
+
+---
+
+## Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline
+
+URL: https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html
+
+Automated QC and human review as complementary layers in an enterprise AI training pipeline. Trainers claim tasks, review content, submit decisions — QC runs in between, but only when it should. Covers claim lifecycle edge cases when QC interrupts an active claim, spinner scoping so loading states don't block unrelated UI, manifest state transitions as QC results flow back, and force-pass guards for admin override scenarios.
+
+---
+
+## Pre-Spend Guards and Content-Aware Routing for AI Video APIs
+
+URL: https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html
+
+AI video generation APIs charge per call — often around $2 per generation. A bad prompt, policy violation, or retry storm can burn budget in minutes. Covers pre-spend validation gates that run before every expensive API call, content-aware engine routing to pick the cheapest viable model, content-policy self-healing that rewrites prompts before rejection, live cost preview in the UI, and transient error retries that don't double-charge on vendor failures.
+
+---
+
 ## AI Writing Markers: Building an Open Dataset and Checker on Hugging Face
 
 URL: https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html

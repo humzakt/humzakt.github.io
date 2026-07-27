@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 27 Jul 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,76 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</title>
+      <link>https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html</guid>
+      <pubDate>Sun, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>23 PRs building a new AI video tool from scratch — 6-workstream studio, waveform timeline, word-level transcript selection, grade-match colour transfer, batch queue.</description>
+      <category>AI</category>
+      <category>Video Generation</category>
+      <category>TypeScript</category>
+      <category>Next.js</category>
+      <category>Product Engineering</category>
+    </item>
+
+    <item>
+      <title>Hook Machine: Scoring and Ranking 3-Second AI Ad Openers</title>
+      <link>https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html</guid>
+      <pubDate>Sun, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>21 PRs building a hook generation tool — scorer algorithm, content-aware video engine routing, karaoke captions, seed frame dispatch, winner loop pattern.</description>
+      <category>AI</category>
+      <category>Video Generation</category>
+      <category>Hooks</category>
+      <category>TypeScript</category>
+      <category>FFmpeg</category>
+    </item>
+
+    <item>
+      <title>Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions</title>
+      <link>https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html</guid>
+      <pubDate>Sun, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Deterministic colour transfer at splice points, end-frame interpolation for smooth cut-backs, and karaoke captions with libass rendering and FFmpeg drawtext fallback.</description>
+      <category>FFmpeg</category>
+      <category>Video Processing</category>
+      <category>Computer Vision</category>
+      <category>Color Science</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline</title>
+      <link>https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html</guid>
+      <pubDate>Sun, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Automated QC orchestration in a human review pipeline — claim lifecycle edge cases, spinner scoping, manifest state transitions, force-pass guards.</description>
+      <category>Enterprise</category>
+      <category>Quality Control</category>
+      <category>TypeScript</category>
+      <category>React</category>
+      <category>Pipeline Architecture</category>
+    </item>
+
+    <item>
+      <title>Pre-Spend Guards and Content-Aware Routing for AI Video APIs</title>
+      <link>https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html</guid>
+      <pubDate>Sun, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Validate before spending on $2/generation AI video APIs — content-aware engine routing, content-policy self-healing, live cost preview, transient error retries.</description>
+      <category>AI</category>
+      <category>Cost Optimization</category>
+      <category>API Design</category>
+      <category>Video Generation</category>
+      <category>TypeScript</category>
+    </item>
 
     <item>
       <title>AI Writing Markers: Building an Open Dataset and Checker on Hugging Face</title>
