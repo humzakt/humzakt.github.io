@@ -125,74 +125,174 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>In multi-app software suites built around shared core modules, fixing a subtle defect in one service often reveals identical hidden vulnerabilities in sibling applications. Furthermore, major framework upgrades like Next.js 15 bring silent breaking changes in route handler configuration parsing. During a recent maintenance cycle across our AI video tools (including <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a> and sibling generation services), we executed a systematic cross-repo audit (following principles from <a href="post-launch-audit-20-prs-48-hours.html">Post-Launch Audit</a>) that port-fixed 14 verified defects and hardened Next.js 15 route configurations.</p>
+      <p>When a product suite grows through sibling tools, defects rarely stay isolated. A bug fixed in one app is often a search query away from another copy in a neighboring app: same route pattern, same provider wrapper, same picker component, same stale state assumption. The August maintenance pass across the AI ad/video tools turned that observation into a deliberate audit workflow.</p>
+
+      <p>The anchor PR was #222 (<code>fix/port-presenter-and-variant-multiplier-fixes</code>) in the main video-generation service: fourteen defects ported from two sibling tools, audited rather than assumed. Minutes later, PR #223 (<code>fix/upload-body-size-key-for-next-15</code>) handled a separate framework gotcha where the upload body-size cap lived under a config key Next.js 15 ignored. Together they are a useful pattern: treat every root-cause fix as a prompt to audit the fleet, and treat every framework upgrade as a contract review, not a version bump.</p>
 
       <blockquote>
         Never fix a bug in isolation. Turn every root-cause fix into a cross-repository audit pattern for sibling codebases.
       </blockquote>
 
-      <h2>The Next.js 15 Upload Body Size Gotcha</h2>
-      <p>When upgrading from Next.js 14 to Next.js 15, custom API route body-size configurations changed. Legacy configurations using <code>export const config = { api: { bodyParser: false } }</code> were silently ignored in Next.js 15 App Router segment configs, causing large video uploads to fail with 413 Payload Too Large or silent body truncation.</p>
+      <h2>The Next.js 15 upload body-size gotcha</h2>
 
-      <pre><code>// Legacy Next.js 14 route config (Ignored in Next.js 15 App Router)
-// export const config = { api: { bodyParser: { sizeLimit: '100mb' } } };
+      <p>The upload issue was easy to misread because the code looked familiar. Legacy Next.js API-route config often used <code>export const config = { api: { bodyParser: false } }</code> or a nested body-size value. In App Router route handlers, especially after the Next.js 15 migration, that pattern can be ignored or simply not apply where engineers think it applies. The symptom appears elsewhere: 413 responses, truncated multipart bodies, or missing file fields.</p>
 
-// Correct Next.js 15 Route Handler configuration
-export const maxDuration = 60; // 60 seconds timeout
+      <p>PR #223 moved the upload path away from implicit parser behavior and toward explicit route-handler ownership of the stream. That same fix is the backbone of <a href="streaming-master-uploads-preventing-memory-exhaustion.html">Streaming Master Uploads to Disk</a>: accept the request as bytes, stream to an artifact, then validate the artifact.</p>
+
+<pre><code class="language-typescript">// Suspicious in App Router upload handlers:
+export const config = {
+  api: {
+    bodyParser: { sizeLimit: '100mb' },
+  },
+};
+
+// Safer route-handler shape:
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-// Large payloads are parsed directly via req.body Web Streams
-import { handleMasterUploadStream } from './stream-utils';
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const filePath = await handleMasterUploadStream(req, 'upload.mp4');
-  return Response.json({ status: 'success', filePath });
+  const upload = await streamUploadToTempFile(req, 'master.mp4');
+  try {
+    await assertVideoProbePasses(upload.path);
+    return Response.json(await ingestMasterVideo(upload.path));
+  } finally {
+    await upload.cleanup();
+  }
 }</code></pre>
 
-      <p>As covered in <a href="streaming-master-uploads-preventing-memory-exhaustion.html">Streaming Master Uploads to Disk</a>, pairing Web Stream handlers with explicit Next.js 15 segment options ensures upload routes accept multi-gigabyte video files reliably.</p>
+      <h2>The cross-tool audit protocol</h2>
 
-      <h2>The Cross-Tool Audit Protocol</h2>
-      <p>To ensure bug fixes were systematically applied across all sibling applications (video generation, presenter generation, variant multiplier, hook machine), we adopted a strict audit protocol:</p>
+      <p>The most important phrase in #222's title is "audited, not assumed." Porting fixes by memory is how teams create fake confidence. The protocol was stricter:</p>
 
       <ol>
-        <li><strong>Defect Extraction:</strong> Log every root-cause fix from any single repo into a centralized audit checklist.</li>
-        <li><strong>Cross-Repo Verification:</strong> Inspect sibling codebases to verify whether the vulnerability or anti-pattern exists, rather than assuming immunity.</li>
-        <li><strong>Atomic Port-Fixes:</strong> Submit audited, verified PRs across sibling repos within the same maintenance window.</li>
+        <li><strong>Extract the root cause.</strong> Describe the bug as a reusable pattern: stale render input, unsafe paid action, wrong provider request shape, hidden body parser, picker overflow.</li>
+        <li><strong>Search sibling repos by behavior.</strong> Do not only search for one function name. Search equivalent routes, components, and state transitions.</li>
+        <li><strong>Classify each hit.</strong> Mark it present, absent, intentionally different, or untestable. "Not sure" is not a pass.</li>
+        <li><strong>Port only verified fixes.</strong> Submit atomic PRs that name the source defect and the target behavior.</li>
+        <li><strong>Update docs and changelogs.</strong> The next audit should start from a known map, not from chat memory.</li>
       </ol>
 
-      <h2>Audited Defect Summary</h2>
+      <p>This mirrors the discipline from <a href="post-launch-audit-20-prs-48-hours.html">Post-Launch Audit</a>, but across repositories instead of one launch surface. The difference is that cross-tool audits need a translation step: a defect may not have the same filename in every app, but it often has the same user-facing shape.</p>
+
+      <h2>Defect families that repeated</h2>
+
       <table>
         <thead>
           <tr>
-            <th>PR / Module</th>
-            <th>Vulnerability</th>
-            <th>Audited Resolution</th>
+            <th>Defect family</th>
+            <th>Example source</th>
+            <th>Audit question</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>fix/upload-body-cap</code></td>
-            <td>Next.js 15 ignored legacy body size config key</td>
-            <td>Refactored route handler exports to Web Stream handler pattern</td>
+            <td>Paid-action ownership</td>
+            <td>Hook Machine #53</td>
+            <td>Can any double-click or retry dispatch two paid provider calls?</td>
           </tr>
           <tr>
-            <td><code>fix/cross-tool-defects</code></td>
-            <td>14 shared UI/API defects across sibling tools</td>
-            <td>Audited sibling repositories and port-fixed all verified occurrences</td>
+            <td>Render input drift</td>
+            <td>Hook Machine #57</td>
+            <td>Can resume/regenerate lose voice, product, or prompt locks?</td>
           </tr>
           <tr>
-            <td><code>fix/picker-search-cap</code></td>
-            <td>Presenter character picker crashed on 500+ items</td>
-            <td>Capped picker render limit and added client-side fuzzy search</td>
+            <td>Audio/render DOM leakage</td>
+            <td>Hook Machine #58</td>
+            <td>Can preview-only DOM elements enter headless frame capture?</td>
+          </tr>
+          <tr>
+            <td>Upload body limits</td>
+            <td>Video-generation #223 / Variant Multiplier #64/#66</td>
+            <td>Does this route own raw upload bytes or rely on hidden parser limits?</td>
+          </tr>
+          <tr>
+            <td>Vendor request shape</td>
+            <td>Presenter #9, Hook Machine #49, Variant Multiplier #62</td>
+            <td>Can the real provider reject fields the local schema allowed?</td>
+          </tr>
+          <tr>
+            <td>Picker and catalog scaling</td>
+            <td>Presenter #19</td>
+            <td>Do large voice/character/product catalogs break layout or search?</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Porting fixes without cargo culting</h2>
+
+      <p>A cross-tool fix should not blindly copy code. Hook Machine, Presenter Generation, Variant Multiplier, and the main video-generation service share concepts, but each app has different workflows. A regenerate action in Hook Machine is not the same as a scene redo in Presenter Generation or a section-swap reroll in Variant Multiplier. The audit needs to preserve the behavior that mattered, not the exact function body.</p>
+
+      <p>That distinction showed up in the paid-action work. In one tool, the risk was a regenerate double-click. In another, it was a button that looked dead while an action was still pending. In a third, it was ledger idempotency around retries. The shared invariant was server-owned action state. The implementation varied per tool.</p>
+
+<pre><code class="language-typescript">type AuditFinding =
+  | { status: 'present'; repo: string; fixBranch: string; test: string }
+  | { status: 'absent'; repo: string; evidence: string }
+  | { status: 'different_by_design'; repo: string; reason: string };
+
+function requireEvidence(finding: AuditFinding) {
+  if (finding.status === 'present' &amp;&amp; !finding.test) {
+    throw new Error('A ported defect needs a test or reproducible check');
+  }
+  return finding;
+}</code></pre>
+
+      <h2>Framework upgrade hardening</h2>
+
+      <p>The Next.js 15 body-size issue belongs in a broader checklist. Framework upgrades break assumptions in places that do not always fail at compile time: route config, runtime selection, cache behavior, request body parsing, streaming APIs, and server action boundaries. The fix is to audit by capability rather than by package version.</p>
+
+      <ul>
+        <li><strong>Large uploads:</strong> verify the route receives raw bytes and can stream past 10 MB.</li>
+        <li><strong>Long jobs:</strong> verify route duration and background handoff do not depend on defaults.</li>
+        <li><strong>Cache-sensitive state:</strong> mark dynamic routes explicitly when job state must be fresh.</li>
+        <li><strong>Provider wrappers:</strong> test against real request shapes, not only local TypeScript types.</li>
+      </ul>
+
+      <p>That is how a framework migration becomes reliability work instead of a dependency chore.</p>
+
+      <h2>Audited PR summary</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>PR / branch</th>
+            <th>Scope</th>
+            <th>Resolution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#222 <code>fix/port-presenter-and-variant-multiplier-fixes</code></td>
+            <td>Fourteen verified defects ported into the main video-generation service</td>
+            <td>Converted sibling-tool bug fixes into explicit checks and equivalent fixes</td>
+          </tr>
+          <tr>
+            <td>#223 <code>fix/upload-body-size-key-for-next-15</code></td>
+            <td>Upload body-size config ignored after framework migration</td>
+            <td>Moved large upload handling to explicit stream-owned route handlers</td>
+          </tr>
+          <tr>
+            <td>#60 <code>fix/port-presenter-delivery-and-vendor-fixes</code></td>
+            <td>Presenter delivery and vendor bugs with equivalent section-swap risks</td>
+            <td>Ported only defects that reproduced in the target workflow</td>
+          </tr>
+          <tr>
+            <td>#45 <code>port/presenter-hook-catch-and-wire-fixes</code></td>
+            <td>Presenter fixes that were live bugs in Hook Machine too</td>
+            <td>Applied equivalent hook-generation fixes and synced docs afterward</td>
           </tr>
         </tbody>
       </table>
 
       <h2>What I'd do differently</h2>
-      <p>I would mandate shared monorepo packages for shared API handlers and route configurations earlier. While cross-repo PR auditing catches duplicate defects, extracting shared middleware into NPM packages prevents drift across sibling repos automatically.</p>
+
+      <p>I would extract shared upload handlers, provider request validators, and paid-action guards into versioned packages sooner. Cross-repo audits are valuable, but shared libraries make the desired behavior harder to drift from in the first place. The audit still has a role: proving adoption and catching places where a workflow genuinely needs a different implementation.</p>
+
+      <p>I would also keep a living "defect families" document. Individual PRs are easy to close and forget. A defect family list turns each incident into future search terms, test fixtures, and review prompts.</p>
 
       <h2>The pattern: proactive multi-repo maintenance</h2>
-      <p>Frame upgrades and bug fixes should never happen in isolation. Establishing a disciplined cross-repo audit protocol ensures that platform upgrades in <a href="production-hardening-ai-video-pipeline.html">Production Hardening AI Video Pipelines</a> elevate software quality across the entire product ecosystem.</p>
+
+      <p>Bug fixes should improve more than the file they touch. When tools share workflows, providers, and framework surfaces, every root cause is a candidate audit pattern. The engineering move is to preserve specificity — exact PRs, exact symptoms, exact checks — while raising the fix to the fleet level. That is how a maintenance sprint compounds into platform quality.</p>
     </div>
 
     <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">

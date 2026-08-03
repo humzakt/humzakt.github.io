@@ -125,76 +125,164 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>In short-form video advertising, the first 3 seconds determine whether a viewer stays or scrolls past. When generating AI avatar openers and voiceover hooks in <a href="hook-machine-3s-ad-openers.html">Hook Machine</a>, text-to-speech (TTS) engines frequently output 200ms to 800ms of leading silence before speech audio begins. In a 3-second hook video, even a 300ms delay feels sluggish and tanks viewer retention metrics. Initially, our pipeline logged passive warnings. To achieve <a href="viral-feel-parity-ai-video-ads.html">Viral Feel Parity</a>, we transformed silence monitoring into an automated dead-air trimming engine directly inside our video rendering pipeline.</p>
+      <p>In short-form video advertising, the first three seconds are not a warm-up. They are the product. That makes leading silence unusually expensive. A 300ms pause is normal in a long voiceover; inside a 3-second hook it consumes ten percent of the creative before the first word lands. In <a href="hook-machine-3s-ad-openers.html">Hook Machine</a>, generated hooks were technically valid, but some opened with a dead-air gap from the voice model before speech began.</p>
+
+      <p>The first implementation only warned about the problem. That was useful for debugging and useless for production. Editors do not want a report that says the hook starts late; they want the rendered clip to start cleanly. PR #55 (<code>feat/trim-vo-lead-in</code>) changed the hook pipeline from "detect and warn" to "detect, trim, retime, and render." PR #58 (<code>fix/audio-tag-blind-spot</code>) caught the neighboring failure: an inline audio element made the hook look fine in the browser while the captured frames still burned a late-starting audio control into the output.</p>
 
       <blockquote>
-        In 3-second ad openers, 300ms of dead air is 10% of total video runtime. Trimming leading silence on render ensures instantaneous audio impact.
+        In 3-second ad openers, 300ms of dead air is 10% of total runtime. A hook renderer should fix that automatically, not ask an editor to notice it.
       </blockquote>
 
-      <h2>Detecting Silence Thresholds Programmatically</h2>
-      <p>Relying on static offset trims is unreliable because speech onset varies per voice model and prompt structure. Instead, we use FFmpeg's <code>silencedetect</code> audio filter to parse silence boundaries dynamically before splicing:</p>
+      <h2>The late-starting hook problem</h2>
 
-      <pre><code>// Programmatic FFmpeg silence detection execution
-import { exec } from 'child_process';
-import { promisify } from 'util';
+      <p>Generated voiceover has natural variance. The same text can produce different leading silence depending on voice, model settings, normalization, and punctuation. Static trims fail because they either leave silence in some outputs or cut the start of the first phoneme in others. The render system needed to measure the actual audio artifact before composing the final hook.</p>
 
-const execAsync = promisify(exec);
-
-export async function detectLeadingSilence(audioPath: string): Promise&lt;number&gt; {
-  const cmd = `ffmpeg -i "${audioPath}" -af "silencedetect=noise=-45dB:d=0.05" -f null - 2>&1`;
-  const { stdout } = await execAsync(cmd);
-  
-  const match = stdout.match(/silence_end:\s*([\d\.]+)/);
-  return match ? parseFloat(match[1]) : 0;
-}</code></pre>
-
-      <p>By parsing <code>silencedetect</code> outputs programmatically, the engine isolates the exact timestamp where audio amplitude rises above -45 dB threshold.</p>
-
-      <h2>Automated Trimming & Audio-Visual Alignment</h2>
-      <p>Once silence offsets are extracted, the rendering pipeline executes a synchronized dual-stream trim pass across both audio and video tracks:</p>
-
-      <ul>
-        <li><strong>Audio Trim:</strong> Cuts leading silent frames so voiceover begins precisely on frame 0.</li>
-        <li><strong>Visual Offset Alignment:</strong> Adjusts avatar lip-sync video frame offsets to match the trimmed audio start timestamp, avoiding frozen avatar frames or desynchronized mouth movements.</li>
-      </ul>
-
-      <pre><code>// FFmpeg command to trim leading dead-air and reset timestamps
-const trimSeconds = silenceEnd.toFixed(3);
-const ffmpegCmd = `ffmpeg -ss ${trimSeconds} -i input.mp4 -c:v libx264 -c:a aac -avoid_negative_ts make_zero output_trimmed.mp4`;</code></pre>
-
-      <h2>Pipeline Hardening & PR History</h2>
       <table>
         <thead>
           <tr>
-            <th>PR</th>
+            <th>Failure</th>
+            <th>User-visible result</th>
+            <th>Why warnings were insufficient</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>200-800ms TTS lead-in</td>
+            <td>Hook feels slow before the first word</td>
+            <td>The editor already paid for a candidate that needs manual trimming</td>
+          </tr>
+          <tr>
+            <td>Audio-only trim</td>
+            <td>Voice starts on time, avatar mouth starts late</td>
+            <td>The output looks desynchronized even when waveform timing is fixed</td>
+          </tr>
+          <tr>
+            <td>DOM audio capture</td>
+            <td>Player chrome or hidden audio state appears in frames</td>
+            <td>The issue is invisible until the final encoded video is reviewed</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>This is the same class of problem as <a href="viral-feel-parity-ai-video-ads.html">Viral Feel Parity</a>: the model output can be "correct" while the final creative feels wrong. The fix has to live in the renderer, where audio, frames, captions, and final encoding meet.</p>
+
+      <h2>Detecting silence thresholds programmatically</h2>
+
+      <p>The core detector runs FFmpeg's <code>silencedetect</code> filter against the rendered voiceover, parses the first <code>silence_end</code>, and clamps it through guardrails. The clamp matters because noise floors vary. A tiny breath at the start should not shift the entire hook; a true half-second lead-in should.</p>
+
+<pre><code class="language-typescript">import { execa } from 'execa';
+
+type LeadInTrim = {
+  trimMs: number;
+  reason: 'silence_detected' | 'below_threshold' | 'no_audio';
+};
+
+export async function detectVoiceLeadIn(
+  audioPath: string,
+  noiseDb = -45,
+): Promise&lt;LeadInTrim&gt; {
+  const { stderr } = await execa('ffmpeg', [
+    '-i', audioPath,
+    '-af', `silencedetect=noise=${noiseDb}dB:d=0.05`,
+    '-f', 'null',
+    '-',
+  ], { reject: false });
+
+  const match = stderr.match(/silence_end:\s*([\d.]+)/);
+  if (!match) return { trimMs: 0, reason: 'below_threshold' };
+
+  const trimMs = Math.round(Number(match[1]) * 1000);
+  return {
+    trimMs: trimMs &gt;= 80 ? trimMs : 0,
+    reason: trimMs &gt;= 80 ? 'silence_detected' : 'below_threshold',
+  };
+}</code></pre>
+
+      <p>The threshold is deliberately conservative. Trimming a clean hook by 20ms is more dangerous than leaving 20ms of room tone. The render only shifts when silence is large enough for a viewer to feel it.</p>
+
+      <h2>Retiming audio, frames, and captions together</h2>
+
+      <p>Once the lead-in is measured, the renderer cannot simply cut the audio file. The hook is a composed artifact: avatar frames, caption word timings, audio bed, and final mux all need the same timeline origin. PR #55 treated trim as a manifest transformation rather than an FFmpeg one-off.</p>
+
+<pre><code class="language-typescript">type HookTimeline = {
+  voicePath: string;
+  videoFramesDir: string;
+  words: Array&lt;{ text: string; startMs: number; endMs: number }&gt;;
+  trimMs: number;
+};
+
+function applyLeadInTrim(timeline: HookTimeline): HookTimeline {
+  if (!timeline.trimMs) return timeline;
+
+  return {
+    ...timeline,
+    words: timeline.words.map(word =&gt; ({
+      ...word,
+      startMs: Math.max(0, word.startMs - timeline.trimMs),
+      endMs: Math.max(0, word.endMs - timeline.trimMs),
+    })),
+  };
+}</code></pre>
+
+      <p>The final FFmpeg pass then seeks both the video and voice assets to the same start point and resets timestamps. That keeps mouth movement, caption highlights, and audio impact aligned on frame zero.</p>
+
+<pre><code class="language-bash">ffmpeg \
+  -ss "$TRIM_SECONDS" -i avatar.mp4 \
+  -ss "$TRIM_SECONDS" -i voice.wav \
+  -filter_complex "[0:v]setpts=PTS-STARTPTS[v];[1:a]asetpts=PTS-STARTPTS[a]" \
+  -map "[v]" -map "[a]" \
+  -c:v libx264 -c:a aac hook-trimmed.mp4</code></pre>
+
+      <h2>Why the audio tag bug mattered</h2>
+
+      <p>PR #58 looked unrelated at first: an inline <code>&lt;audio&gt;</code> tag hid a late-starting hook and could be captured on screen. It was actually the same architectural problem. Browser preview and final render were sharing too much DOM. A visible or hidden audio element is convenient for preview controls, but a frame-capture renderer should only see visual layers.</p>
+
+      <p>The fix split preview state from render state. Preview can own playback controls. Render receives a visual scene graph plus an audio asset path. That same separation supports <a href="dual-aspect-ratio-rendering-ai-video.html">Dual Aspect-Ratio Rendering</a>, where 9:16 and 16:9 frames are captured separately but share one canonical voice track.</p>
+
+      <h2>Pipeline hardening PRs</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>PR / branch</th>
             <th>Problem</th>
             <th>Fix</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>feat/dead-air-trim</code></td>
-            <td>Leading dead-air ruined 3s hook openers</td>
-            <td>Automated FFmpeg silence detection and dynamic audio-visual trimming</td>
+            <td>#55 <code>feat/trim-vo-lead-in</code></td>
+            <td>Hook openers could spend the first 200-800ms in silence</td>
+            <td>Measured lead-in with FFmpeg, then trimmed and retimed output automatically</td>
           </tr>
           <tr>
-            <td><code>fix/audio-tag-inline-burn</code></td>
-            <td>Hidden inline audio tags hid late-starting hooks</td>
-            <td>Isolated DOM frame capture from off-screen audio synthesis pipeline</td>
+            <td>#58 <code>fix/audio-tag-blind-spot</code></td>
+            <td>Inline audio tags made late-start issues invisible in preview and visible in capture</td>
+            <td>Separated preview playback controls from the render scene graph</td>
           </tr>
           <tr>
-            <td><code>fix/av-desync-trim</code></td>
-            <td>Trimming audio caused avatar mouth freeze</td>
-            <td>Recalculated video frame seek timestamps to match audio start onset</td>
+            <td>#12 presenter follow-up</td>
+            <td>Presenter-generation assets had the same dead-air and catalog persistence risks</td>
+            <td>Ported dead-air trim into the presenter tool while preserving Drive-backed assets</td>
           </tr>
         </tbody>
       </table>
 
+      <h2>Operational guardrails</h2>
+
+      <p>The trim pass should be automatic, but it still needs observability. The renderer records the measured lead-in, final trim, and whether the trim was skipped. That lets QA distinguish "no silence found" from "silence found but below threshold." For hook batches, the metadata also explains why one candidate feels sharper than another even when the prompt and voice are similar.</p>
+
+      <p>The key guardrail is idempotency. A user may regenerate a hook after a dead-air fix, or a worker may retry after FFmpeg fails. The trim result belongs in the job manifest so retries do not produce two slightly different timelines. I cover the paid-action side of that in <a href="idempotency-guards-state-locks-generative-ux.html">Idempotency Transaction Guards &amp; State Locks</a>.</p>
+
       <h2>What I'd do differently</h2>
-      <p>I would perform silence detection directly in WebAudio API buffers on the client side before triggering server-side video rendering. Detecting silence client-side avoids uploading silent audio chunks, saving bandwidth and processing time as explored in <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a>.</p>
+
+      <p>I would add client-side WebAudio analysis earlier as a preflight. Server-side FFmpeg is the source of truth for final render, but WebAudio could catch obvious dead air before upload or render dispatch, especially in voice-preview flows. That would save time without replacing the final server-side trim.</p>
+
+      <p>I would also make late-start metadata visible in the editor scorecard. Hook Machine already ranks candidates; a measured <code>leadInMs</code> signal belongs beside motion density and copy fit. Editors should see why a hook won, not just that it ranked first.</p>
 
       <h2>The pattern: self-healing rendering gates</h2>
-      <p>Automating dead-air removal turned a manual video inspection task into an automated, self-healing rendering pipeline. Integrated into our <a href="ai-video-generation-pipeline-architecture.html">AI Video Generation Pipeline</a>, automated dead-air trimming guarantees every 3-second hook opens with crisp, immediate speech playback.</p>
+
+      <p>Dead-air trimming is a small feature with a large product lesson: render pipelines should repair deterministic defects automatically. If a machine can measure the fault and the correction is safe, do not turn it into a manual QA burden. A 3-second hook has no room for preventable silence.</p>
     </div>
 
     <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">

@@ -125,81 +125,157 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>When processing high-definition video assets in modern web applications, memory management is frequently the silent bottleneck that causes production servers to crash unexpectedly under load. In our AI video platform (which includes <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a> and <a href="hook-machine-3s-ad-openers.html">Hook Machine</a>), processing master video uploads originally relied on standard form-data parsers that buffered incoming files directly in memory before writing them to disk. As video uploads scaled beyond 10 MB, servers encountered sudden out-of-memory (OOM) exceptions and generic <code>"Expected a 'video' file field"</code> multipart parsing errors.</p>
+      <p>Master uploads are where video tools stop behaving like ordinary web apps. A profile image can survive a form parser that buffers the whole payload. A high-bitrate ad master cannot. In the AI ad/video platform, the section-swap workflow from <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a> exposed the failure: uploads over 10 MB returned <code>"Expected a 'video' file field"</code>, even though the user had selected the right file.</p>
+
+      <p>The root cause was not the field name. The route was buffering multipart data before the application code owned the stream. Once the request crossed the framework limit, the parser truncated or rejected it and the validation layer reported the symptom it could see: no complete video field. PR #64 (<code>fix/upload-body-truncated-at-10mb</code>) made the failure reproducible. PR #66 (<code>perf/stream-upload-to-disk</code>) changed the ingest architecture so bytes went directly to disk instead of through process heap. The same pattern connects to <a href="streaming-ai-video-cloud-storage.html">Streaming AI Video to Cloud Storage</a>, but this pass was intentionally local-disk first: remove the memory cliff without forcing the whole upload flow to become a signed-URL product change.</p>
 
       <blockquote>
         In-memory file buffering scales linearly with upload size. Streaming to disk turns memory consumption into a flat constant.
       </blockquote>
 
-      <h2>The In-Memory Buffering Bottleneck</h2>
-      <p>Standard HTTP body parsers in frameworks like Next.js often store incoming file payloads in RAM buffers (such as <code>Buffer.concat()</code>) during request ingestion. While this approach works reliably for small images or JSON payloads, video files introduce distinct challenges:</p>
+      <h2>The 10 MB failure mode</h2>
+
+      <p>The broken behavior looked like a form-validation bug because the UI saw a clean error string. Underneath, the shape was a transport problem:</p>
+
       <ul>
-        <li><strong>Memory Spikes:</strong> Concurrent uploads of 50 MB to 200 MB master videos quickly consume node process heap allocations, triggering garbage collector stalls and eventual OOM crashes.</li>
-        <li><strong>Parser Payload Caps:</strong> Built-in body parsers enforce rigid memory buffer limits. Exceeding these limits truncates streams prematurely, confusing boundary parsers and returning unhelpful form field validation errors like <code>"Expected a 'video' file field"</code>.</li>
+        <li><strong>Body parser limit:</strong> the request crossed the default body cap before the route handler could validate the multipart boundary.</li>
+        <li><strong>Heap pressure:</strong> concurrent 50-200 MB uploads created large buffers that competed with render jobs, thumbnails, and FFmpeg subprocesses.</li>
+        <li><strong>Misleading error surface:</strong> the parser dropped the file part, then the application reported that the <code>video</code> field was missing.</li>
+        <li><strong>Retry waste:</strong> users retried the same upload and reproduced the same failure, tying up worker slots with no useful artifact.</li>
       </ul>
 
-      <h2>Refactoring to Disk Streaming</h2>
-      <p>To resolve this, we refactored the master video ingest pipeline to stream incoming request chunks directly onto disk storage using Node.js <code>ReadableStream</code> and temporary file descriptors, bypassing process memory entirely:</p>
+      <p>That last point matters in creative tooling. Upload is the front door to expensive generation. If ingest is flaky, the rest of the reliability stack — <a href="pre-spend-guards-content-aware-routing.html">Pre-Spend Guards</a>, cost preview, Drive mirroring, splice repair — never gets a chance to help.</p>
 
-      <pre><code>// Stream incoming upload chunks directly to disk
-import { createWriteStream } from 'fs';
-import { pipeline } from 'stream/promises';
-import { Readable } from 'stream';
-import { join } from 'path';
-import { tmpdir } from 'os';
-
-export async function handleMasterUploadStream(req: Request, filename: string): Promise&lt;string&gt; {
-  if (!req.body) throw new Error("Missing request body stream");
-
-  const targetPath = join(tmpdir(), `master_${Date.now()}_${filename}`);
-  const writeStream = createWriteStream(targetPath, { flags: 'w' });
-  const nodeStream = Readable.fromWeb(req.body as any);
-
-  // Pipe directly to disk with zero in-memory buffer aggregation
-  await pipeline(nodeStream, writeStream);
-  return targetPath;
-}</code></pre>
-
-      <h2>Key Pipeline Hardening Steps</h2>
-      <ol>
-        <li><strong>Stream Chunking:</strong> Ingesting chunks incrementally keeps RAM consumption flat (typically under 15 MB) regardless of whether the master file is 10 MB or 2 GB.</li>
-        <li><strong>Disk Cleanup Lifecycle:</strong> Temporary files are tracked in a transient registry and automatically cleaned up if processing fails or succeeds, avoiding disk fill-up incidents.</li>
-        <li><strong>Explicit Route Configs:</strong> In Next.js App Router API handlers, disable default body parsing for raw file endpoints to delegate stream control directly to Node.js stream utilities.</li>
-      </ol>
-
-      <h2>Reliability & Hardening PRs</h2>
       <table>
         <thead>
           <tr>
-            <th>PR</th>
+            <th>Payload path</th>
+            <th>Memory profile</th>
+            <th>Failure symptom</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Buffered multipart parser</td>
+            <td>O(file size) per request</td>
+            <td>OOM, 413, or missing field after truncation</td>
+          </tr>
+          <tr>
+            <td>Web Stream to temp file</td>
+            <td>O(chunk size) per request</td>
+            <td>Disk / permission errors with explicit cleanup</td>
+          </tr>
+          <tr>
+            <td>Signed URL to object storage</td>
+            <td>O(0) in app server</td>
+            <td>Client/storage auth and lifecycle coordination</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Refactoring to disk streaming</h2>
+
+      <p>The fix was to treat the HTTP body as a stream from the first byte. The route creates a temporary file, converts the Web Stream to a Node stream, pipes chunks to disk, and returns a file handle to the downstream validation path. No <code>Buffer.concat()</code>. No "read the whole upload, then decide." The route becomes a byte transport boundary.</p>
+
+<pre><code class="language-typescript">import { createWriteStream } from 'fs';
+import { mkdir, rm } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+
+type StreamedUpload = {
+  path: string;
+  cleanup: () =&gt; Promise&lt;void&gt;;
+};
+
+export async function streamUploadToTempFile(
+  req: Request,
+  filename: string,
+): Promise&lt;StreamedUpload&gt; {
+  if (!req.body) throw new Error('Missing request body stream');
+
+  const uploadDir = join(tmpdir(), 'video-master-uploads');
+  await mkdir(uploadDir, { recursive: true });
+
+  const safeName = filename.replace(/[^a-z0-9._-]/gi, '_');
+  const path = join(uploadDir, `${Date.now()}-${safeName}`);
+  const output = createWriteStream(path, { flags: 'wx' });
+
+  await pipeline(Readable.fromWeb(req.body as any), output);
+
+  return {
+    path,
+    cleanup: () =&gt; rm(path, { force: true }),
+  };
+}</code></pre>
+
+      <p>The important design choice is that cleanup is returned with the artifact handle. The caller that validates, probes, uploads, or fails the master file owns the final cleanup decision. That prevents a common bug in streaming refactors: moving memory pressure out of Node and creating a disk-fill incident instead.</p>
+
+      <h2>Next.js route gotchas</h2>
+
+      <p>PR #223 in the sibling video-generation service exposed the second half of the problem: legacy Next.js API-route config keys do not protect App Router handlers the way teams expect during a Next.js 15 migration. A route can look configured while the framework still applies the wrong body behavior. I cover the audit angle in <a href="cross-tool-defect-auditing-nextjs15-hardening.html">Systematic Cross-Tool Defect Auditing</a>; for upload routes, the rule is simple: the handler must own the raw stream and the route must avoid hidden parser work.</p>
+
+<pre><code class="language-typescript">export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
+export async function POST(req: Request) {
+  const upload = await streamUploadToTempFile(req, 'master.mp4');
+
+  try {
+    await assertVideoProbePasses(upload.path);
+    const result = await ingestMasterVideo(upload.path);
+    return Response.json(result);
+  } finally {
+    await upload.cleanup();
+  }
+}</code></pre>
+
+      <h2>Reliability PR cluster</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>PR / branch</th>
             <th>Problem</th>
             <th>Resolution</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>perf/stream-upload-disk</code></td>
-            <td>In-memory buffering crashed Node on 10MB+ video uploads</td>
-            <td>Streamed incoming request WebStream directly to temporary disk descriptors</td>
+            <td>#64 <code>fix/upload-body-truncated-at-10mb</code></td>
+            <td>Master uploads over 10 MB failed as if the <code>video</code> field was missing</td>
+            <td>Reproduced the parser-limit failure and separated transport failure from validation failure</td>
           </tr>
           <tr>
-            <td><code>fix/upload-body-cap</code></td>
-            <td>Next.js 15 ignored legacy route body size limits</td>
-            <td>Updated route handler export flags to disable default body parsing</td>
+            <td>#66 <code>perf/stream-upload-to-disk</code></td>
+            <td>Upload path buffered large files in memory before downstream processing</td>
+            <td>Streamed the request body into temporary disk storage with caller-owned cleanup</td>
           </tr>
           <tr>
-            <td><code>fix/stream-abort-cleanup</code></td>
-            <td>Aborted client connections left orphan temp files</td>
-            <td>Wired stream abort signals to immediate disk file unlinking</td>
+            <td>#223 <code>fix/upload-body-size-key-for-next-15</code></td>
+            <td>Next.js 15 ignored a body-size config key that looked valid in code review</td>
+            <td>Moved large payload handling to explicit Web Stream route handlers</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>What I'd do differently</h2>
-      <p>I would implement direct signed URL uploads to GCS earlier in the architecture lifecycle. While streaming to local node disk solved process OOMs, streaming directly from browser to cloud storage eliminates Node.js proxying altogether, as discussed in <a href="streaming-ai-video-cloud-storage.html">Streaming AI Video</a>.</p>
+      <h2>Where streaming fits in the video pipeline</h2>
 
-      <h2>The pattern: stream everything over 5MB</h2>
-      <p>Master video ingestion requires treating payloads as byte streams, never in-memory byte arrays. Paired with <a href="pre-spend-guards-content-aware-routing.html">Pre-Spend Guards</a> and <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a>, stream-to-disk ingestion ensures high-resolution video tools remain stable under production traffic.</p>
+      <p>Streaming upload is not the whole durability story. The rest of the pipeline still needs ffprobe validation, Drive or object-storage mirroring, job-scoped artifact keys, and retry-safe state transitions. But upload streaming removes the most expensive early failure: losing the request before there is an artifact to reason about.</p>
+
+      <p>The same discipline appears elsewhere in the toolchain. <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a> treats generated sections as files with explicit boundaries, not blobs hidden inside UI state. <a href="drive-backed-asset-catalogs-runtime.html">Drive-Backed Asset Catalogs</a> separates media storage from runtime configuration. Streaming uploads are another version of that rule: keep large media as addressable artifacts as early as possible.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would move direct browser-to-object-storage uploads earlier once the UX stabilizes. Local disk streaming is the right tactical fix when users are blocked by 10 MB payload failures. Signed URL upload is the strategic shape because it removes the app server from the byte path entirely.</p>
+
+      <p>I would also add upload-size chaos tests before launch: 9 MB, 11 MB, 100 MB, aborted connection, duplicate filename, and slow client. The bug here was not subtle once tested at the right payload size. The missing piece was having those payload sizes in CI instead of discovering them through real master videos.</p>
+
+      <h2>The pattern: stream everything over 5 MB</h2>
+
+      <p>Any endpoint that accepts video, audio, model artifacts, or high-resolution frames should default to streaming. In-memory buffers are convenient until they become the scaling limit for the whole product. Treat upload bytes as a stream, validate the resulting artifact, and clean up explicitly. That keeps the rest of the video system available for the work users actually care about: generating, comparing, and shipping creative.</p>
     </div>
 
     <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">

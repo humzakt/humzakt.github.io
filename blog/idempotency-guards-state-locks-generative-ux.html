@@ -125,81 +125,207 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>Interactive Generative AI interfaces incur real unit costs ($0.50 to $3.00+ per generation call). In fast-paced UI flows across <a href="hook-machine-3s-ad-openers.html">Hook Machine</a> and <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a>, rapid user interactions like double-clicking a "Regenerate" button or triggering a session resume can spawn duplicate model invocations. If backend APIs lack idempotency checks, users get billed twice while cost ledgers mask duplicate charges. Furthermore, resuming a session without strict state locking often resets selected voice models and avatar locks. Here is how we implemented backend idempotency transaction guards and persistent state locks to eliminate double-billing and preserve user intent.</p>
+      <p>Generative UI buttons are not ordinary buttons. A double-click on "Regenerate" is not a harmless duplicate POST; it can launch two paid model jobs, consume two queue slots, and write two cost entries before the user sees the first spinner. In Hook Machine, PR #53 (<code>fix/claim-paid-actions-server-side</code>) came from exactly that class of bug: a fast repeated action could pay twice, and the cost ledger did not make the duplicate obvious enough.</p>
+
+      <p>The same sprint exposed a second issue that looks unrelated until you trace the user workflow. PR #57 (<code>fix/render-inputs-snapshot</code>) fixed regenerate/resume paths that dropped the selected voice and product identity lock. Together, these bugs define the real contract for interactive generative UX: paid actions need transaction safety, and long-lived editing sessions need state locks that survive retries, resumes, and partial regeneration.</p>
 
       <blockquote>
-        Every paid generative click is a transaction. Treat model dispatches with financial-grade idempotency keys and server locks.
+        Every paid generative click is a transaction. Treat model dispatches with financial-grade idempotency keys and server-owned locks.
       </blockquote>
 
-      <h2>Client Deduplication & Idempotency Keys</h2>
-      <p>Every generation trigger assigns a deterministic, client-computed idempotency key derived from the task payload hash. Subsequent clicks within a short window reuse the existing key:</p>
+      <h2>The double-click billing race</h2>
 
-      <pre><code>// Deterministic idempotency key calculation
-import { createHash } from 'crypto';
+      <p>The race is easy to create. A user clicks regenerate twice before the client disables the button. Two requests reach the server. If the server trusts the UI to prevent duplicates, both requests can claim the action, call the model provider, and append cost ledger entries. The UI eventually shows one winner, but the system paid for two attempts.</p>
 
-export function getGenerationIdempotencyKey(taskId: string, payload: object): string {
-  const normalized = JSON.stringify(payload, Object.keys(payload).sort());
-  return createHash('sha256').update(`${taskId}:${normalized}`).digest('hex');
-}</code></pre>
-
-      <h2>Server Transaction Locks & Cost Ledger Reconciliation</h2>
-      <p>On receiving a request, the API checks distributed Redis transaction locks before dispatching jobs to external model endpoints (as discussed in <a href="pre-spend-guards-content-aware-routing.html">Pre-Spend Guards</a>):</p>
-
-      <pre><code>// Server idempotency guard with Redis lock
-export async function executeGenerativeTask(idempotencyKey: string, runner: () => Promise&lt;any&gt;) {
-  const lockAcquired = await redis.set(`lock:${idempotencyKey}`, 'active', 'NX', 'EX', 60);
-  
-  if (!lockAcquired) {
-    // Return existing in-flight job handle instead of spawning a new paid task
-    const activeResult = await redis.get(`result:${idempotencyKey}`);
-    return activeResult ? JSON.parse(activeResult) : { status: 'in-progress', idempotencyKey };
-  }
-
-  try {
-    const result = await runner();
-    await redis.set(`result:${idempotencyKey}`, JSON.stringify(result), 'EX', 3600);
-    return result;
-  } finally {
-    await redis.del(`lock:${idempotencyKey}`);
-  }
-}</code></pre>
-
-      <h2>Voice & Product Identity State Locks</h2>
-      <p>When users pause and resume interactive editing sessions, frontend state re-hydration must not overwrite custom voice model IDs or product identity locks with default fallback values. We introduced explicit versioned state schemas (mirroring patterns from <a href="drive-backed-asset-catalogs-runtime.html">Drive-Backed Asset Catalogs</a>) that validate lock integrity before applying state updates.</p>
-
-      <h2>Audit & Fix History</h2>
       <table>
         <thead>
           <tr>
-            <th>PR</th>
+            <th>Layer</th>
+            <th>Weak behavior</th>
+            <th>Correct behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Client</td>
+            <td>Disable button after first click and hope latency is low</td>
+            <td>Send a stable idempotency key with every paid action</td>
+          </tr>
+          <tr>
+            <td>Server</td>
+            <td>Start generation whenever a request arrives</td>
+            <td>Atomically claim the paid action before provider dispatch</td>
+          </tr>
+          <tr>
+            <td>Ledger</td>
+            <td>Record every provider call independently</td>
+            <td>Attach spend to one transaction ID and reject duplicates</td>
+          </tr>
+          <tr>
+            <td>UI resume</td>
+            <td>Hydrate defaults when fields are missing</td>
+            <td>Preserve voice, product, and render-input locks from the job snapshot</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>This is the paid-action version of <a href="pre-spend-guards-content-aware-routing.html">Pre-Spend Guards</a>. Pre-spend validation stops bad inputs from spending. Idempotency stops repeated valid inputs from spending twice.</p>
+
+      <h2>Client idempotency keys</h2>
+
+      <p>The client should generate a deterministic action key from the stable parts of the request: job ID, action type, selected candidate, render inputs, and user intent. The key is not a security boundary. It is a coordination token that lets the server collapse duplicates into one in-flight operation.</p>
+
+<pre><code class="language-typescript">import { createHash } from 'crypto';
+
+type PaidAction = {
+  jobId: string;
+  action: 'regenerate' | 'promote' | 'render';
+  candidateId?: string;
+  renderInputsVersion: string;
+  userInstruction?: string;
+};
+
+function stableJson(value: unknown): string {
+  return JSON.stringify(value, Object.keys(value as Record&lt;string, unknown&gt;).sort());
+}
+
+export function getPaidActionKey(action: PaidAction): string {
+  return createHash('sha256')
+    .update(stableJson(action))
+    .digest('hex');
+}</code></pre>
+
+      <p>The key includes the render-input version. If the user changes the prompt, voice, or product lock, it is a new action. If they double-click the same regenerate command, it is the same action.</p>
+
+      <h2>Server-side claim before spend</h2>
+
+      <p>PR #53 moved the authoritative claim to the server. The server receives the idempotency key, attempts an atomic insert or lock, and only the winner is allowed to call the model provider. Duplicates return the in-flight job handle. This keeps the user experience responsive without pretending the browser is the source of truth.</p>
+
+<pre><code class="language-typescript">type PaidActionClaim =
+  | { status: 'claimed'; transactionId: string }
+  | { status: 'duplicate'; transactionId: string; jobId: string };
+
+async function claimPaidAction(
+  idempotencyKey: string,
+  jobId: string,
+): Promise&lt;PaidActionClaim&gt; {
+  const existing = await paidActions.findByKey(idempotencyKey);
+  if (existing) {
+    return {
+      status: 'duplicate',
+      transactionId: existing.transactionId,
+      jobId: existing.jobId,
+    };
+  }
+
+  const transactionId = crypto.randomUUID();
+  await paidActions.create({
+    idempotencyKey,
+    transactionId,
+    jobId,
+    status: 'claimed',
+  });
+
+  return { status: 'claimed', transactionId };
+}</code></pre>
+
+      <p>Redis locks can speed this up, but the durable constraint belongs in the transaction store or database. If a process dies after provider dispatch but before ledger write, the recovery path still needs to know which transaction owned the spend.</p>
+
+      <h2>Cost ledger reconciliation</h2>
+
+      <p>The cost ledger fix was not just "do not add duplicate rows." The ledger needed to answer a stronger question: for this user-visible action, how many provider calls happened, which one became the surfaced result, and which transaction ID owns the spend? Without that shape, a duplicate can hide as a normal retry.</p>
+
+<pre><code class="language-typescript">async function recordSpendOnce(
+  transactionId: string,
+  spend: { provider: string; amountUsd: number; providerJobId: string },
+) {
+  const existing = await costLedger.findByTransaction(transactionId);
+  if (existing) return existing;
+
+  return costLedger.create({
+    transactionId,
+    provider: spend.provider,
+    amountUsd: spend.amountUsd,
+    providerJobId: spend.providerJobId,
+    recordedAt: new Date(),
+  });
+}</code></pre>
+
+      <p>That reconciliation model also helps with retries. If a provider call times out but later completes, the recovery job can attach the result to the same transaction instead of inventing a second billable action.</p>
+
+      <h2>Render input snapshots and state locks</h2>
+
+      <p>PR #57 fixed the other half of the session: a regenerate or resume could drop the selected voice and product identity lock. In AI video tools, those fields are not cosmetic. A voice model controls continuity across candidates. A product identity lock prevents the generator from drifting into a visually similar but wrong item. Losing either one changes the user's creative intent.</p>
+
+      <p>The fix was to snapshot render inputs as versioned state and make resume paths hydrate from that snapshot, not from UI defaults. This is the same principle as <a href="drive-backed-asset-catalogs-runtime.html">Drive-Backed Asset Catalogs</a>: runtime state should be explicit, durable, and validated before use.</p>
+
+<pre><code class="language-typescript">type RenderInputSnapshot = {
+  version: 2;
+  voiceModelId: string;
+  productIdentityLock: {
+    productId: string;
+    referenceImageIds: string[];
+    lockedAt: string;
+  };
+  promptContract: {
+    userInstruction: string;
+    negativePrompt?: string;
+  };
+};
+
+function hydrateRenderInputs(snapshot: RenderInputSnapshot): RenderInputSnapshot {
+  if (!snapshot.voiceModelId) {
+    throw new Error('Cannot resume render without locked voice model');
+  }
+  if (!snapshot.productIdentityLock?.productId) {
+    throw new Error('Cannot resume render without product identity lock');
+  }
+  return snapshot;
+}</code></pre>
+
+      <h2>Audit and fix history</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>PR / branch</th>
             <th>Issue</th>
             <th>Fix</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>fix/double-click-billing</code></td>
-            <td>Double clicking Regenerate charged twice in cost ledger</td>
-            <td>Client request deduplication &amp; Redis atomic idempotency locks</td>
+            <td>#53 <code>fix/claim-paid-actions-server-side</code></td>
+            <td>Double-clicking regenerate could pay twice while the ledger hid the duplicate</td>
+            <td>Server-owned paid-action claim, idempotency key, and transaction-scoped cost entries</td>
           </tr>
           <tr>
-            <td><code>fix/voice-identity-lock</code></td>
-            <td>Resuming session reset voice model lock to default</td>
-            <td>Persisted voice model IDs in versioned session schemas</td>
+            <td>#57 <code>fix/render-inputs-snapshot</code></td>
+            <td>Regenerate and resume dropped selected voice and product identity locks</td>
+            <td>Versioned render-input snapshot hydrated by resume and retry paths</td>
           </tr>
           <tr>
-            <td><code>fix/cost-ledger-audit</code></td>
-            <td>Hidden duplicate charges in cost accounting</td>
-            <td>Reconciled cost ledger entries against unique transaction IDs</td>
+            <td>#17 presenter generation</td>
+            <td>Buttons looked dead and could bill twice in a neighboring presenter workflow</td>
+            <td>Server-declared pending state and stricter action ownership across buttons</td>
+          </tr>
+          <tr>
+            <td>#53 variant multiplier tests</td>
+            <td>Cost idempotency needed coverage in a sibling tool</td>
+            <td>Added tests around transient classifier and idempotent cost accounting</td>
           </tr>
         </tbody>
       </table>
 
       <h2>What I'd do differently</h2>
-      <p>I would implement database-level unique constraints on idempotency keys alongside Redis locks. While Redis provides fast locks, DB-level constraints guarantee idempotency even during Redis node failovers or memory evictions.</p>
+
+      <p>I would start every paid generation endpoint with a transaction table before adding the first provider integration. It is tempting to add idempotency after the first duplicate spend bug because the UI can appear to guard clicks. That is backwards. Provider dispatch is the money boundary; the server needs ownership from day one.</p>
+
+      <p>I would also make state locks visible in the editor. If the tool is preserving a voice model and product identity, show those locks as first-class state. Users trust resume flows more when they can see what will be preserved before they click regenerate.</p>
 
       <h2>The pattern: financial-grade generative UX</h2>
-      <p>Generative AI user experience must be engineered with transaction safety. Enforcing client payload hashing, server-side Redis locks, and strict state preservation protects user budgets while delivering seamless session resumes.</p>
+
+      <p>Interactive AI tools need the ergonomics of creative software and the transaction safety of billing systems. The browser can make buttons feel responsive, but the server must own paid-action claims, ledger reconciliation, and render-input snapshots. That is how a tool can let users iterate quickly without silently charging twice or changing the creative identity underneath them.</p>
     </div>
 
     <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">

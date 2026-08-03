@@ -125,78 +125,196 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>Modern ad campaigns require video creative exports across multiple screen formats: vertical 9:16 for TikTok/Reels and widescreen 16:9 for YouTube/Desktop. Naively cropping a 9:16 video into 16:9 leads to awkward subject clipping, misplaced captions, and poor visual composition. In our AI video generation suite (powering tools like <a href="hook-machine-3s-ad-openers.html">Hook Machine</a> and <a href="ugc-pipeline-script-first-video-generation.html">UGC Pipeline</a>), we built a dual aspect-ratio rendering architecture that dynamically adapts layouts while sharing voiceover synthesis and audio alignment.</p>
+      <p>Ad creative rarely ships in one shape. A vertical hook may work for Reels or TikTok, while a sales page, YouTube placement, or desktop embed needs widescreen. The tempting shortcut is to render 9:16 and crop it into 16:9 later. That shortcut breaks quickly: presenters lose shoulders, product callouts drift outside the frame, captions sit in the wrong safe area, and the composition starts looking like an afterthought.</p>
+
+      <p>In the AI ad/video platform, Hook Machine started as a 9:16-first tool because short-form hooks were the main use case. PR #56 (<code>feat/voice-picker-and-16x9</code>) changed the output contract: a generated hook could ship with a voice the editor could preview and with 16:9 output alongside 9:16. That forced a renderer-level decision. We could either crop after the fact, or render parallel spatial layouts against a single audio source of truth. The second approach won.</p>
 
       <blockquote>
-        Never crop vertical video into widescreen post-hoc. Render parallel spatial coordinate trees anchored to a single synthesized voiceover track.
+        Never crop vertical video into widescreen post-hoc. Render parallel spatial coordinate trees anchored to one synthesized voiceover track.
       </blockquote>
 
-      <h2>Multi-Canvas Layout Engine</h2>
-      <p>Rather than rendering one format and performing a secondary video crop, our layout engine maintains dual spatial coordinate trees. Key UI elements (avatars, titles, CTA overlays) are positioned relative to target aspect containers:</p>
+      <h2>Why crop-after-render fails</h2>
 
-      <pre><code>// Responsive canvas transformation based on target aspect ratio
-export interface LayoutBounds {
-  avatarBounds: { x: number; y: number; w: number; h: number };
-  captionBottomOffset: number;
-  fontSize: number;
-}
+      <p>Video crops look simple when the subject sits in the exact center and there are no overlays. AI-generated ads rarely satisfy those constraints. The output may include presenter framing, product lockups, caption highlights, CTA badges, progress indicators, and scene-specific visual emphasis. A crop that preserves the face may cut the product. A crop that preserves the caption may weaken the hook's first-frame impact.</p>
 
-export function calculateElementBounds(aspectRatio: '16:9' | '9:16', width: number): LayoutBounds {
-  const isVertical = aspectRatio === '9:16';
-  const height = isVertical ? width * (16 / 9) : width * (9 / 16);
-
-  return {
-    avatarBounds: isVertical 
-      ? { x: width * 0.1, y: height * 0.15, w: width * 0.8, h: width * 0.8 }
-      : { x: width * 0.05, y: height * 0.1, w: height * 0.8, h: height * 0.8 },
-    captionBottomOffset: isVertical ? 120 : 45,
-    fontSize: isVertical ? 28 : 22
-  };
-}</code></pre>
-
-      <h2>Isolating Audio Elements during Frame Capture</h2>
-      <p>During headless DOM frame captures (using Puppeteer/Playwright canvas capture), inline HTML <code>&lt;audio&gt;</code> tags or visual media controls can interfere with render loops if rendered on-screen. We decoupled audio synthesis into an off-screen headless audio pipeline, combining visual frames and voice tracks strictly in FFmpeg post-processing.</p>
-
-      <h2>FFmpeg Dual Export Pipeline</h2>
-      <p>Visual frame sequences for 16:9 and 9:16 are rendered in parallel workers and merged with the master voiceover audio track in a single unified command pass:</p>
-
-      <pre><code>// FFmpeg command to assemble dual aspect-ratio outputs from shared audio
-ffmpeg -framerate 30 -i frames_916/%04d.png -i voiceover.wav -c:v libx264 -pix_fmt yuv420p output_916.mp4 \
-       -framerate 30 -i frames_169/%04d.png -i voiceover.wav -c:v libx264 -pix_fmt yuv420p output_169.mp4</code></pre>
-
-      <h2>PR Engineering & Gotchas</h2>
       <table>
         <thead>
           <tr>
-            <th>PR</th>
-            <th>Problem</th>
-            <th>Fix</th>
+            <th>Element</th>
+            <th>9:16 behavior</th>
+            <th>16:9 behavior</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>feat/16-9-support</code></td>
-            <td>Platform supported 9:16 portrait only</td>
-            <td>Added dual 16:9 layout generator alongside 9:16</td>
+            <td>Presenter</td>
+            <td>Centered, taller crop, more headroom control</td>
+            <td>Offset to leave room for product proof or caption blocks</td>
           </tr>
           <tr>
-            <td><code>fix/audio-element-burnin</code></td>
-            <td>HTML audio controls rendered onto video frames</td>
-            <td>Stripped DOM audio tags from capture layer and delegated audio to FFmpeg</td>
+            <td>Captions</td>
+            <td>Large bottom-safe text above platform controls</td>
+            <td>Lower third, wider line length, smaller vertical footprint</td>
           </tr>
           <tr>
-            <td><code>fix/picker-cap-search</code></td>
-            <td>Presenter pickers overflowed on large voice lists</td>
-            <td>Capped voice pickers and added live search filter UI</td>
+            <td>Product frame</td>
+            <td>Stacked under or above presenter</td>
+            <td>Side-by-side with presenter or proof panel</td>
+          </tr>
+          <tr>
+            <td>CTA</td>
+            <td>Bottom or final-card emphasis</td>
+            <td>Right rail or lower-third badge</td>
           </tr>
         </tbody>
       </table>
 
+      <p>This is why the dual-ratio work connects back to <a href="ugc-pipeline-script-first-video-generation.html">Script-First UGC</a>: once the script and scene plan are structured, layout can adapt per target surface without asking the model to regenerate the whole ad.</p>
+
+      <h2>Multi-canvas layout engine</h2>
+
+      <p>The renderer keeps logical elements independent from physical pixels. A scene does not say "draw the avatar at x=120." It says "draw presenter primary, captions bottom-safe, product proof secondary." The target canvas resolves those slots differently for 9:16 and 16:9.</p>
+
+<pre><code class="language-typescript">type AspectRatio = '9:16' | '16:9';
+
+type SceneElement =
+  | { kind: 'presenter'; priority: 'primary' | 'secondary' }
+  | { kind: 'caption'; placement: 'safe-bottom' | 'lower-third' }
+  | { kind: 'product'; placement: 'proof-panel' | 'hero' }
+  | { kind: 'cta'; placement: 'badge' | 'end-card' };
+
+type LayoutRect = { x: number; y: number; w: number; h: number };
+
+function resolveLayout(
+  element: SceneElement,
+  aspect: AspectRatio,
+  canvas: { width: number; height: number },
+): LayoutRect {
+  if (element.kind === 'presenter' &amp;&amp; aspect === '9:16') {
+    return { x: canvas.width * 0.10, y: canvas.height * 0.12, w: canvas.width * 0.80, h: canvas.height * 0.54 };
+  }
+
+  if (element.kind === 'presenter') {
+    return { x: canvas.width * 0.06, y: canvas.height * 0.10, w: canvas.width * 0.42, h: canvas.height * 0.78 };
+  }
+
+  if (element.kind === 'caption') {
+    return aspect === '9:16'
+      ? { x: canvas.width * 0.08, y: canvas.height * 0.74, w: canvas.width * 0.84, h: canvas.height * 0.16 }
+      : { x: canvas.width * 0.10, y: canvas.height * 0.76, w: canvas.width * 0.80, h: canvas.height * 0.14 };
+  }
+
+  return aspect === '9:16'
+    ? { x: canvas.width * 0.18, y: canvas.height * 0.56, w: canvas.width * 0.64, h: canvas.height * 0.14 }
+    : { x: canvas.width * 0.56, y: canvas.height * 0.18, w: canvas.width * 0.34, h: canvas.height * 0.50 };
+}</code></pre>
+
+      <p>The code is not trying to be a design system. It is an anti-crop layer. It keeps meaning stable while pixels move. That makes testing easier too: a snapshot can assert that the product remains visible in both exports and that captions stay inside safe areas.</p>
+
+      <h2>One audio source of truth</h2>
+
+      <p>The audio contract matters more than it looks. If 9:16 and 16:9 renders synthesize voice separately, even tiny duration differences make caption timings, lip-sync, and cuts drift. PR #56 made voice preview part of the editor experience, but the render path still needed to treat the approved voice asset as canonical. Both aspect ratios consume the same voiceover, word timings, and trim metadata from <a href="automated-dead-air-trimming-video-hooks.html">Automated Dead-Air Trimming</a>.</p>
+
+      <p>That design also keeps generation cost down. The system pays for voice synthesis once, then spends CPU to render two visual layouts. If the user changes the voice, both ratios invalidate. If the user changes only the target surface, the audio cache stays valid.</p>
+
+<pre><code class="language-typescript">type RenderPlan = {
+  jobId: string;
+  voice: {
+    audioPath: string;
+    words: Array&lt;{ text: string; startMs: number; endMs: number }&gt;;
+    trimMs: number;
+  };
+  outputs: Array&lt;{ aspect: AspectRatio; frameDir: string; outputPath: string }&gt;;
+};
+
+async function renderAllRatios(plan: RenderPlan) {
+  await Promise.all(plan.outputs.map(output =&gt;
+    renderFrames({
+      aspect: output.aspect,
+      words: plan.voice.words,
+      frameDir: output.frameDir,
+    }),
+  ));
+
+  return muxOutputsWithSharedVoice(plan);
+}</code></pre>
+
+      <h2>Isolating audio from frame capture</h2>
+
+      <p>Frame capture should be visually pure. PR #58 in the same Hook Machine cluster found an inline audio element that could hide a late-starting hook and burn UI into captured frames. The dual-ratio renderer adopted the same separation: preview controls live in the interactive UI; render scenes receive only the visual tree. Audio enters later during FFmpeg mux.</p>
+
+      <p>That separation is what lets two visual exports share one voice track cleanly. It also keeps headless capture deterministic. The renderer should not depend on browser autoplay policies, hidden media controls, or preview component state.</p>
+
+      <h2>FFmpeg dual export pipeline</h2>
+
+      <p>The final mux step is deliberately boring: each aspect ratio produces frames, then FFmpeg combines those frames with the approved voiceover. The important part is that both outputs consume the same audio file and the same normalized timestamps.</p>
+
+<pre><code class="language-bash">ffmpeg -y \
+  -framerate 30 -i frames_916/%05d.png -i voice.wav \
+  -filter_complex "[0:v]setpts=PTS-STARTPTS[v916];[1:a]asetpts=PTS-STARTPTS[a916]" \
+  -map "[v916]" -map "[a916]" -c:v libx264 -c:a aac output_916.mp4
+
+ffmpeg -y \
+  -framerate 30 -i frames_169/%05d.png -i voice.wav \
+  -filter_complex "[0:v]setpts=PTS-STARTPTS[v169];[1:a]asetpts=PTS-STARTPTS[a169]" \
+  -map "[v169]" -map "[a169]" -c:v libx264 -c:a aac output_169.mp4</code></pre>
+
+      <h2>PR engineering and gotchas</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>PR / branch</th>
+            <th>Capability</th>
+            <th>Engineering constraint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#56 <code>feat/voice-picker-and-16x9</code></td>
+            <td>Voice preview plus 16:9 output beside 9:16</td>
+            <td>Single voice artifact must drive both aspect ratios</td>
+          </tr>
+          <tr>
+            <td>#58 <code>fix/audio-tag-blind-spot</code></td>
+            <td>Removed inline audio from the visual capture path</td>
+            <td>Preview DOM and render DOM cannot share media controls</td>
+          </tr>
+          <tr>
+            <td>#19 <code>feat/catalog-renames-picker-caps</code></td>
+            <td>Presenter catalog rename, cap, and search UX</td>
+            <td>Large voice / character catalogs must not distort layout controls</td>
+          </tr>
+          <tr>
+            <td>#49 <code>feat/multi-ratio-repurpose</code></td>
+            <td>Variant repurposing across platform ratios</td>
+            <td>Surface-specific output should reuse creative intent, not crop blindly</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Testing the render contract</h2>
+
+      <p>The tests I care about are not only "file exists." A bad ratio export can exist and still be unusable. The useful checks are visual and temporal:</p>
+
+      <ul>
+        <li><strong>Safe-area assertions:</strong> captions and CTA blocks stay within platform-safe margins.</li>
+        <li><strong>Subject visibility:</strong> presenter face and product proof remain inside the frame at sampled timestamps.</li>
+        <li><strong>Audio parity:</strong> both outputs have identical voice duration and word-timing metadata.</li>
+        <li><strong>Frame count parity:</strong> 9:16 and 16:9 exports produce matching duration within one frame.</li>
+      </ul>
+
+      <p>Those checks are cheap compared with manual review and catch the exact mistakes crop-after-render tends to hide until late QA.</p>
+
       <h2>What I'd do differently</h2>
-      <p>I would unify caption rendering via WebAssembly libass earlier instead of relying on separate canvas overlays for 16:9 vs 9:16. Libass subtitle tracks adapt smoothly across aspect ratios without requiring manual font size recalculations, as detailed in <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a>.</p>
+
+      <p>I would unify captions around ASS/libass earlier instead of carrying canvas text layout per ratio. Canvas captions are workable, but subtitle tracks are naturally time-based and can adapt style per surface. The caption-rendering detail from <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a> belongs in the multi-ratio renderer as a first-class primitive.</p>
+
+      <p>I would also create a ratio matrix in the product spec before writing the renderer: 9:16, 16:9, 1:1, and maybe 4:5. Adding the second ratio forced the right abstraction. Designing for three or four would have made the layout contract clearer from day one.</p>
 
       <h2>The pattern: single audio, adaptive canvases</h2>
-      <p>Multi-format AI video generation relies on a single audio source of truth driving responsive visual layout trees. Combining dual-canvas rendering with clean audio isolation enables shipping TikTok and YouTube ready ads simultaneously.</p>
+
+      <p>Multi-format AI video generation should preserve creative intent, not crop pixels. Keep one canonical audio timeline, render visual layouts per target surface, and mux each output from deterministic artifacts. That is how a 3-second hook can ship as both a vertical social ad and a widescreen placement without feeling like one was an afterthought.</p>
     </div>
 
     <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
