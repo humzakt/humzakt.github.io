@@ -25,6 +25,36 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://humzakt.github.io/blog/streaming-master-uploads-preventing-memory-exhaustion.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/automated-dead-air-trimming-video-hooks.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/idempotency-guards-state-locks-generative-ux.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/cross-tool-defect-auditing-nextjs15-hardening.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>monthly</changefreq>

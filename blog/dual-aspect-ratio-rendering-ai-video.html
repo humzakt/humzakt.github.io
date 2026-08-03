@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads — Humza Tareen</title>
+  <meta name="description" content="Engineering a multi-canvas layout engine to generate 16:9 desktop and 9:16 vertical video ad creatives with synchronized voiceovers and isolated DOM rendering.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Video Rendering, Aspect Ratio, AI Video, WebGL, Canvas, FFmpeg, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads">
+  <meta property="og:description" content="Engineering a multi-canvas layout engine to generate 16:9 desktop and 9:16 vertical video ad creatives with synchronized voiceovers and isolated DOM rendering.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-03T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Video Rendering">
+  <meta property="article:tag" content="Aspect Ratio">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Canvas">
+  <meta property="article:tag" content="FFmpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads">
+  <meta name="twitter:description" content="Engineering a multi-canvas layout engine to generate 16:9 desktop and 9:16 vertical video ad creatives with synchronized voiceovers and isolated DOM rendering.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads",
+    "description": "Engineering a multi-canvas layout engine to generate 16:9 desktop and 9:16 vertical video ad creatives with synchronized voiceovers and isolated DOM rendering.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-03",
+    "dateModified": "2026-08-03",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html" },
+    "keywords": ["Video Rendering", "Aspect Ratio", "AI Video", "Canvas", "FFmpeg"],
+    "articleSection": "ML / AI Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Dual Aspect-Ratio Rendering"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-03" itemprop="datePublished">August 3, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Video Rendering</span>
+        <span class="blog-tag">Aspect Ratio</span>
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Canvas</span>
+        <span class="blog-tag">FFmpeg</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Modern ad campaigns require video creative exports across multiple screen formats: vertical 9:16 for TikTok/Reels and widescreen 16:9 for YouTube/Desktop. Naively cropping a 9:16 video into 16:9 leads to awkward subject clipping, misplaced captions, and poor visual composition. In our AI video generation suite, we built a dual aspect-ratio rendering architecture that dynamically adapts layouts while sharing voiceover synthesis and audio alignment.</p>
+
+      <h2>Multi-Canvas Layout Engine</h2>
+      <p>Rather than rendering one format and performing a secondary video crop, our layout engine maintains dual spatial coordinate trees. Key UI elements (avatars, titles, CTA overlays) are positioned relative to target aspect containers:</p>
+
+      <pre><code>// Responsive canvas transformation based on target aspect ratio
+export function calculateElementBounds(aspectRatio: '16:9' | '9:16', containerWidth: number) {
+  const isVertical = aspectRatio === '9:16';
+  const containerHeight = isVertical ? containerWidth * (16 / 9) : containerWidth * (9 / 16);
+
+  return {
+    avatarSize: isVertical ? { w: containerWidth * 0.8, h: containerWidth * 0.8 } : { w: containerHeight * 0.85, h: containerHeight * 0.85 },
+    captionOffsetBottom: isVertical ? 120 : 40,
+    fontSize: isVertical ? 28 : 22
+  };
+}</code></pre>
+
+      <h2>Isolating Audio Elements during Frame Capture</h2>
+      <p>During headless DOM frame captures (using Puppeteer/Playwright canvas capture), inline HTML <code>&lt;audio&gt;</code> tags or visual media controls can interfere with render loops if rendered on-screen. We decoupled audio synthesis into an off-screen headless audio pipeline, combining visual frames and voice tracks strictly in FFmpeg post-processing.</p>
+
+      <h2>FFmpeg Dual Export Pipeline</h2>
+      <p>Visual frame sequences for 16:9 and 9:16 are rendered in parallel workers and merged with the master voiceover audio track in a single unified command pass:</p>
+
+      <pre><code>// FFmpeg command to assemble dual aspect-ratio outputs from shared audio
+ffmpeg -framerate 30 -i frames_916/%04d.png -i voiceover.wav -c:v libx264 -pix_fmt yuv420p output_916.mp4 \
+       -framerate 30 -i frames_169/%04d.png -i voiceover.wav -c:v libx264 -pix_fmt yuv420p output_169.mp4</code></pre>
+
+      <h2>Key Learnings</h2>
+      <ul>
+        <li><strong>Single Audio Source of Truth:</strong> Synthesizing voiceover once and reusing audio duration timestamps guarantees frame synchronization across both aspect ratios.</li>
+        <li><strong>Zero Screen Burn-in:</strong> Isolating visual canvas rendering from audio player UI prevents hidden audio widgets or player overlays from appearing on exported video frames.</li>
+      </ul>
+    </div>
+  </article>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Humza Tareen. Built for high-performance AI systems.</p>
+    </div>
+  </footer>
+  <script src="../js/read-time.js"></script>
+</body>
+</html>

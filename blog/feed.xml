@@ -20,6 +20,76 @@
     </image>
 
     <item>
+      <title>Streaming Master Uploads to Disk: Preventing Memory Exhaustion in Video Pipelines</title>
+      <link>https://humzakt.github.io/blog/streaming-master-uploads-preventing-memory-exhaustion.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/streaming-master-uploads-preventing-memory-exhaustion.html</guid>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How streaming video uploads directly to disk instead of buffering in memory eliminated payload size crashes and OOM errors in high-resolution Next.js video pipelines.</description>
+      <category>Node.js</category>
+      <category>Next.js</category>
+      <category>Streaming</category>
+      <category>Video Pipelines</category>
+      <category>Performance</category>
+    </item>
+
+    <item>
+      <title>Automated Dead-Air Trimming: Cleaning Up Leading Silence in Short-Form Video Hooks</title>
+      <link>https://humzakt.github.io/blog/automated-dead-air-trimming-video-hooks.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/automated-dead-air-trimming-video-hooks.html</guid>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How building an automated audio-visual silence detector and FFmpeg trimming engine eliminated leading dead air in 3-second AI ad openers.</description>
+      <category>FFmpeg</category>
+      <category>Audio Processing</category>
+      <category>Silence Detection</category>
+      <category>AI Video</category>
+      <category>Automation</category>
+    </item>
+
+    <item>
+      <title>Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads</title>
+      <link>https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html</guid>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Engineering a multi-canvas layout engine to generate 16:9 desktop and 9:16 vertical video ad creatives with synchronized voiceovers and isolated DOM rendering.</description>
+      <category>Video Rendering</category>
+      <category>Aspect Ratio</category>
+      <category>AI Video</category>
+      <category>Canvas</category>
+      <category>FFmpeg</category>
+    </item>
+
+    <item>
+      <title>Idempotency Transaction Guards &amp; State Locks in Interactive Generative AI UX</title>
+      <link>https://humzakt.github.io/blog/idempotency-guards-state-locks-generative-ux.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/idempotency-guards-state-locks-generative-ux.html</guid>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How double-click transaction deduplication, cost ledger reconciliation, and strict state locks prevent duplicate billing and preserve user configuration in generative AI applications.</description>
+      <category>Idempotency</category>
+      <category>Generative AI</category>
+      <category>UX</category>
+      <category>TypeScript</category>
+      <category>Architecture</category>
+    </item>
+
+    <item>
+      <title>Systematic Cross-Tool Defect Auditing and Next.js 15 Middleware Hardening</title>
+      <link>https://humzakt.github.io/blog/cross-tool-defect-auditing-nextjs15-hardening.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/cross-tool-defect-auditing-nextjs15-hardening.html</guid>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How systematically auditing sibling codebases and fixing Next.js 15 route handler gotchas eliminated 14 shared defects across video tools.</description>
+      <category>Next.js</category>
+      <category>Architecture</category>
+      <category>Code Audit</category>
+      <category>Software Quality</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
       <title>Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data</title>
       <link>https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html</link>
       <guid isPermaLink="true">https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html</guid>
