@@ -113,7 +113,7 @@
       <div class="blog-meta">
         <span>By <span itemprop="author">Humza Tareen</span></span>
         <time datetime="2026-08-03" itemprop="datePublished">August 3, 2026</time>
-        <span>· 7 min read</span>
+        <span>· 8 min read</span>
       </div>
       <div class="blog-tags">
         <span class="blog-tag">Next.js</span>
@@ -125,10 +125,14 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>In multi-app software suites built around shared core modules, fixing a subtle defect in one service often reveals identical hidden vulnerabilities in sibling applications. Furthermore, major framework upgrades like Next.js 15 bring silent breaking changes in route handler configuration parsing. During a recent infrastructure sprint across our AI video tools, we executed a systematic cross-repo audit that port-fixed 14 verified defects and updated Next.js 15 upload handling configurations.</p>
+      <p>In multi-app software suites built around shared core modules, fixing a subtle defect in one service often reveals identical hidden vulnerabilities in sibling applications. Furthermore, major framework upgrades like Next.js 15 bring silent breaking changes in route handler configuration parsing. During a recent maintenance cycle across our AI video tools (including <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a> and sibling generation services), we executed a systematic cross-repo audit (following principles from <a href="post-launch-audit-20-prs-48-hours.html">Post-Launch Audit</a>) that port-fixed 14 verified defects and hardened Next.js 15 route configurations.</p>
+
+      <blockquote>
+        Never fix a bug in isolation. Turn every root-cause fix into a cross-repository audit pattern for sibling codebases.
+      </blockquote>
 
       <h2>The Next.js 15 Upload Body Size Gotcha</h2>
-      <p>When upgrading from Next.js 14 to Next.js 15, custom API route body-size configurations changed. Legacy configurations using <code>export const config = { api: { bodyParser: false } }</code> were silently ignored in Next.js 15 App Router segment configs, causing large file uploads to be rejected with 413 Payload Too Large or silent truncation.</p>
+      <p>When upgrading from Next.js 14 to Next.js 15, custom API route body-size configurations changed. Legacy configurations using <code>export const config = { api: { bodyParser: false } }</code> were silently ignored in Next.js 15 App Router segment configs, causing large video uploads to fail with 413 Payload Too Large or silent body truncation.</p>
 
       <pre><code>// Legacy Next.js 14 route config (Ignored in Next.js 15 App Router)
 // export const config = { api: { bodyParser: { sizeLimit: '100mb' } } };
@@ -137,7 +141,15 @@
 export const maxDuration = 60; // 60 seconds timeout
 export const dynamic = 'force-dynamic';
 
-// Large payloads are handled directly via request.body Web Streams</code></pre>
+// Large payloads are parsed directly via req.body Web Streams
+import { handleMasterUploadStream } from './stream-utils';
+
+export async function POST(req: Request) {
+  const filePath = await handleMasterUploadStream(req, 'upload.mp4');
+  return Response.json({ status: 'success', filePath });
+}</code></pre>
+
+      <p>As covered in <a href="streaming-master-uploads-preventing-memory-exhaustion.html">Streaming Master Uploads to Disk</a>, pairing Web Stream handlers with explicit Next.js 15 segment options ensures upload routes accept multi-gigabyte video files reliably.</p>
 
       <h2>The Cross-Tool Audit Protocol</h2>
       <p>To ensure bug fixes were systematically applied across all sibling applications (video generation, presenter generation, variant multiplier, hook machine), we adopted a strict audit protocol:</p>
@@ -148,17 +160,62 @@ export const dynamic = 'force-dynamic';
         <li><strong>Atomic Port-Fixes:</strong> Submit audited, verified PRs across sibling repos within the same maintenance window.</li>
       </ol>
 
-      <h2>Audit Outcomes</h2>
-      <p>Through this systematic approach, we ported 14 audited defects across sibling services, resolving silent payload truncation, UI picker overflows, and unhandled stream cancellation errors in one clean maintenance cycle.</p>
+      <h2>Audited Defect Summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>PR / Module</th>
+            <th>Vulnerability</th>
+            <th>Audited Resolution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>fix/upload-body-cap</code></td>
+            <td>Next.js 15 ignored legacy body size config key</td>
+            <td>Refactored route handler exports to Web Stream handler pattern</td>
+          </tr>
+          <tr>
+            <td><code>fix/cross-tool-defects</code></td>
+            <td>14 shared UI/API defects across sibling tools</td>
+            <td>Audited sibling repositories and port-fixed all verified occurrences</td>
+          </tr>
+          <tr>
+            <td><code>fix/picker-search-cap</code></td>
+            <td>Presenter character picker crashed on 500+ items</td>
+            <td>Capped picker render limit and added client-side fuzzy search</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+      <p>I would mandate shared monorepo packages for shared API handlers and route configurations earlier. While cross-repo PR auditing catches duplicate defects, extracting shared middleware into NPM packages prevents drift across sibling repos automatically.</p>
+
+      <h2>The pattern: proactive multi-repo maintenance</h2>
+      <p>Frame upgrades and bug fixes should never happen in isolation. Establishing a disciplined cross-repo audit protocol ensures that platform upgrades in <a href="production-hardening-ai-video-pipeline.html">Production Hardening AI Video Pipelines</a> elevate software quality across the entire product ecosystem.</p>
     </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="post-launch-audit-20-prs-48-hours.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours</a><br><span style="color:#8892b0;font-size:13px;">Systematic post-launch triage across reliability regressions, UX confusion, and data honesty</span></li>
+        <li style="margin-bottom:12px;"><a href="streaming-master-uploads-preventing-memory-exhaustion.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Streaming Master Uploads to Disk: Preventing Memory Exhaustion in Video Pipelines</a><br><span style="color:#8892b0;font-size:13px;">Stream-to-disk ingestion for 10MB+ video payloads in Node/Next.js to prevent memory exhaustion</span></li>
+        <li style="margin-bottom:12px;"><a href="production-hardening-ai-video-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards</a><br><span style="color:#8892b0;font-size:13px;">Transient error classifier with exponential backoff, Claude model fallback, and crash guards</span></li>
+      </ul>
+    </section>
   </article>
   </main>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <p>&copy; 2026 Humza Tareen. Built for high-performance AI systems.</p>
-    </div>
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
   </footer>
-  <script src="../js/read-time.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
 </body>
 </html>

@@ -42,7 +42,7 @@
     "dateModified": "2026-08-03",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/streaming-master-uploads-preventing-memory-exhaustion.html" },
     "keywords": ["Node.js", "Next.js", "Streaming", "Video Pipelines", "Performance"],
-    "articleSection": "ML / AI Engineering"
+    "articleSection": "ML / AI"
   }
   </script>
   <script type="application/ld+json">
@@ -73,7 +73,7 @@
     .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
     .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
     .blog-meta time { color: var(--accent); }
-    .blog-tags { display: flex; flex-wrap: gap: 8px; margin-bottom: 24px; }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
     .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
     .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
     .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
@@ -113,7 +113,7 @@
       <div class="blog-meta">
         <span>By <span itemprop="author">Humza Tareen</span></span>
         <time datetime="2026-08-03" itemprop="datePublished">August 3, 2026</time>
-        <span>· 6 min read</span>
+        <span>· 8 min read</span>
       </div>
       <div class="blog-tags">
         <span class="blog-tag">Node.js</span>
@@ -125,13 +125,17 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>When processing high-definition video assets in modern web applications, memory management is frequently the silent bottleneck that causes production servers to crash unexpectedly under load. In our AI video generation platform, processing master video uploads originally relied on standard form-data parsers that buffered incoming files directly in memory before writing them to disk. As video uploads scaled beyond 10 MB, servers encountered sudden out-of-memory (OOM) exceptions and generic <code>"Expected a 'video' file field"</code> multipart parsing errors.</p>
+      <p>When processing high-definition video assets in modern web applications, memory management is frequently the silent bottleneck that causes production servers to crash unexpectedly under load. In our AI video platform (which includes <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a> and <a href="hook-machine-3s-ad-openers.html">Hook Machine</a>), processing master video uploads originally relied on standard form-data parsers that buffered incoming files directly in memory before writing them to disk. As video uploads scaled beyond 10 MB, servers encountered sudden out-of-memory (OOM) exceptions and generic <code>"Expected a 'video' file field"</code> multipart parsing errors.</p>
+
+      <blockquote>
+        In-memory file buffering scales linearly with upload size. Streaming to disk turns memory consumption into a flat constant.
+      </blockquote>
 
       <h2>The In-Memory Buffering Bottleneck</h2>
       <p>Standard HTTP body parsers in frameworks like Next.js often store incoming file payloads in RAM buffers (such as <code>Buffer.concat()</code>) during request ingestion. While this approach works reliably for small images or JSON payloads, video files introduce distinct challenges:</p>
       <ul>
-        <li><strong>Memory Spikes:</strong> Concurrent uploads of 50 MB to 200 MB master videos quickly consume node process heap allocations, triggering garbage collector stalls and eventual crashes.</li>
-        <li><strong>Parser Payload Caps:</strong> Built-in body parsers enforce rigid memory buffer limits. Exceeding these limits truncates streams prematurely, confusing boundary parsers and returning unhelpful form field validation errors.</li>
+        <li><strong>Memory Spikes:</strong> Concurrent uploads of 50 MB to 200 MB master videos quickly consume node process heap allocations, triggering garbage collector stalls and eventual OOM crashes.</li>
+        <li><strong>Parser Payload Caps:</strong> Built-in body parsers enforce rigid memory buffer limits. Exceeding these limits truncates streams prematurely, confusing boundary parsers and returning unhelpful form field validation errors like <code>"Expected a 'video' file field"</code>.</li>
       </ul>
 
       <h2>Refactoring to Disk Streaming</h2>
@@ -141,39 +145,84 @@
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
+import { join } from 'path';
+import { tmpdir } from 'os';
 
-export async function handleMasterUpload(req: Request, targetPath: string) {
+export async function handleMasterUploadStream(req: Request, filename: string): Promise&lt;string&gt; {
   if (!req.body) throw new Error("Missing request body stream");
 
+  const targetPath = join(tmpdir(), `master_${Date.now()}_${filename}`);
   const writeStream = createWriteStream(targetPath, { flags: 'w' });
   const nodeStream = Readable.fromWeb(req.body as any);
 
   // Pipe directly to disk with zero in-memory buffer aggregation
   await pipeline(nodeStream, writeStream);
+  return targetPath;
 }</code></pre>
 
       <h2>Key Pipeline Hardening Steps</h2>
       <ol>
         <li><strong>Stream Chunking:</strong> Ingesting chunks incrementally keeps RAM consumption flat (typically under 15 MB) regardless of whether the master file is 10 MB or 2 GB.</li>
         <li><strong>Disk Cleanup Lifecycle:</strong> Temporary files are tracked in a transient registry and automatically cleaned up if processing fails or succeeds, avoiding disk fill-up incidents.</li>
-        <li><strong>Explicit Route Configs:</strong> In Next.js App Router API handlers, disable body parsing for raw file endpoints to delegate stream control directly to Node.js stream utilities.</li>
+        <li><strong>Explicit Route Configs:</strong> In Next.js App Router API handlers, disable default body parsing for raw file endpoints to delegate stream control directly to Node.js stream utilities.</li>
       </ol>
 
-      <h2>Impact & Metrics</h2>
-      <p>Migrating to stream-to-disk architecture delivered immediate stability improvements across our video variant platform:</p>
-      <ul>
-        <li><strong>0% Memory OOM Crashes:</strong> Peak memory utilization during 100 MB+ video uploads dropped from >1.5 GB down to a stable ~35 MB.</li>
-        <li><strong>Support for High-Bitrate Assets:</strong> Master videos of arbitrary sizes can now be ingested and processed smoothly.</li>
-      </ul>
+      <h2>Reliability & Hardening PRs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Problem</th>
+            <th>Resolution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>perf/stream-upload-disk</code></td>
+            <td>In-memory buffering crashed Node on 10MB+ video uploads</td>
+            <td>Streamed incoming request WebStream directly to temporary disk descriptors</td>
+          </tr>
+          <tr>
+            <td><code>fix/upload-body-cap</code></td>
+            <td>Next.js 15 ignored legacy route body size limits</td>
+            <td>Updated route handler export flags to disable default body parsing</td>
+          </tr>
+          <tr>
+            <td><code>fix/stream-abort-cleanup</code></td>
+            <td>Aborted client connections left orphan temp files</td>
+            <td>Wired stream abort signals to immediate disk file unlinking</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+      <p>I would implement direct signed URL uploads to GCS earlier in the architecture lifecycle. While streaming to local node disk solved process OOMs, streaming directly from browser to cloud storage eliminates Node.js proxying altogether, as discussed in <a href="streaming-ai-video-cloud-storage.html">Streaming AI Video</a>.</p>
+
+      <h2>The pattern: stream everything over 5MB</h2>
+      <p>Master video ingestion requires treating payloads as byte streams, never in-memory byte arrays. Paired with <a href="pre-spend-guards-content-aware-routing.html">Pre-Spend Guards</a> and <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a>, stream-to-disk ingestion ensures high-resolution video tools remain stable under production traffic.</p>
     </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="variant-multiplier-ad-section-swap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</a><br><span style="color:#8892b0;font-size:13px;">23 PRs building a new AI video tool from scratch with waveform timeline and batch queue</span></li>
+        <li style="margin-bottom:12px;"><a href="seam-free-video-splicing-grade-match.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions</a><br><span style="color:#8892b0;font-size:13px;">Deterministic colour transfer and seamless frame bridging at video splice boundaries</span></li>
+        <li style="margin-bottom:12px;"><a href="pre-spend-guards-content-aware-routing.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Pre-Spend Guards and Content-Aware Routing for AI Video APIs</a><br><span style="color:#8892b0;font-size:13px;">Validation and cost control before triggering expensive generative video endpoints</span></li>
+      </ul>
+    </section>
   </article>
   </main>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <p>&copy; 2026 Humza Tareen. Built for high-performance AI systems.</p>
-    </div>
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
   </footer>
-  <script src="../js/read-time.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
 </body>
 </html>

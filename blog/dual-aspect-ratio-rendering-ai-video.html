@@ -42,7 +42,7 @@
     "dateModified": "2026-08-03",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html" },
     "keywords": ["Video Rendering", "Aspect Ratio", "AI Video", "Canvas", "FFmpeg"],
-    "articleSection": "ML / AI Engineering"
+    "articleSection": "ML / AI"
   }
   </script>
   <script type="application/ld+json">
@@ -113,7 +113,7 @@
       <div class="blog-meta">
         <span>By <span itemprop="author">Humza Tareen</span></span>
         <time datetime="2026-08-03" itemprop="datePublished">August 3, 2026</time>
-        <span>· 7 min read</span>
+        <span>· 8 min read</span>
       </div>
       <div class="blog-tags">
         <span class="blog-tag">Video Rendering</span>
@@ -125,19 +125,31 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>Modern ad campaigns require video creative exports across multiple screen formats: vertical 9:16 for TikTok/Reels and widescreen 16:9 for YouTube/Desktop. Naively cropping a 9:16 video into 16:9 leads to awkward subject clipping, misplaced captions, and poor visual composition. In our AI video generation suite, we built a dual aspect-ratio rendering architecture that dynamically adapts layouts while sharing voiceover synthesis and audio alignment.</p>
+      <p>Modern ad campaigns require video creative exports across multiple screen formats: vertical 9:16 for TikTok/Reels and widescreen 16:9 for YouTube/Desktop. Naively cropping a 9:16 video into 16:9 leads to awkward subject clipping, misplaced captions, and poor visual composition. In our AI video generation suite (powering tools like <a href="hook-machine-3s-ad-openers.html">Hook Machine</a> and <a href="ugc-pipeline-script-first-video-generation.html">UGC Pipeline</a>), we built a dual aspect-ratio rendering architecture that dynamically adapts layouts while sharing voiceover synthesis and audio alignment.</p>
+
+      <blockquote>
+        Never crop vertical video into widescreen post-hoc. Render parallel spatial coordinate trees anchored to a single synthesized voiceover track.
+      </blockquote>
 
       <h2>Multi-Canvas Layout Engine</h2>
       <p>Rather than rendering one format and performing a secondary video crop, our layout engine maintains dual spatial coordinate trees. Key UI elements (avatars, titles, CTA overlays) are positioned relative to target aspect containers:</p>
 
       <pre><code>// Responsive canvas transformation based on target aspect ratio
-export function calculateElementBounds(aspectRatio: '16:9' | '9:16', containerWidth: number) {
+export interface LayoutBounds {
+  avatarBounds: { x: number; y: number; w: number; h: number };
+  captionBottomOffset: number;
+  fontSize: number;
+}
+
+export function calculateElementBounds(aspectRatio: '16:9' | '9:16', width: number): LayoutBounds {
   const isVertical = aspectRatio === '9:16';
-  const containerHeight = isVertical ? containerWidth * (16 / 9) : containerWidth * (9 / 16);
+  const height = isVertical ? width * (16 / 9) : width * (9 / 16);
 
   return {
-    avatarSize: isVertical ? { w: containerWidth * 0.8, h: containerWidth * 0.8 } : { w: containerHeight * 0.85, h: containerHeight * 0.85 },
-    captionOffsetBottom: isVertical ? 120 : 40,
+    avatarBounds: isVertical 
+      ? { x: width * 0.1, y: height * 0.15, w: width * 0.8, h: width * 0.8 }
+      : { x: width * 0.05, y: height * 0.1, w: height * 0.8, h: height * 0.8 },
+    captionBottomOffset: isVertical ? 120 : 45,
     fontSize: isVertical ? 28 : 22
   };
 }</code></pre>
@@ -152,20 +164,62 @@ export function calculateElementBounds(aspectRatio: '16:9' | '9:16', containerWi
 ffmpeg -framerate 30 -i frames_916/%04d.png -i voiceover.wav -c:v libx264 -pix_fmt yuv420p output_916.mp4 \
        -framerate 30 -i frames_169/%04d.png -i voiceover.wav -c:v libx264 -pix_fmt yuv420p output_169.mp4</code></pre>
 
-      <h2>Key Learnings</h2>
-      <ul>
-        <li><strong>Single Audio Source of Truth:</strong> Synthesizing voiceover once and reusing audio duration timestamps guarantees frame synchronization across both aspect ratios.</li>
-        <li><strong>Zero Screen Burn-in:</strong> Isolating visual canvas rendering from audio player UI prevents hidden audio widgets or player overlays from appearing on exported video frames.</li>
-      </ul>
+      <h2>PR Engineering & Gotchas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Problem</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>feat/16-9-support</code></td>
+            <td>Platform supported 9:16 portrait only</td>
+            <td>Added dual 16:9 layout generator alongside 9:16</td>
+          </tr>
+          <tr>
+            <td><code>fix/audio-element-burnin</code></td>
+            <td>HTML audio controls rendered onto video frames</td>
+            <td>Stripped DOM audio tags from capture layer and delegated audio to FFmpeg</td>
+          </tr>
+          <tr>
+            <td><code>fix/picker-cap-search</code></td>
+            <td>Presenter pickers overflowed on large voice lists</td>
+            <td>Capped voice pickers and added live search filter UI</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+      <p>I would unify caption rendering via WebAssembly libass earlier instead of relying on separate canvas overlays for 16:9 vs 9:16. Libass subtitle tracks adapt smoothly across aspect ratios without requiring manual font size recalculations, as detailed in <a href="seam-free-video-splicing-grade-match.html">Seam-Free Video Splicing</a>.</p>
+
+      <h2>The pattern: single audio, adaptive canvases</h2>
+      <p>Multi-format AI video generation relies on a single audio source of truth driving responsive visual layout trees. Combining dual-canvas rendering with clean audio isolation enables shipping TikTok and YouTube ready ads simultaneously.</p>
     </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="hook-machine-3s-ad-openers.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hook Machine: Scoring and Ranking 3-Second AI Ad Openers</a><br><span style="color:#8892b0;font-size:13px;">21 PRs building a hook generation tool — scorer algorithm, content-aware video engine routing</span></li>
+        <li style="margin-bottom:12px;"><a href="variant-multiplier-ad-section-swap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</a><br><span style="color:#8892b0;font-size:13px;">23 PRs building a new AI video tool from scratch with waveform timeline and batch queue</span></li>
+        <li style="margin-bottom:12px;"><a href="ugc-pipeline-script-first-video-generation.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Script-First UGC: Generating Video Ads Without a Reference</a><br><span style="color:#8892b0;font-size:13px;">Original-script UGC pipeline without reference video dependency</span></li>
+      </ul>
+    </section>
   </article>
   </main>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <p>&copy; 2026 Humza Tareen. Built for high-performance AI systems.</p>
-    </div>
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
   </footer>
-  <script src="../js/read-time.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
 </body>
 </html>

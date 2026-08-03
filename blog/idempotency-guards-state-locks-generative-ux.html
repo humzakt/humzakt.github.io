@@ -113,7 +113,7 @@
       <div class="blog-meta">
         <span>By <span itemprop="author">Humza Tareen</span></span>
         <time datetime="2026-08-03" itemprop="datePublished">August 3, 2026</time>
-        <span>· 6 min read</span>
+        <span>· 8 min read</span>
       </div>
       <div class="blog-tags">
         <span class="blog-tag">Idempotency</span>
@@ -125,29 +125,34 @@
     </header>
 
     <div class="blog-content" itemprop="articleBody">
-      <p>Interactive Generative AI interfaces incur real unit costs ($0.50 to $3.00+ per generation call). In fast-paced UI flows, rapid user interactions like double-clicking a "Regenerate" button or triggering a session resume can spawn duplicate model invocations. If backend APIs lack idempotency checks, users get billed twice while cost ledgers mask duplicate charges. Furthermore, resuming a session without strict state locking often resets selected voice and avatar locks. Here is how we implemented backend idempotency transaction guards and persistent state locks to eliminate double-billing and preserve user intent.</p>
+      <p>Interactive Generative AI interfaces incur real unit costs ($0.50 to $3.00+ per generation call). In fast-paced UI flows across <a href="hook-machine-3s-ad-openers.html">Hook Machine</a> and <a href="variant-multiplier-ad-section-swap.html">Variant Multiplier</a>, rapid user interactions like double-clicking a "Regenerate" button or triggering a session resume can spawn duplicate model invocations. If backend APIs lack idempotency checks, users get billed twice while cost ledgers mask duplicate charges. Furthermore, resuming a session without strict state locking often resets selected voice models and avatar locks. Here is how we implemented backend idempotency transaction guards and persistent state locks to eliminate double-billing and preserve user intent.</p>
 
-      <h2>Client-Side Deduplication & Idempotency Keys</h2>
+      <blockquote>
+        Every paid generative click is a transaction. Treat model dispatches with financial-grade idempotency keys and server locks.
+      </blockquote>
+
+      <h2>Client Deduplication & Idempotency Keys</h2>
       <p>Every generation trigger assigns a deterministic, client-computed idempotency key derived from the task payload hash. Subsequent clicks within a short window reuse the existing key:</p>
 
-      <pre><code>// Generating deterministic idempotency keys for AI generation requests
+      <pre><code>// Deterministic idempotency key calculation
 import { createHash } from 'crypto';
 
-export function getGenerationIdempotencyKey(taskId: string, config: object): string {
-  const raw = `${taskId}:${JSON.stringify(config)}`;
-  return createHash('sha256').update(raw).digest('hex');
+export function getGenerationIdempotencyKey(taskId: string, payload: object): string {
+  const normalized = JSON.stringify(payload, Object.keys(payload).sort());
+  return createHash('sha256').update(`${taskId}:${normalized}`).digest('hex');
 }</code></pre>
 
-      <h2>Server-Side Transaction Lock & Cost Ledger Reconciliation</h2>
-      <p>On receiving a request, the API checks Redis / DB transaction locks before dispatching jobs to model endpoints:</p>
+      <h2>Server Transaction Locks & Cost Ledger Reconciliation</h2>
+      <p>On receiving a request, the API checks distributed Redis transaction locks before dispatching jobs to external model endpoints (as discussed in <a href="pre-spend-guards-content-aware-routing.html">Pre-Spend Guards</a>):</p>
 
       <pre><code>// Server idempotency guard with Redis lock
-export async function executeGenerativeTask(idempotencyKey: string, runner: () => Promise<any>) {
+export async function executeGenerativeTask(idempotencyKey: string, runner: () => Promise&lt;any&gt;) {
   const lockAcquired = await redis.set(`lock:${idempotencyKey}`, 'active', 'NX', 'EX', 60);
   
   if (!lockAcquired) {
     // Return existing in-flight job handle instead of spawning a new paid task
-    return await redis.get(`result:${idempotencyKey}`);
+    const activeResult = await redis.get(`result:${idempotencyKey}`);
+    return activeResult ? JSON.parse(activeResult) : { status: 'in-progress', idempotencyKey };
   }
 
   try {
@@ -160,22 +165,64 @@ export async function executeGenerativeTask(idempotencyKey: string, runner: () =
 }</code></pre>
 
       <h2>Voice & Product Identity State Locks</h2>
-      <p>When users pause and resume interactive editing sessions, frontend state re-hydration must not overwrite custom voice model IDs or product identity locks with default fallback values. We introduced explicit versioned state schemas that validate lock integrity before applying state updates.</p>
+      <p>When users pause and resume interactive editing sessions, frontend state re-hydration must not overwrite custom voice model IDs or product identity locks with default fallback values. We introduced explicit versioned state schemas (mirroring patterns from <a href="drive-backed-asset-catalogs-runtime.html">Drive-Backed Asset Catalogs</a>) that validate lock integrity before applying state updates.</p>
 
-      <h2>Impact</h2>
-      <ul>
-        <li><strong>Zero Duplicate Billing:</strong> 100% of double-click race conditions are intercepted before external API dispatch.</li>
-        <li><strong>Consistent State Hydration:</strong> Voice models and character identity locks persist seamlessly across page refreshes and session resumes.</li>
-      </ul>
+      <h2>Audit & Fix History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Issue</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>fix/double-click-billing</code></td>
+            <td>Double clicking Regenerate charged twice in cost ledger</td>
+            <td>Client request deduplication &amp; Redis atomic idempotency locks</td>
+          </tr>
+          <tr>
+            <td><code>fix/voice-identity-lock</code></td>
+            <td>Resuming session reset voice model lock to default</td>
+            <td>Persisted voice model IDs in versioned session schemas</td>
+          </tr>
+          <tr>
+            <td><code>fix/cost-ledger-audit</code></td>
+            <td>Hidden duplicate charges in cost accounting</td>
+            <td>Reconciled cost ledger entries against unique transaction IDs</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What I'd do differently</h2>
+      <p>I would implement database-level unique constraints on idempotency keys alongside Redis locks. While Redis provides fast locks, DB-level constraints guarantee idempotency even during Redis node failovers or memory evictions.</p>
+
+      <h2>The pattern: financial-grade generative UX</h2>
+      <p>Generative AI user experience must be engineered with transaction safety. Enforcing client payload hashing, server-side Redis locks, and strict state preservation protects user budgets while delivering seamless session resumes.</p>
     </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="pre-spend-guards-content-aware-routing.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Pre-Spend Guards and Content-Aware Routing for AI Video APIs</a><br><span style="color:#8892b0;font-size:13px;">Validate before spending on $2/generation AI video APIs — cost preview and error retries</span></li>
+        <li style="margin-bottom:12px;"><a href="hook-machine-3s-ad-openers.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hook Machine: Scoring and Ranking 3-Second AI Ad Openers</a><br><span style="color:#8892b0;font-size:13px;">21 PRs building a hook generation tool — scorer algorithm, content-aware video engine routing</span></li>
+        <li style="margin-bottom:12px;"><a href="variant-multiplier-ad-section-swap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</a><br><span style="color:#8892b0;font-size:13px;">23 PRs building a new AI video tool from scratch with waveform timeline and batch queue</span></li>
+      </ul>
+    </section>
   </article>
   </main>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <p>&copy; 2026 Humza Tareen. Built for high-performance AI systems.</p>
-    </div>
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
   </footer>
-  <script src="../js/read-time.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
 </body>
 </html>
