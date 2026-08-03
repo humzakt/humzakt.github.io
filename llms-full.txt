@@ -4,6 +4,14 @@
 
 ---
 
+## Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data
+
+URL: https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html
+
+How a multi-gate auto-seed pipeline turns occupational scenarios into long-horizon RL training and eval tasks. Covers claim roles (AUTHOR, GOLDEN_DATA, REVIEWER) enforced across ~11 pipeline stages, RL-World taxonomy as the front door to occupational diversity, golden-data production against model outputs, and QC orchestration at trainer gate and golden-data — edge cases that only surface at hour-scale human effort, not toy coding puzzles.
+
+---
+
 ## Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants
 
 URL: https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html

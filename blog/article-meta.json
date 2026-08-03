@@ -1,5 +1,16 @@
 [
   {
+    "id": "long-horizon-rl-task-pipelines",
+    "title": "Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data",
+    "summary": "How a multi-gate auto-seed pipeline turns occupational scenarios into long-horizon RL tasks — claim roles, RL-World taxonomy, golden data, and QC orchestration that only matter at hour-scale effort.",
+    "date": "2026-08-03",
+    "themes": ["production"],
+    "components": ["Long-Horizon RL", "AI Training Data", "Pipeline Architecture", "TypeScript", "Enterprise"],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html"
+    }
+  },
+  {
     "id": "variant-multiplier-ad-section-swap",
     "title": "Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants",
     "summary": "23 PRs building a new AI video tool from scratch — 6-workstream studio, waveform timeline, word-level transcript selection, grade-match colour transfer, batch queue.",

@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Sun, 27 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Aug 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,20 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data</title>
+      <link>https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html</guid>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How a multi-gate auto-seed pipeline turns occupational scenarios into long-horizon RL tasks — claim roles, RL-World taxonomy, golden data, and QC orchestration that only matter at hour-scale effort.</description>
+      <category>Long-Horizon RL</category>
+      <category>AI Training Data</category>
+      <category>Pipeline Architecture</category>
+      <category>TypeScript</category>
+      <category>Enterprise</category>
+    </item>
 
     <item>
       <title>Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants</title>

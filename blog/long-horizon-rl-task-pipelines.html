@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data — Humza Tareen</title>
+  <meta name="description" content="How I built multi-gate claim pipelines for long-horizon RL training tasks — taxonomy-driven scenario intake, AUTHOR / GOLDEN_DATA / REVIEWER roles, Auto-QC orchestration, and the edge cases that only appear at hour-scale human work.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Long-Horizon RL, AI Training Data, Pipeline Architecture, TypeScript, Enterprise">
+  <link rel="canonical" href="https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data">
+  <meta property="og:description" content="How I built multi-gate claim pipelines for long-horizon RL training tasks — taxonomy-driven scenario intake, AUTHOR / GOLDEN_DATA / REVIEWER roles, Auto-QC orchestration, and the edge cases that only appear at hour-scale human work.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-03T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Long-Horizon RL">
+  <meta property="article:tag" content="AI Training Data">
+  <meta property="article:tag" content="Pipeline Architecture">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Enterprise">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data">
+  <meta name="twitter:description" content="How I built multi-gate claim pipelines for long-horizon RL training tasks — taxonomy-driven scenario intake, AUTHOR / GOLDEN_DATA / REVIEWER roles, Auto-QC orchestration, and the edge cases that only appear at hour-scale human work.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data",
+    "description": "How I built multi-gate claim pipelines for long-horizon RL training tasks — taxonomy-driven scenario intake, AUTHOR / GOLDEN_DATA / REVIEWER roles, Auto-QC orchestration, and the edge cases that only appear at hour-scale human work.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-03",
+    "dateModified": "2026-08-03",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html" },
+    "keywords": ["Long-Horizon RL", "AI Training Data", "Pipeline Architecture", "TypeScript", "Enterprise"],
+    "articleSection": "Production Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Long-Horizon RL Task Pipelines"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-03" itemprop="datePublished">August 3, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Long-Horizon RL</span>
+        <span class="blog-tag">AI Training Data</span>
+        <span class="blog-tag">Pipeline Architecture</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Enterprise</span>
+      </div>
+    </header>
+    <div class="blog-content" itemprop="articleBody">
+
+      <p>Most AI training datasets are built from short tasks: classify a sentence, fix a function, rate a response. Long-horizon reinforcement learning needs something harder — occupational scenarios that take a human expert hours of realistic effort, produce multi-artifact deliverables, and survive a multi-gate review before they become golden data.</p>
+
+      <p>On the enterprise evaluation platform, I spent roughly four months shipping the auto-seed pipeline that produces those tasks — claim lifecycle, events table, LLM dedup adjudication, trainer-gate QC, taxonomy search, configurable timeouts, user dashboard, and 100+ merged PRs around them. This post is the architecture view: what "long-horizon" means in practice, why a multi-gate human pipeline beats single-shot annotation, and which edge cases only appear when work spans hours instead of minutes.</p>
+
+      <blockquote>
+        Long-horizon RL tasks fail without multi-role claim pipelines, taxonomy, and QC gates — not just better prompts.
+      </blockquote>
+
+      <h2>What "long-horizon" means in RL task design</h2>
+
+      <p>A long-horizon task on the platform is identified by an <code>lh-*</code> ID — for example <code>lh-government-compliance_officers-20260529-231730</code>. The ID encodes sector, role, and a timestamp. The content is not a coding puzzle. It is a multi-step occupational scenario:</p>
+
+      <ul>
+        <li>A compliance officer reviews a policy packet, drafts findings, and packages evidence</li>
+        <li>A financial analyst reconciles statements, builds a memo, and cites source artifacts</li>
+        <li>A legal researcher synthesizes case materials into a structured recommendation</li>
+      </ul>
+
+      <p>These scenarios demand hours of realistic expert effort. Deliverables are multi-artifact — documents, tables, checklists, Harbor-style packages — not a single string label. The model being trained or evaluated must plan, use tools, revise, and persist state across a long trajectory. If your annotation UI assumes a five-minute turnaround, the data you collect will look like short tasks no matter how carefully you write the prompt.</p>
+
+      <p>That mismatch is why the auto-seed pipeline exists. Scenario design, model runs, golden solutions, calibration, and final review are separate stages with separate human owners. The pipeline is the coordination layer that makes hour-scale work producible at volume.</p>
+
+      <h2>The ~11-step pipeline</h2>
+
+      <p>A task moves through roughly eleven stages from design to finished golden review:</p>
+
+      <ol>
+        <li><strong>task_design</strong> — trainers author the scenario and acceptance criteria</li>
+        <li>… intermediate packaging, model run, and intake stages …</li>
+        <li><strong>trainer_gate</strong> — trainers review and approve the designed task</li>
+        <li><strong>model_output_review</strong> — experts examine model trajectories against the scenario</li>
+        <li><strong>golden_data</strong> — experts produce the golden solution</li>
+        <li><strong>calibration</strong> — golden solutions are calibrated for reward / eval use</li>
+        <li><strong>golden_review</strong> — final human gate before the task is Finished</li>
+      </ol>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Horizon span</th>
+            <th>Stages</th>
+            <th>Claim role</th>
+            <th>Job</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A1 — Authoring</td>
+            <td><code>task_design → trainer_gate</code></td>
+            <td><code>AUTHOR</code></td>
+            <td>Design and review the scenario</td>
+          </tr>
+          <tr>
+            <td>A2 — Golden data</td>
+            <td><code>model_output_review → calibration</code></td>
+            <td><code>GOLDEN_DATA</code></td>
+            <td>Produce golden solutions vs model output</td>
+          </tr>
+          <tr>
+            <td>A3 — Final review</td>
+            <td><code>golden_review</code></td>
+            <td><code>REVIEWER</code></td>
+            <td>Final quality gate</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Each stage has its own claim, timeout, release semantics, and admin kill-switch. Diagrams that collapse this into "human labels data" hide the actual product: a state machine that keeps multi-hour work from colliding, stalling, or shipping incomplete golden forms.</p>
+
+      <h2>Why a multi-gate pipeline beats single-shot annotation</h2>
+
+      <p>Single-shot annotation works when the unit of work is small and the annotator's mistake is cheap. Long-horizon occupational scenarios fail that test in three ways:</p>
+
+      <ol>
+        <li><strong>Expertise is split.</strong> The person who designs a government-compliance scenario is rarely the same person who should write the golden solution against a model trajectory — and neither should be the final reviewer of their own work.</li>
+        <li><strong>Failure modes accumulate.</strong> A vague scenario produces an unusable model run; an incomplete golden form produces a useless reward signal; a skipped QC check ships both.</li>
+        <li><strong>Time makes exclusivity necessary.</strong> If one person can hold a task for hours, you need claim timeouts, release, and reclaim — not a shared Google Doc.</li>
+      </ol>
+
+      <p>Multi-gate pipelines look bureaucratic until you measure what single-shot produces: scenarios that look complete in a UI but cannot grade a long trajectory, or golden data that mirrors the author's bias because the same human designed and "solved" the task.</p>
+
+      <h2>Claim roles as the coordination mechanism</h2>
+
+      <p>The core abstraction is not a ticket status — it is a <strong>claim role</strong> spanning a horizon of stages:</p>
+
+      <ul>
+        <li><strong>AUTHOR (A1)</strong> — claims from <code>task_design</code> through <code>trainer_gate</code></li>
+        <li><strong>GOLDEN_DATA (A2)</strong> — claims from <code>model_output_review</code> through <code>calibration</code></li>
+        <li><strong>REVIEWER (A3)</strong> — claims <code>golden_review</code></li>
+      </ul>
+
+      <p>Different humans must hold different roles on the same task. That rule is enforced at claim time, not as a soft guideline in a wiki:</p>
+
+<pre><code class="language-typescript">async function claimTask(
+  taskId: string,
+  userId: string,
+  role: ClaimRole,
+): Promise&lt;ClaimResult&gt; {
+  const prior = await claims.forTask(taskId);
+
+  // Same human cannot hold AUTHOR and GOLDEN_DATA on one task
+  if (prior.some(c =&gt; c.userId === userId &amp;&amp; c.role !== role)) {
+    throw new ClaimConflictError(
+      'Different claim roles on the same task require different humans',
+    );
+  }
+
+  if (await killSwitch.isGateDisabled(role.gate)) {
+    throw new GateDisabledError(role.gate);
+  }
+
+  return claims.create({
+    taskId,
+    userId,
+    role,
+    expiresAt: Date.now() + timeouts.forRole(role),
+  });
+}</code></pre>
+
+      <p>Claim timeouts, manual release, and admin kill-switches are per gate. AUTHOR work can time out independently of GOLDEN_DATA work. An admin can freeze <code>trainer_gate</code> without freezing <code>golden_review</code>. That granularity is what turns "people will figure it out" into a production system.</p>
+
+      <h2>Taxonomy + scenario as the front door to diversity</h2>
+
+      <p>Long-horizon tasks are only useful if they cover real occupational diversity. The platform's RL-World taxonomy is an extensible <code>L(n)</code> tree:</p>
+
+      <p><strong>Sector → Sub Vertical → Function → Role</strong></p>
+
+      <p>Taxonomy nodes are seeded from YAML into GCS, then consumed by cascading bulk intake. Required scenarios hang off roles so intake cannot create a task without a grounded occupational context. Search across the taxonomy is a first-class product surface — trainers pick a role, not a free-text job title that later collapses into noise.</p>
+
+<pre><code class="language-typescript">type TaxonomyNode = {
+  level: 'sector' | 'sub_vertical' | 'function' | 'role';
+  id: string;
+  label: string;
+  children?: TaxonomyNode[];
+  requiredScenarios?: ScenarioSpec[];
+};
+
+async function bulkIntake(roleId: string, count: number): Promise&lt;TaskDraft[]&gt; {
+  const role = await taxonomy.getRole(roleId); // GCS-backed, YAML-seeded
+  const scenarios = role.requiredScenarios;
+  if (!scenarios?.length) {
+    throw new IntakeError('Role has no required scenarios');
+  }
+  return scenarios.flatMap(s =&gt; seedTasks(role, s, count));
+}</code></pre>
+
+      <p>Without taxonomy as the front door, "diversity" becomes whatever trainers typed last week. With it, auto-seed can cascade intake across sectors while keeping scenario requirements attached to the leaf roles that actually do the work.</p>
+
+      <h2>Golden data + QC as the quality floor</h2>
+
+      <p>Golden data is the quality floor for RL rewards and evals. If the golden solution is incomplete, every downstream score is fiction. Auto-QC agents run at trainer gate and golden-data stages via Cloud Tasks workers with webhook callbacks — the same request-async-respond pattern used elsewhere on the platform:</p>
+
+      <ol>
+        <li>Human submits at a gate → manifest transitions to submitted / qc_pending</li>
+        <li>Cloud Tasks worker dispatches configured QC agents</li>
+        <li>Webhook callbacks return results</li>
+        <li>Pass advances the stage; fail returns the task with actionable findings</li>
+      </ol>
+
+      <p>Force-pass is an admin escape hatch for known false positives. It is blocked when the golden form is incomplete. That guard sounds small; it is the difference between "QC can be overridden carefully" and "admins can ship empty golden data under pressure."</p>
+
+<pre><code class="language-typescript">async function forcePassQc(
+  taskId: string,
+  adminId: string,
+): Promise&lt;void&gt; {
+  const golden = await goldenForms.get(taskId);
+  if (!golden || !golden.isComplete()) {
+    throw new ValidationError(
+      'Force-pass blocked: golden data form is incomplete',
+    );
+  }
+  await qc.forcePass(taskId, { adminId, reason: 'admin_override' });
+  await events.record('qc.force_passed', { taskId, adminId });
+}</code></pre>
+
+      <p>Stack underneath: Next.js UI, PostgreSQL + Prisma for claims and manifests, Zod for payload validation, GCS for taxonomy and packaged artifacts, Claude / GPT for adjudication and dedup where LLM judgment beats brittle rules. Public tech is enough to describe the system; the hard part is the coordination semantics, not the model names.</p>
+
+      <h2>Edge cases that only show up at horizon scale</h2>
+
+      <p>Minute-scale annotation hides failure modes that dominate hour-scale work. These are the ones that consumed real engineering time:</p>
+
+      <h3>Stale claims</h3>
+
+      <p>A trainer claims AUTHOR work, starts a draft, then disappears for six hours. Without timeout + release, the task is a ghost lock. With timeout, you still need draft cleanup and manifest reset to pending so another AUTHOR can reclaim without inheriting a half-written, ownership-ambiguous draft.</p>
+
+      <h3>Release and timeout reset</h3>
+
+      <p>Manual release and auto-timeout must share the same reset path: delete in-progress draft, return stage to pending, preserve audit history. Divergent paths produce "I released it but it still looks claimed" bugs that destroy trust in My Tasks.</p>
+
+<pre><code class="language-typescript">async function onClaimRelease(
+  taskId: string,
+  reason: 'manual' | 'timeout',
+  role: ClaimRole,
+): Promise&lt;void&gt; {
+  await drafts.delete(taskId, role);
+  await manifest.transition(role.gate, 'pending', {
+    releasedAt: Date.now(),
+    releaseReason: reason,
+  });
+  await events.record('claim.released', { taskId, role, reason });
+}</code></pre>
+
+      <h3>Spinner scoping</h3>
+
+      <p>Status changes fire constantly — claim heartbeats, webhook callbacks, draft autosave. If the Auto-QC spinner shows on every transition, reviewers stop believing any spinner. Scope progress UI to "this gate is submitted AND QC job is in_progress." Anything else is noise.</p>
+
+      <h3>Force-pass guards</h3>
+
+      <p>At horizon scale, incomplete golden forms are common mid-flight. Blocking force-pass until the form is complete prevents the exact failure mode pressure creates: skip QC, ship now, fix never.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Edge case</th>
+            <th>Symptom at horizon scale</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Stale claim</td>
+            <td>Task locked for hours with no progress</td>
+            <td>Per-role timeout + reclaimable pending</td>
+          </tr>
+          <tr>
+            <td>Release / timeout reset</td>
+            <td>Ghost drafts, wrong My Tasks state</td>
+            <td>Shared reset path + events audit</td>
+          </tr>
+          <tr>
+            <td>Unscoped spinner</td>
+            <td>Reviewers ignore all progress UI</td>
+            <td>Spinner only during active QC</td>
+          </tr>
+          <tr>
+            <td>Force-pass abuse</td>
+            <td>Empty golden data enters eval corpus</td>
+            <td>Block when golden form incomplete</td>
+          </tr>
+          <tr>
+            <td>Same-human dual role</td>
+            <td>Author grades own scenario</td>
+            <td>Enforce role exclusivity at claim</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Scale of the engineering</h2>
+
+      <p>None of this landed as one epic. Over ~four months the surface area included:</p>
+
+      <ul>
+        <li>Claim lifecycle across AUTHOR / GOLDEN_DATA / REVIEWER</li>
+        <li>Events table for pipeline observability</li>
+        <li>LLM dedup adjudication for near-duplicate scenarios</li>
+        <li>Trainer-gate and golden-data Auto-QC wiring</li>
+        <li>Configurable claim timeouts and admin kill-switches per gate</li>
+        <li>Taxonomy search and YAML → GCS seeding</li>
+        <li>User dashboard for workload visibility</li>
+      </ul>
+
+      <p>100+ merged PRs is the real signal: long-horizon pipelines are not a prompt engineering problem. They are a product of claim semantics, taxonomy intake, and QC placement — shipped incrementally against production edge cases.</p>
+
+      <h2>What I'd do differently</h2>
+
+      <p>I would publish the three claim roles and their stage spans as a formal state machine on day one, before the first trainer-gate PR. We discovered exclusivity rules and timeout interactions through production tickets; a diagram in the repo would have caught several of them in design review.</p>
+
+      <p>I would also treat golden-form completeness as a hard invariant earlier. Force-pass guards arrived after incomplete golden data was already a known risk. Invariants that protect reward quality should ship with the first golden-data gate, not as a follow-up.</p>
+
+      <h2>The pattern: coordinate the horizon, don't just annotate it</h2>
+
+      <p>Long-horizon RL needs tasks that take humans hours, not minutes. That requirement forces a multi-gate pipeline, multi-role claims, taxonomy-backed scenario intake, and QC at the gates where humans can still fix failures. Better prompts help inside a stage. They do not replace the coordination machinery between stages.</p>
+
+      <p>If you are building evaluation or training data for agents that plan over long trajectories, start with claim roles, taxonomy, and QC placement. The golden data you get will be only as good as the pipeline that refused to ship incomplete work.</p>
+
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="trainer-gate-qc-claim-lifecycle.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline</a><br><span style="color:#8892b0;font-size:13px;">Claim lifecycle, spinner scoping, and force-pass guardrails at trainer gate</span></li>
+        <li style="margin-bottom:12px;"><a href="auto-seed-admin-controls-ai-training.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Auto-Seed Admin Controls for AI Training Data Pipelines</a><br><span style="color:#8892b0;font-size:13px;">Kill-switches, claim timeouts, and governance for the auto-seed pipeline</span></li>
+        <li style="margin-bottom:12px;"><a href="extensible-taxonomy-system-yaml-seeding.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Extensible Taxonomy System with YAML Seeding</a><br><span style="color:#8892b0;font-size:13px;">L(n) Sector → Role taxonomy seeded from YAML into GCS</span></li>
+        <li style="margin-bottom:12px;"><a href="qc-orchestration-agent-driven-quality.html" style="color:#64ffda;text-decoration:none;font-size:15px;">QC Orchestration: Integrating Agent-Driven Quality Checks into a Review Pipeline</a><br><span style="color:#8892b0;font-size:13px;">Cloud Tasks + webhook QC agents that power gate checks</span></li>
+        <li style="margin-bottom:12px;"><a href="gcs-backed-auto-seeder-platform.html" style="color:#64ffda;text-decoration:none;font-size:15px;">GCS-Backed Auto-Seeder Platform</a><br><span style="color:#8892b0;font-size:13px;">How auto-seed packages and stores long-horizon task artifacts</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>
