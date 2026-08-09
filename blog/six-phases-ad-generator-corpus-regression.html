@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus — Humza Tareen</title>
+  <meta name="description" content="A reliability improvement quietly deleted the creative intent it was supposed to preserve. Six phases, measured against a corpus of past runs, restore product-featuring b-roll, correct mascot casting, fix a pace bias, and rethink what percentage-based cutaway budgets actually mean on a short ad.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Regression Analysis, Product Engineering, Prompt Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus">
+  <meta property="og:description" content="A reliability improvement quietly deleted the creative intent it was supposed to preserve. Six phases, measured against a corpus of past runs, restore product-featuring b-roll, correct mascot casting, fix a pace bias, and rethink what percentage-based cutaway budgets actually mean on a short ad.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Regression Analysis">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus">
+  <meta name="twitter:description" content="A reliability improvement quietly deleted the creative intent it was supposed to preserve. Six phases, measured against a corpus of past runs, restore product-featuring b-roll, correct mascot casting, fix a pace bias, and rethink what percentage-based cutaway budgets actually mean on a short ad.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus",
+    "description": "A reliability improvement quietly deleted the creative intent it was supposed to preserve. Six phases, measured against a corpus of past runs, restore product-featuring b-roll, correct mascot casting, fix a pace bias, and rethink what percentage-based cutaway budgets actually mean on a short ad.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html" },
+    "keywords": ["AI Video", "Regression Analysis", "Product Engineering", "Prompt Engineering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Six Phases: Diagnosing a Regression Against a Corpus"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Regression Analysis</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">Prompt Engineering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>"Reliability went up and intent went down." That's the one-line summary of a regression I found by comparing two months of a video generator's output against itself: July's runs against August's, 295 scenes against 268. Every individual change made between them had shipped for a defensible reason. The aggregate was a pipeline that completed more often and made a worse ad every time. Fixing it took six phases, each one measured against the corpus rather than against a guess at what "better" meant.</p>
+
+      <blockquote>
+        A regression nobody can point to a single bad commit for is still a regression. Measure the aggregate, not the diffs.
+      </blockquote>
+
+      <h2>The measurement that started it</h2>
+
+      <p>Phase 0 (PR #306) is the diagnosis, not a fix:</p>
+
+      <table>
+        <thead><tr><th></th><th>July</th><th>August</th></tr></thead>
+        <tbody>
+          <tr><td><code>role: "broll"</code> scenes</td><td>72</td><td><strong>zero, across all 46 runs</strong></td></tr>
+          <tr><td>Product-bearing scenes</td><td>60/295 (20.3%)</td><td>39/268 (14.6%)</td></tr>
+          <tr><td>Product-state vocabulary</td><td>case-closed 49, case-open 6, buds 5</td><td>only case-closed</td></tr>
+          <tr><td>B-roll sources</td><td>41 real product photos, 31 generated</td><td>23 spans: 18 mascot, 2 product</td></tr>
+        </tbody>
+      </table>
+
+      <p>July made long, product-featuring videos that often crashed mid-render. August made short, product-free videos that reliably completed. Every fix made in between had chased reliability — and had done it, one at a time, by narrowing what the planner was willing to attempt until the safest possible output was also the least differentiated one. Phase 0's fix isn't a new mechanism; it's restoring the specific behaviors the corpus proves the best July runs had, verified line by line rather than reconstructed from memory of what "used to work."</p>
+
+      <h2>Phase 1: the right entity, not just a product</h2>
+
+      <p>PR #307 closed a gap the product's own spec had flagged as a correctness bug: the script decides which brand entity a beat highlights — often a mascot character, not the physical product — and the live planner had no concept of "mascot" as a distinct, castable entity. One reference ad opens on a chip-mascot character. The reference's own expected-output clip opens on the same mascot. The pipeline's render opened on a product case with a face crudely implied, because a case photo was the only visual anchor a mascot casting decision had ever had available. The fix is a real entity catalog — case, buds, chip, mascot — each with its own established path from script slug to committed asset, so "this beat is about the mascot" is a decision the planner can actually represent instead of approximating with the nearest product photo.</p>
+
+      <h2>Phase 2: a mascot that performs instead of a product that sits still</h2>
+
+      <p>PR #308 diagnosed the specific viewer complaint of "we lost the hook" as a branch-selection bug: a mascot span was falling through into the same code path as a plain product shot, and got the product shot's own animation direction — explicitly, "no people, hands, fingers, or figures anywhere, just the product in its setting" — applied to a character that was supposed to be performing. The result was a static figurine on a blank background for nearly five seconds at the top of a fourteen-second ad, while the reference it was meant to echo had its mascot animated over dynamic imagery for the same beat. The planned fix was a new dedicated role for character spans; the shipped fix turned out simpler once written, because the existing rendering primitives already supported it — the branch just needed to route there.</p>
+
+      <h2>Phase 3: a b-roll bank that was already built and switched off</h2>
+
+      <p>PR #309 is the phase I'd flag as a reminder to check configuration before writing code: a Drive-backed b-roll library, with a tagged index carrying duration, aspect ratio, and audio metadata, streamed to the player and cached for FFmpeg, already existed and was already wired into span selection. It simply no-op'd because one environment variable — the folder ID it reads from — was unset. The documentation describing the system's current state said "none; b-roll is generated from scratch," which had been accurate once and had gone stale without anyone updating it after the bank was built. The genuinely new work in this phase was smaller: when nothing in the bank matched a scene well enough to use outright, the closest available clip was being discarded rather than used as the best available answer to "what fills this beat" — a completeness bug sitting next to a configuration bug.</p>
+
+      <h2>Phase 4: the pace guess was wrong by a measured 11%</h2>
+
+      <p>PR #310 traces the entire dead-air and time-compression bug family back to one shared root: every scene's target clip length was computed from a words-per-second constant of 2.5 — and the pipeline's own code comment, sitting right next to that constant, recorded the actually-measured delivery rate of the voice model in use as 2.78 words per second. Every scene was sized roughly 11% longer than the voiceover would actually take to speak, so the picture consistently outlasted the line and the video model filled the gap with idle behavior — dead air. The new default, 2.75, is deliberately still just under the measured 2.78: erring slightly long is recoverable at the stitch step by trimming the tail; erring short cuts a line off mid-word, which isn't recoverable at all.</p>
+
+      <h2>Phase 5: a share is not the quantity that matters</h2>
+
+      <p>PR #311 unwinds an assumption baked into a single constant: <code>MAX_BROLL_SHARE = 0.5</code> treats a 15-second ad exactly like a 45-second one, because it caps a <em>percentage</em> of runtime rather than the actual viewing experience that percentage produces. A 45-second reference ad spending 45% of its runtime on cutaways spreads that across roughly fifteen separate shots — each cutaway reads as brief texture between longer presenter shots. A 14.5-second live render spending the identical 45% spent it as two blocks of roughly 3.5 seconds each, alternating presenter, mascot, presenter, mascot — the same math producing a viewing experience that reads as choppy back-and-forth rather than texture. The fix stops treating the share as the governing quantity and instead governs the number and length of individual interruptions directly, because that's the variable that actually determines how a cut sequence feels.</p>
+
+      <h2>The pattern: measure against your own corpus before trusting your own instinct</h2>
+
+      <p>None of these six phases required a new model, a new vendor, or a new architectural layer. Every fix was available in the codebase or the documentation already — an unset environment variable, a branch that fell through to the wrong case, a constant that had never been updated after the number it was based on was independently measured and written down two lines away. What made all six findable in one week rather than continuing to accumulate as separate, unconnected complaints was Phase 0: stopping to measure the aggregate output against a real corpus of past runs, instead of triaging each new complaint as its own isolated bug.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">The gates and dead-code audit that ran in the same week and fed into this diagnosis</span></li>
+        <li style="margin-bottom:12px;"><a href="reference-matching-engine-inert-rollout.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Ship It Inert First</a><br><span style="color:#8892b0;font-size:13px;">The reference-mirroring feature these six phases build directly on top of</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-broll-three-phases-vision-authored.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Three Phases of AI B-Roll</a><br><span style="color:#8892b0;font-size:13px;">An earlier phased rollout on the same pipeline's b-roll system</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

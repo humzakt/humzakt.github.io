@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days — Humza Tareen</title>
+  <meta name="description" content="Rolling out a feature that lets an AI-generated ad mirror a competitor's reference video: an inert resolver and catalog, a route excluded from auth for vendor reasons, and the PR that found five prior PRs had zero production callers.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Feature Rollout, Software Architecture, AI Video, Feature Flags, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days">
+  <meta property="og:description" content="Rolling out a feature that lets an AI-generated ad mirror a competitor's reference video: an inert resolver and catalog, a route excluded from auth for vendor reasons, and the PR that found five prior PRs had zero production callers.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Feature Rollout">
+  <meta property="article:tag" content="Software Architecture">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Feature Flags">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days">
+  <meta name="twitter:description" content="Rolling out a feature that lets an AI-generated ad mirror a competitor's reference video: an inert resolver and catalog, a route excluded from auth for vendor reasons, and the PR that found five prior PRs had zero production callers.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days",
+    "description": "Rolling out a feature that lets an AI-generated ad mirror a competitor's reference video: an inert resolver and catalog, a route excluded from auth for vendor reasons, and the PR that found five prior PRs had zero production callers.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html" },
+    "keywords": ["Feature Rollout", "Software Architecture", "AI Video", "Feature Flags"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Ship It Inert First"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 10 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Feature Rollout</span>
+        <span class="blog-tag">Software Architecture</span>
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Feature Flags</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Some feature requests are simple to state and dangerous to ship in one PR: "make our generated ad resemble this reference video." Resemble how — the on-camera person, the shot pacing, the hook, the b-roll ratio, the graphics burned into frame? Every one of those is a different subsystem, and wiring all of them at once into a pipeline that already renders paid, irreversible video means one bad merge can degrade every run behind it. I built this feature — a "generation reference" that lets a run's presenter and pacing echo a chosen clip — as roughly fifteen PRs over three days, and the shape of that rollout is the actual subject of this post.</p>
+
+      <blockquote>
+        An inert feature that compiles, type-checks, and has test coverage looks exactly like a working one. The only way to tell the difference is to check whether anything actually calls it in production.
+      </blockquote>
+
+      <h2>The resolver and catalog, wired to nothing</h2>
+
+      <p>PR #253 built the resolver and the catalog for generation references and shipped with the flag off and the catalog empty. Nothing consumed it. Ingest, the asset route, and the job shape all followed in later PRs — deliberately, so each one could be reviewed and verified against a narrow claim instead of against "does the whole feature work end to end."</p>
+
+      <p>The design also diverged from the pattern a sibling tool used for a similar idea. That tool lets an editor say "use the reference itself as the look I want" — because their reference <em>is</em> the aesthetic. Here, <code>referenceVideoPath</code> means something different: it's the competitor's ad being replicated for pacing and structure. Using it directly as a generation reference would lock the presenter to the competitor's on-camera person — the opposite of the intent. Copying an interface from a sibling tool without checking what the field actually means in this pipeline would have shipped a privacy and brand problem disguised as feature parity.</p>
+
+      <h2>An asset route that has to be reachable without auth</h2>
+
+      <p>PR #254 built the asset route, and it's a good example of a security decision that looks wrong until you know why. The route is excluded from the auth middleware matcher — same treatment as the avatar-asset route. The reason isn't the browser, it's the vendor: this URL gets handed to Kling as a request parameter, and a third-party vendor cannot attach this pipeline's internal auth header. A browser preview would work fine either way, since it goes through an authenticated proxy. So the route has to be reachable unauthenticated — which is exactly why the path resolution goes through the catalog rather than the filesystem directly:</p>
+
+<pre><code class="language-typescript">const entry = getGenerationRefBySlug(slug);
+if (!entry || entry.assetFile !== requestedFile) {
+  return notFound();
+}
+// only a slug the catalog explicitly owns can resolve to a file —
+// an unauthenticated route can't be turned into an arbitrary-path read</code></pre>
+
+      <p>Excluding a route from auth is a five-minute change. Making that safe took understanding exactly which caller — a vendor with no ability to authenticate — forced the exclusion, and constraining the route's reach to only what the catalog explicitly lists.</p>
+
+      <h2>Refusing an unusable reference instead of silently downgrading</h2>
+
+      <p>PR #256 staged a chosen reference onto disk — or refused it outright. The refusal path exists because of an asymmetry in how the vendor handles bad input: Kling applies its size constraint to the whole request, and a reference under 720px doesn't degrade gracefully. It 422s every clip in the run, and the retry ladder underneath then renders them plain, silently, without the reference the editor explicitly chose. Refusing at staging time costs one cheap probe. The alternative costs a full paid run that quietly ignored what the editor asked for, with nothing in the output telling them so.</p>
+
+      <h2>Five PRs of dead code</h2>
+
+      <p>PR #267 is the PR I'd point to if someone asked what "ship it inert first" actually protects against, because it's also the failure mode inside that same discipline. <code>resolveGenerationRef</code>, <code>stageGenerationRef</code>, and a third helper had <strong>zero production callers</strong>. <code>job.generationRef</code> was never written by anything. There was no listing route, so a picker UI had nothing to read even if one had been built. Every prior PR had shipped clean, typed, and tested — and dead code that compiles and passes its own tests reads exactly like a working feature from the PR list. The only way #267 caught it was checking wiring specifically, not correctness: does anything outside this file's own tests call this function?</p>
+
+      <p>The same PR found an environment-variable collision underneath the dead code: <code>GENERATION_REF_DEFAULT</code> was claimed twice — once as the boolean flag gating the feature, and again inside the resolver's own documented precedence as the name of a default reference. Two different systems reading the same variable name for two different purposes, both silently wrong in a feature nothing was calling yet.</p>
+
+      <h2>Wiring it in, one behavior at a time</h2>
+
+      <p>Once the plumbing was verified live, each subsequent PR added exactly one consuming behavior:</p>
+
+      <table>
+        <thead><tr><th>PR</th><th>What it wired</th></tr></thead>
+        <tbody>
+          <tr><td>#257</td><td>A generation reference rides scene 0's existing free element slot — no new slot invented</td></tr>
+          <tr><td>#268</td><td>The presenter-reference picker, so an editor can actually choose one</td></tr>
+          <tr><td>#274</td><td>Lifted the reference-analysis layer out of the swipe path before that path was deleted, so a hard-won cut-detection lesson wasn't lost with it</td></tr>
+          <tr><td>#277</td><td>Measures the reference at its real resolution instead of an assumed one</td></tr>
+          <tr><td>#278–#279</td><td>Decoupled "person on screen" from "person is speaking," and freed scene 0 from being welded to the person/voice/product-ban bundle</td></tr>
+          <tr><td>#280, #284</td><td>Mirror the reference's hook instead of always protecting the pipeline's own opener, and open on the right kind of shot when mirroring</td></tr>
+          <tr><td>#287</td><td>Carry the reference's own shots, including graphics burned into its frame</td></tr>
+          <tr><td>#290–#291</td><td>Source both the amount and the content of b-roll cutaways from the reference, not the pipeline's own plan</td></tr>
+        </tbody>
+      </table>
+
+      <h2>A lesson almost lost to a deletion</h2>
+
+      <p>PR #274 is worth its own paragraph. The PR after it deletes an older scene-swap pipeline entirely, and buried inside that pipeline was a genuinely valuable finding: an earlier version tried FFmpeg-only cut detection, measured it against a real sample, and found it caught roughly one cut in ten — soft and CGI transitions barely move frame-to-frame difference at all — and reverted to a vision-model pass using FFmpeg only as a hint generator. That lesson lived nowhere except inside the code being deleted. Worse: <strong>the live production path had never received that fix.</strong> It called bare cut-detection directly and inherited the exact failure the swipe path had already fixed and forgotten to propagate. A 41-second reference came back with almost none of its cuts detected, silently, because the fix for that specific failure existed one file away and had never been ported over. Lifting the analysis layer out before the deletion wasn't just code hygiene — it was rescuing a debugging finding that would otherwise have been deleted along with the code that discovered it.</p>
+
+      <h2>The grammar bug: whose voice is telling this story</h2>
+
+      <p>Two of the last wiring bugs are about a subtler kind of mismatch than shape or timing. PR #301 found that the reference's own grammar — its script, written from its own presenter's point of view — was deciding who speaks in <em>this</em> pipeline's ad, producing narration that made sense for the reference's cast and not for this one. PR #302 found a narrated scene that was still being authored as if it were a to-camera selfie, a leftover assumption from before reference-mirroring existed. Both are the same class of bug as the dead-code PR, one level up the stack: correctly wired plumbing carrying an assumption from the wrong source.</p>
+
+      <h2>The pattern</h2>
+
+      <p>Fifteen PRs to ship one feature is not inefficiency when the feature touches presenter identity, shot pacing, b-roll sourcing, and vendor-facing asset delivery all at once. Each inert PR bought a checkpoint where "nothing changed for existing runs" could be verified before the next behavior went live. The one PR that mattered most for trusting the whole rollout wasn't a feature PR at all — it was the one that stopped and asked whether the five PRs before it had actually done anything, and found out they hadn't.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="aspect-ratio-single-source-of-truth.html" style="color:#64ffda;text-decoration:none;font-size:15px;">One Source of Truth for Aspect Ratio</a><br><span style="color:#8892b0;font-size:13px;">The same "ship inert, verify, wire one consumer at a time" discipline applied to frame shape</span></li>
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">More dead code and silently-succeeding failure paths in the same pipeline</span></li>
+        <li style="margin-bottom:12px;"><a href="six-phases-ad-generator-corpus-regression.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Six Phases: Diagnosing a Regression Against a Corpus</a><br><span style="color:#8892b0;font-size:13px;">Where the reference-mirroring work fed directly into casting and pacing fixes</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

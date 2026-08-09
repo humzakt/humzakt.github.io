@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline — Humza Tareen</title>
+  <meta name="description" content="Nine PRs to move a video pipeline from 9:16-hardcoded-in-thirty-places to an inert aspect-ratio table, then to a real 16:9 output — and the frame-side and model-routing bugs found along the way.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Video Rendering, Aspect Ratio, Feature Flags, TypeScript, Gemini">
+  <link rel="canonical" href="https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline">
+  <meta property="og:description" content="Nine PRs to move a video pipeline from 9:16-hardcoded-in-thirty-places to an inert aspect-ratio table, then to a real 16:9 output — and the frame-side and model-routing bugs found along the way.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Video Rendering">
+  <meta property="article:tag" content="Aspect Ratio">
+  <meta property="article:tag" content="Feature Flags">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline">
+  <meta name="twitter:description" content="Nine PRs to move a video pipeline from 9:16-hardcoded-in-thirty-places to an inert aspect-ratio table, then to a real 16:9 output — and the frame-side and model-routing bugs found along the way.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline",
+    "description": "Nine PRs to move a video pipeline from 9:16-hardcoded-in-thirty-places to an inert aspect-ratio table, then to a real 16:9 output — and the frame-side and model-routing bugs found along the way.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html" },
+    "keywords": ["Video Rendering", "Aspect Ratio", "Feature Flags", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"One Source of Truth for Aspect Ratio"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Video Rendering</span>
+        <span class="blog-tag">Aspect Ratio</span>
+        <span class="blog-tag">Feature Flags</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service was portrait-only, and not by a config flag — <code>9:16</code> was hardcoded in roughly thirty places: FFmpeg boxes, a Gemini environment constant read once at import, an OpenAI size parameter, ten English prompt strings, twelve Tailwind classes, the caption canvas. None of those thirty sites referenced each other. "Add 16:9" wasn't one change, it was thirty independent edits with no shared seam, and no way to verify you'd found all thirty until a landscape run either worked or silently didn't.</p>
+
+      <blockquote>
+        When a value is duplicated in thirty places with no shared reference, you don't have thirty features. You have one feature that will break in thirty places, one at a time, on a schedule you don't control.
+      </blockquote>
+
+      <h2>The inert table first</h2>
+
+      <p>PR #241 built a single resolution table for aspect ratio and shipped it doing nothing — no consumer read it yet. That's deliberate: this value touches the delivery path of every existing run, so each PR that follows carries its own "vertical is unchanged" assertion. Ship the seam, verify it changes nothing, then move consumers onto it one at a time instead of swapping thirty call sites in one PR and hoping the diff review catches every miss.</p>
+
+      <h2>Settings that recorded a choice nobody made</h2>
+
+      <p>Before aspect ratio could vary per run, per-job settings had to actually apply. PR #224 found per-job settings not reaching the render call; PR #238 found four separate values recorded as "the editor's choice" when no editor had touched them — defaults masquerading as explicit decisions, which matters the moment you need to know whether a run's shape was chosen or assumed. PR #235 found two editor-facing routes that could spend money outside any run entirely, unrelated to aspect ratio but caught by the same settings audit. PR #234 fixed a promise mismatch — editors were told they could upload up to 500MB and the server refused at 200. PR #239 made the create-form's request body reachable by a test at all, which is what let #233 catch that the start route's input mapping was the one untested line in the whole feature.</p>
+
+      <h2>Containers before pixels</h2>
+
+      <p>PR #242 through #245 made the <em>containers</em> aspect-aware: the organic pass was squeezing a landscape master into a portrait box, uploaded b-roll was pillarboxed on any non-vertical run, captions had two separate aspect bugs stacked on top of each other, and the render target was resolved once per process instead of per run — meaning a portrait run and a landscape run started close together could read each other's setting.</p>
+
+      <h2>The frame side is what decides the shape</h2>
+
+      <p>PR #246 is the pivot from containers to pixels, and it's the harder half: <em>most of it isn't typed at all.</em> Two module-level constants — one in the Gemini image client, three system-prompt constants in the prompt author — were evaluated once per process import, so they could not vary per run even in principle, no matter what the settings table said. Same defect as the earlier render constants, different file, same root cause: a value computed once at cold start pretending to be a per-request parameter.</p>
+
+<pre><code class="language-typescript">// before: evaluated once at import, frozen for the process lifetime
+const ASPECT_RATIO = process.env.GEMINI_IMAGE_ASPECT ?? '9:16';
+
+// after: a function, resolved per run
+function resolveAspectRatio(settings: RunSettings): AspectRatio {
+  return process.env.GEMINI_IMAGE_ASPECT // operator override still wins
+    ?? settings.aspectRatio
+    ?? '9:16';
+}</code></pre>
+
+      <p>The operator override — <code>GEMINI_IMAGE_ASPECT</code> — deliberately stays first in resolution order even after the fix. It's an existing escape hatch for pinning every generation during an incident, and the aspect-ratio work preserved it rather than removing an operational lever nobody asked to lose.</p>
+
+      <h2>A defense with nothing to fail loudly</h2>
+
+      <p><code>fal-kling</code> and <code>fal-motion</code>, the clip vendors downstream of the frame, take no aspect parameter at all — the clip's shape simply follows whatever shape the input frame already is. PR #247's insight is that this makes them correct by construction once #246 lands, and that's exactly the danger: <strong>there is no field to get wrong, so there is nothing that can fail loudly.</strong> If a frame comes back the wrong shape — a vendor silently ignoring a size hint, a stale cached frame from before the aspect pin took effect, an operator override left on from a previous incident — every downstream step just accepts it and renders the wrong shape end to end with no error anywhere in the chain. The fix adds an explicit shape check with nothing implicit to rely on.</p>
+
+      <h2>Flipping the switch</h2>
+
+      <p>PR #249 is the commit that actually lets a run be something other than vertical, and the diff is almost nothing — because everything from #241 onward had been inert or shape-preserving. State lives entirely in <code>settings.aspectRatio</code>; the form already posts one settings blob, and <code>parseSettingsField</code> already iterates a registry. The submit path, input schema, and start route are untouched. And because the settings blob only ever carries values moved <em>off</em> their default, picking 9:16 — still the default — sends nothing at all. Absence stays absence for free, with no phantom flag to clean up later, which is the same property PR #238 had to hunt down and remove by hand earlier in the same cluster.</p>
+
+      <h2>The bug real rendering caught that types couldn't</h2>
+
+      <p>PR #270 is the one I'd flag to anyone who thinks a type-safe settings pipeline is sufficient. It was found by rendering a vertical A/B test and looking at the actual frames: both came back <code>1536×2752</code> — identical shape, differing only by seed. The size setting had zero effect, because the model doing the rendering was Gemini ("Nano Banana"), not gpt-image, and <code>preferredImageModel()</code> silently routes to Gemini whenever a Gemini key is configured — which is the default. <code>renderFrameApi</code> only pulled the prompt and image blobs out of the request; the <code>size</code> field was read by nobody. The entire <code>frameSizeFinal</code>/<code>frameSizePreview</code> resolution table, correct end to end, was feeding a parameter the active model didn't consume. Types verify a value exists and has the right shape. They don't verify the function on the other end reads it.</p>
+
+      <p>PR #265 caught the sibling failure mode on the output side: landscape frames were rendered at 3:2 and cropped at the final stitch rather than at the correct ratio from the start — a "close enough" ratio compounding error at the one step nobody was watching. PR #266 shipped the vertical frame size itself behind its own switch, matching the pattern the whole cluster had established: ship inert, verify unchanged, then flip.</p>
+
+      <h2>Closing the gap with a real render, not a unit test</h2>
+
+      <p>PR #269 is the test that would have caught #270 before it shipped: an actual rendered clip, not a mock, asserting the real output shape — plus pinning what a $0.20 vendor success response is actually worth, so the cost of running this check on every merge is a known, bounded number rather than an unbounded "however much fal charges today."</p>
+
+      <h2>The pattern: ship the seam, then move consumers one at a time</h2>
+
+      <p>Nine-plus PRs to add a second aspect ratio to a mature pipeline sounds like overkill until you count how many independent things "aspect ratio" actually touches: settings plumbing, container layout, model routing, vendor request shape, caption placement, and the render/stitch pipeline. Doing it in one PR means one enormous diff with no place to put a "this specific thing is unchanged" assertion. Doing it as an inert table first, then one shape-preserving consumer migration at a time, means every PR after the first has a narrow, falsifiable claim attached to it — and the two bugs that mattered most in this whole cluster, #270 and #247, were only findable because someone looked at an actual rendered frame instead of trusting that a correct-looking settings pipeline implied a correct output.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="dual-aspect-ratio-rendering-ai-video.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Dual Aspect-Ratio Rendering</a><br><span style="color:#8892b0;font-size:13px;">The same 16:9/9:16 problem, solved a few days earlier in a sibling tool with a shared audio track</span></li>
+        <li style="margin-bottom:12px;"><a href="reference-matching-engine-inert-rollout.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Ship It Inert First</a><br><span style="color:#8892b0;font-size:13px;">Same rollout discipline — build the seam inert, verify, then wire consumers one at a time</span></li>
+        <li style="margin-bottom:12px;"><a href="voice-pipeline-billing-lipsync-kling-v3.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Voice Pipeline Economics</a><br><span style="color:#8892b0;font-size:13px;">The same week, the same service — billing, caching, and a voice clone dropped on the floor</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

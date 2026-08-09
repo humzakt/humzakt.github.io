@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System — Humza Tareen</title>
+  <meta name="description" content="Splitting an enterprise workflow platform's admin role in two: a Platform Admin tier that alone can reach the admin console, and a unified resizable/collapsible panel system replacing three different ad hoc layouts across review gates.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="RBAC, Enterprise Platform, React, Access Control, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System">
+  <meta property="og:description" content="Splitting an enterprise workflow platform's admin role in two: a Platform Admin tier that alone can reach the admin console, and a unified resizable/collapsible panel system replacing three different ad hoc layouts across review gates.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="RBAC">
+  <meta property="article:tag" content="Enterprise Platform">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="Access Control">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System">
+  <meta name="twitter:description" content="Splitting an enterprise workflow platform's admin role in two: a Platform Admin tier that alone can reach the admin console, and a unified resizable/collapsible panel system replacing three different ad hoc layouts across review gates.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System",
+    "description": "Splitting an enterprise workflow platform's admin role in two: a Platform Admin tier that alone can reach the admin console, and a unified resizable/collapsible panel system replacing three different ad hoc layouts across review gates.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html" },
+    "keywords": ["RBAC", "Enterprise Platform", "React", "Access Control"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Locking Down an Admin Dashboard"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">RBAC</span>
+        <span class="blog-tag">Enterprise Platform</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">Access Control</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Two unrelated-looking pieces of work landed on the enterprise workflow platform this week: a role-based access split for the admin console, and a shared resizable/collapsible panel system for the reviewer UI. They shipped as separate tickets, but they share a lesson worth pulling out together — both are about a single source of truth doing the work that three or four ad hoc implementations were doing badly before.</p>
+
+      <blockquote>
+        Two roles with the same name doing different things is worse than one role with a smaller scope. Split the role before the permission check gets any more special cases bolted onto it.
+      </blockquote>
+
+      <h2>One admin role, two very different jobs</h2>
+
+      <p>The platform's <code>ADMIN</code> role had accumulated two distinct sets of responsibilities under one name: day-to-day operational powers over auto-seed and review workflows, and full access to the platform configuration console — user management, taxonomy, global settings. Those aren't the same job, and treating them as the same permission level meant every operational admin, by default, could also reach platform-wide configuration whether or not that was ever intended for their role.</p>
+
+      <p>AGT-1428 (PR #730) splits them. A new <code>PLATFORM_ADMIN</code> tier gates the <code>/admin</code> route and the admin link in the dashboard header — reachable only by that tier. The existing <code>ADMIN</code> role keeps every operational power it had (auto-seed controls, via the same <code>isAdminRole</code> check and Firebase <code>admin</code> claim it always used) but is now explicitly redirected away from <code>/admin</code> rather than allowed in ambiently. The redirect matters as much as the permission check itself: a role that used to have access and now doesn't needs to fail predictably, at a known point, not silently render a broken or partial page. The PR also adds a client-side analytics event on a blocked console-entry attempt, so an accidental or exploratory access attempt against the newly-restricted route is visible rather than just silently bounced.</p>
+
+      <h2>The dropdown has to agree with the guard</h2>
+
+      <p>Splitting a role into a new tier is only half the change — the tier also has to be assignable, or it exists in the permission-check code with no path for anyone to actually be granted it. AGT-1429 (PR #731) makes <code>PLATFORM_ADMIN</code> a first-class option on the admin users page and the underlying user-role update endpoint, and centralizes the set of assignable roles, their display labels, and the parsing logic that validates a role string in one shared module read by both the UI dropdown and the API route.</p>
+
+<pre><code class="language-typescript">// src/lib/users/roles.ts — one definition, read by the dropdown and the API
+export const ASSIGNABLE_USER_ROLES = ['ADMIN', 'PLATFORM_ADMIN', 'REVIEWER', /* ... */] as const;
+export const USER_ROLE_LABELS: Record<AssignableUserRole, string> = {
+  ADMIN: 'Admin',
+  PLATFORM_ADMIN: 'Platform Admin',
+  // ...
+};
+export function parseAssignableUserRole(value: string): AssignableUserRole | null {
+  return (ASSIGNABLE_USER_ROLES as readonly string[]).includes(value)
+    ? (value as AssignableUserRole)
+    : null;
+}</code></pre>
+
+      <p>That single source of truth is what stops the dropdown and the guard from silently drifting apart — a real risk any time "what roles exist" is spelled out once in a UI component and again, separately, in an API validator. The PR also threads the new tier through the existing Firebase claim sync: granting <code>PLATFORM_ADMIN</code> sets the <code>admin</code> claim through the same <code>isAdminRole</code> check the operational role already used, and demoting away from it clears the claim the same way — no parallel claim-management path invented for the new tier, and the existing audit trail and role-change notification events keep working unmodified because the role-change plumbing underneath them didn't need to change at all.</p>
+
+      <h2>Three ad hoc panel layouts, one shared shell</h2>
+
+      <p>AGT-1409 (PR #727) is the other half of the week's work, and it's a consolidation rather than a new capability: the Trainer and Final Review gates were using a fixed 280px explorer panel bolted to a separate resizable-split implementation — two different sizing mechanisms stitched together in one screen. Model Output Review, Golden Data, and Calibration each already had their own two-to-three-pane resizable shell, built separately and not quite consistently.</p>
+
+      <p>The fix unifies all of them onto one shared <code>ResizableColumns</code> and <code>CollapsedRail</code> component pair, with a <code>side: start | end</code> option covering panels that collapse toward either edge, and a shared set of layout constants replacing per-screen magic numbers. No new resize library was introduced — this is entirely about collapsing duplicated, slightly-inconsistent implementations into one, so a layout fix applied to one review gate is structurally guaranteed to apply to all of them rather than needing to be manually ported across three or four separate component trees. The early-step browsers — the step artifact browser, Model Output, and Packaging views — gained drag-resize they hadn't had before, and Source Data and Prompt panels gained the same dual-rail collapse behavior. A smaller but real UX fix rode along with the consolidation: filter chips and stat cards in the Preview pane now wrap instead of clipping when that pane is narrowed, which the previous ad hoc layouts hadn't accounted for at all.</p>
+
+      <h2>The pattern: consolidate the definition, not just the behavior</h2>
+
+      <p>Both pieces of work this week solve the same underlying problem from different angles. The RBAC split works because the set of assignable roles lives in exactly one file that both the UI and the API read — there's no second copy to forget to update. The panel consolidation works because the resizing and collapsing behavior lives in exactly one component pair that every review gate imports — there's no second implementation to patch separately when a bug in it is found. Neither change added a new capability the platform didn't have some version of already. Both changes removed the second (and third, and fourth) copy of a definition that had been drifting slightly out of sync with the others.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="trainer-gate-qc-claim-lifecycle.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Trainer Gate QC: Claim Lifecycle</a><br><span style="color:#8892b0;font-size:13px;">The review gate this panel system now shares its layout shell with</span></li>
+        <li style="margin-bottom:12px;"><a href="long-horizon-rl-task-pipelines.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Long-Horizon RL Task Pipelines</a><br><span style="color:#8892b0;font-size:13px;">The claim-role system this admin tier split sits alongside</span></li>
+        <li style="margin-bottom:12px;"><a href="cross-tool-defect-auditing-nextjs15-hardening.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Cross-Tool Defect Auditing</a><br><span style="color:#8892b0;font-size:13px;">The same "one shared definition instead of several drifting copies" discipline, applied to a different codebase</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

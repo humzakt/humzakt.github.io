@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice — Humza Tareen</title>
+  <meta name="description" content="Auditing a video generation voice pipeline: billing what vendors actually charge, a budget/quality SKU ladder that opened backwards, content-keyed voiceover caching, and a pronunciation dictionary nobody could hear.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Voice AI, Text to Speech, Kling, Lip Sync, Cost Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice">
+  <meta property="og:description" content="Auditing a video generation voice pipeline: billing what vendors actually charge, a budget/quality SKU ladder that opened backwards, content-keyed voiceover caching, and a pronunciation dictionary nobody could hear.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Voice AI">
+  <meta property="article:tag" content="Kling">
+  <meta property="article:tag" content="Lip Sync">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice">
+  <meta name="twitter:description" content="Auditing a video generation voice pipeline: billing what vendors actually charge, a budget/quality SKU ladder that opened backwards, content-keyed voiceover caching, and a pronunciation dictionary nobody could hear.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice",
+    "description": "Auditing a video generation voice pipeline: billing what vendors actually charge, a budget/quality SKU ladder that opened backwards, content-keyed voiceover caching, and a pronunciation dictionary nobody could hear.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html" },
+    "keywords": ["Voice AI", "Kling", "Lip Sync", "Cost Engineering", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Voice Pipeline Economics"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Voice AI</span>
+        <span class="blog-tag">Kling</span>
+        <span class="blog-tag">Lip Sync</span>
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Every AI video pipeline eventually has to answer an unglamorous question: what did we actually pay for that clip? On the main video-generation service, the answer for months had been "a hardcoded constant." That's fine until the vendor changes its own pricing, or a code path pays for the same synthesis twice, or a voice engine mints a clone, bills for it, and never sends it downstream. Over a ten-PR run I audited and rebuilt the voice and lip-sync pipeline from the billing layer up, then used the vendor's own SKU tiers to cut cost 7x without touching output quality.</p>
+
+      <blockquote>
+        A cost model built from hardcoded constants isn't a cost model. It's a guess that happens to compile.
+      </blockquote>
+
+      <h2>Billing what the vendor actually charges</h2>
+
+      <p>PR #224 was workstream one of three from a sibling-tool audit: port the cost-accounting fixes that Presenter Generation and Variant Multiplier had already found, verifying each one against this repo's own code rather than assuming the same defect existed in the same place. Anthropic returns exact token counts on every response. Nothing in the pipeline read them — every charge was a hardcoded per-call constant, so the ledger and the vendor invoice diverged the moment usage drifted from whatever number had been typed in at launch.</p>
+
+      <p>The same PR closed a second gap: two editor-facing routes could spend money — kicking off a generation, retrying a step — <strong>outside any run</strong>. A run is the unit everything else (budgets, audit trail, the cost ledger) is keyed to. A spend with no run attached is a spend the ledger can't even see, which is worse than a wrong number.</p>
+
+      <h2>Paying twice for a take the model returns unchanged</h2>
+
+      <p>PR #225 found the sibling bug's twin: some vendor calls return the exact same asset on a retry — no new synthesis happened — and the pipeline billed a second time anyway because "call succeeded" and "call did new work" were treated as the same fact. The fix is the boring, correct kind: hash the output, and only charge when the hash changes from the take you already paid for.</p>
+
+      <h2>A budget/quality SKU ladder that opened backwards</h2>
+
+      <p>PR #232 replaced one hardcoded lip-sync SKU pair with two explicit fallback chains:</p>
+
+      <table>
+        <thead>
+          <tr><th>Chain</th><th>Ladder</th><th>Rate</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>budget</strong> (default)</td><td>1.9.0-beta → v2</td><td>$0.0117/s → $0.05/s</td></tr>
+          <tr><td><strong>quality</strong> (rollback)</td><td>v2/pro → react-1</td><td>$0.0833/s → $0.167/s</td></tr>
+        </tbody>
+      </table>
+
+      <p>That's a 7x cut against v2/pro on the pass, but the ladder direction is what makes it safe rather than reckless. Both chains fall back <strong>upward</strong> — to a better SKU than they opened with, never a worse one. A fallback fires because the first choice failed; degrading further would trade an outage for a silent quality drop nobody chose. <code>react-1</code> only appears in the quality chain, because landing there by accident from the budget chain costs 14x the cheapest SKU with nobody having decided to pay for it.</p>
+
+      <h2>A cache keyed on the wrong thing</h2>
+
+      <p>PR #229 is the pattern this whole cluster keeps rediscovering in different clothes: <strong>a cache key must move when its content does.</strong> The voiceover cache was keyed on scene index — <code>vo-scenes/&lt;idx&gt;.mp3</code> either existed or it didn't. Changing the voice, the scene's emotion, the TTS model, or any of three delivery flags left the old recording in place, generated under settings that no longer applied. Only a text edit invalidated it, because <code>invalidateSceneVo</code> was called from exactly two places in the whole codebase.</p>
+
+      <p>The fix content-keys the cache via a sidecar file rather than renaming the asset itself — the filename can't move because it's served over HTTP by path — and makes the warp chain that depends on it optional rather than assumed-present.</p>
+
+      <h2>Minted, billed, and never sent</h2>
+
+      <p>PR #258 is the sharpest failure in the batch. A Kling voice clone was minted from the source audio, billed to the run's ledger, and then <strong>never actually sent</strong> to the clip-generation call that was supposed to use it — the clip rendered with Kling's default voice while the ledger recorded a custom-clone charge. The bug produced a video that sounded fine, which is exactly why nobody caught it by watching output: the defect was invisible in the artifact and only visible in the diff between the request built and the request sent.</p>
+
+<pre><code class="language-typescript">// before: clone minted, billed, and dropped on the floor
+const clone = await mintKlingVoiceClone(audioBuffer);
+await ledger.charge(runId, 'voice_clone', clone.cost);
+// clip request never referenced clone.voiceId — Kling used its own default
+
+// after: the clone id is a required field on the clip request,
+// not an optional one the caller can forget to attach
+const clip = await requestKlingClip({
+  ...clipParams,
+  voiceId: clone.voiceId, // TypeScript now refuses to compile without this
+});</code></pre>
+
+      <h2>A voice bind that can 422 a whole run</h2>
+
+      <p>PR #260 found that the voice-bind call — attaching a cloned voice to a specific Kling model invocation — could 422 and take down every clip in the run with it, not just the one clip that needed the voice. A probe surfaced the failure mode: bind failures need to degrade one clip, not cascade to the batch. PR #271 found the same class of bug from the other direction — every scene ended up with a different voice because the clone was minted from a source file that didn't exist yet at mint time, a race between file-write and clone-request that only showed up under real concurrency.</p>
+
+      <h2>A pronunciation dictionary nobody could hear</h2>
+
+      <p>The scripts for this pipeline are built on product-specific vocabulary — anatomical terms, brand names — and a TTS voice guesses at pronunciation differently take to take, so the same word could be said two different ways inside a single video. PR #230 built a pronunciation dictionary and, more importantly, a test that could actually fail against it, because "the audio came back different" proves nothing against a non-deterministic voice model on its own.</p>
+
+      <p>That dictionary shipped and did nothing for two more PRs. PR #262, on the sibling repo's own pipeline, found the lexicon was attached to a voice synthesis call nobody actually listened to downstream — the dictionary was correct, the wiring wasn't. PR #261 refactored the rule shape first, so a pronunciation rule could carry either a phoneme or a plain-text alias, because some mispronunciations aren't phonetic at all — they're the model reading a brand name as an acronym.</p>
+
+      <h2>The pattern across all ten PRs</h2>
+
+      <p>Every fix in this cluster is a variant of the same root cause: a value computed correctly in one place and consumed incorrectly — or not at all — somewhere downstream. The billing constant was correct until the vendor's pricing moved. The cache key was correct until content changed without the key changing. The voice clone was correctly minted and billed and then silently dropped before the request that needed it. None of these are algorithmically hard bugs. They're wiring bugs, and the only defense against wiring bugs is measuring the actual request sent, not the intent that produced it — which is why almost every PR here ends with a test or a probe that reads the real payload, not the code that built it.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="aspect-ratio-single-source-of-truth.html" style="color:#64ffda;text-decoration:none;font-size:15px;">One Source of Truth for Aspect Ratio</a><br><span style="color:#8892b0;font-size:13px;">Retrofitting 16:9 into a portrait-only pipeline, same service, same week</span></li>
+        <li style="margin-bottom:12px;"><a href="presenter-generation-guardrails.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Guardrails for an AI Presenter</a><br><span style="color:#8892b0;font-size:13px;">A flaky call silently disarming a spend gate, and a pose lock that was never asked for</span></li>
+        <li style="margin-bottom:12px;"><a href="cross-tool-defect-auditing-nextjs15-hardening.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Cross-Tool Defect Auditing</a><br><span style="color:#8892b0;font-size:13px;">The audit pattern that fed this cluster's workstream 1</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

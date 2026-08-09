@@ -2,6 +2,70 @@
 
 > AI Engineer who ships production systems with enterprise clients. IEEE-published researcher.
 
+## Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus
+
+URL: https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html
+
+How comparing two months of AI ad generator output against its own corpus surfaced a reliability-vs-intent regression — b-roll scenes dropped to zero, product-bearing scenes down a third — fixed across six phases: entity-correct mascot casting, activating an already-built b-roll bank, correcting an 11% pace bias, and rethinking percentage-based cutaway budgets on short ads.
+
+---
+
+## Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree
+
+URL: https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html
+
+Auditing an AI ad planner for failures that report success rather than throw: a candidate frame scorer dormant in production behind a stale gate, two full measurement modules with zero callers, a self-contradicting plan caught at a gate instead of the render, and a review gate that reported 0% b-roll on a run that spent 43%.
+
+---
+
+## Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days
+
+URL: https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html
+
+Rolling out a feature that lets an AI-generated ad mirror a competitor's reference video: an inert resolver and catalog, a vendor asset route deliberately excluded from auth, and the PR that discovered five prior PRs of clean, tested code had zero production callers.
+
+---
+
+## One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline
+
+URL: https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html
+
+Nine PRs moving a video pipeline from 9:16 hardcoded in roughly thirty places to an inert aspect-ratio resolution table, then to a real 16:9 output — including a bug where an aspect-ratio setting had zero effect because the active image model never read the size field at all.
+
+---
+
+## Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice
+
+URL: https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html
+
+Auditing a video pipeline's voice and lip-sync stack: billing what vendors actually charge instead of a hardcoded constant, a budget/quality SKU ladder that cuts cost 7x while only ever falling back to a better tier, content-keyed voiceover caching, and a Kling voice clone that was minted, billed, and never sent to the render call that needed it.
+
+---
+
+## Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes
+
+URL: https://humzakt.github.io/blog/presenter-generation-guardrails.html
+
+Eight PRs closing a forensic QA pass on an AI presenter tool: a flaky API call silently disarming a lip-sync spend gate, an aspect-ratio bug reproducing on every run, a green checkmark that passed on the wrong word due to a substring-match bug, and two diagnostic decisions logged to a file a routine redeploy wipes.
+
+---
+
+## Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced
+
+URL: https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html
+
+Swapping the featured product across an entire finished ad while keeping music, voice, and picture untouched: deterministic plain-text substitution for the majority of a script, a scoped model call only where no deterministic rule applies, and a byte-identical audio-only render that never re-encodes a picture that didn't need to change.
+
+---
+
+## Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System
+
+URL: https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html
+
+Splitting an enterprise workflow platform's admin role into a Platform Admin tier that alone can reach platform configuration, with one shared source of truth for assignable roles read by both the UI and the API — plus consolidating three ad hoc resizable-panel layouts into one shared component system across review gates.
+
+---
+
 ## Streaming Master Uploads to Disk: Preventing Memory Exhaustion in Video Pipelines
 
 URL: https://humzakt.github.io/blog/streaming-master-uploads-preventing-memory-exhaustion.html

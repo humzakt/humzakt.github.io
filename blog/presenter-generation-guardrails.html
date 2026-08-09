@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes — Humza Tareen</title>
+  <meta name="description" content="Eight PRs closing out a QA pass on an AI presenter tool: a flaky call that silently disarmed a spend gate, an aspect-ratio bug that reproduced on every run, paying to render pixels and then binning them, and diagnostic logs that a routine redeploy erased.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Presenters, Reliability, Cost Engineering, Observability, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/presenter-generation-guardrails.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes">
+  <meta property="og:description" content="Eight PRs closing out a QA pass on an AI presenter tool: a flaky call that silently disarmed a spend gate, an aspect-ratio bug that reproduced on every run, paying to render pixels and then binning them, and diagnostic logs that a routine redeploy erased.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/presenter-generation-guardrails.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Presenters">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Observability">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes">
+  <meta name="twitter:description" content="Eight PRs closing out a QA pass on an AI presenter tool: a flaky call that silently disarmed a spend gate, an aspect-ratio bug that reproduced on every run, paying to render pixels and then binning them, and diagnostic logs that a routine redeploy erased.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes",
+    "description": "Eight PRs closing out a QA pass on an AI presenter tool: a flaky call that silently disarmed a spend gate, an aspect-ratio bug that reproduced on every run, paying to render pixels and then binning them, and diagnostic logs that a routine redeploy erased.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/presenter-generation-guardrails.html" },
+    "keywords": ["AI Presenters", "Reliability", "Cost Engineering", "Observability"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Guardrails for an AI Presenter"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Presenters</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Observability</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Presenter Generation renders an AI avatar delivering a script — cartoon or realistic, lip-synced, aspect-ratio aware. A test pass from a teammate flagged two problems from two real runs. What actually shipped across the next eight PRs was closer to a forensic audit: read the job-state and log files each failed run had left on disk, trust nothing that wasn't directly measurable from them, and follow each finding to whatever it actually was rather than the first plausible explanation.</p>
+
+      <blockquote>
+        "The audio came back different" proves nothing against a non-deterministic model. Measure the transcript, not the vibe.
+      </blockquote>
+
+      <h2>An aspect-ratio bug that reproduced on every run</h2>
+
+      <p>PR #20 found two problems that turned out to be different in kind. The first — every run set to 16:9 rendering 9:16 anyway — was a straightforward code defect, reproducible on every single run, confirmed directly from the job-state JSON: the settings recorded 16:9, the delivered file was 9:16. The second was a cartoon lip-sync desync, and it looked similar from the outside but wasn't: it was dominated by two production environment flags, with a real but smaller code gap underneath. Treating both symptoms as one bug would have meant chasing a code fix for something that was actually a misconfigured flag, or shipping a flag change that left the real underlying gap in place.</p>
+
+      <h2>A flaky call that silently disarmed a spend gate</h2>
+
+      <p>PR #21 investigated a continuity-canon call that failed with a bare, fieldless 400 error — "invalid request data," no further detail — after which the run continued without a canon reference at all. Rather than accept the first plausible cause, the investigation ruled three out explicitly: not the response schema, because another run's canon call succeeded on the identical schema minutes earlier; not image size, because the payload was well under the vendor's documented per-image limit. The actual finding was narrower and more concerning than any of those: the failure silently disarmed a downstream lip-sync spend gate, meaning a transient, unexplained 400 on one call could remove a cost control from a run with nobody deciding that should happen.</p>
+
+      <h2>A flag that covered two of three warp sites</h2>
+
+      <p>PR #22 made no behavior change at all — a comment and a log-level adjustment — and it's still worth including because of what it documents. A run had shipped a desynced cartoon because a "never warp the picture" flag was off in the production environment, letting the picture speed up 1.3x before a lip-sync model was asked to paint a mouth onto frames that no longer matched their original timing. Reconciling environment variables afterward confirmed the override had already been fixed at the config layer — there was nothing left to fix in code. But the flag's own name promised more than it delivered: it covered two of the three call sites that could warp a picture, silently, and that gap needed to be on record rather than rediscovered the next time someone reasonably assumed "never warp" meant never, anywhere.</p>
+
+      <h2>A lexicon attached to a synthesis nobody hears, twice</h2>
+
+      <p>PR #23 found that a pronunciation dictionary was firing correctly — the logs showed "dictionary ready" and listed its rules — right before the run shipped a mispronounced word anyway. The dictionary was attached to a voice synthesis call that fed a different downstream path than the one actually bound to the delivered audio; being technically correct and being heard are not the same claim, and only checking the log line for "dictionary ready" would have missed that the correct synthesis and the shipped audio had quietly diverged. The same PR found the pose lock — meant to keep a character's pose stable across a run — had been implemented as this repo's own addition rather than inherited correctly from elsewhere, worth flagging because it meant future pose bugs needed to be diagnosed against this codebase specifically, not assumed to behave like a sibling tool's version.</p>
+
+      <h2>A green checkmark that was wrong twice over</h2>
+
+      <p>PR #24 is the sharpest self-correction in the batch. A probe PR #23 had shipped but never actually run was finally executed, and it passed — on a transcript that read "I am your cochlear, uh" against a prompt that intended "cochlea." The assertion was a plain substring match, and <code>"cochlear".includes("cochlea")</code> is true, so the check reported success on a word that was, in fact, wrong. Worse, the same loose match would have passed on "cochlear implant" too. The fix adds a word-boundary match plus an explicit check that a deliberately awkward phonetic respelling — meant to be read as one word — hadn't instead been read by the voice model as several separate words strung together, which is its own distinct failure mode a simple substring test can't see at all.</p>
+
+      <h2>A fix that shipped on and made things worse</h2>
+
+      <p>PR #25 is an honest admission built into its own PR description: of the four fixes in the previous round, three were confirmed working end to end and one wasn't — and that one had shipped turned on by default. An "adopt this frame and sharpen it" step, applied to a generative image edit, cannot actually leave the frame unchanged the way a deterministic sharpen filter would; the model regenerates the whole frame from the instruction, and despite the prompt explicitly forbidding re-posing, re-framing, recoloring, and resizing, the character came back larger, repositioned, and with its details altered anyway. The fix wasn't a better prompt — it was defaulting the step off, because a generative model told "change nothing but do this one visible thing" reliably fails to hold the "nothing" part.</p>
+
+      <h2>Paying to render pixels and then binning them</h2>
+
+      <p>PR #26 found that a widely-repeated technical constraint had quietly stopped being true. The frame pipeline had been built around "the image model has no aspect-ratio parameter, only three fixed sizes, none of which is 16:9" — accurate for one version of that model, and no longer accurate for the version actually in use, which takes an arbitrary width-by-height size field that dictates output shape directly. The pipeline had spent months rendering a frame at the wrong shape and cropping or padding it afterward — paying full generation cost for pixels it would then discard — when the fix was to ask for the correct shape from the vendor in the first place and pay for exactly the pixels that were needed.</p>
+
+      <h2>Decisions logged to a file a redeploy wipes</h2>
+
+      <p>PR #27 closes the loop on the whole investigation with an infrastructure gap: two per-clip decisions — which words were respelled for the voice model, and what delivery direction, if any, was given — were logged as plain application-log lines. The application log lives in the container's ephemeral filesystem. A routine Railway redeploy wipes it, meaning the exact record an after-the-fact investigation like this entire cluster depended on could vanish before anyone thought to look for it, purely from unrelated deploy timing. The fix persists those two decisions somewhere a redeploy can't reach, closing the same gap that had made every earlier PR in this cluster harder than it needed to be: several of these bugs took multiple rounds to fully diagnose specifically because the evidence describing what a run actually did wasn't guaranteed to still exist by the time anyone went looking.</p>
+
+      <h2>The pattern: read the artifact, not the assumption</h2>
+
+      <p>Every fix in this cluster traces back to checking a specific, concrete artifact — a job-state file, a log line, a rendered frame, a transcript — instead of trusting the plausible story about what the code should have done. The green checkmark in #24 is the cleanest illustration: a test existed, ran, and passed, and was still wrong, because nobody had checked what the assertion actually matched against. The fix each time wasn't cleverness. It was reading the real output before believing the report about it.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="voice-pipeline-billing-lipsync-kling-v3.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Voice Pipeline Economics</a><br><span style="color:#8892b0;font-size:13px;">The same pronunciation-lexicon and voice-wiring failure class, on the sibling video-generation service</span></li>
+        <li style="margin-bottom:12px;"><a href="cross-tool-defect-auditing-nextjs15-hardening.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Cross-Tool Defect Auditing</a><br><span style="color:#8892b0;font-size:13px;">Presenter Generation's earlier fixes ported into the sibling tools this same week</span></li>
+        <li style="margin-bottom:12px;"><a href="idempotency-guards-state-locks-generative-ux.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Idempotency Guards and State Locks</a><br><span style="color:#8892b0;font-size:13px;">More spend-gate and double-charge failure modes in generative UX</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

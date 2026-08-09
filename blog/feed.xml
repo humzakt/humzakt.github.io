@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Mon, 03 Aug 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 09 Aug 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -18,6 +18,110 @@
       <title>Humza Tareen — Engineering Blog</title>
       <link>https://humzakt.github.io</link>
     </image>
+
+    <item>
+      <title>Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus</title>
+      <link>https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>How comparing two months of AI ad generator output against its own corpus surfaced a reliability-vs-intent regression, fixed in six phases: mascot casting, b-roll bank activation, pace correction, and cutaway budgeting.</description>
+      <category>AI Video</category>
+      <category>Regression Analysis</category>
+      <category>Product Engineering</category>
+      <category>Prompt Engineering</category>
+    </item>
+
+    <item>
+      <title>Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree</title>
+      <link>https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Auditing an AI ad planner for failures that report success: a frame scorer dormant in production, measurement code with zero callers, a self-contradicting plan, and a review gate that misreported its own numbers.</description>
+      <category>AI Planning</category>
+      <category>Observability</category>
+      <category>Code Quality</category>
+      <category>Video Generation</category>
+    </item>
+
+    <item>
+      <title>Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days</title>
+      <link>https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Rolling out a feature that lets an AI ad mirror a competitor's reference video — an inert resolver and catalog, an auth-excluded vendor asset route, and the PR that found five prior PRs had zero production callers.</description>
+      <category>Feature Rollout</category>
+      <category>Software Architecture</category>
+      <category>AI Video</category>
+      <category>Feature Flags</category>
+    </item>
+
+    <item>
+      <title>One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline</title>
+      <link>https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Nine PRs moving a video pipeline from 9:16 hardcoded in thirty places to an inert aspect-ratio table, then to a real 16:9 output — and the frame-side and model-routing bugs found along the way.</description>
+      <category>Video Rendering</category>
+      <category>Aspect Ratio</category>
+      <category>Feature Flags</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice</title>
+      <link>https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Auditing a video pipeline's voice stack: billing what vendors actually charge, a budget/quality SKU ladder that cut cost 7x, content-keyed voiceover caching, and a Kling voice clone that was minted, billed, and never sent.</description>
+      <category>Voice AI</category>
+      <category>Kling</category>
+      <category>Lip Sync</category>
+      <category>Cost Engineering</category>
+    </item>
+
+    <item>
+      <title>Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes</title>
+      <link>https://humzakt.github.io/blog/presenter-generation-guardrails.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/presenter-generation-guardrails.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Eight PRs closing a QA pass on an AI presenter tool: a flaky call that silently disarmed a spend gate, an aspect-ratio bug reproducing on every run, and diagnostic logs erased by a routine redeploy.</description>
+      <category>AI Presenters</category>
+      <category>Reliability</category>
+      <category>Cost Engineering</category>
+      <category>Observability</category>
+    </item>
+
+    <item>
+      <title>Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced</title>
+      <link>https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Swapping the featured product across an entire finished ad while keeping music, voice, and picture untouched — deterministic planning, an audio-only byte-identical render, and captions regenerated from the finished audio.</description>
+      <category>AI Video</category>
+      <category>Product Engineering</category>
+      <category>TypeScript</category>
+      <category>FFmpeg</category>
+    </item>
+
+    <item>
+      <title>Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System</title>
+      <link>https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html</guid>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Splitting an enterprise workflow platform's admin role into a Platform Admin tier, and consolidating three ad hoc resizable-panel layouts into one shared component system across review gates.</description>
+      <category>RBAC</category>
+      <category>Enterprise Platform</category>
+      <category>React</category>
+      <category>Access Control</category>
+    </item>
 
     <item>
       <title>Streaming Master Uploads to Disk: Preventing Memory Exhaustion in Video Pipelines</title>

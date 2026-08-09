@@ -1,11 +1,165 @@
 [
   {
+    "id": "six-phases-ad-generator-corpus-regression",
+    "title": "Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus",
+    "summary": "How comparing two months of AI ad generator output against its own corpus surfaced a reliability-vs-intent regression, fixed in six phases: mascot casting, b-roll bank activation, pace correction, and cutaway budgeting.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Video",
+      "Regression Analysis",
+      "Prompt Engineering",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html"
+    }
+  },
+  {
+    "id": "planner-hardening-gates-dead-code-scorer",
+    "title": "Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree",
+    "summary": "Auditing an AI ad planner for failures that report success: a frame scorer dormant in production, measurement code with zero callers, a self-contradicting plan, and a review gate that misreported its own numbers.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Planning",
+      "Observability",
+      "Code Quality",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html"
+    }
+  },
+  {
+    "id": "reference-matching-engine-inert-rollout",
+    "title": "Ship It Inert First: A Reference-Matching Engine That Was Dead Code for Two Days",
+    "summary": "Rolling out a feature that lets an AI ad mirror a competitor's reference video \u2014 an inert resolver and catalog, an auth-excluded vendor asset route, and the PR that found five prior PRs had zero production callers.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "Feature Flags",
+      "Software Architecture",
+      "AI Video",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/reference-matching-engine-inert-rollout.html"
+    }
+  },
+  {
+    "id": "aspect-ratio-single-source-of-truth",
+    "title": "One Source of Truth for Aspect Ratio: Retrofitting 16:9 Into a Portrait-Only Pipeline",
+    "summary": "Nine PRs moving a video pipeline from 9:16 hardcoded in thirty places to an inert aspect-ratio table, then to a real 16:9 output \u2014 and the frame-side and model-routing bugs found along the way.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "Video Rendering",
+      "Aspect Ratio",
+      "Feature Flags",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/aspect-ratio-single-source-of-truth.html"
+    }
+  },
+  {
+    "id": "voice-pipeline-billing-lipsync-kling-v3",
+    "title": "Voice Pipeline Economics: Double-Billing, a Backwards Ladder, and a Lexicon That Never Reached the Voice",
+    "summary": "Auditing a video pipeline's voice stack: billing what vendors actually charge, a budget/quality SKU ladder that cut cost 7x, content-keyed voiceover caching, and a Kling voice clone that was minted, billed, and never sent.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "Voice AI",
+      "Kling",
+      "Cost Engineering",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/voice-pipeline-billing-lipsync-kling-v3.html"
+    }
+  },
+  {
+    "id": "presenter-generation-guardrails",
+    "title": "Guardrails for an AI Presenter: Spend Gates, Wasted Renders, and Logs a Redeploy Wipes",
+    "summary": "Eight PRs closing a QA pass on an AI presenter tool: a flaky call that silently disarmed a spend gate, an aspect-ratio bug reproducing on every run, and diagnostic logs erased by a routine redeploy.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Presenters",
+      "Reliability",
+      "Cost Engineering",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/presenter-generation-guardrails.html"
+    }
+  },
+  {
+    "id": "whole-ad-product-swap-deterministic-planning",
+    "title": "Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced",
+    "summary": "Swapping the featured product across an entire finished ad while keeping music, voice, and picture untouched \u2014 deterministic planning, an audio-only byte-identical render, and captions regenerated from the finished audio.",
+    "date": "2026-08-09",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Video",
+      "Product Engineering",
+      "FFmpeg",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html"
+    }
+  },
+  {
+    "id": "rbac-hardening-resizable-admin-panels",
+    "title": "Locking Down an Admin Dashboard: Role Guards and a Shared Resizable-Panel System",
+    "summary": "Splitting an enterprise workflow platform's admin role into a Platform Admin tier, and consolidating three ad hoc resizable-panel layouts into one shared component system across review gates.",
+    "date": "2026-08-09",
+    "themes": [
+      "infrastructure",
+      "security"
+    ],
+    "components": [
+      "RBAC",
+      "React",
+      "Access Control",
+      "Enterprise Platform"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/rbac-hardening-resizable-admin-panels.html"
+    }
+  },
+  {
     "id": "streaming-master-uploads-preventing-memory-exhaustion",
     "title": "Streaming Master Uploads to Disk: Preventing Memory Exhaustion in Video Pipelines",
     "summary": "How streaming video uploads directly to disk instead of buffering in memory eliminated payload size crashes and OOM errors in high-resolution Next.js video pipelines.",
     "date": "2026-08-03",
-    "themes": ["ml-ai"],
-    "components": ["Node.js", "Next.js", "Streaming", "Video Pipelines", "Performance"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "Node.js",
+      "Next.js",
+      "Streaming",
+      "Video Pipelines",
+      "Performance"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/streaming-master-uploads-preventing-memory-exhaustion.html"
     }
@@ -15,8 +169,16 @@
     "title": "Automated Dead-Air Trimming: Cleaning Up Leading Silence in Short-Form Video Hooks",
     "summary": "How building an automated audio-visual silence detector and FFmpeg trimming engine eliminated leading dead air in 3-second AI ad openers.",
     "date": "2026-08-03",
-    "themes": ["ml-ai"],
-    "components": ["FFmpeg", "Audio Processing", "Silence Detection", "AI Video", "Automation"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "FFmpeg",
+      "Audio Processing",
+      "Silence Detection",
+      "AI Video",
+      "Automation"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/automated-dead-air-trimming-video-hooks.html"
     }
@@ -26,8 +188,16 @@
     "title": "Dual Aspect-Ratio Rendering: Synchronizing 16:9 Widescreen and 9:16 Portrait AI Ads",
     "summary": "Engineering a multi-canvas layout engine to generate 16:9 desktop and 9:16 vertical video ad creatives with synchronized voiceovers and isolated DOM rendering.",
     "date": "2026-08-03",
-    "themes": ["ml-ai"],
-    "components": ["Video Rendering", "Aspect Ratio", "AI Video", "Canvas", "FFmpeg"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "Video Rendering",
+      "Aspect Ratio",
+      "AI Video",
+      "Canvas",
+      "FFmpeg"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/dual-aspect-ratio-rendering-ai-video.html"
     }
@@ -37,8 +207,16 @@
     "title": "Idempotency Transaction Guards & State Locks in Interactive Generative AI UX",
     "summary": "How double-click transaction deduplication, cost ledger reconciliation, and strict state locks prevent duplicate billing and preserve user configuration in generative AI applications.",
     "date": "2026-08-03",
-    "themes": ["production"],
-    "components": ["Idempotency", "Generative AI", "UX", "TypeScript", "Architecture"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "Idempotency",
+      "Generative AI",
+      "UX",
+      "TypeScript",
+      "Architecture"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/idempotency-guards-state-locks-generative-ux.html"
     }
@@ -48,8 +226,16 @@
     "title": "Systematic Cross-Tool Defect Auditing and Next.js 15 Middleware Hardening",
     "summary": "How systematically auditing sibling codebases and fixing Next.js 15 route handler gotchas eliminated 14 shared defects across video tools.",
     "date": "2026-08-03",
-    "themes": ["production"],
-    "components": ["Next.js", "Architecture", "Code Audit", "Software Quality", "TypeScript"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "Next.js",
+      "Architecture",
+      "Code Audit",
+      "Software Quality",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/cross-tool-defect-auditing-nextjs15-hardening.html"
     }
@@ -57,10 +243,18 @@
   {
     "id": "long-horizon-rl-task-pipelines",
     "title": "Long-Horizon RL Task Pipelines: From Scenario Design to Golden Data",
-    "summary": "How a multi-gate auto-seed pipeline turns occupational scenarios into long-horizon RL tasks — claim roles, RL-World taxonomy, golden data, and QC orchestration that only matter at hour-scale effort.",
+    "summary": "How a multi-gate auto-seed pipeline turns occupational scenarios into long-horizon RL tasks \u2014 claim roles, RL-World taxonomy, golden data, and QC orchestration that only matter at hour-scale effort.",
     "date": "2026-08-03",
-    "themes": ["production"],
-    "components": ["Long-Horizon RL", "AI Training Data", "Pipeline Architecture", "TypeScript", "Enterprise"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "Long-Horizon RL",
+      "AI Training Data",
+      "Pipeline Architecture",
+      "TypeScript",
+      "Enterprise"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/long-horizon-rl-task-pipelines.html"
     }
@@ -68,10 +262,18 @@
   {
     "id": "variant-multiplier-ad-section-swap",
     "title": "Variant Multiplier: Swapping Sections of Winning Ads into Fresh Variants",
-    "summary": "23 PRs building a new AI video tool from scratch — 6-workstream studio, waveform timeline, word-level transcript selection, grade-match colour transfer, batch queue.",
+    "summary": "23 PRs building a new AI video tool from scratch \u2014 6-workstream studio, waveform timeline, word-level transcript selection, grade-match colour transfer, batch queue.",
     "date": "2026-07-27",
-    "themes": ["ml-ai"],
-    "components": ["AI", "Video Generation", "TypeScript", "Next.js", "Product Engineering"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI",
+      "Video Generation",
+      "TypeScript",
+      "Next.js",
+      "Product Engineering"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/variant-multiplier-ad-section-swap.html"
     }
@@ -79,10 +281,18 @@
   {
     "id": "hook-machine-3s-ad-openers",
     "title": "Hook Machine: Scoring and Ranking 3-Second AI Ad Openers",
-    "summary": "21 PRs building a hook generation tool — scorer algorithm, content-aware video engine routing, karaoke captions, seed frame dispatch, winner loop pattern.",
+    "summary": "21 PRs building a hook generation tool \u2014 scorer algorithm, content-aware video engine routing, karaoke captions, seed frame dispatch, winner loop pattern.",
     "date": "2026-07-27",
-    "themes": ["ml-ai"],
-    "components": ["AI", "Video Generation", "Hooks", "TypeScript", "FFmpeg"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI",
+      "Video Generation",
+      "Hooks",
+      "TypeScript",
+      "FFmpeg"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/hook-machine-3s-ad-openers.html"
     }
@@ -92,8 +302,16 @@
     "title": "Seam-Free Video Splicing: Grade-Match, End-Frame Interpolation, and Karaoke Captions",
     "summary": "Deterministic colour transfer at splice points, end-frame interpolation for smooth cut-backs, and karaoke captions with libass rendering and FFmpeg drawtext fallback.",
     "date": "2026-07-27",
-    "themes": ["infrastructure"],
-    "components": ["FFmpeg", "Video Processing", "Computer Vision", "Color Science", "TypeScript"],
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "FFmpeg",
+      "Video Processing",
+      "Computer Vision",
+      "Color Science",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/seam-free-video-splicing-grade-match.html"
     }
@@ -101,10 +319,18 @@
   {
     "id": "trainer-gate-qc-claim-lifecycle",
     "title": "Trainer Gate QC: Integrating Quality Checks into a Multi-Stage Review Pipeline",
-    "summary": "Automated QC orchestration in a human review pipeline — claim lifecycle edge cases, spinner scoping, manifest state transitions, force-pass guards.",
+    "summary": "Automated QC orchestration in a human review pipeline \u2014 claim lifecycle edge cases, spinner scoping, manifest state transitions, force-pass guards.",
     "date": "2026-07-27",
-    "themes": ["production"],
-    "components": ["Enterprise", "Quality Control", "TypeScript", "React", "Pipeline Architecture"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "Enterprise",
+      "Quality Control",
+      "TypeScript",
+      "React",
+      "Pipeline Architecture"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/trainer-gate-qc-claim-lifecycle.html"
     }
@@ -112,10 +338,18 @@
   {
     "id": "pre-spend-guards-content-aware-routing",
     "title": "Pre-Spend Guards and Content-Aware Routing for AI Video APIs",
-    "summary": "Validate before spending on $2/generation AI video APIs — content-aware engine routing, content-policy self-healing, live cost preview, transient error retries.",
+    "summary": "Validate before spending on $2/generation AI video APIs \u2014 content-aware engine routing, content-policy self-healing, live cost preview, transient error retries.",
     "date": "2026-07-27",
-    "themes": ["production"],
-    "components": ["AI", "Cost Optimization", "API Design", "Video Generation", "TypeScript"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "AI",
+      "Cost Optimization",
+      "API Design",
+      "Video Generation",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/pre-spend-guards-content-aware-routing.html"
     }
@@ -123,10 +357,19 @@
   {
     "id": "ai-writing-markers-huggingface-dataset",
     "title": "AI Writing Markers: Building an Open Dataset and Checker on Hugging Face",
-    "summary": "87+ source-backed markers of AI-generated writing, structured as a Hugging Face dataset with a zero-dependency Python checker — a transparency tool, not a detector.",
+    "summary": "87+ source-backed markers of AI-generated writing, structured as a Hugging Face dataset with a zero-dependency Python checker \u2014 a transparency tool, not a detector.",
     "date": "2026-07-21",
-    "themes": ["ml-ai"],
-    "components": ["AI", "NLP", "Hugging Face", "Open Source", "Python", "Dataset"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI",
+      "NLP",
+      "Hugging Face",
+      "Open Source",
+      "Python",
+      "Dataset"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/ai-writing-markers-huggingface-dataset.html"
     }
@@ -136,8 +379,17 @@
     "title": "PSX Investor: A FastAPI Tool for Disciplined Stock Investing on the Pakistan Stock Exchange",
     "summary": "A local FastAPI tool that pulls live PSX prices and generates whole-share buy plans for a Shariah/KMI30 portfolio with purchase history tracking and resilient price fallback.",
     "date": "2026-07-21",
-    "themes": ["infrastructure"],
-    "components": ["FastAPI", "Python", "Finance", "Open Source", "PSX", "API Design"],
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "FastAPI",
+      "Python",
+      "Finance",
+      "Open Source",
+      "PSX",
+      "API Design"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/psx-investor-fastapi-stock-tool.html"
     }
@@ -145,10 +397,19 @@
   {
     "id": "ugc-pipeline-script-first-video-generation",
     "title": "UGC Pipeline: Script-First AI Video Generation",
-    "summary": "Paradigm shift from reference-first to script-first video generation — wizard UX, scene-level review gates, candidate frame selection, and batch approve-and-render.",
+    "summary": "Paradigm shift from reference-first to script-first video generation \u2014 wizard UX, scene-level review gates, candidate frame selection, and batch approve-and-render.",
     "date": "2026-07-21",
-    "themes": ["ml-ai"],
-    "components": ["UGC", "Video Generation", "TypeScript", "Next.js", "AI", "Product Engineering"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "UGC",
+      "Video Generation",
+      "TypeScript",
+      "Next.js",
+      "AI",
+      "Product Engineering"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/ugc-pipeline-script-first-video-generation.html"
     }
@@ -158,8 +419,16 @@
     "title": "Three Phases of AI B-Roll: From Manual Beats to Vision-Authored Cutaways",
     "summary": "The b-roll system evolved through three phases: manual beat placement, AI-swiped timing from reference, and vision-authored cutaway prompts with progressive feature-flag rollout.",
     "date": "2026-07-21",
-    "themes": ["ml-ai"],
-    "components": ["AI", "Video Generation", "B-Roll", "Computer Vision", "TypeScript"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI",
+      "Video Generation",
+      "B-Roll",
+      "Computer Vision",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/ai-broll-three-phases-vision-authored.html"
     }
@@ -167,10 +436,18 @@
   {
     "id": "drive-backed-asset-catalogs-runtime",
     "title": "Drive-Backed Asset Catalogs: Avatars and Products Without Code Deploys",
-    "summary": "Using Google Drive as a runtime-configurable asset catalog — JSON index alongside media, auto-save on upload, multi-product support without code deploys.",
+    "summary": "Using Google Drive as a runtime-configurable asset catalog \u2014 JSON index alongside media, auto-save on upload, multi-product support without code deploys.",
     "date": "2026-07-21",
-    "themes": ["infrastructure"],
-    "components": ["Google Drive", "Asset Management", "TypeScript", "Next.js", "Product Engineering"],
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Google Drive",
+      "Asset Management",
+      "TypeScript",
+      "Next.js",
+      "Product Engineering"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/drive-backed-asset-catalogs-runtime.html"
     }
@@ -178,10 +455,18 @@
   {
     "id": "auto-seed-admin-controls-ai-training",
     "title": "Auto-Seed Admin Controls: Building Governance for an AI Training Pipeline",
-    "summary": "Kill-switches per gate, reviewer attribution, admin impersonation audit trails, configurable claim timeouts — the governance layer that turns a prototype into an enterprise product.",
+    "summary": "Kill-switches per gate, reviewer attribution, admin impersonation audit trails, configurable claim timeouts \u2014 the governance layer that turns a prototype into an enterprise product.",
     "date": "2026-07-21",
-    "themes": ["production"],
-    "components": ["Admin Controls", "AI Training", "Enterprise", "TypeScript", "React"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "Admin Controls",
+      "AI Training",
+      "Enterprise",
+      "TypeScript",
+      "React"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/auto-seed-admin-controls-ai-training.html"
     }
@@ -189,10 +474,18 @@
   {
     "id": "vision-in-the-loop-prompt-authoring",
     "title": "Vision-in-the-Loop: When the AI Rewrites Its Own Prompts from the Generated Frame",
-    "summary": "The AI generates a frame, inspects its own output with vision, and rewrites the prompt to fix camera, color, or composition issues — a closed-loop feedback system for video generation.",
+    "summary": "The AI generates a frame, inspects its own output with vision, and rewrites the prompt to fix camera, color, or composition issues \u2014 a closed-loop feedback system for video generation.",
     "date": "2026-07-06",
-    "themes": ["ml-ai"],
-    "components": ["AI", "Video Generation", "Computer Vision", "Prompt Engineering", "TypeScript"],
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI",
+      "Video Generation",
+      "Computer Vision",
+      "Prompt Engineering",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/vision-in-the-loop-prompt-authoring.html"
     }
@@ -200,10 +493,18 @@
   {
     "id": "universal-vendor-polling-heartbeat-template",
     "title": "Universal Vendor Polling: One Heartbeat Template for Every AI Model Provider",
-    "summary": "A single polling abstraction with heartbeats, timeouts, and exponential backoff that wraps every AI vendor's status endpoint — replacing duplicated polling logic across five providers.",
+    "summary": "A single polling abstraction with heartbeats, timeouts, and exponential backoff that wraps every AI vendor's status endpoint \u2014 replacing duplicated polling logic across five providers.",
     "date": "2026-07-06",
-    "themes": ["infrastructure"],
-    "components": ["Reliability", "TypeScript", "AI Infrastructure", "Polling", "Vendor Abstraction"],
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Reliability",
+      "TypeScript",
+      "AI Infrastructure",
+      "Polling",
+      "Vendor Abstraction"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/universal-vendor-polling-heartbeat-template.html"
     }
@@ -211,10 +512,18 @@
   {
     "id": "post-launch-audit-20-prs-48-hours",
     "title": "Post-Launch Audit: 20 PRs and 12 Fixes in 48 Hours",
-    "summary": "Systematic post-launch triage across reliability regressions, UX confusion, and data honesty — batched into themed fix rounds with a living roadmap doc.",
+    "summary": "Systematic post-launch triage across reliability regressions, UX confusion, and data honesty \u2014 batched into themed fix rounds with a living roadmap doc.",
     "date": "2026-07-06",
-    "themes": ["production"],
-    "components": ["Production Engineering", "Post-Launch", "Reliability", "UX", "TypeScript"],
+    "themes": [
+      "production"
+    ],
+    "components": [
+      "Production Engineering",
+      "Post-Launch",
+      "Reliability",
+      "UX",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/post-launch-audit-20-prs-48-hours.html"
     }
@@ -224,8 +533,16 @@
     "title": "Streaming AI-Generated Video from Cloud Storage to Browser",
     "summary": "Range-request streaming from Google Drive through Next.js route handlers, index-first run history, and the Safari black-video fix that required poster frames and H.264 re-encoding.",
     "date": "2026-07-06",
-    "themes": ["performance"],
-    "components": ["Performance", "Cloud Storage", "Streaming", "TypeScript", "Next.js"],
+    "themes": [
+      "performance"
+    ],
+    "components": [
+      "Performance",
+      "Cloud Storage",
+      "Streaming",
+      "TypeScript",
+      "Next.js"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/streaming-ai-video-cloud-storage.html"
     }
@@ -233,10 +550,18 @@
   {
     "id": "validate-before-building-technical-discovery",
     "title": "Validate Before Building: A Technical Discovery Framework for Startup Clients",
-    "summary": "How a discovery call with a startup founder pivoted from an 8-phase fixed-price MVP build to problem validation first — and why refusing to design immediately built more trust.",
+    "summary": "How a discovery call with a startup founder pivoted from an 8-phase fixed-price MVP build to problem validation first \u2014 and why refusing to design immediately built more trust.",
     "date": "2026-07-06",
-    "themes": ["api-design"],
-    "components": ["Consulting", "Architecture", "Startups", "Technical Discovery", "Engineering Leadership"],
+    "themes": [
+      "api-design"
+    ],
+    "components": [
+      "Consulting",
+      "Architecture",
+      "Startups",
+      "Technical Discovery",
+      "Engineering Leadership"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/validate-before-building-technical-discovery.html"
     }
@@ -246,8 +571,19 @@
     "title": "Building an AI Video Generation Pipeline from Scratch",
     "summary": "Five-stage pipeline: analyzer, Claude planner, Kling clip gen, FFmpeg stitch with sidechain-ducked audio, and cross-scene narrative QA. 20 PRs in 3 days.",
     "date": "2026-06-28",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["Video Generation", "TypeScript", "FFmpeg", "Claude", "AI", "Pipeline", "Next.js"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "Video Generation",
+      "TypeScript",
+      "FFmpeg",
+      "Claude",
+      "AI",
+      "Pipeline",
+      "Next.js"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/ai-video-generation-pipeline-architecture.html"
     }
@@ -255,10 +591,20 @@
   {
     "id": "viral-feel-parity-ai-video-ads",
     "title": "Viral Feel Parity: Making AI-Generated Ads Feel Like the Original",
-    "summary": "Avatar consistency, sidechain-ducked audio beds, emotion-driven VO, caption rendering, color grading, and L/J-cut transitions — 2,800 lines of feel engineering.",
+    "summary": "Avatar consistency, sidechain-ducked audio beds, emotion-driven VO, caption rendering, color grading, and L/J-cut transitions \u2014 2,800 lines of feel engineering.",
     "date": "2026-06-28",
-    "themes": ["ml-ai", "performance"],
-    "components": ["Video Generation", "FFmpeg", "Audio Engineering", "AI", "TypeScript", "ElevenLabs"],
+    "themes": [
+      "ml-ai",
+      "performance"
+    ],
+    "components": [
+      "Video Generation",
+      "FFmpeg",
+      "Audio Engineering",
+      "AI",
+      "TypeScript",
+      "ElevenLabs"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/viral-feel-parity-ai-video-ads.html"
     }
@@ -266,10 +612,20 @@
   {
     "id": "narrative-continuity-story-spine-video-gen",
     "title": "Narrative Continuity: Story Spine and L/J-Cut Editing in AI Video",
-    "summary": "Story spine enforcement, cross-scene narrative QA, continuous VO over cuts, pacing auto-fit — making AI video feel like one story, not disjoint scenes.",
+    "summary": "Story spine enforcement, cross-scene narrative QA, continuous VO over cuts, pacing auto-fit \u2014 making AI video feel like one story, not disjoint scenes.",
     "date": "2026-06-28",
-    "themes": ["ml-ai", "api-design"],
-    "components": ["Video Generation", "Narrative AI", "FFmpeg", "Claude", "TypeScript", "Content Quality"],
+    "themes": [
+      "ml-ai",
+      "api-design"
+    ],
+    "components": [
+      "Video Generation",
+      "Narrative AI",
+      "FFmpeg",
+      "Claude",
+      "TypeScript",
+      "Content Quality"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/narrative-continuity-story-spine-video-gen.html"
     }
@@ -279,8 +635,18 @@
     "title": "Production Hardening an AI Video Pipeline: Retries, Fallbacks, and Crash Guards",
     "summary": "Transient error classifier with exponential backoff, Claude model fallback, process crash guards, Zod null tolerance, and env-gated local frame hosting.",
     "date": "2026-06-28",
-    "themes": ["devops", "infrastructure"],
-    "components": ["Production Hardening", "TypeScript", "AI Pipeline", "Reliability", "Error Handling", "Retries"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "Production Hardening",
+      "TypeScript",
+      "AI Pipeline",
+      "Reliability",
+      "Error Handling",
+      "Retries"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/production-hardening-ai-video-pipeline.html"
     }
@@ -290,8 +656,18 @@
     "title": "QC Orchestration: Agent-Driven Quality Checks in a Review Pipeline",
     "summary": "Config-driven QC service dispatching to external AI agents with HMAC-signed webhooks, state machine integration, and zero-change fallback for unconfigured steps.",
     "date": "2026-06-28",
-    "themes": ["infrastructure", "devops"],
-    "components": ["QC Orchestration", "TypeScript", "Webhooks", "Cloud Tasks", "State Machine", "Quality Assurance"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "QC Orchestration",
+      "TypeScript",
+      "Webhooks",
+      "Cloud Tasks",
+      "State Machine",
+      "Quality Assurance"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/qc-orchestration-agent-driven-quality.html"
     }
@@ -301,8 +677,18 @@
     "title": "Halving Reviewer Clicks: Feedback Navigator, Keyboard Nav, and Read-Only Context",
     "summary": "51% click reduction with chip-based feedback navigator, j/k/n keyboard shortcuts, auto-advance after decisions, and a reusable read-only context pattern.",
     "date": "2026-06-28",
-    "themes": ["frontend", "ux-engineering"],
-    "components": ["UX Engineering", "React", "TypeScript", "Accessibility", "Admin UI", "Keyboard Navigation"],
+    "themes": [
+      "frontend",
+      "ux-engineering"
+    ],
+    "components": [
+      "UX Engineering",
+      "React",
+      "TypeScript",
+      "Accessibility",
+      "Admin UI",
+      "Keyboard Navigation"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/reviewer-ux-click-reduction-feedback-navigator.html"
     }
@@ -310,10 +696,21 @@
   {
     "id": "extensible-taxonomy-system-yaml-seeding",
     "title": "From Fixed Levels to L(n): Building an Extensible Taxonomy System",
-    "summary": "Replaced a rigid 2-level hierarchy with a config-driven L(n) taxonomy — YAML seeding, GCS CAS writes, admin CRUD UI, cascading dropdowns, and a bidirectional backward compatibility layer.",
+    "summary": "Replaced a rigid 2-level hierarchy with a config-driven L(n) taxonomy \u2014 YAML seeding, GCS CAS writes, admin CRUD UI, cascading dropdowns, and a bidirectional backward compatibility layer.",
     "date": "2026-06-12",
-    "themes": ["infrastructure", "api-design"],
-    "components": ["Taxonomy", "TypeScript", "YAML", "GCS", "Zod", "React", "Admin UI"],
+    "themes": [
+      "infrastructure",
+      "api-design"
+    ],
+    "components": [
+      "Taxonomy",
+      "TypeScript",
+      "YAML",
+      "GCS",
+      "Zod",
+      "React",
+      "Admin UI"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/extensible-taxonomy-system-yaml-seeding.html"
     }
@@ -321,10 +718,20 @@
   {
     "id": "llm-adjudication-dedup-false-positives",
     "title": "When RAG Says Duplicate but the LLM Disagrees: Building an Adjudication Layer",
-    "summary": "Two-threshold band architecture where an LLM second-opinion overrides RAG false positives — feature-flagged, fail-closed, with structured verdicts and 109 tests.",
+    "summary": "Two-threshold band architecture where an LLM second-opinion overrides RAG false positives \u2014 feature-flagged, fail-closed, with structured verdicts and 109 tests.",
     "date": "2026-06-12",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["RAG", "LLM", "TypeScript", "Deduplication", "Embeddings", "Feature Flags"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "RAG",
+      "LLM",
+      "TypeScript",
+      "Deduplication",
+      "Embeddings",
+      "Feature Flags"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/llm-adjudication-dedup-false-positives.html"
     }
@@ -334,8 +741,18 @@
     "title": "Building an Events Table for Pipeline Observability",
     "summary": "Unified events timeline aggregating status transitions, admin actions, step traces, and assignment lifecycle from four sources into one diagnostic view with causal ordering and rich detail panels.",
     "date": "2026-06-05",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Observability", "Pipeline", "TypeScript", "GCS", "Event Sourcing", "Next.js"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Observability",
+      "Pipeline",
+      "TypeScript",
+      "GCS",
+      "Event Sourcing",
+      "Next.js"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/events-table-pipeline-observability.html"
     }
@@ -345,8 +762,18 @@
     "title": "Redesigning Bulk Intake: Cascading Dropdowns, Taxonomy Validation, and a Week of Polish",
     "summary": "Replaced a checkbox taxonomy grid with cascading dropdowns, server-side slug validation, per-row scenario threading, and seven companion polish PRs in one sprint.",
     "date": "2026-06-05",
-    "themes": ["api-design", "frontend"],
-    "components": ["Bulk Intake", "TypeScript", "Admin UI", "Taxonomy Validation", "React", "Next.js"],
+    "themes": [
+      "api-design",
+      "frontend"
+    ],
+    "components": [
+      "Bulk Intake",
+      "TypeScript",
+      "Admin UI",
+      "Taxonomy Validation",
+      "React",
+      "Next.js"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/bulk-intake-redesign-taxonomy-validation.html"
     }
@@ -356,8 +783,17 @@
     "title": "Dead Letter Queues for Pipeline Reliability",
     "summary": "DLQ escalation with reason codes, inline and sweep detection, GCS manifest fields, and UI badges for permanently failed pipeline runs.",
     "date": "2026-06-02",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Dead Letter Queue", "Pipeline", "TypeScript", "Cloud Tasks", "Reliability"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Dead Letter Queue",
+      "Pipeline",
+      "TypeScript",
+      "Cloud Tasks",
+      "Reliability"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/dead-letter-queue-pipeline-reliability.html"
     }
@@ -365,10 +801,19 @@
   {
     "id": "two-cache-layers-stale-data",
     "title": "When Two Cache Layers Serve Stale Data",
-    "summary": "Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state — a two-part cache debugging story.",
+    "summary": "Server-side unstable_cache never invalidated by workers plus client-side gcTime replaying old state \u2014 a two-part cache debugging story.",
     "date": "2026-06-02",
-    "themes": ["performance", "debugging"],
-    "components": ["Caching", "Next.js", "React Query", "Debugging", "TypeScript"],
+    "themes": [
+      "performance",
+      "debugging"
+    ],
+    "components": [
+      "Caching",
+      "Next.js",
+      "React Query",
+      "Debugging",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/two-cache-layers-stale-data.html"
     }
@@ -376,10 +821,19 @@
   {
     "id": "ux-polish-sprint-filter-registry-consolidated-controls",
     "title": "A UX Polish Sprint: 8 PRs in 48 Hours",
-    "summary": "Filter registry, consolidated controls, search validation, back button, label cleanup — eight small PRs that compound into a polished admin dashboard.",
+    "summary": "Filter registry, consolidated controls, search validation, back button, label cleanup \u2014 eight small PRs that compound into a polished admin dashboard.",
     "date": "2026-06-02",
-    "themes": ["frontend", "ux-engineering"],
-    "components": ["UX Engineering", "React", "TypeScript", "Admin UI", "Registry Pattern"],
+    "themes": [
+      "frontend",
+      "ux-engineering"
+    ],
+    "components": [
+      "UX Engineering",
+      "React",
+      "TypeScript",
+      "Admin UI",
+      "Registry Pattern"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/ux-polish-sprint-filter-registry-consolidated-controls.html"
     }
@@ -387,10 +841,19 @@
   {
     "id": "gcs-race-conditions-generation-fenced-leases",
     "title": "GCS Race Conditions: Generation-Fenced Lease Deletion",
-    "summary": "Two race conditions in distributed step leasing where stale workers deleted fresh locks — fixed with GCS generation-based optimistic concurrency.",
+    "summary": "Two race conditions in distributed step leasing where stale workers deleted fresh locks \u2014 fixed with GCS generation-based optimistic concurrency.",
     "date": "2026-05-26",
-    "themes": ["infrastructure", "distributed-systems"],
-    "components": ["GCS", "Distributed Locking", "Race Conditions", "TypeScript", "Optimistic Concurrency"],
+    "themes": [
+      "infrastructure",
+      "distributed-systems"
+    ],
+    "components": [
+      "GCS",
+      "Distributed Locking",
+      "Race Conditions",
+      "TypeScript",
+      "Optimistic Concurrency"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/gcs-race-conditions-generation-fenced-leases.html"
     }
@@ -400,8 +863,17 @@
     "title": "Multi-Layer Caching for Dashboard Latency",
     "summary": "HTTP Cache-Control, server-side cache with tag invalidation, React Query migration, centralized query keys, and dynamic imports for code splitting.",
     "date": "2026-05-26",
-    "themes": ["performance", "frontend"],
-    "components": ["Caching", "React Query", "Next.js", "Performance", "TypeScript"],
+    "themes": [
+      "performance",
+      "frontend"
+    ],
+    "components": [
+      "Caching",
+      "React Query",
+      "Next.js",
+      "Performance",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/multi-layer-cache-dashboard-latency.html"
     }
@@ -411,8 +883,17 @@
     "title": "Pipeline Hardening: Timeouts, Traceability, and Graceful Shutdown",
     "summary": "Dispatch registry for env-configurable step timeouts, SIGTERM graceful shutdown, dynamic lease TTL, and step error traceability in a pipeline engine.",
     "date": "2026-05-26",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Pipeline", "Cloud Tasks", "TypeScript", "Graceful Shutdown", "Observability"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Pipeline",
+      "Cloud Tasks",
+      "TypeScript",
+      "Graceful Shutdown",
+      "Observability"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/pipeline-hardening-timeouts-traceability-graceful-shutdown.html"
     }
@@ -422,8 +903,17 @@
     "title": "Building a GCS-Backed Auto-Seeder Platform with Hot-Swappable Backends",
     "summary": "Provider-service architecture with hot-swappable GCS and Prisma backends, run manifests, unified 13-node pipeline, and desktop-parity task detail pages.",
     "date": "2026-05-15",
-    "themes": ["infrastructure", "api-design"],
-    "components": ["GCS", "TypeScript", "Provider Pattern", "Next.js", "Service Layer"],
+    "themes": [
+      "infrastructure",
+      "api-design"
+    ],
+    "components": [
+      "GCS",
+      "TypeScript",
+      "Provider Pattern",
+      "Next.js",
+      "Service Layer"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/gcs-backed-auto-seeder-platform.html"
     }
@@ -431,10 +921,19 @@
   {
     "id": "57k-line-merge-rollback-reconsolidation",
     "title": "When 57K Lines Get Rolled Back: Lessons from a Mega-Merge",
-    "summary": "11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering — deleting 9,685 lines in the process.",
+    "summary": "11 stacked PRs merged as one 57K-line commit, rolled back the next day, then reconsolidated with strict provider-service-route layering \u2014 deleting 9,685 lines in the process.",
     "date": "2026-05-15",
-    "themes": ["devops", "infrastructure"],
-    "components": ["Git", "Architecture", "TypeScript", "Code Integration", "Rollback"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "Git",
+      "Architecture",
+      "TypeScript",
+      "Code Integration",
+      "Rollback"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/57k-line-merge-rollback-reconsolidation.html"
     }
@@ -442,10 +941,19 @@
   {
     "id": "invisible-bugs-file-type-bypass-missing-worker-runs",
     "title": "Invisible Bugs: File Type Bypass and Missing Worker Runs in Production",
-    "summary": "Two production bugs invisible during development — a file type validation bypass in expert review and a missing worker run that broke admin bulk-approve visibility.",
+    "summary": "Two production bugs invisible during development \u2014 a file type validation bypass in expert review and a missing worker run that broke admin bulk-approve visibility.",
     "date": "2026-05-15",
-    "themes": ["devops", "security"],
-    "components": ["Bug Fix", "TypeScript", "Prisma", "Validation", "Production"],
+    "themes": [
+      "devops",
+      "security"
+    ],
+    "components": [
+      "Bug Fix",
+      "TypeScript",
+      "Prisma",
+      "Validation",
+      "Production"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/invisible-bugs-file-type-bypass-missing-worker-runs.html"
     }
@@ -455,8 +963,17 @@
     "title": "Designing a Task Lifecycle V1 from Scratch: 10-Table Schema and 40+ API Routes",
     "summary": "10-table schema with composite keys, immutable versioning, dual event pipelines, step state machines, and a full REST API delivered in 6 stacked PRs with 176+ tests.",
     "date": "2026-05-02",
-    "themes": ["api-design", "infrastructure"],
-    "components": ["Schema Design", "TypeScript", "Prisma", "REST API", "State Machine"],
+    "themes": [
+      "api-design",
+      "infrastructure"
+    ],
+    "components": [
+      "Schema Design",
+      "TypeScript",
+      "Prisma",
+      "REST API",
+      "State Machine"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/task-lifecycle-v1-schema-api-design.html"
     }
@@ -466,8 +983,17 @@
     "title": "Building an SFT Recording Pipeline: Docker Sandboxes, Trajectory Capture, and Review Workflows",
     "summary": "Docker sandboxes with VNC, trajectory capture, video recording, 18 API routes, rubric-based review, rework flow, and 1,096 passing tests across 56 files.",
     "date": "2026-05-02",
-    "themes": ["infrastructure", "ml-ai"],
-    "components": ["Docker", "VNC", "TypeScript", "React", "Recording"],
+    "themes": [
+      "infrastructure",
+      "ml-ai"
+    ],
+    "components": [
+      "Docker",
+      "VNC",
+      "TypeScript",
+      "React",
+      "Recording"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/sft-recording-pipeline-docker-sandboxes.html"
     }
@@ -475,10 +1001,19 @@
   {
     "id": "unified-status-sort-display-labels",
     "title": "When Display Labels Break Sorting: Three Bugs in One Column",
-    "summary": "The unified status column looked correct but sorted wrong — three bugs in rank computation, date tiebreakers, and deterministic windowing, fixed with 78 new tests.",
+    "summary": "The unified status column looked correct but sorted wrong \u2014 three bugs in rank computation, date tiebreakers, and deterministic windowing, fixed with 78 new tests.",
     "date": "2026-05-02",
-    "themes": ["performance", "devops"],
-    "components": ["Sorting", "TypeScript", "Prisma", "Admin UI", "Data Tables"],
+    "themes": [
+      "performance",
+      "devops"
+    ],
+    "components": [
+      "Sorting",
+      "TypeScript",
+      "Prisma",
+      "Admin UI",
+      "Data Tables"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/unified-status-sort-display-labels.html"
     }
@@ -486,10 +1021,19 @@
   {
     "id": "enterprise-state-machine-bulk-admin-ops",
     "title": "Taming a State Machine: Iterating Bulk Admin Ops Through 13 Commits",
-    "summary": "How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool — transition matrices, workflow decoupling, unified status resolution, and JSON upload.",
+    "summary": "How 13 commits over 4 days turned a clean bulk-status API into a production-safe admin tool \u2014 transition matrices, workflow decoupling, unified status resolution, and JSON upload.",
     "date": "2026-04-19",
-    "themes": ["api-design", "infrastructure"],
-    "components": ["State Machine", "TypeScript", "Next.js", "Prisma", "Admin Panel"],
+    "themes": [
+      "api-design",
+      "infrastructure"
+    ],
+    "components": [
+      "State Machine",
+      "TypeScript",
+      "Next.js",
+      "Prisma",
+      "Admin Panel"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/enterprise-state-machine-bulk-admin-ops.html"
     }
@@ -499,8 +1043,17 @@
     "title": "Decoupling Claim Timeouts from Feature Flags: Three-Phase Countdown UX",
     "summary": "When disabling the expert review pool killed timeout enforcement, I decoupled the countdown, added three-phase UX with urgent and expired states, and blocked expired uploads.",
     "date": "2026-04-19",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Feature Flags", "React", "TypeScript", "UX", "Countdown Timer"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Feature Flags",
+      "React",
+      "TypeScript",
+      "UX",
+      "Countdown Timer"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/claim-timeout-decoupling-expert-review-ux.html"
     }
@@ -508,10 +1061,19 @@
   {
     "id": "bootstrapping-engineering-standards-legacy-codebase",
     "title": "Bootstrapping Engineering Standards on a Legacy Codebase",
-    "summary": "AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades — layering standards incrementally on an active codebase without disrupting the team.",
+    "summary": "AI tool rules, PR templates, testing mandates, date formatting fixes, feature lockdowns, and CI upgrades \u2014 layering standards incrementally on an active codebase without disrupting the team.",
     "date": "2026-04-19",
-    "themes": ["devops", "infrastructure"],
-    "components": ["CI/CD", "TypeScript", "Testing", "GitHub Actions", "Developer Experience"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "CI/CD",
+      "TypeScript",
+      "Testing",
+      "GitHub Actions",
+      "Developer Experience"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/bootstrapping-engineering-standards-legacy-codebase.html"
     }
@@ -521,8 +1083,17 @@
     "title": "Production-Ready Multi-Turn Evaluation: Harness Testing, Snapshots, and Resume",
     "summary": "Hardening a multi-turn AI agent evaluator with per-turn harness testing, codebase snapshots via base64 transfer, artifact retry, crash-resilient resume state, and completeness reporting.",
     "date": "2026-04-13",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["AI Agents", "Docker", "Python", "Evaluation", "Multi-Turn"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "AI Agents",
+      "Docker",
+      "Python",
+      "Evaluation",
+      "Multi-Turn"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/production-ready-multi-turn-evaluation.html"
     }
@@ -532,8 +1103,17 @@
     "title": "Reverse-Engineering a Codebase Into Architecture Docs for 14 Modules",
     "summary": "Systematically documenting an enterprise application with Mermaid data flow diagrams, conditional logic tables, file inventories, and three verification passes against source code.",
     "date": "2026-04-13",
-    "themes": ["devops", "infrastructure"],
-    "components": ["Documentation", "Architecture", "Mermaid", "Enterprise", "TypeScript"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "Documentation",
+      "Architecture",
+      "Mermaid",
+      "Enterprise",
+      "TypeScript"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/reverse-engineering-codebase-architecture-docs.html"
     }
@@ -543,8 +1123,17 @@
     "title": "Audit-Safe Admin Tools: Bulk Operations with Event Sourcing",
     "summary": "Building bulk admin operations with atomic Prisma transactions, event sourcing for full audit trails, preview mode before execution, and Firebase RBAC protection.",
     "date": "2026-04-13",
-    "themes": ["api-design", "infrastructure"],
-    "components": ["Event Sourcing", "TypeScript", "Prisma", "Firebase", "Admin Panel"],
+    "themes": [
+      "api-design",
+      "infrastructure"
+    ],
+    "components": [
+      "Event Sourcing",
+      "TypeScript",
+      "Prisma",
+      "Firebase",
+      "Admin Panel"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/audit-safe-admin-bulk-operations.html"
     }
@@ -554,8 +1143,17 @@
     "title": "Multi-Turn Agent Evaluation: Why Stateless Turns Failed and Persistent State Fixed It",
     "summary": "Single-turn evaluation produced zero patches. Building a multi-turn runner with persistent Docker environments, conversation memory, and progressive hint injection changed everything.",
     "date": "2026-03-13",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["AI Agents", "Docker", "Python", "Evaluation", "Multi-Turn"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "AI Agents",
+      "Docker",
+      "Python",
+      "Evaluation",
+      "Multi-Turn"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/multi-turn-agent-evaluation-persistent-state.html"
     }
@@ -565,8 +1163,17 @@
     "title": "Docker Image Hardening for Multi-Language AI Benchmarks",
     "summary": "Pre-flight validation, runtime layer injection, and skip lists for Docker images spanning dozens of languages. How we stopped broken containers from wasting evaluation compute.",
     "date": "2026-03-13",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Docker", "Python", "CI/CD", "AI Benchmarks", "Bash"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Docker",
+      "Python",
+      "CI/CD",
+      "AI Benchmarks",
+      "Bash"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/docker-image-hardening-ai-benchmarks.html"
     }
@@ -574,10 +1181,19 @@
   {
     "id": "responses-api-support-agent-framework",
     "title": "Adding Responses API Support to an Agent Framework",
-    "summary": "When codex models required a different API, I added auto-detection, input conversion, tool schema flattening, and response normalization — with zero regression to existing models.",
+    "summary": "When codex models required a different API, I added auto-detection, input conversion, tool schema flattening, and response normalization \u2014 with zero regression to existing models.",
     "date": "2026-03-13",
-    "themes": ["ml-ai", "api-design"],
-    "components": ["OpenAI", "Responses API", "Python", "LLM", "Agent Framework"],
+    "themes": [
+      "ml-ai",
+      "api-design"
+    ],
+    "components": [
+      "OpenAI",
+      "Responses API",
+      "Python",
+      "LLM",
+      "Agent Framework"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/responses-api-support-agent-framework.html"
     }
@@ -587,8 +1203,21 @@
     "title": "I Built a Starter Repo That Turns AI Coding Tools Into Senior Engineers",
     "summary": "An open-source starter repo with CI/CD workflows, test coverage enforcement, incident runbooks, and pre-configured instructions for Cursor, Claude Code, Codex, and Copilot.",
     "date": "2026-03-04",
-    "themes": ["devops", "ml-ai", "infrastructure"],
-    "components": ["GitHub Actions", "Ruff", "pytest", "Cursor", "Claude Code", "Codex", "Copilot", "Python"],
+    "themes": [
+      "devops",
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "GitHub Actions",
+      "Ruff",
+      "pytest",
+      "Cursor",
+      "Claude Code",
+      "Codex",
+      "Copilot",
+      "Python"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html",
       "linkedin": "https://humzakt.github.io/blog/dev-starter-kit-ai-coding-tools.html"
@@ -599,8 +1228,19 @@
     "title": "Building an AI Evaluation Platform on GCP: Architecture of a Multi-Cluster System",
     "summary": "A deep dive into the architecture behind a production-grade AI agent evaluation system spanning multiple Cloud Run services, GKE clusters, and managed databases with event-driven orchestration.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "ml-ai", "devops"],
-    "components": ["GCP", "Cloud Run", "GKE", "Pub/Sub", "PostgreSQL", "Python"],
+    "themes": [
+      "infrastructure",
+      "ml-ai",
+      "devops"
+    ],
+    "components": [
+      "GCP",
+      "Cloud Run",
+      "GKE",
+      "Pub/Sub",
+      "PostgreSQL",
+      "Python"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/building-ai-evaluation-platform-gcp.html"
     }
@@ -610,8 +1250,17 @@
     "title": "Event-Driven Architecture on GCP: Pub/Sub, Cloud Tasks, and Cloud Scheduler",
     "summary": "How we orchestrated a 6-phase AI evaluation pipeline with dozens of Pub/Sub topics, dead-letter queues, Cloud Tasks, Cloud Scheduler, and zero silent failures.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "devops"],
-    "components": ["GCP", "Pub/Sub", "Cloud Tasks", "Cloud Scheduler", "Microservices"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "GCP",
+      "Pub/Sub",
+      "Cloud Tasks",
+      "Cloud Scheduler",
+      "Microservices"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/event-driven-architecture-gcp-pubsub.html"
     }
@@ -621,8 +1270,17 @@
     "title": "The Database Bug That Took Down Our AI Pipeline: Debugging AlloyDB SSL Drops",
     "summary": "How we diagnosed and fixed random SSL connection failures in AlloyDB that caused 5% of our evaluation tasks to fail. A 3-line config change that saved hundreds of engineering hours.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "performance"],
-    "components": ["AlloyDB", "PostgreSQL", "SQLAlchemy", "Cloud Run", "Python"],
+    "themes": [
+      "infrastructure",
+      "performance"
+    ],
+    "components": [
+      "AlloyDB",
+      "PostgreSQL",
+      "SQLAlchemy",
+      "Cloud Run",
+      "Python"
+    ],
     "platforms": {
       "devto": "https://humzakt.github.io/blog/debugging-alloydb-ssl-connection-drops.html"
     }
@@ -632,8 +1290,18 @@
     "title": "How to Build Idempotent Cloud Tasks Handlers in Python",
     "summary": "The pattern that eliminated our duplicate record bugs. A practical guide using FastAPI, PostgreSQL, and deterministic UUIDs for at-least-once delivery systems.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "api-design", "devops"],
-    "components": ["Cloud Tasks", "GCP", "FastAPI", "PostgreSQL", "Python"],
+    "themes": [
+      "infrastructure",
+      "api-design",
+      "devops"
+    ],
+    "components": [
+      "Cloud Tasks",
+      "GCP",
+      "FastAPI",
+      "PostgreSQL",
+      "Python"
+    ],
     "platforms": {
       "devto": "https://humzakt.github.io/blog/idempotent-cloud-tasks-handlers-python.html"
     }
@@ -643,8 +1311,17 @@
     "title": "Zero-Downtime Embedding Migration: Switching Models in a Production RAG System",
     "summary": "Step-by-step playbook for migrating embedding models in production using pgvector. Two environment variables made the difference between a 2-day migration and a 2-week one.",
     "date": "2026-02-08",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["RAG", "pgvector", "Embeddings", "PostgreSQL", "Python"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "RAG",
+      "pgvector",
+      "Embeddings",
+      "PostgreSQL",
+      "Python"
+    ],
     "platforms": {
       "devto": "https://humzakt.github.io/blog/rag-embedding-migration-zero-downtime.html"
     }
@@ -654,8 +1331,17 @@
     "title": "Building an RL Training Arena for AI Code Agents on GCP",
     "summary": "A reinforcement learning environment for training AI coding agents. Gym-style API, Cloud Build sandboxing, Redis episode state, and Firestore trajectory recording.",
     "date": "2026-02-08",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["Reinforcement Learning", "GKE", "Cloud Build", "Redis", "Python"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "Reinforcement Learning",
+      "GKE",
+      "Cloud Build",
+      "Redis",
+      "Python"
+    ],
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/rl-training-arena-code-agents.html"
     }
@@ -665,8 +1351,17 @@
     "title": "How I Audited Our AI Platform and Found Critical Security Gaps",
     "summary": "A systematic security audit revealed SQL injection, hardcoded credentials, and secrets in production logs. Here's the methodology and how we remediated them.",
     "date": "2026-02-08",
-    "themes": ["devops", "infrastructure"],
-    "components": ["Security", "GCP", "Secret Manager", "Python", "Cloud Run"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "Security",
+      "GCP",
+      "Secret Manager",
+      "Python",
+      "Cloud Run"
+    ],
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/security-audit-ai-platform-25-critical-issues.html"
     }
@@ -676,8 +1371,19 @@
     "title": "Building the Core AI Evaluation Engine: AlloyDB Fixes, Autoscaling, and a Headless API",
     "summary": "Deep dive into the core evaluation engine covering AlloyDB SSL fixes, KEDA autoscaling, Firestore misrouting, continuous learning, and a headless API for external integrations.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "ml-ai", "devops"],
-    "components": ["Cloud Run", "AlloyDB", "GKE", "KEDA", "Firestore", "Python"],
+    "themes": [
+      "infrastructure",
+      "ml-ai",
+      "devops"
+    ],
+    "components": [
+      "Cloud Run",
+      "AlloyDB",
+      "GKE",
+      "KEDA",
+      "Firestore",
+      "Python"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/atlas-evaluations-core-engine.html"
     }
@@ -687,8 +1393,19 @@
     "title": "Building an Automated LLM Scoring Service: From Prototype to Production",
     "summary": "From idempotent Cloud Tasks to LiteLLM proxy integration, Redis state management, VPC networking battles, and a complete logging overhaul. How we shipped an automated rating service end to end.",
     "date": "2026-02-08",
-    "themes": ["ml-ai", "infrastructure", "api-design"],
-    "components": ["Cloud Run", "Cloud Tasks", "Redis", "LiteLLM", "Python", "FastAPI"],
+    "themes": [
+      "ml-ai",
+      "infrastructure",
+      "api-design"
+    ],
+    "components": [
+      "Cloud Run",
+      "Cloud Tasks",
+      "Redis",
+      "LiteLLM",
+      "Python",
+      "FastAPI"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/auto-rater-service-llm-scoring.html"
     }
@@ -698,8 +1415,17 @@
     "title": "Building an Auth Gateway with Admin Dashboard: JWT, OIDC, and Notifications Admin",
     "summary": "Authentication gateway with Google OIDC, JWT validation, Kong integration, and a notifications admin dashboard with pagination and delivery logs.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Authentication", "JWT", "Kong", "React", "Cloud Run"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Authentication",
+      "JWT",
+      "Kong",
+      "React",
+      "Cloud Run"
+    ],
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/guard-service-auth-gateway.html"
     }
@@ -709,8 +1435,17 @@
     "title": "Building a Notification Service: Cloud Tasks Delivery, Circuit Breakers, and Webhook Dispatch",
     "summary": "Production notification service with Cloud Tasks delivery, circuit breakers, dead-letter queues, subscription management, and schema migrations from scratch.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "api-design"],
-    "components": ["Cloud Tasks", "Webhooks", "FastAPI", "PostgreSQL", "Event-Driven"],
+    "themes": [
+      "infrastructure",
+      "api-design"
+    ],
+    "components": [
+      "Cloud Tasks",
+      "Webhooks",
+      "FastAPI",
+      "PostgreSQL",
+      "Event-Driven"
+    ],
     "platforms": {
       "devto": "https://humzakt.github.io/blog/notification-service-event-delivery.html"
     }
@@ -720,8 +1455,17 @@
     "title": "Building a RAG Retrieval Service: pgvector, Embedding Migrations, and Provenance Tracking",
     "summary": "RAG retrieval service with pgvector for similarity search. Emergency embedding model migration in 48 hours with zero downtime, plus provenance tracking for evaluation calibration.",
     "date": "2026-02-08",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["RAG", "pgvector", "Embeddings", "PostgreSQL", "FastAPI"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "RAG",
+      "pgvector",
+      "Embeddings",
+      "PostgreSQL",
+      "FastAPI"
+    ],
     "platforms": {
       "devto": "https://humzakt.github.io/blog/rag-service-embedding-search.html"
     }
@@ -731,8 +1475,17 @@
     "title": "Building an RL Training Arena: Gym-Style API and Cloud Build Sandboxing",
     "summary": "Reinforcement learning arena for AI coding agents. Gym-style API, Cloud Build sandboxing, Redis episode management, and a multi-step preprocessor pipeline built from the ground up.",
     "date": "2026-02-08",
-    "themes": ["ml-ai", "infrastructure"],
-    "components": ["Reinforcement Learning", "GKE", "Cloud Build", "Redis", "Python"],
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "Reinforcement Learning",
+      "GKE",
+      "Cloud Build",
+      "Redis",
+      "Python"
+    ],
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/rl-arena-executor-preprocessor.html"
     }
@@ -742,8 +1495,17 @@
     "title": "The Connective Tissue of an AI Platform: Workflow, Taxonomy, Auth, and Memory",
     "summary": "The services that turned a collection of microservices into a platform: HITL workflow orchestration with WebSocket, taxonomy-based task routing, JWT auth fixes, and LLM memory evaluation.",
     "date": "2026-02-08",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Microservices", "HITL", "WebSocket", "Python", "FastAPI"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Microservices",
+      "HITL",
+      "WebSocket",
+      "Python",
+      "FastAPI"
+    ],
     "platforms": {
       "linkedin": "https://humzakt.github.io/blog/workflow-taxonomy-platform-services.html"
     }
@@ -753,8 +1515,17 @@
     "title": "Incident Response & CLI Agent Debugging: Runbooks, Silent Failures, and Sandbox Fixes",
     "summary": "Building incident runbooks with 70+ diagnostic commands, debugging silent agent failures where exit code 0 hid API errors, and fixing sandbox environment gaps.",
     "date": "2026-02-12",
-    "themes": ["infrastructure", "devops"],
-    "components": ["Incident Response", "GKE", "Python", "CLI Debugging", "FastAPI"],
+    "themes": [
+      "infrastructure",
+      "devops"
+    ],
+    "components": [
+      "Incident Response",
+      "GKE",
+      "Python",
+      "CLI Debugging",
+      "FastAPI"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/incident-response-iflow-debugging.html"
     }
@@ -764,8 +1535,18 @@
     "title": "Systematic Service Hardening: Security, Performance, and Reliability",
     "summary": "One week, three services: fixed N+1 queries, race conditions, SSRF vulnerabilities, non-atomic counters, and wrote 124 tests where there were zero.",
     "date": "2026-02-12",
-    "themes": ["devops", "infrastructure", "performance"],
-    "components": ["Security", "Python", "FastAPI", "PostgreSQL", "asyncio"],
+    "themes": [
+      "devops",
+      "infrastructure",
+      "performance"
+    ],
+    "components": [
+      "Security",
+      "Python",
+      "FastAPI",
+      "PostgreSQL",
+      "asyncio"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/systematic-service-hardening-guard-notification.html"
     }
@@ -773,10 +1554,19 @@
   {
     "id": "production-bug-hunting-33-issues",
     "title": "How I Find Bugs in Production Code: Filing 33 Issues in One Week",
-    "summary": "A 5-layer audit methodology for production codebases — from API surface validation to security vulnerabilities. Path traversal, datetime bugs, and CORS misconfigurations.",
+    "summary": "A 5-layer audit methodology for production codebases \u2014 from API surface validation to security vulnerabilities. Path traversal, datetime bugs, and CORS misconfigurations.",
     "date": "2026-02-12",
-    "themes": ["devops", "infrastructure"],
-    "components": ["Code Audit", "Security", "Python", "GCP", "FastAPI"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "Code Audit",
+      "Security",
+      "Python",
+      "GCP",
+      "FastAPI"
+    ],
     "platforms": {
       "devto": "https://humzakt.github.io/blog/production-bug-hunting-33-issues.html"
     }
@@ -786,8 +1576,17 @@
     "title": "Building CI/CD Quality Gates That Actually Catch Bugs",
     "summary": "How I built test coverage enforcement, dynamic test discovery, and CI gates that caught invisible test files and prevented broken code from reaching production.",
     "date": "2026-02-20",
-    "themes": ["devops", "infrastructure"],
-    "components": ["GitHub Actions", "CI/CD", "Python", "FastAPI", "Testing"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "GitHub Actions",
+      "CI/CD",
+      "Python",
+      "FastAPI",
+      "Testing"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/ci-cd-quality-gates-test-infrastructure.html"
     }
@@ -797,8 +1596,16 @@
     "title": "When Your Logging Framework Crashes Production",
     "summary": "A logging adapter collision was crashing agent sessions. Here's how I built crash-proof logging infrastructure with safe_log_extra helpers and structured error recovery.",
     "date": "2026-02-20",
-    "themes": ["devops", "infrastructure"],
-    "components": ["Logging", "Python", "FastAPI", "Production"],
+    "themes": [
+      "devops",
+      "infrastructure"
+    ],
+    "components": [
+      "Logging",
+      "Python",
+      "FastAPI",
+      "Production"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/production-logging-safe-debugging.html"
     }
@@ -808,8 +1615,18 @@
     "title": "Hardening a Headless API for Production CI/CD Integration",
     "summary": "Migrating FastAPI lifecycle hooks, fixing Langfuse integration, enforcing Firestore security rules, and stabilizing a headless API used by external CI/CD pipelines.",
     "date": "2026-02-20",
-    "themes": ["infrastructure", "security", "api-design"],
-    "components": ["FastAPI", "Firestore", "GCP", "Python", "API Design"],
+    "themes": [
+      "infrastructure",
+      "security",
+      "api-design"
+    ],
+    "components": [
+      "FastAPI",
+      "Firestore",
+      "GCP",
+      "Python",
+      "API Design"
+    ],
     "platforms": {
       "medium": "https://humzakt.github.io/blog/headless-api-hardening-production-stability.html"
     }

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced — Humza Tareen</title>
+  <meta name="description" content="Swapping the product in an entire winning ad — SL-603 to SL-808 — while keeping the music, voice, and picture untouched wherever possible. Five PRs from real editor feedback, ending in an audio-only render with a byte-identical picture.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Product Engineering, TypeScript, FFmpeg">
+  <link rel="canonical" href="https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced">
+  <meta property="og:description" content="Swapping the product in an entire winning ad — SL-603 to SL-808 — while keeping the music, voice, and picture untouched wherever possible. Five PRs from real editor feedback, ending in an audio-only render with a byte-identical picture.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="FFmpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced">
+  <meta name="twitter:description" content="Swapping the product in an entire winning ad — SL-603 to SL-808 — while keeping the music, voice, and picture untouched wherever possible. Five PRs from real editor feedback, ending in an audio-only render with a byte-identical picture.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced",
+    "description": "Swapping the product in an entire winning ad — SL-603 to SL-808 — while keeping the music, voice, and picture untouched wherever possible. Five PRs from real editor feedback, ending in an audio-only render with a byte-identical picture.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/whole-ad-product-swap-deterministic-planning.html" },
+    "keywords": ["AI Video", "Product Engineering", "TypeScript", "FFmpeg"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Whole-Ad Product Swap"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Whole-Ad Product Swap: Deterministic Planning First, Model Only Where Forced</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 8 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">FFmpeg</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Variant Multiplier already let an editor swap one section of a winning ad and keep the rest. The next request from a real production job — replacing product SL-603 with SL-808, a different hearing-aid SKU, across an entire finished ad — was a different shape of problem. It's not "change one section," it's "change every mention of the product, everywhere it appears, while keeping literally everything else the same." Two direct quotes from the editor drove the whole five-PR arc: the transcript editing was too rigid for word-by-word changes, and separately, "the music, voice, etc. should retain the same, we should keep the quality the same, and not make it do a lot of changes."</p>
+
+      <blockquote>
+        If a re-render can degrade something the editor explicitly asked to keep untouched, the render path is wrong for the job — no matter how good the model is.
+      </blockquote>
+
+      <h2>The cheap fix first: let editors actually edit</h2>
+
+      <p>PR #67 shipped before any product-swap work started, because it was the cheap, high-value half of the same feedback: "I am just able to select word by word here but I am not really able to change the whole sentence a lot easier," and separately, "I'm able to double click on these words and then just type it in." Both were UI gaps in the transcript editor, not pipeline gaps — selecting by sentence or scene instead of only by word, and retyping a line verbatim instead of only substituting individual words. Shipping this first, standalone, meant the harder product-swap work that followed didn't also have to carry an unrelated UX fix in its diff.</p>
+
+      <h2>A product catalog the tool never had</h2>
+
+      <p>PR #69, stacked directly on top of the transcript work, is pure groundwork with no user-visible feature of its own: a product catalog, because Variant Multiplier had no concept of "a product" at all before this. The editor's own framing made the requirement explicit: "have a product selection right here, for Pro Bluetooth, for [the other SKU], and maybe other tons of products" going forward. The catalog data itself is maintained in the main video-generation service and synced into this tool rather than duplicated and drifted — one canonical source for product identity, read by whichever tool needs it.</p>
+
+      <h2>Planning the swap before touching a single frame</h2>
+
+      <p>PR #70 is the center of the whole arc, and its title states the engineering decision directly: plan the swap deterministically first, and only fall back to a model where a deterministic rule genuinely can't decide. The editor's own words framed the danger of the naive approach: "if I click here Pro 3.0 → Pro Bluetooth, the AI will be able to change everything" — technically true, and exactly the failure mode to avoid, because "change everything" is also how you accidentally change the music, the pacing, or the voice quality nobody asked to touch.</p>
+
+<pre><code class="language-typescript">type SwapPlanLine = {
+  lineIndex: number;
+  originalText: string;
+  matchKind: 'deterministic' | 'model-required';
+  newText: string;
+};
+
+function planLine(line: TranscriptLine, from: Product, to: Product): SwapPlanLine {
+  // exact product-name substitution: deterministic, no model call
+  if (line.text.includes(from.name)) {
+    return {
+      lineIndex: line.index,
+      originalText: line.text,
+      matchKind: 'deterministic',
+      newText: line.text.replaceAll(from.name, to.name),
+    };
+  }
+  // an indirect reference ("this device", a spec number tied to the old product)
+  // has no deterministic rule — fall to the model, scoped to this one line
+  return {
+    lineIndex: line.index,
+    originalText: line.text,
+    matchKind: 'model-required',
+    newText: null, // resolved by a scoped model call, not a blanket rewrite
+  };
+}</code></pre>
+
+      <p>The output of this PR is a plan and a per-line diff the editor reviews before anything renders — not a video. Deciding <em>what</em> changes is separated cleanly from <em>rendering</em> the change, which is what makes the next PR possible without redoing this one.</p>
+
+      <h2>Audio-only render: a byte-identical picture</h2>
+
+      <p>PR #71 renders the plan, and it's the PR that actually delivers on "keep the quality the same, don't make a lot of changes" — taken literally rather than as a vague aspiration. The existing render path, built for section swaps, re-encodes every segment through libx264 because it has to concatenate generated b-roll with master footage. Running a pure audio change through that path would re-encode, and therefore degrade, 100% of a picture that never needed to change at all. The fix instead reissues the ad with new audio and a picture that is byte-identical to the original master — no re-encode, because the video stream simply isn't touched. That's the difference between "we tried to preserve quality" and "there is no quality to lose because the bits didn't move."</p>
+
+      <h2>Captions were the gap nobody had asked about yet</h2>
+
+      <p>PR #73 came from a single follow-up question, not a bug report: if the ad has captions, do we update them? The team hadn't — because the swap copies the picture untouched, captions baked into the master's pixels survived exactly as they were, now describing the wrong product on screen while the new audio said something else. On the real SL-603 job, one caption line still read the old product's brand name on screen while the new voiceover said the new SKU's name — a rejection risk on an actual client deliverable, not a cosmetic gap. The fix regenerates captions from the finished swapped audio, so the on-screen text and the spoken audio agree again.</p>
+
+      <h2>Verifying the fix against the in-house reference, not just testing it</h2>
+
+      <p>PR #74 is a short, disciplined close-out: before considering #73 done, review its caption approach against the equivalent module in the main video-generation service, which both tools treat as the in-house reference implementation for captions. The review confirmed the approach was already right — both use subtitle-track rendering rather than burned-in draw commands, and Variant Multiplier's captions module carries forward the sibling's own hard-won caption-timing fixes rather than reinventing them. Checking a new implementation against the team's own established reference, rather than shipping the first version that passed its own tests, is what caught that this one didn't need a second round.</p>
+
+      <h2>The pattern: separate the decision from the render</h2>
+
+      <p>The core lesson across five PRs is the same one #70 states outright in its title: plan deterministically, and reach for a model only for the specific lines a deterministic rule genuinely can't resolve. A full-ad product swap sounds like it demands a single large generative pass. In practice, the vast majority of a script is exact product-name substitution — free, instant, and impossible to get subtly wrong the way a model rewrite can be. Reserving the model for the handful of lines that reference the product indirectly, and reserving a re-encode for the rare case that genuinely needs one, is what let this feature ship with a render path that provably can't degrade the 95% of the ad that was never supposed to change.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="variant-multiplier-ad-section-swap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Variant Multiplier: Swapping Sections of Winning Ads</a><br><span style="color:#8892b0;font-size:13px;">The tool this whole-ad product swap was built on top of</span></li>
+        <li style="margin-bottom:12px;"><a href="idempotency-guards-state-locks-generative-ux.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Idempotency Guards and State Locks</a><br><span style="color:#8892b0;font-size:13px;">Preserving user configuration and avoiding wasted re-renders, the same design goal from a different angle</span></li>
+        <li style="margin-bottom:12px;"><a href="dual-aspect-ratio-rendering-ai-video.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Dual Aspect-Ratio Rendering</a><br><span style="color:#8892b0;font-size:13px;">Another render-path decision built around preserving one canonical asset across variants</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

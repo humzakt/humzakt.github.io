@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree — Humza Tareen</title>
+  <meta name="description" content="Auditing an AI ad planner for failures that report success: a candidate frame scorer dormant in production, measurement code with zero callers, a self-contradicting plan that only failed at render time, and a review gate that lied about its own numbers.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Planning, Observability, Code Quality, Video Generation, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree">
+  <meta property="og:description" content="Auditing an AI ad planner for failures that report success: a candidate frame scorer dormant in production, measurement code with zero callers, a self-contradicting plan that only failed at render time, and a review gate that lied about its own numbers.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-09T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Planning">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="Code Quality">
+  <meta property="article:tag" content="Video Generation">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree">
+  <meta name="twitter:description" content="Auditing an AI ad planner for failures that report success: a candidate frame scorer dormant in production, measurement code with zero callers, a self-contradicting plan that only failed at render time, and a review gate that lied about its own numbers.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree",
+    "description": "Auditing an AI ad planner for failures that report success: a candidate frame scorer dormant in production, measurement code with zero callers, a self-contradicting plan that only failed at render time, and a review gate that lied about its own numbers.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-09",
+    "dateModified": "2026-08-09",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/planner-hardening-gates-dead-code-scorer.html" },
+    "keywords": ["AI Planning", "Observability", "Code Quality", "Video Generation"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Hardening a Video Planner"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Hardening a Video Planner: Contradiction Gates, Dead Code, and a Scorer That Can Disagree</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-09" itemprop="datePublished">August 9, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Planning</span>
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">Code Quality</span>
+        <span class="blog-tag">Video Generation</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A planner that generates a full shot list for an AI ad can be wrong in two very different ways. It can produce a bad plan — and a human or a downstream check catches it. Or it can produce a plan that is internally inconsistent, or a scoring step that never actually runs, or a review gate that reports a healthy number while the real number is something else entirely — and nothing catches it, because every individual system reported success. Across roughly fifteen PRs on the main video-generation service, I went looking specifically for the second kind: failures that pass their own checks.</p>
+
+      <blockquote>
+        The dangerous bug isn't the one that throws. It's the one where every component reports success and the composite is still wrong.
+      </blockquote>
+
+      <h2>A scorer that generated candidates and never looked at them</h2>
+
+      <p>PR #294 found that the frame-generation step created several candidate frames per scene — configurable, paid for individually — and then hardcoded <code>chosenCandidateIndex: 0</code>. Every alternative was generated, paid for, mirrored to storage, and discarded unlooked-at. That's the "generate divergently, converge by scoring" pattern from the research literature with the scoring half simply missing. The economics made the gap concrete: on a completed run, a full clip costs $1.55 and an extra candidate frame costs $0.05 — the pipeline was already paying for the option to pick the best frame and then not exercising it.</p>
+
+      <p>PR #299 found why the fix from #294 didn't show up in production output at all: both fan-out sites that would call the scorer gated on <code>!job.autopilot</code>, and autopilot <em>is</em> the production path. The scorer only ever ran when a human was manually driving the review gates — which is how it had been tested, which is exactly why the gap wasn't obvious. The gating condition had been correct when originally written; both halves of the reason had since changed underneath it, and nobody had gone back to check whether the guard still made sense.</p>
+
+      <h2>A review gate that reported 0% for a run that spent 43%</h2>
+
+      <p>PR #293 is the one I'd call the most dangerous in this batch, because of what it would have let ship unnoticed. The log line at the script-review gate is titled "reference split by seconds" but was computed entirely from the <em>plan</em> side rather than the reference — on one run it printed <code>sharePct: 0, cutawayCuts: 0, sources: 0</code>. The same run then rendered three cutaways over 43% of its runtime from two sources. An operator reading the gate before approving the run would see a report of essentially no b-roll and approve a run that actually had extensive b-roll — the review gate's entire purpose, catching a run before it ships, defeated by a metric computed from the wrong side of the comparison. This is also the PR that made the two before it, #290 and #291, trustworthy: without a correct gate reading, both of those fixes could have shipped a regression that nothing downstream would have flagged.</p>
+
+      <h2>A plan that contradicts itself, caught at the gate instead of the render</h2>
+
+      <p>PR #282 traced a real failed run back to its own plan data. One scene's <code>motion</code> field explicitly read "no person on screen," while the same scene's <code>role</code> was <code>presenter</code> and its <code>productState</code> was <code>none</code>. The frame-generation step then attached a person reference and zero product references and rendered a person holding nothing, in a scene the plan itself said shouldn't have a person in it. A second scene independently declared "no talking face" while also being typed as a presenter scene. Every fact needed to catch both contradictions was already present in the plan — nothing needed to be inferred or predicted. The fix adds a gate that gets an internally-inconsistent plan is caught before a paid render, not after one produces visibly wrong footage.</p>
+
+      <h2>Measurement code nothing calls</h2>
+
+      <p>PR #305 is a direct, deliberate audit: for every scoring or measurement function in the codebase, does anything actually read its output? Two full modules — one comparing shot lengths against a reference, one computing an energy curve over the audio — exported five functions each, all imported by the same orchestration file, and <strong>called zero times</strong>. They looked like active infrastructure from an import graph. They were pure overhead: computed, discarded, never read. The same PR made the frame scorer from #294 able to actually disagree with the default choice, closing a gap where the scorer existed, ran, and always happened to agree with candidate zero regardless of what it measured — which is a scorer in name only.</p>
+
+      <h2>A dead pipeline, kept alive by nothing but its own existence</h2>
+
+      <p>PR #275, labeled "D2," deleted an entire older scene-swap and one-shot-UGC pipeline outright, and PR #276 removed a second plan shape — <code>ugcVariant</code> — that PR #274 had already established nothing could actually request. Both deletions followed the audit discipline from #305: not "this looks unused," but "I checked every call site and there are none." PR #286 dropped two job-state fields nothing could write to anymore, for the same reason. Deleting confirmed-dead code isn't cleanup for its own sake here — every line of dead code left in a planner this size is a future false positive waiting for someone to assume it's load-bearing.</p>
+
+      <h2>A cap that outlived the reason it existed</h2>
+
+      <p>PR #292 found a scene cap that had made sense under an old architecture — when a fast-cut reference video meant one generated clip per detected shot, the cap bounded runaway cost — and had kept exactly the same numeric value long after the function computing it changed to have exactly one caller, whose output now only grounds transition boundaries rather than driving clip count. The same constant, unchanged, had silently gone from "a real cost control" to "a cap that deletes evidence the vision pass already gathered," because nobody had revisited why the number was what it was after the code around it changed.</p>
+
+      <h2>Diagnosing instead of guessing at a vendor 422</h2>
+
+      <p>PR #298 responded to a Kling failure with a message that named the wrong cause — "video duration is not supported," on a request asking for exactly the duration the vendor's own documentation allowed. Reading back the actual checkpoint data showed the error was inconsistent between otherwise-identical requests, which meant the message was misleading, not descriptive. Rather than patch around the reported symptom, the fix logs the literal request body sent on rejection and stops resubmitting an already-rejected payload verbatim. That logging is what let PR #303 resolve the real mystery two days later on its first occurrence: a 10MB payload size limit, triggered by base64 encoding inflating an image by 4/3 past the vendor's raw-byte ceiling — a bug that four separate paid diagnostic probes, at roughly six dollars total, hadn't been able to pin down until the request itself was actually logged.</p>
+
+      <h2>Never author over a legal disclosure</h2>
+
+      <p>PR #297 is the one correctness bug in this batch with a compliance dimension, and it was caught before it shipped rather than after: checking a new overlay classifier against real corpus data, before running the validation render it was built for. Every measured overlay on one reference ad was a "compensated for testimonial" disclaimer, and the classifier scored all of them as ordinary graphic beats to mirror — which would have filled each one with a line from the pipeline's own marketing script, replacing a required legal disclosure with a sales claim in the exact screen position a viewer expects the disclosure to appear, on an ad for a medical device. The fix is a hard classification rule carved out ahead of the general classifier, not a tuning adjustment to it.</p>
+
+      <h2>The pattern: check whether it fires, not just whether it's correct</h2>
+
+      <p>Nearly every fix in this cluster was correct code sitting behind a condition that silently prevented it from running, or a metric computed from data that looked plausible but was measuring the wrong side of the comparison. Unit tests on the scorer, the classifier, and the review-gate calculation would all have passed in isolation — they were internally correct. The bugs only existed at the seam between components, which is exactly where unit tests don't look and where "does anything call this in production" has to be asked explicitly, on purpose, as its own audit step.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="six-phases-ad-generator-corpus-regression.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Six Phases: Diagnosing a Regression Against a Corpus</a><br><span style="color:#8892b0;font-size:13px;">The capstone release this hardening work fed directly into</span></li>
+        <li style="margin-bottom:12px;"><a href="reference-matching-engine-inert-rollout.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Ship It Inert First</a><br><span style="color:#8892b0;font-size:13px;">The PR that found five prior PRs had zero production callers — the same failure mode from the rollout side</span></li>
+        <li style="margin-bottom:12px;"><a href="voice-pipeline-billing-lipsync-kling-v3.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Voice Pipeline Economics</a><br><span style="color:#8892b0;font-size:13px;">Wiring bugs of the same shape, one layer down the stack</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>
