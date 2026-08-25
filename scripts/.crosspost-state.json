@@ -1,1 +1,474 @@
-{}
+{
+  "57k-line-merge-rollback-reconsolidation": {
+    "id": 4488226,
+    "postedAt": "2026-08-25T20:57:26Z",
+    "url": "https://dev.to/humzakt/when-57k-lines-get-rolled-back-3bn3"
+  },
+  "ai-broll-three-phases-vision-authored": {
+    "id": 4488261,
+    "postedAt": "2026-08-25T21:04:28Z",
+    "url": "https://dev.to/humzakt/three-phases-of-ai-b-roll-from-manual-beats-to-vision-authored-cutaways-539i"
+  },
+  "ai-critic-panel-verifying-generated-ads": {
+    "id": 4488263,
+    "postedAt": "2026-08-25T21:04:33Z",
+    "url": "https://dev.to/humzakt/the-critic-panel-teaching-an-ai-pipeline-to-check-its-own-work-24n"
+  },
+  "ai-video-generation-pipeline-architecture": {
+    "id": 4488267,
+    "postedAt": "2026-08-25T21:05:09Z",
+    "url": "https://dev.to/humzakt/building-an-ai-video-generation-pipeline-from-scratch-1ka2"
+  },
+  "ai-writing-markers-huggingface-dataset": {
+    "id": 4488268,
+    "postedAt": "2026-08-25T21:05:13Z",
+    "url": "https://dev.to/humzakt/ai-writing-markers-building-an-open-dataset-and-checker-on-hugging-face-20e8"
+  },
+  "aspect-ratio-single-source-of-truth": {
+    "id": 4488270,
+    "postedAt": "2026-08-25T21:05:49Z",
+    "url": "https://dev.to/humzakt/one-source-of-truth-for-aspect-ratio-retrofitting-169-into-a-portrait-only-pipeline-5bh3"
+  },
+  "atlas-evaluations-core-engine": {
+    "id": 3263413,
+    "postedAt": "2026-03-23T11:30:00.000Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/the-firestore-default-database-trap-why-your-data-is-going-to-the-wrong-place-2kea"
+  },
+  "audit-safe-admin-bulk-operations": {
+    "id": 4488227,
+    "postedAt": "2026-08-25T20:57:40Z",
+    "url": "https://dev.to/humzakt/audit-safe-admin-tools-with-event-sourcing-o4k"
+  },
+  "auto-rater-service-llm-scoring": {
+    "id": 3263408,
+    "postedAt": "2026-03-18T11:30:00.000Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/cloud-run-vpc-networking-the-two-modes-that-cant-coexist-3fom"
+  },
+  "auto-seed-admin-controls-ai-training": {
+    "id": 4488271,
+    "postedAt": "2026-08-25T21:05:53Z",
+    "url": "https://dev.to/humzakt/auto-seed-admin-controls-building-governance-for-an-ai-training-pipeline-22c4"
+  },
+  "automated-dead-air-trimming-video-hooks": {
+    "id": 4488273,
+    "postedAt": "2026-08-25T21:06:29Z",
+    "url": "https://dev.to/humzakt/automated-dead-air-trimming-cleaning-up-leading-silence-in-short-form-video-hooks-352l"
+  },
+  "bootstrapping-engineering-standards-legacy-codebase": {
+    "id": 4488275,
+    "postedAt": "2026-08-25T21:06:33Z",
+    "url": "https://dev.to/humzakt/engineering-standards-on-a-legacy-codebase-41hp"
+  },
+  "brand-voice-avatar-profile-persistence": {
+    "id": 4488276,
+    "postedAt": "2026-08-25T21:07:09Z",
+    "url": "https://dev.to/humzakt/a-brands-voice-becomes-persistent-avatar-profiles-instead-of-per-run-re-supply-25j4"
+  },
+  "broll-cutaway-defects-library-gap": {
+    "id": 4488277,
+    "postedAt": "2026-08-25T21:07:13Z",
+    "url": "https://dev.to/humzakt/b-roll-gone-wrong-strangers-in-cutaways-color-swings-and-a-library-that-couldnt-say-no-13nk"
+  },
+  "building-ai-evaluation-platform-gcp": {
+    "id": 4488283,
+    "postedAt": "2026-08-25T21:07:48Z",
+    "url": "https://dev.to/humzakt/building-an-ai-evaluation-platform-on-gcp-architecture-of-a-multi-cluster-system-3o8a"
+  },
+  "bulk-intake-redesign-taxonomy-validation": {
+    "id": 4488228,
+    "postedAt": "2026-08-25T20:57:58Z",
+    "url": "https://dev.to/humzakt/redesigning-bulk-intake-cascading-dropdowns-taxonomy-validation-and-a-week-of-polish-33pg"
+  },
+  "ci-cd-quality-gates-test-infrastructure": {
+    "id": 4488284,
+    "postedAt": "2026-08-25T21:07:53Z",
+    "url": "https://dev.to/humzakt/building-cicd-quality-gates-that-actually-catch-bugs-407c"
+  },
+  "claim-timeout-decoupling-expert-review-ux": {
+    "id": 4488286,
+    "postedAt": "2026-08-25T21:08:28Z",
+    "url": "https://dev.to/humzakt/decoupling-claim-timeouts-from-feature-flags-4f0a"
+  },
+  "cross-tool-defect-auditing-nextjs15-hardening": {
+    "id": 4488287,
+    "postedAt": "2026-08-25T21:08:32Z",
+    "url": "https://dev.to/humzakt/systematic-cross-tool-defect-auditing-and-nextjs-15-middleware-hardening-1od4"
+  },
+  "dead-letter-queue-pipeline-reliability": {
+    "id": 4488288,
+    "postedAt": "2026-08-25T21:09:08Z",
+    "url": "https://dev.to/humzakt/dead-letter-queues-for-pipeline-reliability-2k45"
+  },
+  "debugging-alloydb-ssl-connection-drops": {
+    "id": 3263375,
+    "postedAt": "2026-02-17T19:17:12.057Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/alloydb-sqlalchemy-connection-pooling-strategies-that-actually-work-in-production-5809"
+  },
+  "dev-starter-kit-ai-coding-tools": {
+    "id": 3309572,
+    "postedAt": "2026-03-04T19:40:48.243Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/i-built-a-starter-repo-that-turns-ai-coding-tools-into-senior-engineers-1m76"
+  },
+  "docker-image-hardening-ai-benchmarks": {
+    "id": 4488229,
+    "postedAt": "2026-08-25T20:58:11Z",
+    "url": "https://dev.to/humzakt/docker-image-hardening-for-ai-benchmarks-14c7"
+  },
+  "drive-backed-asset-catalogs-runtime": {
+    "id": 4488289,
+    "postedAt": "2026-08-25T21:09:13Z",
+    "url": "https://dev.to/humzakt/drive-backed-asset-catalogs-avatars-and-products-without-code-deploys-1e2a"
+  },
+  "dual-aspect-ratio-rendering-ai-video": {
+    "id": 4488293,
+    "postedAt": "2026-08-25T21:09:48Z",
+    "url": "https://dev.to/humzakt/dual-aspect-ratio-rendering-synchronizing-169-widescreen-and-916-portrait-ai-ads-j47"
+  },
+  "enterprise-state-machine-bulk-admin-ops": {
+    "id": 4488294,
+    "postedAt": "2026-08-25T21:09:52Z",
+    "url": "https://dev.to/humzakt/taming-a-state-machine-bulk-admin-ops-503j"
+  },
+  "event-driven-architecture-gcp-pubsub": {
+    "id": 4488298,
+    "postedAt": "2026-08-25T21:10:28Z",
+    "url": "https://dev.to/humzakt/event-driven-architecture-on-gcp-pubsub-cloud-tasks-and-cloud-scheduler-in-practice-52fj"
+  },
+  "events-table-pipeline-observability": {
+    "id": 4488299,
+    "postedAt": "2026-08-25T21:10:33Z",
+    "url": "https://dev.to/humzakt/building-an-events-table-for-pipeline-observability-2415"
+  },
+  "extensible-taxonomy-system-yaml-seeding": {
+    "id": 4488303,
+    "postedAt": "2026-08-25T21:11:09Z",
+    "url": "https://dev.to/humzakt/from-fixed-levels-to-ln-building-an-extensible-taxonomy-system-4dh5"
+  },
+  "gcs-backed-auto-seeder-platform": {
+    "id": 4488231,
+    "postedAt": "2026-08-25T20:58:29Z",
+    "url": "https://dev.to/humzakt/building-a-gcs-backed-auto-seeder-platform-5f09"
+  },
+  "gcs-race-conditions-generation-fenced-leases": {
+    "id": 4488304,
+    "postedAt": "2026-08-25T21:11:13Z",
+    "url": "https://dev.to/humzakt/gcs-race-conditions-generation-fenced-leases-2047"
+  },
+  "guard-service-auth-gateway": {
+    "id": 4488305,
+    "postedAt": "2026-08-25T21:11:48Z",
+    "url": "https://dev.to/humzakt/building-an-auth-gateway-with-admin-dashboard-jwt-oidc-and-notifications-admin-21g7"
+  },
+  "headless-api-hardening-production-stability": {
+    "id": 4488307,
+    "postedAt": "2026-08-25T21:11:53Z",
+    "url": "https://dev.to/humzakt/hardening-a-headless-api-for-production-cicd-integration-25cn"
+  },
+  "hook-machine-3s-ad-openers": {
+    "id": 4488310,
+    "postedAt": "2026-08-25T21:12:28Z",
+    "url": "https://dev.to/humzakt/hook-machine-scoring-and-ranking-3-second-ai-ad-openers-4op5"
+  },
+  "idempotency-guards-state-locks-generative-ux": {
+    "id": 4488312,
+    "postedAt": "2026-08-25T21:12:33Z",
+    "url": "https://dev.to/humzakt/idempotency-transaction-guards-state-locks-in-interactive-generative-ai-ux-377n"
+  },
+  "idempotent-cloud-tasks-handlers-python": {
+    "id": 3263372,
+    "postedAt": "2026-02-19T13:30:00.000Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/how-to-build-idempotent-cloud-tasks-handlers-in-python-the-pattern-that-eliminated-our-duplicate-4gml"
+  },
+  "incident-response-iflow-debugging": {
+    "id": 4488233,
+    "postedAt": "2026-08-25T20:58:44Z",
+    "url": "https://dev.to/humzakt/incident-response-runbooks-cli-agent-debugging-and-sandbox-fixes-199a"
+  },
+  "invisible-bugs-file-type-bypass-missing-worker-runs": {
+    "id": 4488313,
+    "postedAt": "2026-08-25T21:13:08Z",
+    "url": "https://dev.to/humzakt/invisible-bugs-file-bypass-missing-worker-runs-415o"
+  },
+  "ledger-billing-reconciliation-paid-runs": {
+    "id": 4488314,
+    "postedAt": "2026-08-25T21:13:13Z",
+    "url": "https://dev.to/humzakt/what-paid-runs-found-reconciling-a-video-pipelines-cost-ledger-40aa"
+  },
+  "llm-adjudication-dedup-false-positives": {
+    "id": 4488317,
+    "postedAt": "2026-08-25T21:13:49Z",
+    "url": "https://dev.to/humzakt/when-rag-says-duplicate-but-the-llm-disagrees-building-an-adjudication-layer-2ioa"
+  },
+  "long-horizon-rl-task-pipelines": {
+    "id": 4488319,
+    "postedAt": "2026-08-25T21:13:53Z",
+    "url": "https://dev.to/humzakt/long-horizon-rl-task-pipelines-from-scenario-design-to-golden-data-3b1n"
+  },
+  "modularization-400-line-file-cap": {
+    "id": 4488322,
+    "postedAt": "2026-08-25T21:14:29Z",
+    "url": "https://dev.to/humzakt/every-god-file-split-enforcing-a-400-line-cap-across-a-video-pipeline-6jd"
+  },
+  "multi-layer-cache-dashboard-latency": {
+    "id": 4488323,
+    "postedAt": "2026-08-25T21:14:34Z",
+    "url": "https://dev.to/humzakt/multi-layer-caching-for-dashboard-latency-2c53"
+  },
+  "multi-presenter-cast-pipeline": {
+    "id": 4488234,
+    "postedAt": "2026-08-25T20:59:01Z",
+    "url": "https://dev.to/humzakt/n-person-cast-teaching-a-one-presenter-video-pipeline-to-handle-a-cast-2kn"
+  },
+  "multi-turn-agent-evaluation-persistent-state": {
+    "id": 4488327,
+    "postedAt": "2026-08-25T21:15:10Z",
+    "url": "https://dev.to/humzakt/multi-turn-agent-evaluation-at-scale-1f83"
+  },
+  "narrative-continuity-story-spine-video-gen": {
+    "id": 4488328,
+    "postedAt": "2026-08-25T21:15:15Z",
+    "url": "https://dev.to/humzakt/narrative-continuity-in-ai-video-generation-story-spine-and-lj-cut-editing-3aa9"
+  },
+  "notification-service-event-delivery": {
+    "id": 4488329,
+    "postedAt": "2026-08-25T21:15:50Z",
+    "url": "https://dev.to/humzakt/building-a-notification-service-cloud-tasks-delivery-circuit-breakers-and-webhook-dispatch-3f8c"
+  },
+  "one-call-voiceover-consolidation": {
+    "id": 4488330,
+    "postedAt": "2026-08-25T21:15:54Z",
+    "url": "https://dev.to/humzakt/from-jl-cuts-to-one-call-consolidating-a-video-pipelines-voiceover-path-8ac"
+  },
+  "pipeline-hardening-timeouts-traceability-graceful-shutdown": {
+    "id": 4488332,
+    "postedAt": "2026-08-25T21:16:30Z",
+    "url": "https://dev.to/humzakt/pipeline-hardening-timeouts-traceability-shutdown-pl9"
+  },
+  "plan-gate-contradiction-chain": {
+    "id": 4488235,
+    "postedAt": "2026-08-25T20:59:16Z",
+    "url": "https://dev.to/humzakt/the-plan-gate-contradiction-chain-when-a-planner-is-blind-to-its-own-grading-criteria-4ham"
+  },
+  "planner-hardening-gates-dead-code-scorer": {
+    "id": 4488335,
+    "postedAt": "2026-08-25T21:16:41Z",
+    "url": "https://dev.to/humzakt/hardening-a-video-planner-contradiction-gates-dead-code-and-a-scorer-that-can-disagree-3426"
+  },
+  "post-launch-audit-20-prs-48-hours": {
+    "id": 4488337,
+    "postedAt": "2026-08-25T21:17:17Z",
+    "url": "https://dev.to/humzakt/post-launch-audit-20-prs-and-12-fixes-in-48-hours-cfc"
+  },
+  "pre-spend-guards-content-aware-routing": {
+    "id": 4488338,
+    "postedAt": "2026-08-25T21:17:22Z",
+    "url": "https://dev.to/humzakt/pre-spend-guards-and-content-aware-routing-for-ai-video-apis-3ei5"
+  },
+  "presenter-generation-guardrails": {
+    "id": 4488342,
+    "postedAt": "2026-08-25T21:17:57Z",
+    "url": "https://dev.to/humzakt/guardrails-for-an-ai-presenter-spend-gates-wasted-renders-and-logs-a-redeploy-wipes-bga"
+  },
+  "production-bug-hunting-33-issues": {
+    "id": 3263402,
+    "postedAt": "2026-03-09T11:30:00.000Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/how-to-audit-production-code-a-5-layer-bug-hunting-methodology-26af"
+  },
+  "production-hardening-ai-video-pipeline": {
+    "id": 4488237,
+    "postedAt": "2026-08-25T20:59:33Z",
+    "url": "https://dev.to/humzakt/production-hardening-an-ai-video-pipeline-retries-fallbacks-and-crash-guards-l9k"
+  },
+  "production-logging-safe-debugging": {
+    "id": 4488343,
+    "postedAt": "2026-08-25T21:18:01Z",
+    "url": "https://dev.to/humzakt/when-your-logging-framework-crashes-production-56hc"
+  },
+  "production-ready-multi-turn-evaluation": {
+    "id": 4488345,
+    "postedAt": "2026-08-25T21:18:36Z",
+    "url": "https://dev.to/humzakt/production-ready-multi-turn-evaluation-5615"
+  },
+  "psx-investor-fastapi-stock-tool": {
+    "id": 4488346,
+    "postedAt": "2026-08-25T21:18:41Z",
+    "url": "https://dev.to/humzakt/psx-investor-a-fastapi-tool-for-disciplined-stock-investing-on-the-pakistan-stock-exchange-225f"
+  },
+  "qc-orchestration-agent-driven-quality": {
+    "id": 4488348,
+    "postedAt": "2026-08-25T21:19:17Z",
+    "url": "https://dev.to/humzakt/qc-orchestration-integrating-agent-driven-quality-checks-into-a-review-pipeline-170e"
+  },
+  "rag-embedding-migration-zero-downtime": {
+    "id": 3263380,
+    "postedAt": "2026-02-20T11:30:00.000Z",
+    "preExisting": true,
+    "url": "https://dev.to/humzakt/zero-downtime-embedding-migration-switching-from-text-embedding-004-to-text-embedding-3-large-in-1292"
+  },
+  "rag-service-embedding-search": {
+    "id": 4488349,
+    "postedAt": "2026-08-25T21:19:21Z",
+    "url": "https://dev.to/humzakt/building-a-rag-retrieval-service-pgvector-embedding-migrations-and-provenance-tracking-1i73"
+  },
+  "rbac-hardening-resizable-admin-panels": {
+    "id": 4488240,
+    "postedAt": "2026-08-25T20:59:48Z",
+    "url": "https://dev.to/humzakt/locking-down-an-admin-dashboard-role-guards-and-a-shared-resizable-panel-system-ab4"
+  },
+  "reference-fidelity-swipe-fixes": {
+    "id": 4488350,
+    "postedAt": "2026-08-25T21:19:57Z",
+    "url": "https://dev.to/humzakt/making-the-swipe-follow-its-reference-placement-timing-color-and-multi-shot-bundling-24n5"
+  },
+  "reference-matching-engine-inert-rollout": {
+    "id": 4488351,
+    "postedAt": "2026-08-25T21:20:01Z",
+    "url": "https://dev.to/humzakt/ship-it-inert-first-a-reference-matching-engine-that-was-dead-code-for-two-days-e2"
+  },
+  "render-web-clip-repeat-pinning": {
+    "id": 4488354,
+    "postedAt": "2026-08-25T21:20:36Z",
+    "url": "https://dev.to/humzakt/repeat-a-clip-pin-it-everywhere-fixing-instance-semantics-in-a-render-batch-tool-1p34"
+  },
+  "responses-api-support-agent-framework": {
+    "id": 4488355,
+    "postedAt": "2026-08-25T21:20:41Z",
+    "url": "https://dev.to/humzakt/adding-responses-api-to-an-agent-framework-1pb5"
+  },
+  "reverse-engineering-codebase-architecture-docs": {
+    "id": 4488363,
+    "postedAt": "2026-08-25T21:21:16Z",
+    "url": "https://dev.to/humzakt/reverse-engineering-a-codebase-into-docs-3096"
+  },
+  "reviewer-ux-click-reduction-feedback-navigator": {
+    "id": 4488364,
+    "postedAt": "2026-08-25T21:21:21Z",
+    "url": "https://dev.to/humzakt/halving-reviewer-clicks-feedback-navigator-keyboard-navigation-and-read-only-context-patterns-1d0n"
+  },
+  "rl-arena-executor-preprocessor": {
+    "id": 4488241,
+    "postedAt": "2026-08-25T21:00:05Z",
+    "url": "https://dev.to/humzakt/building-an-rl-training-arena-gym-style-api-and-cloud-build-sandboxing-ogb"
+  },
+  "rl-training-arena-code-agents": {
+    "id": 4488368,
+    "postedAt": "2026-08-25T21:21:56Z",
+    "url": "https://dev.to/humzakt/building-an-rl-training-arena-for-ai-code-agents-on-gcp-5656"
+  },
+  "seam-free-video-splicing-grade-match": {
+    "id": 4488370,
+    "postedAt": "2026-08-25T21:22:01Z",
+    "url": "https://dev.to/humzakt/seam-free-video-splicing-grade-match-end-frame-interpolation-and-karaoke-captions-3dl0"
+  },
+  "security-audit-ai-platform-25-critical-issues": {
+    "id": 4488374,
+    "postedAt": "2026-08-25T21:22:36Z",
+    "url": "https://dev.to/humzakt/i-audited-our-ai-platform-and-found-critical-security-gaps-2gnf"
+  },
+  "sft-recording-pipeline-docker-sandboxes": {
+    "id": 4488375,
+    "postedAt": "2026-08-25T21:22:41Z",
+    "url": "https://dev.to/humzakt/building-an-sft-recording-pipeline-2f7o"
+  },
+  "six-phases-ad-generator-corpus-regression": {
+    "id": 4488222,
+    "postedAt": "2026-08-25T20:57:08Z",
+    "url": "https://dev.to/humzakt/six-phases-diagnosing-an-ad-generators-regression-against-its-own-corpus-505"
+  },
+  "six-reference-sweep-eval-harness": {
+    "id": 4488243,
+    "postedAt": "2026-08-25T21:00:18Z",
+    "url": "https://dev.to/humzakt/building-a-six-reference-sweep-an-eval-harness-for-ai-video-generation-3c42"
+  },
+  "streaming-ai-video-cloud-storage": {
+    "id": 4488376,
+    "postedAt": "2026-08-25T21:23:17Z",
+    "url": "https://dev.to/humzakt/streaming-ai-generated-video-from-cloud-storage-to-browser-mo1"
+  },
+  "streaming-master-uploads-preventing-memory-exhaustion": {
+    "id": 4488377,
+    "postedAt": "2026-08-25T21:23:22Z",
+    "url": "https://dev.to/humzakt/streaming-master-uploads-to-disk-preventing-memory-exhaustion-in-video-pipelines-30a3"
+  },
+  "systematic-service-hardening-guard-notification": {
+    "id": 4488379,
+    "postedAt": "2026-08-25T21:23:57Z",
+    "url": "https://dev.to/humzakt/systematic-service-hardening-security-performance-and-reliability-1a5d"
+  },
+  "task-lifecycle-v1-schema-api-design": {
+    "id": 4488380,
+    "postedAt": "2026-08-25T21:24:01Z",
+    "url": "https://dev.to/humzakt/designing-a-task-lifecycle-v1-from-scratch-37m0"
+  },
+  "trainer-gate-qc-claim-lifecycle": {
+    "id": 4488381,
+    "postedAt": "2026-08-25T21:24:37Z",
+    "url": "https://dev.to/humzakt/trainer-gate-qc-integrating-quality-checks-into-a-multi-stage-review-pipeline-49g4"
+  },
+  "two-cache-layers-stale-data": {
+    "id": 4488382,
+    "postedAt": "2026-08-25T21:24:42Z",
+    "url": "https://dev.to/humzakt/when-two-cache-layers-serve-stale-data-5e5f"
+  },
+  "ugc-pipeline-script-first-video-generation": {
+    "id": 4488246,
+    "postedAt": "2026-08-25T21:00:37Z",
+    "url": "https://dev.to/humzakt/ugc-pipeline-script-first-ai-video-generation-1o8c"
+  },
+  "unified-status-sort-display-labels": {
+    "id": 4488387,
+    "postedAt": "2026-08-25T21:25:17Z",
+    "url": "https://dev.to/humzakt/when-display-labels-break-sorting-4dhh"
+  },
+  "universal-vendor-polling-heartbeat-template": {
+    "id": 4488388,
+    "postedAt": "2026-08-25T21:25:22Z",
+    "url": "https://dev.to/humzakt/universal-vendor-polling-one-heartbeat-template-for-every-ai-model-provider-d65"
+  },
+  "ux-polish-sprint-filter-registry-consolidated-controls": {
+    "id": 4488389,
+    "postedAt": "2026-08-25T21:25:58Z",
+    "url": "https://dev.to/humzakt/a-ux-polish-sprint-8-prs-in-48-hours-43dl"
+  },
+  "validate-before-building-technical-discovery": {
+    "id": 4488390,
+    "postedAt": "2026-08-25T21:26:02Z",
+    "url": "https://dev.to/humzakt/validate-before-building-a-technical-discovery-framework-for-startup-clients-366c"
+  },
+  "variant-multiplier-ad-section-swap": {
+    "id": 4488249,
+    "postedAt": "2026-08-25T21:00:50Z",
+    "url": "https://dev.to/humzakt/variant-multiplier-swapping-sections-of-winning-ads-into-fresh-variants-1d8c"
+  },
+  "viral-feel-parity-ai-video-ads": {
+    "id": 4488391,
+    "postedAt": "2026-08-25T21:26:38Z",
+    "url": "https://dev.to/humzakt/viral-feel-parity-making-ai-generated-ads-feel-like-the-original-3j27"
+  },
+  "vision-in-the-loop-prompt-authoring": {
+    "id": 4488392,
+    "postedAt": "2026-08-25T21:26:43Z",
+    "url": "https://dev.to/humzakt/vision-in-the-loop-when-the-ai-rewrites-its-own-prompts-from-the-generated-frame-3ie1"
+  },
+  "voice-pipeline-billing-lipsync-kling-v3": {
+    "id": 4488394,
+    "postedAt": "2026-08-25T21:27:18Z",
+    "url": "https://dev.to/humzakt/voice-pipeline-economics-double-billing-a-backwards-ladder-and-a-lexicon-that-never-reached-the-pal"
+  },
+  "whole-ad-product-swap-deterministic-planning": {
+    "id": 4488395,
+    "postedAt": "2026-08-25T21:27:23Z",
+    "url": "https://dev.to/humzakt/whole-ad-product-swap-deterministic-planning-first-model-only-where-forced-4ka7"
+  },
+  "workflow-taxonomy-platform-services": {
+    "id": 4488398,
+    "postedAt": "2026-08-25T21:27:58Z",
+    "url": "https://dev.to/humzakt/the-connective-tissue-of-an-ai-platform-workflow-taxonomy-auth-and-memory-15b9"
+  }
+}
