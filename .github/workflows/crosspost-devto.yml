@@ -1,0 +1,54 @@
+name: Cross-post to Dev.to
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [gh-pages]
+    paths:
+      - 'blog/*.html'
+
+jobs:
+  crosspost:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install --quiet beautifulsoup4
+
+      - name: Find newly added blog posts
+        id: find
+        run: |
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ] || [ -z "${{ github.event.before }}" ]; then
+            echo "No previous commit to diff against — skipping this run."
+            echo "files=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          FILES=$(git diff --diff-filter=A --name-only "${{ github.event.before }}" "${{ github.event.after }}" -- 'blog/*.html' | tr '\n' ' ')
+          echo "New post files: $FILES"
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+
+      - name: Cross-post to Dev.to
+        if: steps.find.outputs.files != ''
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+        run: python3 scripts/crosspost_devto.py ${{ steps.find.outputs.files }}
+
+      - name: Commit updated cross-post state
+        if: steps.find.outputs.files != ''
+        run: |
+          if git diff --quiet -- scripts/.crosspost-state.json; then
+            echo "No state changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/.crosspost-state.json
+          git commit -m "chore: record Dev.to cross-post state [skip ci]"
+          git push
