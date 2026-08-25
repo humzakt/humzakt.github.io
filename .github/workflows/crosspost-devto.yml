@@ -2,6 +2,11 @@ name: Cross-post to Dev.to
 
 on:
   workflow_dispatch:
+    inputs:
+      file:
+        description: 'Manually cross-post a single file (e.g. blog/some-post.html) — leave blank for normal push-triggered runs'
+        required: false
+        type: string
   push:
     branches: [gh-pages]
     paths:
@@ -25,6 +30,11 @@ jobs:
       - name: Find newly added blog posts
         id: find
         run: |
+          if [ -n "${{ github.event.inputs.file }}" ]; then
+            echo "Manual dispatch for: ${{ github.event.inputs.file }}"
+            echo "files=${{ github.event.inputs.file }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ] || [ -z "${{ github.event.before }}" ]; then
             echo "No previous commit to diff against — skipping this run."
             echo "files=" >> "$GITHUB_OUTPUT"
