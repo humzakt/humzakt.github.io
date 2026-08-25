@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Making the Swipe Follow Its Reference: Placement, Timing, Color, and Multi-Shot Bundling — Humza Tareen</title>
+  <meta name="description" content="A month of editor complaints that a swiped AI ad no longer matched its reference — traced through a three-layer role-casting bug, a word budget measured in the wrong voice, a color pipeline reading RGB as GBR, and a multi-shot bundle the planner had been computing and discarding for two weeks.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Video Generation, Color Grading, TypeScript, FFmpeg">
+  <link rel="canonical" href="https://humzakt.github.io/blog/reference-fidelity-swipe-fixes.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Making the Swipe Follow Its Reference: Placement, Timing, Color, and Multi-Shot Bundling">
+  <meta property="og:description" content="A month of editor complaints that a swiped AI ad no longer matched its reference — traced through a three-layer role-casting bug, a word budget measured in the wrong voice, a color pipeline reading RGB as GBR, and a multi-shot bundle the planner had been computing and discarding for two weeks.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/reference-fidelity-swipe-fixes.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Color Grading">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Making the Swipe Follow Its Reference: Placement, Timing, Color, and Multi-Shot Bundling">
+  <meta name="twitter:description" content="A month of editor complaints that a swiped AI ad no longer matched its reference — traced through a three-layer role-casting bug, a word budget measured in the wrong voice, a color pipeline reading RGB as GBR, and a multi-shot bundle the planner had been computing and discarding for two weeks.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Making the Swipe Follow Its Reference: Placement, Timing, Color, and Multi-Shot Bundling",
+    "description": "A month of editor complaints that a swiped AI ad no longer matched its reference — traced through a three-layer role-casting bug, a word budget measured in the wrong voice, a color pipeline reading RGB as GBR, and a multi-shot bundle the planner had been computing and discarding for two weeks.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/reference-fidelity-swipe-fixes.html" },
+    "keywords": ["AI Video", "Video Generation", "Color Grading", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Making the Swipe Follow Its Reference"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Making the Swipe Follow Its Reference: Placement, Timing, Color, and Multi-Shot Bundling</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Color Grading</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A "swipe" on the main video-generation service takes a reference ad and reproduces its structure — cuts, pacing, who's on camera when, where the product shows up — with new creative underneath. An editor's review of an early August run put it plainly: "the previous swipe pipeline beautifully replicated the scenes as per the original swiped video… now we are not even replicating the scenes." That one sentence opened a monthlong arc of thirty-odd PRs, because "doesn't replicate the reference" turned out to be four or five independent defects wearing the same coat, each one only visible once the others were peeled back.</p>
+
+      <blockquote>
+        A regression report that names one symptom can be several bugs at once. Fixing the first one you find just changes which of the others becomes visible next.
+      </blockquote>
+
+      <h2>Who's allowed to be a presenter</h2>
+
+      <p>The costliest bug in this arc took three separate PRs to actually kill, because each fix stopped short of the next layer underneath it. A short test on one reference derived fifteen presenters and zero narrated scenes from a reference that contained not one talking-head shot — turning a voiceover documentary-style ad into a wall-to-wall selfie monologue. PR #322 found the immediate cause: the code was reading "the reference has speech in this window" as "the person on screen is speaking," and in a voiceover ad every window has speech, so every window looked like a presenter shot.</p>
+
+      <p>Fixing that surfaced the second layer. PR #324 found that a cutaway window correctly returning "no signal" for its role was falling through to the planner's own guess — or a literal hardcoded string, <code>"presenter"</code> — because the fallback chain had nowhere sensible to land. A reference built from a mascot, seven live-action b-roll shots, four CGI shots, and an end-card, narrated throughout, with not one talking head, still came back with seven presenter scenes.</p>
+
+      <p>A plan-gate sweep of all six references — four dollars and change, no clips rendered — found the third layer, and it's the one that explains why the first two fixes hadn't visibly worked: the actual resolution order was <code>refRole ?? p.role ?? planHumanRole</code>. On a cutaway window, the reference-derived role is <code>undefined</code> by design — a cutaway says nothing about who's in the scene beneath it — so the planner's guess was winning the coin toss before the corrected default ever got consulted. Three PRs, three fixes, and only the third one actually changed the resolution order that mattered. The first two were both correct and both insufficient, which is a harder thing to notice than being simply wrong.</p>
+
+      <h2>A word budget measured in someone else's voice</h2>
+
+      <p>PR #332 traced the ad's pacing drift — consistently too slow, consistently running long against its reference — to a single parameter with an easy-to-miss error: the per-scene word budget was computed at the <em>reference speaker's</em> words-per-second, not the pipeline's own voice model's rate. A reference narrated at 3.6 words per second produced a script sized for 3.6 words per second, delivered by a voice that speaks at 2.75. That script cannot fit by construction — no downstream fix recovers it, because trimming copy is explicitly banned and the audio time-stretch is capped well below what the gap would require. The picture just gets sized to accommodate copy that was never going to fit its own clip.</p>
+
+      <p>The dead-air gate meant to catch under-length lines had the identical bug from the other direction. PR #336 found it demanding nine words for a three-second scene, when that scene's actual speakable budget — at the correct voice rate, accounting for a mandatory breath — was seven. A line written exactly to the correct budget was being flagged as a defect, while a line that passed the check couldn't actually fit its clip. Two mechanisms measuring the same quantity with two different, uncoordinated formulas, and each one invisible precisely because the failure only shows up as "the ad feels slow," which is exactly the vague complaint that started this whole arc.</p>
+
+      <h2>The bundle the planner had been building and throwing away</h2>
+
+      <p>This is the single most expensive bug in the batch, in the literal sense: it made every clip cost more than it needed to for two weeks before anyone found it. Kling's three-second minimum clip length applies per <em>generation</em>, not per shot — but every scene was rendered as its own generation, so every scene paid that floor individually, even when the reference cut it was matching lasted under a second. A 2.2-second reference cut became a 3-second scene. Stacked across an ad, that's the exact mechanism behind "pacing doesn't match the input video": a 7.9-second sequence in the reference rendering as 15 seconds of ad.</p>
+
+      <p>PR #318 found the fix already half-built and entirely unused: <code>planMultiShotGroups</code> had been computing which scenes could share one generation — and persisting that computation to the job record — on every single run since August 12th. It had zero readers. The bundling logic existed, ran, cost nothing extra, and its output sat in the database unconsumed for a fortnight while every scene kept paying the floor it was supposed to eliminate. PR #330 is the follow-up that actually wires the bundle into rendering, and the header number makes the stakes clear: every output had been overrunning its reference by 30 to 60 percent against a 5 percent target, entirely from this one mechanism.</p>
+
+      <p>Bundling correctly meant answering harder questions honestly rather than guessing. PR #413 ran six paid probes specifically to establish where a cut actually lands inside a multi-shot generation — a claim in the code's own comments turned out to be wrong once measured against real frames, with sub-three-second shots silently merging into one continuous take with no cut at all rather than the hard cut the code assumed. PR #433 found the operational cost of bundling on the back end: once a scene's picture comes from a shared bundle rather than its own generation, a "redo" request for just that scene has nowhere to send its edited prompt, and a same-vs-different comparison used to gate a re-render was reading a stale canonical clip and silently discarding paid takes that were, in fact, better than what shipped.</p>
+
+      <h2>Color that drifts, and a channel that was never right</h2>
+
+      <p>An ad assembled from N separate Kling generations is N separate video shoots as far as color is concerned — each clip drifts from its own starting frame independently, so a finished ad reads as clips from different cameras on different days. PR #316 built shot-to-shot color matching for exactly this reason, on the explicit principle "balance first, look second": an earlier attempt at a stylistic look — grain, vignette, contrast, gamma — had been rejected because applying a look on top of an unbalanced base just multiplies the differences that were already there instead of hiding them.</p>
+
+      <p>PR #343 found that the color-matching pipeline itself had a channel-order bug hiding underneath a plausible-looking filter chain: the source was converted to a planar pixel format ordered green-blue-red, and the color-lookup filter applied afterward indexed its lookup table assuming red-green-blue order. A correction authored in RGB was being read in GBR, so every color adjustment landed one channel over — measured directly on a known input color, halving the wrong channel entirely. Two independently correct-looking pieces of a pipeline, composed in the wrong order, producing a result that was confidently, specifically wrong rather than merely approximate.</p>
+
+      <h2>The reference decides, not the script</h2>
+
+      <p>A recurring theme across this whole arc is a planner making decisions from its own script when it should have been deferring to the reference it was supposed to be copying. PR #334 found that automatic cutaway insertion read only the script's own dialogue and authored brand-new spoken lines for each cutaway it inserted — after the plan-gate pacing check had already run, so the newly authored words were invisible to the very check meant to catch pacing drift. PR #344 names the rule this violated directly: nothing should author spoken words the editor didn't write, full stop — authoring copy is the planner's job at plan time, not something a downstream pass gets to do quietly on its own initiative afterward.</p>
+
+      <p>PR #345 closes the loop on where authority over length actually sits: the reference supplies structure — beat count, cut placement, who's on camera — but an ad-length ceiling constant had been silently bounding the rendered picture through the timing engine's own scale-and-fill logic, while nothing anywhere was shortening the words filling that picture. The fix is a statement of priority as much as a code change: the script is the ad's ground truth for length, and a numeric ceiling doesn't get to override that by squeezing the frame around copy it never touched.</p>
+
+      <h2>A gate that measured a plan nobody shipped</h2>
+
+      <p>PR #333 is the finding I'd flag as the sharpest in the batch, because of what it says about validating a check rather than just the thing it checks. The plan-gate pacing report was computed from the planner's raw output — correctly, at the moment it ran — but two more passes happened after that checkpoint: automatic cutaway insertion, and a product-reveal backstop that could rewrite other scenes. The gate's own persisted numbers described a draft that had already been discarded by the time the ad actually rendered. One reference's gate reported an 11 percent overrun; the shipped ad actually ran 40 percent over. A pacing gate that measures the wrong version of the plan is worse than no gate at all — it actively tells an editor the ad is fine while the ad that ships is not the ad it measured.</p>
+
+      <h2>The pattern: fix what the ad actually became, not what it was supposed to be</h2>
+
+      <p>Almost every defect in this arc has the same shape: something measured, gated, or authored an earlier version of the ad than the one that actually shipped. A gate that checked a discarded draft. A word budget computed in a voice nobody was using. A bundling optimization that ran and persisted and never got read. A color correction authored in the right color space and applied in the wrong one. None of these needed a better model or a smarter prompt. They needed someone to measure the artifact that actually left the building, at the moment it left, instead of trusting that an earlier, cheaper checkpoint upstream still described it.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="six-reference-sweep-eval-harness.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building a Six-Reference Sweep</a><br><span style="color:#8892b0;font-size:13px;">The eval harness that surfaced most of these bugs in the first place</span></li>
+        <li style="margin-bottom:12px;"><a href="one-call-voiceover-consolidation.html" style="color:#64ffda;text-decoration:none;font-size:15px;">From J/L-Cuts to One Call</a><br><span style="color:#8892b0;font-size:13px;">The continuous-voiceover work that grew out of the pacing fixes here</span></li>
+        <li style="margin-bottom:12px;"><a href="dual-aspect-ratio-rendering-ai-video.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Dual Aspect-Ratio Rendering</a><br><span style="color:#8892b0;font-size:13px;">An earlier fidelity problem on the same rendering pipeline</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

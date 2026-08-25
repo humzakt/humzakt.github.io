@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building a Six-Reference Sweep: An Eval Harness for AI Video Generation — Humza Tareen</title>
+  <meta name="description" content="Packaging a render-six-references-and-measure workflow into a reusable skill for an AI ad generator, and the audit backlog it surfaced: dead flags, a stop-ship brand gate, a misspelled brand name on a finished master, and a documentation culture that corrects its own wrong claims.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Evaluation, Video Generation, Observability, Cost Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/six-reference-sweep-eval-harness.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building a Six-Reference Sweep: An Eval Harness for AI Video Generation">
+  <meta property="og:description" content="Packaging a render-six-references-and-measure workflow into a reusable skill for an AI ad generator, and the audit backlog it surfaced: dead flags, a stop-ship brand gate, a misspelled brand name on a finished master, and a documentation culture that corrects its own wrong claims.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/six-reference-sweep-eval-harness.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Evaluation">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building a Six-Reference Sweep: An Eval Harness for AI Video Generation">
+  <meta name="twitter:description" content="Packaging a render-six-references-and-measure workflow into a reusable skill for an AI ad generator, and the audit backlog it surfaced: dead flags, a stop-ship brand gate, a misspelled brand name on a finished master, and a documentation culture that corrects its own wrong claims.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building a Six-Reference Sweep: An Eval Harness for AI Video Generation",
+    "description": "Packaging a render-six-references-and-measure workflow into a reusable skill for an AI ad generator, and the audit backlog it surfaced: dead flags, a stop-ship brand gate, a misspelled brand name on a finished master, and a documentation culture that corrects its own wrong claims.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/six-reference-sweep-eval-harness.html" },
+    "keywords": ["AI Evaluation", "Video Generation", "Observability", "Cost Engineering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Building a Six-Reference Sweep"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Building a Six-Reference Sweep: An Eval Harness for AI Video Generation</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Evaluation</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">Cost Engineering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>"Watch the render" does not scale as a QA strategy for an AI ad generator, and it does not catch what matters most: a brand name misspelled on a finished, paid-for master; an ad that runs 30 seconds long for reasons nobody can name; a gate that reports success while doing nothing. On the main video-generation service, the fix was building a repeatable sweep — render against six reference ads, measure the output against ground truth, and treat the whole workflow as a versioned, reusable skill instead of a one-off script somebody remembers how to run. What that sweep found, over roughly three weeks, is a better story than the harness itself.</p>
+
+      <blockquote>
+        A report that only prints what it can measure quietly teaches the reader that what it measures is what matters. The gap between what a verifier scores and what a human notices watching the ad is itself a finding — and it belongs above the measurements, not in an appendix.
+      </blockquote>
+
+      <h2>Packaging the workflow before the next person has to rediscover it</h2>
+
+      <p>The sweep started as a script somebody ran twice. PR #340 turned it into <code>.claude/skills/swipe-fleet/</code> — a SKILL.md plus ten scripts covering a cheap plan-gate sweep that bills no clip generation at all (roughly $4), a six-render fleet with autopilot verification, metric collectors, a finished-master audit, and a report builder. The document's value isn't the scripts — it's the parts that cost real money to learn the first time: sweep before you render, because the gate has already caught six defects that would each have wasted a full fleet run; wait for a deploy to hold five minutes before trusting it, because two queued merges can trigger two deploys and three sweeps had already died mid-run to exactly that race; and the API's <code>autopilot</code> flag accepts only the literal string <code>"1"</code> — passing <code>"true"</code> is silently false, and the job parks looking exactly like a slow render with nothing in the logs to say otherwise.</p>
+
+      <p>The first real fleet run immediately validated the reason to write any of this down. PR #341 found that the harness's own job-id parser used a BSD <code>sed</code> alternation pattern that doesn't exist on BSD sed — every launch read back an empty string, every one of six running jobs was logged as "did NOT take autopilot," and the script recorded none of the six jobs it had itself just started, which were all running correctly the whole time. The tooling built to catch the pipeline's bugs had a bug of its own, in the same class it existed to find: something silently reporting failure, or reporting nothing, while doing real work underneath.</p>
+
+      <h2>A report is a comparison, not a description</h2>
+
+      <p>PR #342 made a small but important architectural choice: the six reference videos being swiped need to be as durable and inspectable as the outputs generated from them. The finished masters already landed in cloud storage through the normal job pipeline; the references themselves arrived as a multipart upload, lived at a temp path for the run's duration, and were gone afterward. A verification report that links a claim about "how closely this matches the reference" to a reference nobody can actually watch isn't verifiable — it's an assertion wearing a report's clothing. Uploading the six inputs to their own tracked folder turned every claim in the report into something a skeptical reader could check.</p>
+
+      <h2>The first six defects</h2>
+
+      <p>PR #349 closed six defects the first real fleet run exposed, each independently reviewable with its own evidence: the wrong image model had become the default frame renderer, because an "auto" provider setting silently meant "use the other model whenever its key happens to be configured" — nobody had chosen that, and it had also dropped the size and quality parameters that were supposed to reach whichever model actually rendered. A second fix: the reference video should supply camera grammar — arc, framing, beat timing — never nouns, because one reference closed beside a cartoon mascot and a shelf of unrelated product jars, and a naive "copy the reference's motion description" pass had started copying the objects in frame along with the camera move. The fix redacts nouns rather than trying to enumerate a forbidden list, because a prohibition that names a specific jar is itself a way of drawing attention to one.</p>
+
+      <p>PR #350 found the fix from #349 was incomplete on its first real clip: a field called <code>refMotionIntent</code> — meant to carry only the reference's camera and pacing grammar — still handed the CLIP-generation prompt a full sentence of the reference's own action, subject included, and a personless product cutaway came back with someone else's product literally poured into frame. The matcher that was supposed to catch these leaks was also too weak: the extractor had recorded "cream jar" while the prose said "the second jar," and a multi-word term needs to match on its head noun, not require an exact string match, to catch a paraphrase. PR #351 re-ran the same reference after the fix and confirmed something worth stating on its own: the guard removed the leaked noun while <em>keeping</em> the camera-and-pacing grammar the field exists to carry, on all 14 of 14 scenes. A guard that fixes a leak by emptying the whole field would pass the same leak test while destroying the actual feature.</p>
+
+      <h2>The inert-fix pattern, again</h2>
+
+      <p>PR #352 raised a verifier's retry ceiling from one attempt to three, and the PR description is candid about something worth calling out directly: raising the constant alone changed nothing, because the calling code read the new ceiling and then made exactly one attempt regardless of its value. "This repo has hit this exact inert-fix failure three times" is the PR's own accounting, not a guess — a config value changed without checking that anything downstream actually consumes it differently is a recurring, nameable bug class here, not a one-off. The economics behind raising the ceiling at all are worth stating too: both gates that can trigger a redo run <em>before</em> the expensive clip generation step, against a roughly $0.10 frame rather than a $1.26 clip, so three attempts cost about a quarter of one full clip to fix the frame the clip gets built from.</p>
+
+      <h2>Honesty bugs in the instrument itself</h2>
+
+      <p>PR #353 found two ways the report generator itself was lying, not about the pipeline but about its own scope. It described a single-input verification render as a fleet of six — title, KPI, and loudness claim all said "six references" while the actual measurement covered one, because scope had never been derived from the real measurement data, only assumed from the script's usual invocation. Separately, an "articulation rate" metric had been sold as the direct, load-bearing answer to a standing pace complaint, but its measurement window ran from first word to last, so long interior pauses fell entirely inside a number meant to describe delivery speed — a caption-conform pass that only changed pause placement, not delivery, moved the reported number from −17% to −31% with identical spoken pace. A reader trusting the headline number alone would conclude the delivery had gotten worse, when nothing about how anyone spoke had changed at all.</p>
+
+      <h2>The build that carries every fix, measured</h2>
+
+      <p>PR #354's final verification run put a number on three sweeps' worth of fixes on the actual artifact rather than the theory of it: tail silence went from 12.3 seconds (19% of runtime) to zero, matching the reference exactly; library-sourced cutaways went from zero of nine to seven of nine; bare, personless product stills went from four to zero; scenes whose generated content didn't match their own plan went from seven of twelve to one of twelve. The three-attempt critic loop from #352 spent roughly $0.60 across ten actual redos against a ceiling of twelve per run, converging in the way you'd want — scenes that already passed bought nothing, scenes that failed stopped retrying the moment nothing failed anymore, and the ceiling nearly bound, which is the argument that it needed to exist at all rather than being an arbitrary safety number.</p>
+
+      <h2>Stop-ship: bugs that fail after the money is already spent</h2>
+
+      <p>PR #357 and #358 are where the sweep found its sharpest results, and #358 is explicit about the stakes: these were <strong>wave 0</strong> of the audit, called out because with the code as it stood, all six paid renders in the next sweep would fail <em>after</em> the money was spent. The brand-name gate was exactly inverted — its normalization step stripped the very hyphen that distinguished the correct brand alias, so it threw on the spelling the pipeline had just correctly restored and passed the misspelled version that actually shipped, ending the job <code>failed</code> after the master had already been built. Separately, the product-appearance redo step was grading a clip against the wrong file entirely — it probed the original take rather than the versioned regeneration — so "is the new take better" was structurally always false, and one hundred percent of product redos in production were being paid for and then discarded regardless of whether they'd actually improved anything.</p>
+
+      <p>PR #357 found the plan-gate script itself never created the directory it wrote its results to — every write silently failed, zero verification jobs launched, and the script printed a success marker and exited 0 anyway: a sweep that measures nothing while reporting that it succeeded, which is precisely the failure mode the entire harness exists to prevent, discovered inside the harness.</p>
+
+      <h2>When the report itself understates or overstates a defect</h2>
+
+      <p>PR #361 closed three bugs specifically in the measurement layer — not the pipeline, the thing reporting on the pipeline. A single flagged defect could double-count itself, because a "warn:product-drift" flag matched both a named-drift filter and a generic warning filter, turning one real issue into what read like a pattern of three. A talking-head ad with no b-roll cutaways at all — correctly, by design — rendered its "library share" as a red 0%, indistinguishable from a talking-head ad that should have had cutaways and didn't get any; "not measured" and "measured at zero" are different findings that a null-coalescing default had quietly collapsed into one. And a fleet-wide library-share statistic was computed as an unweighted mean of six percentages, so one ad with a single library-sourced clip at 100% could numerically cancel out an ad with twenty cutaway spans at only 30% coverage — a ratio needs weighted numerators, not an average of percentages.</p>
+
+      <h2>Deleting seventeen flags that never had a reader</h2>
+
+      <p>PR #362 removed sixteen feature flags with zero code paths reading them — each verified individually to have no reader before deletion, not taken on faith from an audit list, because two items on that same list turned out to be wrong on inspection. The worst of the sixteen was a flag defaulting <strong>ON</strong> that advertised a color-grading pass the pipeline doesn't actually contain — every operator using the create form's Advanced panel was toggling a switch that did nothing, with no way to tell from the UI. PR #363 found the sibling problem one layer deeper: two settings the same panel offered were connected to a filename-parsing function that split on a hyphen no builder's actual filenames contained, so the mapping silently returned undefined and every product reference sent through one code path carried no role label at all — invisible specifically because an unrecognized name was designed to fail open rather than break the render, which is exactly the property that let the bug hide.</p>
+
+      <h2>A brand name, misspelled twice, on a $17.98 finished master</h2>
+
+      <p>PR #368 is the sharpest single defect the sweep caught, because it was measured directly on a shipped artifact rather than inferred from logs. A 71.3-second captioned ad burned the product's own brand name incorrectly, twice, once inside the call-to-action, and the brand-name gate — no longer inverted, that stop-ship bug already fixed — still didn't catch it, because the gate only recognized one specific configured misspelling and a speech-to-text transcriber had invented a third, different misspelling the gate had never been told about. PR #369 found the report generator had independently rated that exact caption text "brand ok" — a defect that a report affirmatively certifies as fine is worse than one it simply misses, because it converts a real problem into written evidence that no problem exists. PR #371 fixed and validated the specific error at effectively zero additional cost, by re-burning captions onto the existing master rather than re-rendering the whole ad from scratch — proof that a caption-path fix doesn't need a $15 re-render to verify, if the render pipeline supports patching the affected layer in isolation.</p>
+
+      <p>Then PR #373 corrected the previous day's own claim: the brand repair was incomplete. The near-miss detector required a misspelling to share its first four letters with the correct spelling, which catches orthographic slips like a dropped hyphen but not a purely phonetic mishearing — a transcriber that hears the brand name as a completely different-sounding sequence of letters defeats a letter-prefix check by construction, because speech-to-text mishears sound, not spelling. Correcting a claim made one day earlier, in writing, at the top of the next day's handoff, is a small thing that matters more than it looks: it means the documentation is tracking what's actually true rather than what was hoped to be true.</p>
+
+      <h2>Ad length was never about word count</h2>
+
+      <p>PR #370 overturned a standing, repeatedly-cited position — that ad length was fundamentally a word-count problem with no engineering lever — by decomposing one measured overshoot directly: of a 30-second gap between the generated ad and its reference, 22.3 seconds came from delivery pace and only 7.9 seconds came from the extra 30 words actually spoken. The pipeline's voice was speaking at 2.61 words per second against the reference's 3.80 — 31% slower — and the same word count delivered at the reference's own pace would have run 48.7 seconds, not 71. Length was an engineering problem with a real lever after all; the lever previously cited by name in the project's own decision log had been deleted two PRs earlier for not actually existing in the code it was supposedly gating.</p>
+
+      <p>PR #376 pushed the same measurement one level deeper and overturned the round's own headline diagnosis in the process: the pace metric being tracked measured words divided by the full span from first word to last, which includes every interior pause inside the "speaking rate." Recomputed correctly on the delivered master, the pipeline's actual articulation rate matched the reference almost exactly — the true story wasn't that the delivery was slow, it was that 31% of the ad's runtime, 26 individual pauses of at least 0.3 seconds, was silence the pace metric had been folding invisibly into "speaking slower."</p>
+
+      <h2>A documentation culture built to be checked, not trusted</h2>
+
+      <p>PR #355, #365, #374, and #375 are, on the surface, "just docs" commits, and they're some of the most valuable work in this entire cycle. #355 audited a handoff document against what the session had actually done rather than assuming its own summary was accurate, and found five gaps a future reader would have hit — two of which would have caused an outright misreading. #365 replaced a "here's what shipped" handoff with a corrections table: eight specific claims from the previous handoff, named individually, that did not survive being checked against the real code, because acting on any of them would have wasted money or broken something that already worked. #374 put what a human editor actually noticed watching two finished ads <em>above</em> the automated measurements in the report, explicitly, because none of the real defects a person caught by watching had shown up in a single measured field — the gap between what gets measured and what gets noticed is the finding, not a footnote to it. #375 caught a "what's left to do" list that was actively wrong: its first, blocking item was work already finished two sweeps earlier, and following the document as written would have re-spent roughly $22 reproducing output that already existed.</p>
+
+      <h2>Closing the audit, then adding the capstone</h2>
+
+      <p>PR #366 finished the backlog with five more fixes, re-verifying each one against the current code before acting because three items on the original audit list didn't survive that check either — including a billing gap where a vendor's own internal retry loop could generate the same paid clip three times while the cost-tracking call sat outside the retry, billing once for three generations. PR #445, months of sweeps later, is admirably candid about a result that "does not flatter the work": an automatic re-authoring pass meant to fix a detected mismatch improved the outcome in only one of the four cases it triggered on, changed nothing in the other three, and never made anything worse — a real but modest win, reported as exactly that rather than rounded up. PR #483 closes the arc by adding Langfuse tracing and turning the plan-gate sweep into a repeatable, versioned dataset run with deterministic scores computed from measurements the pipeline was already collecting — verified, in the PR's own words, "against the artifact, not the code," by emitting one real trace and reading it back over the API rather than trusting that the instrumentation code looked correct.</p>
+
+      <h2>The pattern: measure the artifact, and let the docs be wrong out loud</h2>
+
+      <p>Two disciplines run through every PR in this cycle. The first is refusing to trust a claim that hasn't been checked against a real, shipped output — a rendered frame, a burned caption, a billing line, a trace read back from the observability vendor's own API — over a claim that only lives in code review or in a previous document. The second is a documentation habit that treats being wrong yesterday as a normal, recordable event rather than something to quietly patch over: correcting a claim in writing, at the top of the next handoff, cost nothing and saved the next reader from re-spending real money on work that was already done, or trusting a fix that wasn't actually complete. Neither discipline requires better models or more compute. Both require deciding, as a matter of process, that a report's job is to be checkable, not to be reassuring.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="reference-fidelity-swipe-fixes.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Making the Swipe Follow Its Reference</a><br><span style="color:#8892b0;font-size:13px;">The reference-fidelity fixes this sweep methodology was built to verify</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel</a><br><span style="color:#8892b0;font-size:13px;">The verifiers this sweep exercises, and the ways a critic itself can be wrong</span></li>
+        <li style="margin-bottom:12px;"><a href="six-phases-ad-generator-corpus-regression.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Six Phases: Diagnosing a Regression Against a Corpus</a><br><span style="color:#8892b0;font-size:13px;">An earlier cycle's version of the same measure-before-you-trust discipline</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

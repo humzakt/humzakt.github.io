@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>What Paid Runs Found: Reconciling a Video Pipeline's Cost Ledger — Humza Tareen</title>
+  <meta name="description" content="Real money billed at $0, a resume path that silently re-decided a paid render's settings, a $0.82 measurement of the wrong build, and a reconciliation script that had to recount artifacts because nobody had vendor dashboard access.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Cost Engineering, Observability, Video Generation, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ledger-billing-reconciliation-paid-runs.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="What Paid Runs Found: Reconciling a Video Pipeline's Cost Ledger">
+  <meta property="og:description" content="Real money billed at $0, a resume path that silently re-decided a paid render's settings, a $0.82 measurement of the wrong build, and a reconciliation script that had to recount artifacts because nobody had vendor dashboard access.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ledger-billing-reconciliation-paid-runs.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What Paid Runs Found: Reconciling a Video Pipeline's Cost Ledger">
+  <meta name="twitter:description" content="Real money billed at $0, a resume path that silently re-decided a paid render's settings, a $0.82 measurement of the wrong build, and a reconciliation script that had to recount artifacts because nobody had vendor dashboard access.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "What Paid Runs Found: Reconciling a Video Pipeline's Cost Ledger",
+    "description": "Real money billed at $0, a resume path that silently re-decided a paid render's settings, a $0.82 measurement of the wrong build, and a reconciliation script that had to recount artifacts because nobody had vendor dashboard access.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ledger-billing-reconciliation-paid-runs.html" },
+    "keywords": ["Cost Engineering", "Observability", "Video Generation", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"What Paid Runs Found"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">What Paid Runs Found: Reconciling a Video Pipeline's Cost Ledger</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 10 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Nobody on this project has vendor dashboard access. That single operational fact, stated plainly in more than one PR description, is the reason a cost ledger on the main video-generation service went from "probably fine" to actually verified — and the reason verifying it took longer than writing it. You cannot check a number against a source of truth you don't have. You can only check it against itself, from a different angle, and see whether the two angles agree.</p>
+
+      <blockquote>
+        A measurement script that breaks does not fail loudly. It publishes a wrong number, and a wrong number that looks plausible is worse than no number at all.
+      </blockquote>
+
+      <h2>Six defects, one shape: reads correctly, reports success, does nothing</h2>
+
+      <p>The ledger audit (PR #360) found six separate billing defects, and every one had the same signature: code that read as correct, compiled, and produced a log line indicating success — while the actual charge silently vanished or landed wrong. A billing idempotency note was keyed from a module-level counter that reset to zero on every redeploy, while the note history itself survived in a Drive snapshot; Railway restarts mid-run routinely, so a resumed run's first metered call regenerated a note that already existed, and the dedup logic dropped a charge the vendor had genuinely billed. A checkpoint-invalidation function and the ledger's own deduplication were treated as one fact when they were two — invalidating a checkpoint said "this artifact no longer exists," which triggered a real re-render and a real vendor charge, while the ledger dedup logic, unaware anything had changed, kept believing the old note still covered it. Every editor click of "fix this scene" was a real $1.26–$2.10 charge landing at $0 in the books.</p>
+
+      <p>The fix for the second bug is worth pausing on, because it's a defensive pattern in its own right: rather than trust fourteen call sites to remember to drop the stale cost note when invalidating a checkpoint, the drop was moved <em>inside</em> the invalidation function itself. A caller that forgets doesn't fail loudly — it silently bills at zero, which is the one failure mode a fourteen-site checklist can never fully close.</p>
+
+      <h2>A resume path that re-decided the render instead of resuming it</h2>
+
+      <p>The same PR found a second class of bug hiding in the resume path. <code>restoreFromFolder</code> rebuilds a job by hand after a restart, and it omitted four fields — the run's settings, its engine choice, its aspect ratio, and an image-model pin. Those weren't left unset. A downstream function re-pins anything absent, using whatever the <em>current</em> environment happens to be — so a run that started at 9:16 could finish at 16:9, or silently change rendering engines mid-render, purely because it happened to restart. The bug isn't visible as an error anywhere; it's visible only as a delivered video that doesn't match the settings the editor originally chose, discovered well after the run has been paid for.</p>
+
+      <h2>Building the check that could actually run</h2>
+
+      <p>PR #372 responds to an impossible verification instruction: a prior handoff had named "compare the ledger against the fal/OpenAI/ElevenLabs dashboards" as the only proof the wave-1 fixes worked. Nobody has that access. An unprovable check is not a check — it's a line item that never gets ticked. The alternative built here, <code>reconcile-ledger.mjs</code>, recounts every paid artifact from the job's own persisted state, prices each one using the codebase's own rate constants, and compares that expected range against what the ledger actually recorded:</p>
+
+<pre><code>clips rendered 15 | clips charged 15  (9 scene + 6 span)
+frames 31 | clip-critic 48 | tts 1004 chars
+expected $13.82 .. $18.21    ledger reports $17.98    VERDICT: CONSISTENT</code></pre>
+
+      <p>That doesn't prove the vendor's per-second price matches the code's constants — no dashboard access means that gap stays open, and the script says so honestly in its own output rather than burying the caveat. What it does prove is narrower and still real: no charge silently dropped, and no charge silently missing. The PR also caught its own near-false-positive before shipping: a cutaway scene has no per-scene billing note at all, because its picture is billed under a b-roll span note instead — six consecutive scenes on one real job that look unbilled and aren't. Checking that distinction before raising it as a bug is, as the PR puts it, the difference between writing a tool and reporting an incident.</p>
+
+      <h2>The report that disagreed with its own ledger</h2>
+
+      <p>PR #382 replayed an actual paid production run through an improved plan-gate and got eleven errors on a plan that had originally shipped with zero — sixteen warnings, autopilot-approved, and three of the eleven were defects a downstream frame critic had already reported, <em>after</em> the clips were purchased. The plan's own acceptance criteria described a closed white oval case; the critic that ran afterward reported no case visible at all, only a ceramic mug. The gate hadn't been wired to check what the critic was already catching on its own, one stage later and at full clip cost.</p>
+
+      <p>The same replay found a second, sharper bug: every one of fifteen billing events for a completed render was priced at exactly $0.14 per second, cleanly matching one vendor tier's rate — on a run whose actual ledger had charged the other tier's rate, $0.112 per second. The root cause was almost embarrassingly simple once found: the function that recorded the cost passed a full pricing specification, and the function that emitted the reporting event passed the bare string <code>"pro"</code>. Two code paths deriving the same fact, one of them wrong, and nobody had noticed because the wrong number was still a plausible-looking number. As the PR notes about the fix: expect reported totals to rise with no change in real spend. That's the fix working, not a regression — which is exactly the kind of sentence that needs to be said explicitly, because a number going up looks like bad news until you know why.</p>
+
+      <h2>A reconciler with four bugs of its own</h2>
+
+      <p>PR #389 ran the new reconciliation script against all three paid production runs instead of just the newest one — and found the reconciler itself had four defects, discoverable only by testing it against more than a single lucky case. It had no concept of a multi-shot bundle, so a bundled group's members carried no individual billing note and the script reported "3 rendered clips carry no charge" on a ledger that was actually fine — a false alarm that had been silently wrong on <em>every bundled run since the feature shipped</em>. It attributed bundle membership by parsing a note's name rather than reading the actual persisted group data, which happened to balance by coincidence on one run while misattributing six scenes on another. It summed two separate ledgers together, reporting "15 rendered, 21 charged" in a way that read as overbilling when it was actually scene coverage plus separate b-roll asset charges added together. And it omitted two whole cost categories — voice cloning and QA passes — which on one run accounted for $0.71 of what looked like a $1.17 unexplained gap.</p>
+
+      <p>All three runs reconciled cleanly once fixed: $16.34 against an expected $14.21–$17.46, $17.98 against $15.50–$19.05, $17.26 against $14.20–$16.80. The PR also caught a false positive it had just introduced, in the same pass, the same way it caught everything else — by running the check against a fourth case rather than trusting the fix.</p>
+
+      <h2>A $4.43 sweep that couldn't verify the one thing it existed to check</h2>
+
+      <p>PR #383 added pin fields recording exactly what a run had been configured with — which feature flags actually resolved to true after their dependency logic ran, which TTS model and its measured delivery rate, which rendering engine, which aspect ratio — because "flags confirmed over the wire" had been an unfalsifiable claim with nothing in the job's persisted state to check it against. PR #394 then ran a cheap $4.43 diagnostic sweep specifically to exercise those new fields, and found every one of them absent on all six references swept. The cause: a wrapper function that acquires all five pins was documented as sitting on every path that continues a job, and mostly did — except the very first step of a brand-new run called a lower-level function directly, skipping the wrapper entirely. A job only acquired its pins once an editor approved a gate and frame work began. The one claim the pins existed to make checkable — what a plan-gate run was actually configured with — was, by construction, the one thing a plan-gate run could never prove about itself.</p>
+
+      <h2>Measuring the wrong build</h2>
+
+      <p>PR #396 and #399 are a two-part story about a deploy-verification script that looked correct and measured the wrong thing. A deploy-wait script reported "STABLE" fifteen seconds after a merge — but stable can mean "the previous build settled down," not "the new build arrived." A merge landed, the wait script returned success, and an $0.82 gate run measured the <em>previous</em> commit; the error count dropped from nine to five, which read as "the fix helped but didn't finish," when the fix in question hadn't deployed at all. Root-causing that led to #399: Railway only exposes its commit-SHA environment variable to a Docker build if the Dockerfile explicitly declares it as a build argument, and this one didn't — so every production build ID had silently been a millisecond timestamp instead of a commit hash, and the health endpoint could report that <em>a</em> deploy happened without being able to say which code was actually running. "Which code is running" had been an inference the whole time, and that inference cost real diagnostic dollars to discover was wrong.</p>
+
+      <h2>Spending $14 unattended on a plan already known to be broken</h2>
+
+      <p>PR #435 closes the loop on the whole cluster with a policy decision as much as a code fix. A semantic plan-QA check had been hard-coded to always report as a non-blocking warning, on the reasoning that one LLM's opinion shouldn't be allowed to halt a run outright — and on a real render, that check had caught a genuine defect for free, at the plan-gate stage, before a cent of clip spend: a beat's picture planned a slow, static drift under a line that said "instantly." The pipeline logged the warning and rendered anyway, for roughly fourteen dollars, and the same contradiction showed up in the editorial review of the finished video. The fix isn't to make every warning blocking — a gate that halts on every advisory opinion is a gate editors learn to click past. It's to promote specifically this one class of internally-contradictory finding to a hold rather than a hard failure: the run parks at a gate it was already going to pass through, a human approves or fixes the plan, and nothing is discarded. A held run now costs about twenty-five cents instead of fourteen dollars, for the exact same finding.</p>
+
+      <h2>The pattern: verify with what you actually have</h2>
+
+      <p>Every fix in this cluster shares a structural constraint: no vendor dashboard access, no ground truth to check the ledger against directly. The response wasn't to give up on verification — it was to build verification out of whatever <em>is</em> available: the job's own persisted state, the code's own rate constants, a second run to test the first run's tool against, a replay of an already-paid job through an improved gate. None of these prove the ledger matches the vendor's invoice down to the cent. Every one of them proves something narrower and still valuable: nothing dropped, nothing double-counted, nothing measuring the wrong build. In a system where you can't check against reality directly, checking your own internal consistency, repeatedly and skeptically, is the only kind of check you get — and this cluster is what happens when that constraint is taken seriously instead of quietly ignored.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="voice-pipeline-billing-lipsync-kling-v3.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Voice Pipeline Economics</a><br><span style="color:#8892b0;font-size:13px;">An earlier round of the same billing-correctness work, on the voice and lip-sync stack</span></li>
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">The same "check whether it actually fires" discipline applied to the planner rather than the ledger</span></li>
+        <li style="margin-bottom:12px;"><a href="six-reference-sweep-eval-harness.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building a Six-Reference Sweep</a><br><span style="color:#8892b0;font-size:13px;">The eval harness several of these paid diagnostic sweeps ran against</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

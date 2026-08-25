@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast — Humza Tareen</title>
+  <meta name="description" content="Extending an AI ad pipeline built for one on-camera presenter into one that can cast two: voice cloning from a vendor-accepted sample, a plan gate that binds a cast, and five separate ways the feature shipped correct and stayed inert.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Voice AI, Product Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/multi-presenter-cast-pipeline.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast">
+  <meta property="og:description" content="Extending an AI ad pipeline built for one on-camera presenter into one that can cast two: voice cloning from a vendor-accepted sample, a plan gate that binds a cast, and five separate ways the feature shipped correct and stayed inert.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/multi-presenter-cast-pipeline.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Voice AI">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast">
+  <meta name="twitter:description" content="Extending an AI ad pipeline built for one on-camera presenter into one that can cast two: voice cloning from a vendor-accepted sample, a plan gate that binds a cast, and five separate ways the feature shipped correct and stayed inert.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast",
+    "description": "Extending an AI ad pipeline built for one on-camera presenter into one that can cast two: voice cloning from a vendor-accepted sample, a plan gate that binds a cast, and five separate ways the feature shipped correct and stayed inert.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/multi-presenter-cast-pipeline.html" },
+    "keywords": ["AI Video", "Voice AI", "Product Engineering", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"N-Person Cast"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 12 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Voice AI</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service was built around a single on-camera presenter. Every schema field, every gate, every critic assumed one person speaks, one voice binds, one face gets checked. A real reference ad — a mother-daughter interview, one continuous take, zero cuts — needed two. Extending "one presenter" into "a cast of N" turned out to touch almost every layer of the pipeline at once: voice cloning, plan authoring, the review gate, the render path, and the critics that grade the output. And nearly every layer, once touched, turned out to have already been touched incorrectly at least once before anyone noticed.</p>
+
+      <blockquote>
+        A feature that is correct, tested, and merged is not the same claim as a feature that fires on the input it was built for. Check the second claim separately, every time.
+      </blockquote>
+
+      <h2>The probe that made the whole feature affordable</h2>
+
+      <p>Before any of this was worth building, one question had to be answered: can the vendor even render two distinct, speaking people in a single generation, or does a two-person ad have to be stitched from two separate one-person clips? PR #487 answered it with a single paid probe — about $1.30 for one Kling v3/pro clip — using two image-set elements, each carrying its own bound voice, dialogue written as <code>Name: "line"</code>, and <code>@Element1</code>/<code>@Element2</code> naming which element carries which line. It worked: Kling v3 renders two people with two bound voices in one generation. That result is what let a mother-daughter exchange live inside a single scene rather than being assembled across a cut — which mattered immediately, because the actual reference this feature was built against has zero cuts at either of the pipeline's own scene-detection thresholds.</p>
+
+      <p>The same PR closed a smaller, sharper bug hiding underneath the probe: minting a Kling voice clone from a sample under five seconds returns a 422, and the function responsible for minting one caught that throw and silently returned <code>undefined</code> instead of propagating it. Whether a voice could be minted at all had been decided, invisibly, by how fast that particular voice's picker-preview line happened to be read aloud — one voice minted with 0.29 seconds of margin, another failed outright and silently fell back to the vendor's native voice with nobody told. The fix is a dedicated, separately-cached line built to be long enough for every voice in the catalog, so the mint step is never gambling on a sample recorded for a different purpose.</p>
+
+      <h2>The defect that had nowhere to be flagged</h2>
+
+      <p>PR #488 is where "cast" becomes a real concept in the schema, and the PR description states the motivating defect in numbers worth sitting with: on one measured job, the reference analysis correctly saw both people in a scene — the persisted prompt literally read "daughter turns her head to the mother to ask her age" — and then the same prompt asserted "one identical speaker for the whole shot," handing one avatar both halves of a two-line exchange. Eight of sixteen scenes in that plan carried a question mark that should have been two different people asking and answering. Nothing in the pipeline's own contradiction-detection flagged any of it, for a reason worth internalizing: the schema had nowhere to put a second person, so no guard could contradict a claim the schema couldn't even represent. A validator can only catch a value disagreeing with another value it's allowed to hold.</p>
+
+      <p>What landed is a single derivation point — <code>resolveCast</code>, <code>sceneCast</code>, <code>sceneSpeakers</code>, and a cast-aware identity reference sitting beside the existing single-person one, built so that <code>cast.length === 1</code> is simply the ordinary, common case rather than a special one requiring its own code path. And landing beside that feature, in the same PR, is a hard 400-line file-size cap enforced at lint — a deliberate choice to pair a significant new capability with a structural constraint on how large any one file touched by it is allowed to grow, rather than treating code-quality discipline as a separate cleanup pass to get to later.</p>
+
+      <h2>Inert because the stored reference already knew</h2>
+
+      <p>PR #490 is the first of several PRs in this arc with the same shape, and it's worth naming that shape explicitly: a feature ships correct and tested, and then a sweep across real references finds it produces nothing, on every single input it was built for. Six references parked at the plan gate, $1.75 spent, and <code>castProposal: null</code> on all six — including the two-hander this entire feature exists for. The cause: the field that should have carried cast inference was hardcoded <code>undefined</code> specifically on the "stored rip" code path, and every one of the pipeline's six fixed references uses a stored rip. Correct, tested, merged — and structurally unable to fire on the only inputs available to test it with.</p>
+
+      <p>The fix is a schema-version bump rather than a quiet backfill, and the reasoning behind that choice matters: making the new field optional-and-absent would leave a reference with "no cast recorded" looking identical to a reference with "one person, measured." Those are different claims — one is missing data, the other is a positive result — and conflating them is exactly what let this go unnoticed. Bumping the schema version forces every existing stored reference to re-derive once, at roughly $0.46 each, after which <code>cast: []</code> means measured-and-one-person rather than never-checked.</p>
+
+      <h2>Two writers, and the second one wins by saying nothing</h2>
+
+      <p>PR #491 is a smaller bug with a classic shape. On the reference this feature targets, the blueprint inferred the cast correctly — "reference casts 2 people: A=woman, mid-40s, B=woman, mid-70s," apparent age and sex only, exactly as specified — and the persisted result was <code>null</code> anyway. The proposal object was read and modified by one function earlier in a call chain, and then a second function further down rebuilt the same overall object from a literal that didn't share the first function's snapshot. Two writers touched the same field; the second didn't know the first had written anything, so its omission silently won. The fix collapses cast-proposal writing to the one literal that actually persists, removes the earlier write entirely, and adds a test that plants the old two-writer shape specifically so it can watch that shape fail before trusting the fix.</p>
+
+      <h2>An honest handoff about what isn't built yet</h2>
+
+      <p>PR #492 is a documentation PR, and it earns a place in this story for what it leads with: everything merged on the main branch up to that point detects a cast and parks it as a proposal, and nothing yet binds that proposal to actual avatars — every plan still renders single-presenter. The handoff frames that gap as a designed fail-safe rather than a shortfall: a guessed second person must never reach a paid frame without a human confirming it first. It also writes down, in advance, two traps the next PRs would otherwise rediscover the hard way — that a stored rip hides new inference unless the schema version is bumped, and that the literal-rebuild pattern from #491 will silently discard anything patched earlier in the same function. Naming a trap once, in writing, before someone re-falls into it, is cheaper than debugging it twice.</p>
+
+      <h2>Face models that had never run anywhere</h2>
+
+      <p>PR #493 is where rendering catches up to detection, and it surfaces an infrastructure gap that had been invisible because the check it belonged to always reported the same safe-looking value. The identity-drift check — verifying a rendered face actually matches the reference face — depends on two ONNX face models under an environment-configured directory that had never been set on any machine, in any deployment. Every run for the check's entire history had simply recorded "not checked" rather than failing loudly, which is its own quiet failure mode: a check that can't run and says so cleanly is very different from a check that silently reports green. Once the models were provisioned through the same Drive-folder pattern the pipeline already used for avatars, rips, and products, the check immediately started producing real numbers — a same-person control pair scoring 0.899 cosine similarity, a different-person control pair scoring 0.319, and the new two-shot's left-side face scoring 0.742 against the intended presenter, turning "does this look right to me" into an actual measurement for the first time.</p>
+
+      <h2>Cast-aware critics, and a rule against never quite paying down debt</h2>
+
+      <p>PR #494 extends the pipeline's automated critics so they stop asserting there is exactly one person in every frame — a hardcoded assumption that would otherwise fail every two-person shot by definition, regardless of whether the shot was actually good. The same PR adds a second, unrelated but complementary discipline rule to the 400-line file cap introduced in #488: a file may shrink, but a file you touch may not grow, measured against its state at the merge-base rather than its state at the start of the session. The PR's own description is candid about why that specific rule was needed — it names three separate times, in that same session, the author had kept a 2,700-line file's line count flat by trimming a comment elsewhere to win back the one line a real change had added, which is compliant with "must not grow" in letter while defeating it in spirit. Closing that loophole meant the four files that had been carrying debt finally got split into real leaf modules instead of staying whole under a technicality.</p>
+
+      <h2>The plan gate that finally has one writer, and the UI that calls it</h2>
+
+      <p>PR #497 fixes a gap that had made every mechanism built so far unreachable from a real job: the field meant to hold a confirmed cast had no writer at all. An earlier detection step wrote a cast <em>proposal</em> and left a comment saying the operator binds each slot at the plan gate — except that gate didn't exist yet, so the pipeline always fell back to its legacy single-person path regardless of what had been detected. The PR adds the missing route, deliberately built as the single writer for that field, specifically because the proposal had already been clobbered once by a second writer in #491. The route also refuses two specific unsafe requests outright: re-casting after any clip has already been paid for — because the first scene's voice and frame are inherited by every later scene, so a mid-run recast would produce an ad whose first half is one person and second half another — and binding an avatar with fewer than two reference photographs, since the vendor 422s on a single frontal photo alone.</p>
+
+      <p>PR #498 is the honest follow-up: the route from #497 shipped, and nothing called it. This PR is the UI screen that does — one row per proposed cast slot, an avatar picker restricted to avatars the vendor will actually accept, and a voice picker with audition built specifically because a paid probe had found Kling capable of producing two clearly distinguishable speakers that matched <em>neither</em> of the two voices actually bound. Placed at script review, the last free moment before the frame step starts spending money, because the same re-cast restriction from #497 applies here too.</p>
+
+      <h2>Wired, bound, confirmed — and still inert</h2>
+
+      <p>PR #500 is the PR I'd point to as the center of this whole story, because of what a fresh sweep found after every piece above had already shipped and looked complete. On a real plan-gate sweep, the reference was read correctly as a mother-daughter two-hander and the cast proposal was correct. The planner then produced fifteen presenter scenes with <code>cast: undefined</code> and <code>lines: undefined</code> — a solo monologue, cast and all. The cause: the planner is only told about a <em>confirmed</em> cast, correctly, so an unconfirmed proposal can't change a plan the operator hasn't approved yet — but on the very first pass nothing is confirmed yet, so the schema handed to the planner strips the cast and lines fields entirely, and the planner is literally unable to author a two-hander on that pass. Nothing re-planned afterward to give it a second chance. Binding a cast against a plan authored under that stripped schema changed nothing that would ever render: every scene fell back to the first cast member, and the second person never reached a frame. Every PR from #493 through #498 was individually correct and, end to end, inert — the exact failure shape #490 had already produced once, now recurring one layer higher in the stack.</p>
+
+      <h2>Moving the slow step out of the request that can't wait for it</h2>
+
+      <p>PR #503 fixes the mechanism that #500 required: re-authoring a plan around a newly bound cast. That re-authoring is a vision call over the reference's keyframes, and it takes minutes — which is far too long to run synchronously inside an HTTP request, and a request that dies partway through a re-plan is also exactly the window where the cast binding itself could be lost, because the object rebuild that already caused #491's bug doesn't wait for anything to finish before it runs. The fix splits the operation cleanly: binding itself stays synchronous, because every refusal needs to name a specific clip up front rather than fail invisibly in a background job nobody is watching; re-planning moves into the job's own existing background worker, where retry, resumption, and container restarts are already handled rather than needing to be reinvented for this one feature.</p>
+
+      <h2>The fields that reached the schema and not the scene</h2>
+
+      <p>PR #504 closes the arc by finding a fourth and final way the same intent — a genuinely correct two-hander plan — failed to reach an actual scene. On this job, the planner authored real, correct two-person dialogue, and the pipeline's own plan-consistency scanner flagged five scenes for wanting two people from a scene the code still read as casting one. The cause, again: a function that maps a planned beat onto a job scene does so by naming each field it carries over by hand, and any field it doesn't explicitly name simply doesn't exist on the other side — the exact same shape as an earlier, unrelated bug where a persist step dropped an energy-curve field for the identical reason, a fact the file's own comment already recorded one block up. The fix stops relying on a second hand-maintained list of fields to carry over and derives the guard from the schema itself, so a new field fails loudly by default until someone deliberately marks it either carried or intentionally dropped. It caught a third silently-dropped field, unrelated to cast, on its very first run.</p>
+
+      <h2>The pattern: wiring is a claim, and it needs its own proof</h2>
+
+      <p>Every stage of this feature — inference, proposal, binding, re-planning, scene construction — was, at the moment it merged, individually correct against its own tests. And at four separate points in the sequence, the thing built on top of it found that the previous stage's correct output never actually reached it: a stored reference that skipped inference entirely, a second writer that silently discarded the first, a stripped schema that made the planner incapable of using a confirmed cast, and a hand-written field mapper that dropped exactly the two fields the whole feature depends on. None of these were caught by unit tests, because each stage's own tests only ever exercised that stage in isolation. They were caught by sweeps — running the real pipeline against real references and reading what actually got persisted at each hop, rather than trusting that a green test suite at each layer implies a working feature end to end. Adding a cast wasn't hard because casting two people is conceptually hard. It was hard because "wired all the way through" is a separate claim from "correct," and this pipeline had to verify that claim four times before it was actually true.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="brand-voice-avatar-profile-persistence.html" style="color:#64ffda;text-decoration:none;font-size:15px;">A Brand's Voice Becomes Persistent</a><br><span style="color:#8892b0;font-size:13px;">The avatar and voice profile system this cast feature binds against</span></li>
+        <li style="margin-bottom:12px;"><a href="modularization-400-line-file-cap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Every God File Split</a><br><span style="color:#8892b0;font-size:13px;">The 400-line file cap introduced alongside this feature, and enforced against backsliding</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel</a><br><span style="color:#8892b0;font-size:13px;">The identity and motion critics extended here to stop assuming exactly one person per frame</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

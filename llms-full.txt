@@ -2,6 +2,94 @@
 
 > AI Engineer who ships production systems with enterprise clients. IEEE-published researcher.
 
+## N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast
+
+URL: https://humzakt.github.io/blog/multi-presenter-cast-pipeline.html
+
+Extending an AI ad pipeline built for one on-camera presenter into one that can cast two: voice cloning from a vendor-accepted sample, a plan gate that binds a cast, and five separate ways the feature shipped correct and stayed inert.
+
+---
+
+## Every God File Split: Enforcing a 400-Line Cap Across a Video Pipeline
+
+URL: https://humzakt.github.io/blog/modularization-400-line-file-cap.html
+
+Splitting a 15,177-line wizard runner and a 7,341-line page component into modules, then closing the gaps the split itself created — dead error handling, a stale-cache bug hit twice, and a hard 400-line cap enforced at lint time on main and dev alike.
+
+---
+
+## The Critic Panel: Teaching an AI Pipeline to Check Its Own Work
+
+URL: https://humzakt.github.io/blog/ai-critic-panel-verifying-generated-ads.html
+
+Building a panel of AI critics that check a generated ad against itself — same product, same person, does the cutaway match its line, is the person alive — and the ways a critic itself can be quietly wrong: starved of slots, unable to fail, or grading a picture that will never render.
+
+---
+
+## The Plan Gate Contradiction Chain: When a Planner Is Blind to Its Own Grading Criteria
+
+URL: https://humzakt.github.io/blog/plan-gate-contradiction-chain.html
+
+A recurring bug class in an AI ad planner: the plan and the gate meant to check it disagree, a role gets overwritten after the prose is written for it, and a judge's findings go nowhere because a re-roll re-reads the old verdict.
+
+---
+
+## B-Roll Gone Wrong: Strangers in Cutaways, Color Swings, and a Library That Couldn't Say No
+
+URL: https://humzakt.github.io/blog/broll-cutaway-defects-library-gap.html
+
+A cluster of b-roll and cutaway content-quality defects in an AI ad generator: a stranger in a cutaway, a color grade that was never actually called, a library that returned a bad match instead of admitting it had none, and near-miss fixes that shipped inert.
+
+---
+
+## What Paid Runs Found: Reconciling a Video Pipeline's Cost Ledger
+
+URL: https://humzakt.github.io/blog/ledger-billing-reconciliation-paid-runs.html
+
+Real money billed at $0, a resume path that silently re-decided a paid render's settings, a $0.82 measurement of the wrong build, and a reconciliation script that had to recount artifacts because nobody had vendor dashboard access.
+
+---
+
+## From J/L-Cuts to One Call: Consolidating a Video Pipeline's Voiceover Path
+
+URL: https://humzakt.github.io/blog/one-call-voiceover-consolidation.html
+
+Moving an AI video pipeline from fifteen independent voice-synthesis calls stitched together to one continuous take, and the string of measurement bugs found proving it actually worked.
+
+---
+
+## A Brand's Voice Becomes Persistent: Avatar Profiles Instead of Per-Run Re-Supply
+
+URL: https://humzakt.github.io/blog/brand-voice-avatar-profile-persistence.html
+
+Splitting a video pipeline's brand identity from its per-run reference: a persistent voice profile, a route built on purpose instead of a thin forwarder, and an avatar client that shipped deliberately without a feature flag.
+
+---
+
+## Making the Swipe Follow Its Reference: Placement, Timing, Color, and Multi-Shot Bundling
+
+URL: https://humzakt.github.io/blog/reference-fidelity-swipe-fixes.html
+
+A month of editor complaints that a swiped AI ad no longer matched its reference — traced through a three-layer role-casting bug, a word budget measured in the wrong voice, a color pipeline reading RGB as GBR, and a multi-shot bundle the planner had been computing and discarding for two weeks.
+
+---
+
+## Building a Six-Reference Sweep: An Eval Harness for AI Video Generation
+
+URL: https://humzakt.github.io/blog/six-reference-sweep-eval-harness.html
+
+Packaging a render-six-references-and-measure workflow into a reusable skill for an AI ad generator, and the audit backlog it surfaced: dead flags, a stop-ship brand gate, a misspelled brand name on a finished master, and a documentation culture that corrects its own wrong claims.
+
+---
+
+## Repeat a Clip, Pin It Everywhere: Fixing Instance Semantics in a Render Batch Tool
+
+URL: https://humzakt.github.io/blog/render-web-clip-repeat-pinning.html
+
+A render-batch builder tool couldn't do what every NLE and design tool takes for granted: put the same clip in a slot twice. Two PRs on modeling instances correctly — explicit repeats, cross-variant pinning, and a follow-up that found the first fix's own claim was wrong.
+
+---
+
 ## Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus
 
 URL: https://humzakt.github.io/blog/six-phases-ad-generator-corpus-regression.html

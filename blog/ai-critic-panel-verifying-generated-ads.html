@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>The Critic Panel: Teaching an AI Pipeline to Check Its Own Work — Humza Tareen</title>
+  <meta name="description" content="Building a panel of AI critics that check a generated ad against itself — same product, same person, does the cutaway match its line, is the person alive — and the ways a critic itself can be quietly wrong: starved of slots, unable to fail, or grading a picture that will never render.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Evaluation, Computer Vision, Video Generation, Prompt Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ai-critic-panel-verifying-generated-ads.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="The Critic Panel: Teaching an AI Pipeline to Check Its Own Work">
+  <meta property="og:description" content="Building a panel of AI critics that check a generated ad against itself — same product, same person, does the cutaway match its line, is the person alive — and the ways a critic itself can be quietly wrong: starved of slots, unable to fail, or grading a picture that will never render.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ai-critic-panel-verifying-generated-ads.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Evaluation">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Critic Panel: Teaching an AI Pipeline to Check Its Own Work">
+  <meta name="twitter:description" content="Building a panel of AI critics that check a generated ad against itself — same product, same person, does the cutaway match its line, is the person alive — and the ways a critic itself can be quietly wrong: starved of slots, unable to fail, or grading a picture that will never render.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The Critic Panel: Teaching an AI Pipeline to Check Its Own Work",
+    "description": "Building a panel of AI critics that check a generated ad against itself — same product, same person, does the cutaway match its line, is the person alive — and the ways a critic itself can be quietly wrong: starved of slots, unable to fail, or grading a picture that will never render.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ai-critic-panel-verifying-generated-ads.html" },
+    "keywords": ["AI Evaluation", "Computer Vision", "Video Generation", "Prompt Engineering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"The Critic Panel"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">The Critic Panel: Teaching an AI Pipeline to Check Its Own Work</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 13 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Evaluation</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Prompt Engineering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Every critic in the main video-generation service's pipeline started with the same structural limit: it graded one picture. Is this frame composed correctly, does it contain the right product, does the person in it look right. That's a real check, and it caught real defects. It also meant an entire category of failure was, in the pipeline's own later language, <strong>structurally unaskable</strong>: is this the same physical device in every shot of the ad, is it the same person, does this cutaway actually belong on the line it's covering. A frame can be individually perfect and the ad can still be wrong in a way no single-frame critic could ever have seen.</p>
+
+      <p>Building the panel of critics that closes that gap took dozens of PRs across three weeks, and the harder half of the work wasn't writing new critics — it was discovering how many ways a critic can be wrong without ever throwing an error.</p>
+
+      <blockquote>
+        A critic that cannot fail, or is starved of the frames it needs to look at, is worse than no critic at all. It manufactures confidence instead of catching defects.
+      </blockquote>
+
+      <h2>The first blind spot: nothing was checking across the whole ad</h2>
+
+      <p>PR #437 states the gap plainly: every critic graded one picture, so "is this the same product in every shot" and "is this the same person" weren't merely unchecked — they had no mechanism by which they could be checked. The measurement on one real render made this concrete rather than theoretical: all fourteen scenes carried a "no product held" state, so no frame received a product reference, and each frame independently invented its own case — a wide two-well case at one timestamp, a small square one at another, a wide oval one a few seconds later. Three different devices in seven seconds of screen time, and no existing instrument could see it, because every individual frame was plausible on its own terms. The fix is almost embarrassingly cheap once framed correctly: one contact sheet of frames from across the ad, one vision call, about three cents regardless of scene count, checking a question no per-frame critic could ever have been asked.</p>
+
+      <p>PR #442 found the same failure from a different angle, and this one was structural rather than a missing check. Two separate functions both resolved "the product's photos" — one reading an editor's uploaded images when present, one always reading the catalog's stock photos — and different call sites in the same file called different ones without anyone having decided that was the design. On any job where an editor had uploaded real product photos, some shots showed the real device and others showed a catalog stand-in, and the resulting inconsistency read to a viewer as "the product changes appearance between scenes" — a symptom that looked like a data quality problem and was actually two code paths nobody had reconciled.</p>
+
+      <p>PR #482 is the correction that made the cross-scene identity check itself trustworthy. An earlier proposal aggregated identity across scenes by requiring the <em>minimum</em> similarity-to-anchor across every frame to clear a threshold — which sounds conservative and is actually a fifteen-way multiple-comparison problem: at a per-frame genuine-accept rate of 97.6%, requiring all fifteen frames in a render to individually clear that bar passes only about 69% of genuinely correct renders. A third of good output would have been rejected by a check trying to be strict. The fix compares a quality-filtered mean against an anchor centroid instead of trusting the single worst frame, which for generated content is usually just an alignment or blur artifact, not evidence of a different person.</p>
+
+      <h2>Same clip, two different people</h2>
+
+      <p>PR #460 found a failure mode finer-grained than either of those: identity had been graded <em>across</em> scenes by a contact sheet sampling one frame per scene, and never <em>within</em> a single clip. On one real render, a clip that opened on an elderly bearded presenter transitioned partway through to a young man in a suit holding the product — same room, same lighting, one continuous clip — and every existing check passed it, because the per-scene sheet only ever saw one or the other, never both. The fix cost nothing new: the motion critic already sampled three points across each clip for an unrelated check, and asking those same frames whether they show the same face is a different question put to pictures already in hand.</p>
+
+      <h2>Motion, and a critic that was starved before it started</h2>
+
+      <p>PR #451 closed the gap the editorial review had named most often: every existing criterion described composition — what's in the shot — and a clip that holds one static pose for its entire length satisfies all of them. The most-repeated human note on one delivered ad was a presenter who "looks dead," an "empty hand sticking out," a pose that "looks like begging." No composition check could have caught that, because composition was never the problem.</p>
+
+      <p>Adding the check surfaced a second, uglier bug: PR #462 found the motion criteria added by #451 were silently dropped on six of fourteen scenes in a real run, because the call site combined plan-criteria and motion-criteria into one list and then hard-capped it at four items — first come, first kept. On any scene where the plan's own criteria already filled that budget, the motion, aliveness, and same-person checks added on top of them simply never ran. The run reported zero clip mismatches, which read as a clean pass and was actually a critic that had never been asked its question on nearly half the ad. This is the same shape of bug covered in <a href="planner-hardening-gates-dead-code-scorer.html">an earlier hardening pass on this pipeline's planner</a> — a check that exists in the codebase, is correctly implemented, and simply never executes for a reason nobody chose on purpose.</p>
+
+      <h2>Does the cutaway actually belong here</h2>
+
+      <p>PR #438 asks the question no existing critic had been built to ask: does this b-roll cutaway illustrate the line playing under it. The clip critic graded a scene against its own plan, but a cutaway span isn't a scene — it inherited a checklist describing what the shot should <em>contain</em>, with nothing about whether the shot belonged on that particular beat. Measured on a real render, cutaway spans covered 47% of a 55-second ad, and every single editorial complaint on that ad landed on one of them: the presenter vanishing mid-sentence while a product animation played over a line about a coffee shop, "avatar inconsistent" notes that were really the avatar being replaced by an unrelated cutaway. The fix authors the check from the span's own line of dialogue rather than from the inherited content checklist, because content and relevance are different questions and only one of them had ever been asked.</p>
+
+      <h2>Leakage, false positives, and a metric that measured its own intentions</h2>
+
+      <p>PR #444 found that a "reference leakage" score of zero meant something much narrower than it sounded: it was a text match against the words used to generate a shot's prompt, not an inspection of the shot itself. That makes it structurally blind to exactly the two ways leakage actually happens — a stock library clip with no generated prompt to match against at all, and a generated clip whose model reproduced the reference's subject despite a clean prompt. Both happened on the same real render: a reference ad for a foot cream produced a generated clip of someone applying cream to a bare foot, in an ad for a hearing aid, while the leakage metric reported a clean zero because no prompt had ever named those nouns.</p>
+
+      <p>PR #461 is the same metric's opposite failure, caught almost immediately after a related fix started feeding it more frames: once cross-scene identity sheets began including cutaway panels, the leakage check flagged the pipeline's own brand mascot as a leakage violation — because the reference subjects list, extracted from a mascot-led reference ad, contained the bare word "mascot," and the pipeline's own cartoon character matched it. The check's own documentation said a hit "makes the ad unusable." An editor trusting that would have discarded a perfectly good ad because the pipeline correctly mirrored a mascot-led reference and then incorrectly accused itself of leaking it.</p>
+
+      <h2>A critic that could not fail, and one that failed correctly and shipped anyway</h2>
+
+      <p>PR #432 is the cleanest example in this whole cluster of a check that looks like a check and isn't one. A voice-quality label was set from what mode had been <em>requested</em>, with nothing in the logic reading what had actually been <em>delivered</em>. One real render published a "feel-matched" badge next to numbers reading fifteen pauses against a reference's zero, and three decibels off target — the disagreeing numbers were printed right there in the same report as the badge that contradicted them. A verdict that can't respond to its own evidence isn't a lenient check. It's not a check.</p>
+
+      <p>PR #386 shows the other half of that failure mode: a critic that fires correctly and still changes nothing. On one real job, the clip critic produced seven specific, named mismatch flags — and one of them named the exact defect, down to the frame numbers, that a human reviewer later reported independently on the delivered ad. The ad shipped anyway: sixteen warnings, zero errors, autopilot approved, because the critic that raised the flag was documented as never failing a render and the gate downstream of it bought no re-do. A correct, specific, timely finding existed and could not change the output — the same shape of problem as a feature flag with a real reader that has no power to act on what it reads.</p>
+
+      <h2>A judge grading a picture that will never render</h2>
+
+      <p>PR #446 and #447 are a two-part story about a plan-quality judge that was, on its first outing, right for the wrong reason and then wrong for a reason its own author introduced one layer up. The six-reference sweep flagged eight "visual mismatch" warnings, and #446 traced all eight to one root cause: a beat's script line was explicitly about the product, staged deliberately with no product visible — correct by the plan's own rules — and then a downstream overlay system silently painted a b-roll cutaway over that exact beat, so the judge was evaluating a staging description that the render pipeline would never actually produce as described.</p>
+
+      <p>The fix was to tell the judge what would actually be painted over the beat before it graded anything. #447 caught, on the very next gate run, that the description-generation code defaulted an unknown product state to "the closed product case" — and on one real scene, the recorded state was genuinely unset, because product state doesn't live on the scene at all, it rides on a separate candidate list. The judge was handed "a full-frame shot of the closed case" while the actual staging read "both aids sitting inside," and dutifully, correctly reported a contradiction between two facts that were both fictional. Correct reasoning over a false premise the fix for #446 had itself manufactured, one layer removed. The tempting fix — read the real state off the candidate list — was exactly the fix that shipped, closing the loop the same PR that introduced it had opened.</p>
+
+      <h2>Instrumentation for the instrument</h2>
+
+      <p>PR #470 is about a failure so close to the meta-level it's almost funny: a device-identity criterion had been added to a frame-level gate, and every span carrying it in one real, $15.77 render failed on a <em>different</em> criterion first — so the log line reported only what had failed, never what had been asked and passed, and never what had been silently skipped. The render existed specifically to answer "did the new criterion actually run," and its own logging made that question unanswerable, because "asked and passed" and "never asked" produced byte-identical log output. The PR notes, without exaggeration, that this exact defect shape — a fix that reads correctly and never actually runs — was this pipeline's most expensive recurring problem that month. An instrument that can't distinguish between a clean pass and a check that never fired isn't an instrument.</p>
+
+      <p>PR #485 found the same class of gap in the product-identity check's own accounting: a report read "product colour differs in 4 of 5 scenes" from a batch where twenty frames had gone in and only five had produced any usable signature at all — the other fifteen were silently discarded by unlogged early-exits, with no field anywhere recording that fifteen panels had contributed zero evidence. Most of those fifteen were narrated scenes correctly showing no product, which made the discard technically defensible and the framing of the report — a verdict that read as covering everything, while actually covering a quarter of the panels — indistinguishable from a verdict that really did have complete evidence. The fix isn't a better threshold. It's reporting the denominator.</p>
+
+      <h2>Ground truth has to be inspected, not assumed</h2>
+
+      <p>PR #402 is a reminder that a critic is only as good as what it's compared against. The lead "real product" reference photo shown to every product critic and every frame-authoring call turned out to carry a hard gray rectangle pasted over a third of the frame — a botched cutout that an earlier handoff had documented as an acceptable "seam." Verified by looking at every candidate image directly rather than trusting the filenames or the prior write-up, two of three inherited claims turned out correct and the third — the one about the seam — was wrong in exactly the direction that would have made the fix worse if taken on faith. The lesson generalizes past this one asset: an inherited claim about what a file contains is a claim, not a fact, until someone actually opens the file.</p>
+
+      <h2>The pattern: a critic needs its own audit trail</h2>
+
+      <p>Every failure in this cluster has the same shape. A critic existed, was correctly implemented in isolation, and failed anyway — starved of the frames it needed by an unrelated cap, unable to express disagreement because its verdict field only encoded intent rather than outcome, given a fictional premise by an upstream default, or measuring only a quarter of its evidence while reporting as if it had all of it. None of these are algorithm problems. A better vision model would not have fixed a critic that never received the frames it needed, or a verdict field that structurally cannot fail. The fix, every time, was checking what the critic actually saw and actually said against what it was supposed to see and say — auditing the instrument, not just trusting its output because it produced a number.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">The same "checks that report success and never actually run" failure class, one layer down the stack</span></li>
+        <li style="margin-bottom:12px;"><a href="six-phases-ad-generator-corpus-regression.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Six Phases: Diagnosing a Regression Against a Corpus</a><br><span style="color:#8892b0;font-size:13px;">Measuring the pipeline's own output at scale to find what individual runs couldn't show</span></li>
+        <li style="margin-bottom:12px;"><a href="broll-cutaway-defects-library-gap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">B-Roll Gone Wrong</a><br><span style="color:#8892b0;font-size:13px;">The cutaway defects several of these critics were built specifically to catch</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

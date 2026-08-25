@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Every God File Split: Enforcing a 400-Line Cap Across a Video Pipeline — Humza Tareen</title>
+  <meta name="description" content="Splitting a 15,177-line wizard runner and a 7,341-line page component into modules, then closing the gaps the split itself created — dead error handling, a stale-cache bug hit twice, and a hard 400-line cap enforced at lint time on main and dev alike.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Software Architecture, Code Quality, TypeScript, Refactoring">
+  <link rel="canonical" href="https://humzakt.github.io/blog/modularization-400-line-file-cap.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Every God File Split: Enforcing a 400-Line Cap Across a Video Pipeline">
+  <meta property="og:description" content="Splitting a 15,177-line wizard runner and a 7,341-line page component into modules, then closing the gaps the split itself created — dead error handling, a stale-cache bug hit twice, and a hard 400-line cap enforced at lint time on main and dev alike.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/modularization-400-line-file-cap.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Software Architecture">
+  <meta property="article:tag" content="Code Quality">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Refactoring">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Every God File Split: Enforcing a 400-Line Cap Across a Video Pipeline">
+  <meta name="twitter:description" content="Splitting a 15,177-line wizard runner and a 7,341-line page component into modules, then closing the gaps the split itself created — dead error handling, a stale-cache bug hit twice, and a hard 400-line cap enforced at lint time on main and dev alike.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Every God File Split: Enforcing a 400-Line Cap Across a Video Pipeline",
+    "description": "Splitting a 15,177-line wizard runner and a 7,341-line page component into modules, then closing the gaps the split itself created — dead error handling, a stale-cache bug hit twice, and a hard 400-line cap enforced at lint time on main and dev alike.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/modularization-400-line-file-cap.html" },
+    "keywords": ["Software Architecture", "Code Quality", "TypeScript", "Refactoring"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Every God File Split"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Every God File Split: Enforcing a 400-Line Cap Across a Video Pipeline</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Software Architecture</span>
+        <span class="blog-tag">Code Quality</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Refactoring</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service had a wizard runner at 15,177 lines. A page component at 7,341. A media-stitching module at 3,473. These weren't accidents of neglect — they were the natural result of a fast-moving pipeline where the cheapest thing to do, every single time, was add one more branch to the file already handling that concern. Splitting them wasn't the hard part. The hard part was making sure the split actually held, and that a file couldn't quietly grow back to god-file size the moment nobody was watching.</p>
+
+      <blockquote>
+        A refactor isn't finished when the split lands. It's finished when there's a mechanical guardrail that makes the original problem structurally impossible to reintroduce.
+      </blockquote>
+
+      <h2>26 commits, zero behavior changes</h2>
+
+      <p>The modularization PR is explicit about what it is and isn't: a move to a "modular monolith" — one deployable app, but with real module boundaries, a single public surface per module, typed errors, and unified logging. Twenty-six commits, no behavior changes, nothing spent on a paid render or a plan-gate sweep to verify it, because there was nothing to verify against — the claim was structural, not behavioral, and the test suite (3,987 tests passing) was the actual proof.</p>
+
+      <table>
+        <thead><tr><th>File</th><th>Before</th><th>After</th></tr></thead>
+        <tbody>
+          <tr><td><code>lib/swipe/wizard-runner.ts</code></td><td>15,177 lines</td><td>84 lines — a barrel over 18 modules</td></tr>
+          <tr><td><code>app/wizard/[jobId]/page.tsx</code></td><td>7,341 lines</td><td>385 lines — 9 components</td></tr>
+          <tr><td><code>lib/media/stitch.ts</code></td><td>3,473 lines</td><td>29 lines — a barrel over 12 modules</td></tr>
+          <tr><td><code>lib/swipe/ugc-dynamic.ts</code></td><td>2,254 lines</td><td>21 lines — a barrel</td></tr>
+        </tbody>
+      </table>
+
+      <p>The rollback plan is worth noting on its own: a branch and a tag pinned to the exact pre-modularization commit, kept as an explicit safety net rather than trusted to git history alone. When you're about to touch fifteen thousand lines with a script, you want the "undo everything" path to be one command, not an archaeology exercise.</p>
+
+      <h2>The refactor shipped its own dead code</h2>
+
+      <p>The honest admission in the very next PR is the most valuable paragraph in the whole cluster: the modularization itself shipped dead code. A new error-handling module went in with twenty-five passing tests and a documentation section describing it as current practice — "routes wrap, <code>withRouteErrors()</code> gives one logged failure path." Measured against the actual codebase: zero call sites in <code>app/api</code>, zero typed errors thrown in production, zero non-test files importing the module.</p>
+
+<pre><code class="language-typescript">// what shipped: a correct, tested, documented mechanism
+export function withRouteErrors&lt;T&gt;(handler: () =&gt; Promise&lt;T&gt;) { /* ... */ }
+
+// what was true everywhere it mattered
+// app/api/**/*.ts: 13 routes, 0 try/catch blocks, 0 callers of withRouteErrors
+</code></pre>
+
+      <p>The thirteen routes with no error handling were still thirteen routes with no error handling. The module was built, tested, and documented — and never called. It's the same failure shape that kept surfacing across this pipeline all month: correct code with no consumer reads exactly like a working feature until someone asks specifically whether anything calls it.</p>
+
+      <h2>A stale-cache bug the split shipped twice</h2>
+
+      <p>PR #495 split a 2,756-line clip step into fourteen modules — pure refactor, no behavior change, explicitly framed as unblocking a multi-cast feature that couldn't be written while the file was frozen on the size ledger. The technique matters: four phases share one run-context object rather than a parameter list, each phase reading what it needs and writing back only what it changed, keeping the code inside each phase byte-identical to what it was inside the monolith — verified by comparing source-code hashes, not just behavior.</p>
+
+      <p>That shared-context pattern has exactly one failure mode: a phase that delegates to another phase and then writes back its own now-stale local copy, silently overwriting whatever the delegated phase had just changed. The split shipped that exact bug twice before it was caught — the same mechanical mistake, independently, in two different phase boundaries, which says more about how easy the mistake is to make than about carelessness in either instance.</p>
+
+      <h2>Wiring what the split had frozen</h2>
+
+      <p>Two PRs earlier, four new pure measurement modules had been built for defects a human had found by eye and no number had ever caught: whole-file color saturation reading a healthy 23.53 while individual segments actually ranged 8.1 to 36.2 — a 4.4x spread the aggregate number flattened into invisibility; a vendor silently merging a sub-3-second shot into its neighbor and billing, reporting, and slicing it as if the merge had never happened; a product rendering white in library footage and black in generated scenes with no cross-scene check able to see it; fifteen independent voice-synthesis charges with no scene-to-scene continuity comparison at all.</p>
+
+      <p>Those four modules shipped with zero callers outside their own tests. PR #481 wired three of the four into one real entry point in the render pipeline, and the PR's own framing names the pattern by then-established reputation: "the code reads correctly, the mechanism never runs, and every test passes" is this repository's most expensive recurring shape, restated for the third time in its own documentation. A whole-run measurement report type — seven of them — got carved out of a shared job-types file that had hit its own size cap at exactly zero lines of headroom, specifically so the next measurement type would have somewhere to go that didn't require raising the cap.</p>
+
+      <h2>The cap that makes it stick</h2>
+
+      <p>The mechanism holding all of this in place is a boundaries test that diffs the working tree against the main branch and fails the build on any net-changed file still sitting on a tracked size ledger — "you touch it, you split it." Fifty-five files were frozen on that ledger: you could not land a one-line fix to a file already over the cap without splitting it as part of that same change. PR #488 enforced the cap at lint time with <code>max-lines</code> as an ESLint error, so a next-build and a plain lint run both fail on an oversized file, not just the dedicated boundary test. PR #489 closed the obvious gap in that: the same cap, ported to the development branch, verified by deliberately planting a 419-line file and confirming both ESLint and the boundary test caught it before removing it again.</p>
+
+      <p>The cap's own number had drifted from its own documentation. Two project-level docs both still said "files are capped at 900 lines" after the real threshold had already dropped to 400 — a 2.25x gap between what every agent reading the onboarding docs believed and what the tooling actually enforced. Phase 0 of the whole modularization effort fixed the tooling and the stale documentation before relying on either, and did it a second time, deliberately as a separate cherry-pick rather than a merge, when the same guardrail needed to land on a development branch that had diverged by ten commits in one direction and two in the other — a plain merge would have dragged unrelated feature work across with it.</p>
+
+      <h2>Five entries, wrong in five different ways</h2>
+
+      <p>A "verified dead" list of code, carried forward across handoffs as settled fact, turned out to be five-ninths wrong when actually checked against the running code — and not wrong in one repeated way. One function was simply live, called from a file the audit hadn't checked. A second was a working environment-flag read that deleting would have silently disabled. A third and fourth weren't functions at all but job-state fields with real readers and no writer — a UI panel rendering permanently empty, and an empty series getting archived into permanent snapshots as if it were real data. A fifth was genuinely dead but cascaded: comments elsewhere in the codebase documented an unrelated mapping by reference to the dead function's name, meaning the mapping might have no other producer at all.</p>
+
+      <p>Five different failure modes under one label of "dead code" is the finding underneath the whole cluster: a claim about what's unused is only as good as the audit that produced it, and a claim inherited from a previous session's handoff is a claim that hasn't been re-verified against the code as it exists today — not five instances of the same mistake, but a reminder that "checked once" and "true now" are different claims.</p>
+
+      <h2>The pattern: the split is the easy 80%</h2>
+
+      <p>Every PR in this cluster that split a file cleanly landed with zero behavior changes and a green test suite. Every PR that followed one found something the split itself had broken, forgotten to wire, or left undocumented — a mechanism nobody called, a bug pattern repeated twice, docs describing a cap that no longer matched the code enforcing it. None of that is a case against modularizing a 15,000-line file. It's a case for treating the follow-up pass — the one that checks whether the new pieces actually got wired to each other and to reality — as load-bearing work, not cleanup. The guardrail that makes a god file structurally impossible to reintroduce is worth more than the split itself, because the split is a one-time fix and the guardrail is what stops the same file from growing right back.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">The earlier dead-code and zero-caller audits that established the pattern this cluster kept rediscovering</span></li>
+        <li style="margin-bottom:12px;"><a href="multi-presenter-cast-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">N-Person Cast</a><br><span style="color:#8892b0;font-size:13px;">The feature this modularization was explicitly clearing space to build</span></li>
+        <li style="margin-bottom:12px;"><a href="reference-matching-engine-inert-rollout.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Ship It Inert First</a><br><span style="color:#8892b0;font-size:13px;">The same "correct code, zero callers" failure mode from a feature rollout instead of a refactor</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

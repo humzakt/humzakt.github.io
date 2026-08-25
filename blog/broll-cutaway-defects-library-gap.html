@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>B-Roll Gone Wrong: Strangers in Cutaways, Color Swings, and a Library That Couldn't Say No — Humza Tareen</title>
+  <meta name="description" content="A cluster of b-roll and cutaway content-quality defects in an AI ad generator: a stranger in a cutaway, a color grade that was never actually called, a library that returned a bad match instead of admitting it had none, and near-miss fixes that shipped inert.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Computer Vision, Color Grading, Video Generation">
+  <link rel="canonical" href="https://humzakt.github.io/blog/broll-cutaway-defects-library-gap.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="B-Roll Gone Wrong: Strangers in Cutaways, Color Swings, and a Library That Couldn't Say No">
+  <meta property="og:description" content="A cluster of b-roll and cutaway content-quality defects in an AI ad generator: a stranger in a cutaway, a color grade that was never actually called, a library that returned a bad match instead of admitting it had none, and near-miss fixes that shipped inert.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/broll-cutaway-defects-library-gap.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Color Grading">
+  <meta property="article:tag" content="Video Generation">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="B-Roll Gone Wrong: Strangers in Cutaways, Color Swings, and a Library That Couldn't Say No">
+  <meta name="twitter:description" content="A cluster of b-roll and cutaway content-quality defects in an AI ad generator: a stranger in a cutaway, a color grade that was never actually called, a library that returned a bad match instead of admitting it had none, and near-miss fixes that shipped inert.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "B-Roll Gone Wrong: Strangers in Cutaways, Color Swings, and a Library That Couldn't Say No",
+    "description": "A cluster of b-roll and cutaway content-quality defects in an AI ad generator: a stranger in a cutaway, a color grade that was never actually called, a library that returned a bad match instead of admitting it had none, and near-miss fixes that shipped inert.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/broll-cutaway-defects-library-gap.html" },
+    "keywords": ["AI Video", "Computer Vision", "Color Grading", "Video Generation"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"B-Roll Gone Wrong"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">B-Roll Gone Wrong: Strangers in Cutaways, Color Swings, and a Library That Couldn't Say No</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Color Grading</span>
+        <span class="blog-tag">Video Generation</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>B-roll is supposed to be the easy part. Cut away from the presenter, show something relevant to the line being spoken, cut back. On the main video-generation service, a two-week run of paid renders and cheap "six-reference" plan gates found that almost nothing about that sentence was reliably true: cutaways carried a stranger's face, a color grade nobody had disabled was simply never being invoked, a library with one usable clip claimed to have served six different beats without complaint, and — three separate times — a fix that read correctly, compiled, and passed review shipped completely inert.</p>
+
+      <blockquote>
+        The near-misses have the same shape every time: the code reads correctly, the mechanism never runs, every test passes. Measurement catches that. Review does not.
+      </blockquote>
+
+      <h2>A vision model was discarding detail nobody asked it to discard</h2>
+
+      <p>PR #384 starts with a hardcoded downscale that had been correct when written and had quietly stopped being correct: the image encoder capped every frame at 1568px with a comment explaining that the vision model downscaled past that point anyway, so shrinking early cost nothing. That was true for the standard tier. It stopped being the whole story once a high-resolution tier — automatic, no opt-in, active on the default model — raised the real ceiling to 2576px and nearly triple the visual tokens. The pipeline's own downscale had become the only thing deciding what got thrown away, discarding roughly 1.6x the detail the model could have used, silently, on every single frame.</p>
+
+      <p>The same PR found a second, unrelated defect with real product consequences: a repeat clip was winning a hook slot not because it was a good match, but because it was the <em>most relevant of the available bad options</em> — the ranking function had no floor below which "relevant" stops meaning "acceptable."</p>
+
+      <h2>A tag that recruited the exact wrong footage</h2>
+
+      <p>PR #391 is the follow-up that explains why that repeat clip kept winning. Reading the b-roll index directly — not reasoning about the code, reading the actual JSON — turned up two clips, <code>returning-the-hearing-aids</code> and <code>taking-off-the-hearing-aid</code>, both tagged <code>wearing</code>. Both show the opposite of wearing. They were also the <em>only two clips in the entire index</em> carrying that tag, and the beat-to-tag mapping for a "buds" product state asked for exactly that tag. A beat about keeping the product in didn't merely tolerate footage of taking it out — it actively recruited it, every time, because the tag was simply wrong and nothing else in the index could outrank it.</p>
+
+      <p>A test written to catch a related bug ("half-fix" in the PR's own words) caught this one too, which is the kind of accountability that matters more than the fix itself: the safety net existed and it worked.</p>
+
+      <h2>The classification was never broken — only the order was</h2>
+
+      <p>PR #416 and #425 together are the cleanest example in this cluster of a defect hiding behind a correct-looking abstraction. A render's reference was typed as fourteen beats, only one of them a product shot — the rest were CGI animation, generated b-roll, cartoon mascot. The mapping from "beat type" to "footage source" had been correct for weeks: animation maps to mascot footage, generic b-roll maps to generated inserts. And yet six of nine b-roll spans on that render came back as product footage pulled from a 29-clip product library — exactly the editor's complaint about "repeated irrelevant b-roll."</p>
+
+<pre><code class="language-typescript">// before: a fuzzy title match short-circuits before the beat's declared kind is even computed
+function sourceForRefShot(shot, avail) {
+  if (avail.libraryHit) return avail.libraryHit; // returns here — stand is never reached
+  const stand = brollSourceForShotType(shot.kind); // correct mapping, never consulted
+  return stand;
+}
+
+// after: the correctly-mapped kind gates whether a library hit is even eligible
+function sourceForRefShot(shot, avail) {
+  const stand = brollSourceForShotType(shot.kind);
+  if (avail.libraryHit && libraryFitsShotType(avail.libraryHit, stand.kind)) {
+    return avail.libraryHit;
+  }
+  return stand;
+}</code></pre>
+
+      <p>The classification logic was never the defect. An early return in an unrelated branch meant it was never reached. That's a bug review tends to miss specifically because the correct code is right there in the file, and nothing about reading it in isolation reveals that a different branch returns first.</p>
+
+      <h2>The gap report that reported nothing on the reference it was built for</h2>
+
+      <p>PR #421 measures the same failure from a different angle: a "library gap" warning meant to flag when the house library can't actually serve a beat came back empty on the exact reference it had been written for. The rule checking for a gap was <code>servableClips === 0</code> — a literal zero. The library held exactly one clip tagged for that beat type. One clip serving six separate beats is not zero servable clips; it's the same clip shown six times, which is precisely the "repeated irrelevant b-roll" complaint the check was supposed to catch. The fix reframes the measure as beats-per-servable-clip and reports the repeat count directly, in a sentence a reader can act on without doing the division themselves.</p>
+
+      <h2>A generated span with no prompt, and a mascot answering questions it couldn't see</h2>
+
+      <p>PR #428 found that four of eight generated b-roll spans on one render carried <code>prompt: undefined</code> — the field was declared in the return type and set by no branch that actually produced it, so every downstream consumer that read it got nothing and silently fell back to a generic sentence about "a natural, candid lifestyle moment." The actual scene description the pipeline needed — "a busy coffee shop, late morning" — had been captured earlier in the pipeline for an unrelated library lookup and then dropped on the floor one function later, never forwarded to the branch that needed it to build a real prompt.</p>
+
+      <p>PR #429 found the sibling bug on the evaluation side: the criteria used to accept or reject a generated span were matched to the planner's intent by array index, while the span's actual visual kind was decided independently, a few lines later, by a completely different function. The two routinely disagreed — a cartoon-mascot reference shot could re-kind a product candidate into a mascot shot, and the acceptance criteria for the resulting span were still the ones written for a product. One span was rejected for containing a cartoon mascot, using a criteria list that explicitly named "no jar, bottle, cream, or cartoon mascot" — a rejection for being exactly what the pipeline's own logic had decided to make it.</p>
+
+      <h2>A stranger in the frame, and the fix that fixed the wrong half</h2>
+
+      <p>PR #458 is the sharpest content-quality bug in the whole cluster: four cutaways on one delivered render showed the wrong person's face. The span planner declared a <code>withPresenter</code> field, correctly set by the planner itself, correctly threaded through the scene-rendering path — and silently discarded on the b-roll path, which hardcoded <code>withPresenter: false</code> on every generated span regardless of what the planner had actually decided. Without that flag, no identity reference image was attached to the generation call, and a "lifestyle" shot with no identity anchor produces exactly what you'd expect: an invented, unfamiliar face.</p>
+
+      <p>PR #459 is the honest follow-up, caught by a six-reference plan gate before a single dollar was spent on a render: the fix in #458 was correct and did nothing, because the planner's own candidates for that reference set <code>withPresenter</code> to <code>undefined</code> or <code>false</code> on every single one — abstract motion graphics have no presenter to represent, so the flag being forwarded correctly changed nothing about the output. The real remaining bug — a lifestyle cutaway that shouldn't carry the presenter at all still carrying them — needed its own separate fix, which is exactly the kind of near-miss the team's own handoff docs started explicitly calling out by name: a fix that reads correctly and changes nothing, discovered only because someone measured the actual output against the specific reference the fix claimed to address.</p>
+
+      <h2>An exclusivity that was never documented until it broke</h2>
+
+      <p>PR #464 found the deeper cause underneath: a presenter-carrying cutaway was sent zero product reference images by design, an "undocumented design dichotomy" from an early commit — a shot could show the presenter living the moment, or the product in context, never both — because nothing had ever needed both at once. Widening an earlier fix to cover more cutaway shapes as presenter-eligible turned that old, silent assumption into a live defect: a cutaway carrying the presenter now also needed the product's reference images to render the product correctly, and the code had never been asked to send both.</p>
+
+      <h2>A color grade that was never being called at all</h2>
+
+      <p>PR #443 might be the single best "read the invariant, don't trust the comment" bug in this cluster. A render's saturation measured 10.19 against a reference's 26.11 — a 2.6x gap the grading function's own 1.2x cap couldn't close even if it ran. That's the obvious, wrong explanation. The actual cause: the grading function had been imported and was called from nowhere in the entire codebase, while a comment in the same file asserted "the color grade ALWAYS applies." A false invariant, stated confidently enough in a comment that nobody went looking for the call site that didn't exist.</p>
+
+      <p>PR #472 picked up the same area two rounds later and found the opposite kind of subtlety: once the grade was wired up, it applied one global multiplier to bring the whole picture's mean saturation to the reference's mean — and in doing so pushed already-vivid generated cutaways to a peak of 36.2 while presenter footage sat near 20, because the underlying footage varied 4.4x internally and a single global correction can only target the mean, never the spread. "A viewer sees the peaks; every number we had reported the mean" is the whole bug in one sentence — three separate reports in this area had measured means and missed the actual visible defect until someone looked at the per-segment range instead.</p>
+
+      <h2>A cutaway that plays under the wrong line, by a lag that grows</h2>
+
+      <p>PR #476 closes the cluster with a timing bug whose root cause had been dismissed once already as noise. A function recovering which scene a cutaway plays over walked the <em>planned</em> scene durations, while the cutaway's own placement was measured against the <em>stitched</em> master — and a comment in the code had excused the resulting drift as "about 0.1s per cut" of harmless crossfade error, not worth fixing precisely. That estimate was wrong, and it was wrong specifically because per-scene pace correction rescales each scene to fit its voiceover without ever resetting cumulatively — so the drift compounds across scenes rather than staying flat, landing at 6 to 11 seconds of lag on a render where the original comment predicted a fraction of a second.</p>
+
+      <h2>The pattern: a defect survives review until someone measures the mechanism, not the output</h2>
+
+      <p>Nearly every fix in this cluster follows the same arc: a symptom gets reported, a plausible cause gets identified and fixed, and the fix ships clean — and then a subsequent measurement, often a cheap plan-gate run costing a few dollars rather than a full paid render, finds that the mechanism the fix depended on never actually executes for the case that mattered. The team's own handoff documentation started naming this pattern explicitly as "near-misses" specifically because it kept recurring: correct code, unreachable in practice, indistinguishable from working code by review alone. The fix wasn't better code review. It was cheap, repeatable measurement runs against real references, specifically built to answer "did the mechanism actually fire on this case" rather than "does this look right."</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="six-phases-ad-generator-corpus-regression.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Six Phases: Diagnosing an Ad Generator's Regression Against Its Own Corpus</a><br><span style="color:#8892b0;font-size:13px;">An earlier round of corpus-measured regression fixes on the same pipeline</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel: Teaching an AI Pipeline to Check Its Own Work</a><br><span style="color:#8892b0;font-size:13px;">The AI critics that these b-roll fixes were measured and validated against</span></li>
+        <li style="margin-bottom:12px;"><a href="reference-fidelity-swipe-fixes.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Making the Swipe Follow Its Reference</a><br><span style="color:#8892b0;font-size:13px;">The earlier reference-fidelity work this cluster's cutaway-sourcing bugs build on</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>The Plan Gate Contradiction Chain: When a Planner Is Blind to Its Own Grading Criteria — Humza Tareen</title>
+  <meta name="description" content="A recurring bug class in an AI ad planner: the plan and the gate meant to check it disagree, a role gets overwritten after the prose is written for it, and a judge's findings go nowhere because a re-roll re-reads the old verdict.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Planning, Prompt Engineering, Video Generation, Observability">
+  <link rel="canonical" href="https://humzakt.github.io/blog/plan-gate-contradiction-chain.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="The Plan Gate Contradiction Chain: When a Planner Is Blind to Its Own Grading Criteria">
+  <meta property="og:description" content="A recurring bug class in an AI ad planner: the plan and the gate meant to check it disagree, a role gets overwritten after the prose is written for it, and a judge's findings go nowhere because a re-roll re-reads the old verdict.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/plan-gate-contradiction-chain.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Planning">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Observability">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Plan Gate Contradiction Chain: When a Planner Is Blind to Its Own Grading Criteria">
+  <meta name="twitter:description" content="A recurring bug class in an AI ad planner: the plan and the gate meant to check it disagree, a role gets overwritten after the prose is written for it, and a judge's findings go nowhere because a re-roll re-reads the old verdict.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The Plan Gate Contradiction Chain: When a Planner Is Blind to Its Own Grading Criteria",
+    "description": "A recurring bug class in an AI ad planner: the plan and the gate meant to check it disagree, a role gets overwritten after the prose is written for it, and a judge's findings go nowhere because a re-roll re-reads the old verdict.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/plan-gate-contradiction-chain.html" },
+    "keywords": ["AI Planning", "Prompt Engineering", "Video Generation", "Observability"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"The Plan Gate Contradiction Chain"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">The Plan Gate Contradiction Chain: When a Planner Is Blind to Its Own Grading Criteria</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 10 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Planning</span>
+        <span class="blog-tag">Prompt Engineering</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Observability</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A plan-gate check on the main video-generation service exists to catch a bad plan before it becomes a paid render. Over several days, a cluster of bugs kept showing up in the gap between "the plan" and "the thing checking the plan" — not because the gate was weak, but because the planner and the gate were, in several distinct ways, reading two different specifications of the same ad. A grading system is only as good as whether the thing being graded was ever told what it's being graded on, and this cluster is a tour of every way that assumption can quietly fail.</p>
+
+      <blockquote>
+        A gate that flags a defect it cannot repair, and a repair that fixes a defect it was never told about, agree on nothing except the plan that slipped through both of them.
+      </blockquote>
+
+      <h2>Detection and repair, reading two different vocabularies</h2>
+
+      <p>The first bug in this chain is also the cleanest statement of the whole pattern. <code>scanPlanConsistency</code> flagged "the shot says there is no person in it, but its role puts one there" as a plan error. The repair function meant to fix exactly that defect had its own, narrower pattern for recognizing a personless shot — so the gate reported a contradiction the repair code literally could not see, and the contradiction reached the clip vendor anyway. Measured directly against real scenes: of five ways a script can say "no person here," three were misclassified as person shots, including one where the negation trap was almost poetic — the phrase "no face visible" contains the word "face," and "face" was one of the terms the code used to detect a person's presence. A negated mention counted as a positive one. The concrete cost was recorded on a real job: a scene explicitly staged as hands-free rendered a man holding pens.</p>
+
+      <p>The fix wasn't a smarter pattern. It was making detection and repair share one exported constant instead of two independently-maintained ones, with a test asserting the import rather than a redeclaration — because a second copy of the same vocabulary is, on its own, the regression waiting to happen again.</p>
+
+      <h2>A prompt that told the planner two contradictory things</h2>
+
+      <p>The same PR surfaced a second, unrelated contradiction sitting a few lines apart in the planner's own system prompt: an explicit "the presenter never holds, touches, lifts, or shows the product — no exceptions" rule, followed five lines later by a role definition that offered "(or holding the product while talking)" as an option. The planner followed the parenthetical often enough to be measurable — five scenes on one reference described handling the product in the line while the staging correctly showed none, because the renderer strips the product from every presenter shot regardless of what the script says. Script and picture were pulling in opposite directions, and nothing surfaced it until the gate started persisting its findings instead of only flashing them in a terminal.</p>
+
+      <h2>A role assigned after the prose was already written for a different one</h2>
+
+      <p>The largest single insight in this cluster is an ordering bug, not a vocabulary bug. A scene's <code>role</code> — presenter, narrated, or b-roll — determines whether the clip renders with native audio, mute with a voiceover muxed in later, or as a pure cutaway. The planner picks a role and writes motion and acceptance criteria consistent with it. Then a separate measurement of the reference video's own dominant shot type <strong>overwrites that role afterward</strong> — correctly, because a real measurement of the reference should win over a model's guess. The prose and the role then disagree through no fault of either step individually: seven scenes on one job shipped as <code>narrated</code> — meaning the clip renders mute — while their own motion description had the presenter talking straight to the lens. A narrated clip's rendering path appends an instruction that the subject does <em>not</em> speak, lips at rest, "observed by the camera rather than performing to it" — turned into a mouth moving under someone else's voiceover, which is precisely the "dead avatar" complaint a human reviewer had reported independently, with no idea it traced back to a role reassignment happening after the prose was already committed.</p>
+
+      <p>The tempting fix was a large one: rename the whole role enum to make the distinction unambiguous, a forty-four-site migration touching every persisted job state. The investigation that actually shipped rejected that plan on its own evidence — the roles were not conflated, they were correctly and unambiguously defined; the bug was purely that the role got decided <em>twice</em>, once by the planner and once by the reference measurement, in the wrong order. The real fix derives the role from the reference <em>before</em> the planner writes a single word of motion, and states it to the planner as already decided — naming the exact phrases that would then be wrong ("talks to lens," "facing camera") and where that content belongs instead. Deliberately kept as two separate functions rather than one shared helper: the pre-plan derivation is advice that may be undefined for an ambiguous window, while the reference measurement remains the authority applied afterward. Collapsing them into one function would make the second call look redundant — an invitation to delete the exact override that keeps a real measurement from losing to a language model's guess.</p>
+
+      <h2>Criteria describing a beat that no longer exists</h2>
+
+      <p>A related but distinct bug: the same transform that rewrites a personless shot into a person shot left the scene's acceptance criteria — the list a downstream critic grades the render against — completely untouched, still describing the product-focused, person-free beat that had just been overwritten. One omission produced two separate errors on the same scene, and a clip critic checking the render against those stale criteria would have failed a render for not matching a beat that the pipeline itself had already deleted. The fix drops the stale criteria rather than trying to rewrite them into something new — inventing replacement criteria would mean authoring plan content inside what's supposed to be a pure transform step, a different kind of contamination than the one being fixed.</p>
+
+      <h2>The last three contradictions, on beats no per-scene check could ever see</h2>
+
+      <p>After the two fixes above, a measured gate run against the same reference went from nine total plan errors to zero in two of the three defect categories — genuine evidence the fixes were complete rather than merely narrower. Three contradictions remained, and they were structurally different from everything before them: every one occurred on a cutaway window where the reference measurement legitimately had no opinion about who was on camera, because a cutaway by definition doesn't answer that question. The role then got clamped downstream to "narrated" for an equally sound, independent reason — the reference video simply never puts a talking head on camera at all, so no presenter role should ever be assigned regardless of scene. Two individually correct decisions produced a contradiction that neither one could see on its own, because the actual missing fact — does this reference ever show a speaker at all — is a property of the whole reference video, not of any individual scene, and no per-scene check was ever going to be capable of answering it. The fix computes that fact once, for the reference as a whole, before the plan exists at all, and lets every beat inherit it.</p>
+
+      <h2>A judge whose verdict a re-roll simply ignored</h2>
+
+      <p>A semantic plan-QA step asks a genuinely useful question — does this scene's staging actually illustrate what its own line is saying — and for a while, the answer went nowhere. The check ran, logged its findings, displayed them on the gate, and handed them back to nobody. A human reviewing a flagged plan could re-roll it, and the re-roll would re-author a fresh plan and then read the <em>old</em> plan's cached verdict, because the cache key for that verdict never moved when the plan's content did. A re-roll meant to fix a mismatch would show the exact mismatch it had just fixed, or fail to show a new one the fresh plan had earned. The fix threads the judge's findings back to the author on a dedicated feedback channel — deliberately not the same channel used for human-requested edits, because that channel carries a separate license to author entirely new spoken lines, and reusing it for an automatic pass would have handed an unattended re-plan a privilege the system explicitly reserves for a human asking for it.</p>
+
+      <p>That automatic re-author was itself later removed, in an unusually candid piece of self-audit: measured across five actual fires, it improved exactly one plan out of five, and every fire cost roughly thirty cents for a second authoring call. Three of the five failures were a different, already-fixed bug in disguise; the fourth and fifth simply didn't help. The PR that removed it is explicit that a redo mechanism which mostly reports "no better" shouldn't get a pass just because its author wrote it — the same standard applied to a different feature earlier in the same investigation.</p>
+
+      <h2>A flag that argued itself out of existing</h2>
+
+      <p>The last bug in the chain is the funniest and, in its way, the most instructive: a judge model reasons about a scene inside its own message text and sometimes talks itself into "actually this is fine" — while still emitting the structured flag that parks a render. One flagged message read, verbatim, that a scene's timing was "acceptable; no issue," attached to a flag that had already stopped a real render pending human review. The model's own prose had refuted its own verdict, and nothing was reading the prose. The fix narrows the parser to drop retractions specifically — a scene report that says "acceptable, no issue" doesn't count as a flag — while carefully preserving softer hedges like "a minor mismatch" that are genuine findings and need to keep surfacing. Getting that distinction wrong in either direction would have either let broken plans through as false negatives or blinded the gate entirely.</p>
+
+      <h2>The pattern: ask whether the judge and the author share a spec</h2>
+
+      <p>Every bug in this chain reduces to the same root question, asked about a different pair of components each time: does the thing writing the content and the thing grading it agree on what's being written and graded? A shared vocabulary constant answers it for detection and repair. Ordering the role-assignment step before the prose-writing step answers it for the planner and the reference measurement. A feedback channel that actually reaches the author's prompt answers it for the judge and the planner. None of these fixes involved a smarter model or a better prompt in the sense of more eloquent instructions — every one of them was closing a gap where two systems were each behaving correctly according to a specification the other one didn't have.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">The earlier round of gate and dead-code hardening this chain of fixes continues</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel</a><br><span style="color:#8892b0;font-size:13px;">The judge models whose verdicts this post's fixes finally routed back to the author</span></li>
+        <li style="margin-bottom:12px;"><a href="six-phases-ad-generator-corpus-regression.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Six Phases: Diagnosing a Regression Against a Corpus</a><br><span style="color:#8892b0;font-size:13px;">The measured, evidence-first diagnosis style this whole chain of fixes follows</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

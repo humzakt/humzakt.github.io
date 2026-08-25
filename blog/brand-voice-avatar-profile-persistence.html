@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>A Brand's Voice Becomes Persistent: Avatar Profiles Instead of Per-Run Re-Supply — Humza Tareen</title>
+  <meta name="description" content="Splitting a video pipeline's brand identity from its per-run reference: a persistent voice profile, a route built on purpose instead of a thin forwarder, and an avatar client that shipped deliberately without a feature flag.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Voice AI, AI Presenters, Product Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/brand-voice-avatar-profile-persistence.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="A Brand's Voice Becomes Persistent: Avatar Profiles Instead of Per-Run Re-Supply">
+  <meta property="og:description" content="Splitting a video pipeline's brand identity from its per-run reference: a persistent voice profile, a route built on purpose instead of a thin forwarder, and an avatar client that shipped deliberately without a feature flag.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/brand-voice-avatar-profile-persistence.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-08-26T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Voice AI">
+  <meta property="article:tag" content="AI Presenters">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="A Brand's Voice Becomes Persistent: Avatar Profiles Instead of Per-Run Re-Supply">
+  <meta name="twitter:description" content="Splitting a video pipeline's brand identity from its per-run reference: a persistent voice profile, a route built on purpose instead of a thin forwarder, and an avatar client that shipped deliberately without a feature flag.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A Brand's Voice Becomes Persistent: Avatar Profiles Instead of Per-Run Re-Supply",
+    "description": "Splitting a video pipeline's brand identity from its per-run reference: a persistent voice profile, a route built on purpose instead of a thin forwarder, and an avatar client that shipped deliberately without a feature flag.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-08-26",
+    "dateModified": "2026-08-26",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/brand-voice-avatar-profile-persistence.html" },
+    "keywords": ["Voice AI", "AI Presenters", "Product Engineering", "TypeScript"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"A Brand's Voice Becomes Persistent"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">A Brand's Voice Becomes Persistent: Avatar Profiles Instead of Per-Run Re-Supply</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-08-26" itemprop="datePublished">August 26, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Voice AI</span>
+        <span class="blog-tag">AI Presenters</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service builds each run from a reference video — a "swipe link" that supplies structure: cut positions, shot length, motion arcs, pacing. That reference was also, by accident, supplying the brand's voice, because nothing else in the pipeline had ever been asked to. Every generation re-derived what the brand sounded like from whatever video happened to be swiped that day. A VE lead's ask made the gap explicit: recreate a brand's style once, and stop re-feeding a swipe link that voice on every single run.</p>
+
+      <blockquote>
+        A reference video should supply a shot's grammar, never its subject. The same split that keeps a reference from dictating who's on screen should keep it from dictating what the brand sounds like.
+      </blockquote>
+
+      <h2>Splitting structure from voice</h2>
+
+      <p>PR #385 draws the line explicitly: the swipe link keeps supplying structure — that's the design, unchanged — but voice now comes from a separate, persistent brand profile. The implementation deliberately copies the shape of an existing, already-trusted store rather than inventing a new pattern: <code>lib/catalog/profile-store.ts</code> is structurally the same as <code>product-store.ts</code> — zod-validated, slug-keyed, mirrored to Drive, and critically, a no-op when unconfigured. An unreachable Drive degrades the planner back to today's behavior instead of failing a paid run outright. The profile's fields are field-for-field the same shape as the reference tool's own Research Profile — territory, angles, big ideas, claims — which means a brand's identity now has exactly one home instead of being re-inferred from whatever video got swiped last.</p>
+
+      <h2>A write loop with no caller</h2>
+
+      <p>PR #385 shipped <code>appendProfileRun</code> with zero callers — and PR #403 is the PR that noticed, and it's worth pausing on because the fix that would have been fastest was also wrong. The obvious move is calling it at the end of the render stitch. The store's own schema comment already explained why that's a trap: every field in a profile's run history is supposed to be <em>copied</em> from an external script, <code>measure-pair.mjs</code>, never recomputed inside the app. That script runs outside the pipeline, measures the finished master against the reference through one consistent instrument, and is what an editor actually reads when judging a run. An in-app recompute would produce a second set of numbers for the same render — and then a brand's permanent history and the editor's report could disagree about what happened to the same video. Two truths for one event is exactly the failure mode the store was written to avoid.</p>
+
+      <p>So the fix isn't a function call, it's a dedicated route: the external measurement script pushes, <code>POST /api/profiles/&lt;slug&gt;/runs</code> receives. One writer, one truth. And a route earns its keep over a thin forwarder in four concrete ways: it validates at the boundary with its own wire-contract schema — deliberately separate from the store's persistence-contract schema, because a malformed number reaching a brand's permanent history is exactly the failure a forwarder wouldn't catch; it bounds the inputs, refusing a 140% silence share or a fractional cut count on sight; and it distinguishes a 404 (no such profile) from a 502 (the write itself failed) rather than collapsing both into one generic error a caller can't act on differently.</p>
+
+      <h2>An avatar client shipped with no flag, on purpose</h2>
+
+      <p>PR #393 solves a different but related identity problem: a talking-head avatar generated scene by scene from an anchor description reproduces a slightly different person each time — eleven independently generated frames from one text description became eleven slightly different men, flagged by viewers as wrong-avatar or inconsistency at four separate timestamps in one render. The fix routes around the problem instead of tuning it: a client for a vendor model that generates the <em>picture from the audio</em>, so identity comes from one anchor image reused across the run rather than from a text description regenerated per scene.</p>
+
+      <p>It's also strictly better on cost and quality, which is part of why the PR justifies not shipping a flag at all:</p>
+
+      <table>
+        <thead><tr><th>Path</th><th>Rate</th><th>66s of talking track</th></tr></thead>
+        <tbody>
+          <tr><td>Existing approach, as billed</td><td>$0.14/s</td><td>$9.24 (measured)</td></tr>
+          <tr><td>Avatar client, standard tier</td><td>$0.0562/s</td><td>$3.71</td></tr>
+          <tr><td>Avatar client, pro tier</td><td>$0.115/s</td><td>$7.59</td></tr>
+        </tbody>
+      </table>
+
+      <p>Cheaper, independently benchmarked ahead of a well-known competing avatar product, and built from an audio input the pipeline already produces — nothing discarded, warped, or repainted, which matters because an earlier avatar-adjacent approach had already been rejected for doing exactly that. The decision to ship without a feature flag is the interesting part: this isn't an alternative sitting beside the old path for an operator to toggle between. It's the documented, sanctioned successor to an approach the team had already marked do-not-retry. A flag implies a live choice between two still-valid options. Here there wasn't one — keeping a flag around would have preserved a decision that had already been made, dressed up as still being open.</p>
+
+      <h2>What a paid render found that reasoning didn't</h2>
+
+      <p>PR #409 is the sharpest bug in this cluster, and it's explicitly framed as a design error rather than a vendor failure. A render launched from an earlier PR generated a genuinely good avatar take — succeeded, billed $3.62 — and the pipeline's own downstream check threw it away and fell back to fully generative rendering for every beat instead, silently, with no error surfaced anywhere that would tell an operator this had happened.</p>
+
+      <p>The root cause was a rule that made sense in one context and stopped making sense in another: an all-or-nothing "every cut must land in detected silence" check, fine for a two-to-four shot bundle, and near-unreachable for a fifteen-beat ad that needs fourteen interior cuts when a natural spoken read offers roughly eight detectable silent pauses total. The check wasn't broken — it was correctly enforcing a rule that had quietly stopped fitting the size of ad it was being asked to gate. The fix doesn't loosen the rule; it changes what a "safe cut point" means. The one-call voiceover synthesis step already computes word-level alignment and had been discarding it. Persisting that alignment means a cut can land in the gap between two words — which is, by definition, never mid-word — instead of only in a detected silence, and the same fifteen-cut plan that used to fail categorically now lands cleanly.</p>
+
+      <h2>Closing a session honestly</h2>
+
+      <p>Two documentation PRs bookend this cluster and are worth citing on their own. PR #405 recalibrated an audio-feel check against real measured numbers and found all three of its firing rules had been unfireable since the check was written — one rule's absolute floor was strict enough to condemn the reference video itself, meaning a check that had been wired into the pipeline the entire time had never once been able to say anything. The same PR caught its own earlier mistake: an asset recommendation that would have fixed one defect (a missing product logo) by introducing a different one (a version of the asset without a required brand mark) — trading one visible error for a less visible one and calling it solved.</p>
+
+      <p>PR #427 closes the broader session with a document explicitly built to stop a future reader from re-deriving conclusions that had already been disproven with real measurements — five of them, listed by name, each one something a fresh reader would plausibly reach independently and each one wrong. That kind of handoff only works because it's honest about the false starts inside the same effort, not just the parts that landed.</p>
+
+      <h2>The pattern: one write path, one source of truth</h2>
+
+      <p>Every fix in this cluster is a variant of the same idea applied to a different kind of identity — voice, avatar, or the honesty of the record describing what a session actually found. A brand's voice needed exactly one home instead of an incidental one. A write function needed exactly one caller, reached through a route built for the purpose rather than bolted onto the nearest convenient step. An avatar model needed exactly one anchor image instead of a description regenerated per scene. None of these are hard engineering problems. They're all the same discipline, applied consistently: decide where a fact about identity lives, then make sure nothing else in the system is quietly allowed to supply a second answer.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="voice-pipeline-billing-lipsync-kling-v3.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Voice Pipeline Economics</a><br><span style="color:#8892b0;font-size:13px;">The billing and caching failures underneath the same voice stack this profile system now feeds</span></li>
+        <li style="margin-bottom:12px;"><a href="multi-presenter-cast-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">N-Person Cast</a><br><span style="color:#8892b0;font-size:13px;">Where persistent identity had to scale from one brand voice to a full cast of people</span></li>
+        <li style="margin-bottom:12px;"><a href="presenter-generation-guardrails.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Guardrails for an AI Presenter</a><br><span style="color:#8892b0;font-size:13px;">The sibling tool's own identity-consistency bugs, from a different angle</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>
