@@ -190,7 +190,7 @@
       <h1 class="hero-name fade-in">Humza Tareen.</h1>
       <h2 class="hero-tagline fade-in">I ship AI solutions with customers.</h2>
       <p class="hero-description fade-in">
-        I sit at the intersection of <strong style="color: var(--text-light);">engineering, enterprise delivery, and client success</strong>. I've fine-tuned LLMs for <strong style="color: var(--text-light);">Apple, Meta, and Bytedance</strong>, delivered GenAI integrations for <strong style="color: var(--text-light);">Fortune 500 clients</strong> across Mulesoft, Salesforce, and Kafka, and built agentic automations that cut client workloads by 60%. I ship faster using <strong style="color: var(--text-light);">AI-native tools like Cursor, Codex, and Claude Code</strong> &mdash; including this very website. Currently providing services to <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a> and actively open to new challenges.
+        I sit at the intersection of <strong style="color: var(--text-light);">engineering, enterprise delivery, and client success</strong>. I've fine-tuned LLMs for <strong style="color: var(--text-light);">Apple, Meta, and Bytedance</strong>, delivered GenAI integrations for <strong style="color: var(--text-light);">Fortune 500 clients</strong> across Mulesoft, Salesforce, and Kafka, and built agentic automations that cut client workloads by 60%. More recently, I've built core services for an <strong style="color: var(--text-light);">enterprise AI evaluation and training-data platform</strong> &mdash; RAG retrieval, RL training environments, long-horizon task-design pipelines &mdash; and shipped a <strong style="color: var(--text-light);">production AI video-generation pipeline</strong> end to end, including an AI critic panel that verifies its own output. I ship faster using <strong style="color: var(--text-light);">AI-native tools like Cursor, Codex, and Claude Code</strong> &mdash; including this very website. Currently providing services to <a href="https://www.turing.com" target="_blank" rel="noopener noreferrer">Turing</a> and actively open to new challenges.
       </p>
       <div class="hero-buttons fade-in">
         <a href="mailto:humzakhawartareen@gmail.com" class="btn-primary">Let's Talk</a>
@@ -251,6 +251,9 @@
         <p class="about-text">
           What sets me apart is that I don't just write code &mdash; I <strong style="color: var(--text-light);">ship solutions that solve real client problems</strong>. I've scoped and delivered POCs for financial services clients, built AI agents that reduced customer workloads by 60%, architected integrations across enterprise iPaaS platforms, and hold IBM Cloud Sales and Mulesoft certifications that let me speak both the technical and business language. I also bring peer-reviewed research published at IEEE EMBC.
         </p>
+        <p class="about-text">
+          Most recently, I've built core backend services for an enterprise AI evaluation and training-data platform &mdash; a RAG retrieval service, a Gym-style RL training environment for code agents, and the 11-stage pipeline that turns hours-long occupational scenarios into calibrated RL training data &mdash; and shipped a production AI video-generation pipeline from architecture through hardening: rendering, voice/lip-sync, multi-presenter casting, and a self-verifying critic panel.
+        </p>
         <div class="about-details">
           <div class="about-detail">
             <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
@@ -293,6 +296,8 @@
           <span class="pill">Agentic Systems</span>
           <span class="pill">RAG</span>
           <span class="pill">RLHF</span>
+          <span class="pill">AI Evaluation</span>
+          <span class="pill">RL Training Data</span>
           <span class="pill">LLM Fine-Tuning</span>
           <span class="pill">PyTorch</span>
           <span class="pill">LangChain</span>
@@ -1018,8 +1023,10 @@
           return;
         }
         grid.innerHTML = '';
-        // Show only first 4 articles on main page
-        var displayArticles = articles.slice(0, 4);
+        // Show the 4 most recent articles on main page
+        var displayArticles = articles.slice().sort(function(a, b) {
+          return new Date(b.date) - new Date(a.date);
+        }).slice(0, 4);
         displayArticles.forEach(function(article) {
           const themes = (article.themes || []).join(' ');
           const date = article.date ? new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
