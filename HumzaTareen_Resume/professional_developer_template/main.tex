@@ -23,20 +23,42 @@
 \vspace{-8pt}
 
 %-------------------------------------------------------------------------------
+%                Summary
+%-------------------------------------------------------------------------------
+
+\section{Summary}
+
+\noindent Engineer who ships production AI systems and owns the customer relationship around them --- technical discovery, POC-to-production delivery, enterprise integration, and debugging live in the customer's environment. Built and deployed 10 microservices powering an AI agent evaluation platform on GCP; delivered GenAI programs for Fortune 500 and Big Tech clients across APAC and North America.
+
+\vspace{2pt}
+
+%-------------------------------------------------------------------------------
 %                Work Experience
 %-------------------------------------------------------------------------------
 
 \section{Work Experience}
 
 \WorkExperience
-    {Software Engineer} % job title
+    {Forward Deployed Engineer} % job title
     {Turing} % company name
     {Sep 2024 -- Present} % beginning and end of employment
     {Palo Alto, CA (Remote)} % city, country of employment
     {
-        \item \textbf{Software Engineer (Jul 2025 -- Present):} Architected AI-powered agentic automations using Python, FastAPI, and RAG on GCP; built backend services with PostgreSQL and Redis for model evaluation pipelines.
-        \item \textbf{Pod Lead (Mar -- Jul 2025):} Led a distributed team of 10+ AI Trainers using Agile methodologies for GenAI benchmarking and QA for APAC clients.
-        \item \textbf{LLM Python Developer (Sep 2024 -- Mar 2025):} Developed domain-specific LLMs (RLHF, reasoning) for \textbf{Apple, Meta, and Bytedance}; built custom Code Interpreter tools.
+        \item \textbf{Forward Deployed Engineer (Jul 2025 -- Present):} Architected and shipped \textbf{10 production microservices} on GCP (Cloud Run, GKE, AlloyDB, Pub/Sub, Cloud Tasks) powering an AI agent evaluation platform --- the core evaluation engine, LLM-as-judge scoring service, RAG retrieval pipeline with pgvector, and RL training arena.
+        \item Designed event-driven data pipelines using Pub/Sub (\textbf{35 topics} with DLQs), Cloud Tasks, and Cloud Scheduler to orchestrate 6-phase evaluation workflows with built-in observability, independent retry, and zero silent failures.
+        \item Debugged a live production AlloyDB SSL failure affecting \textbf{5\%} of evaluation tasks by tracing a connection pool lifecycle mismatch --- cutting the failure rate to \textbf{0.01\%}.
+        \item \textbf{Pod Lead (Mar -- Jul 2025):} Owned client-facing delivery of GenAI benchmarking and evaluation for \textbf{APAC stakeholders}, leading a cross-functional team of \textbf{10+ engineers across 3 continents} and translating client requirements into shippable acceptance criteria.
+        \item \textbf{LLM Python Developer (Sep 2024 -- Mar 2025):} Developed domain-specific LLMs (RLHF, prompt engineering, reasoning) for \textbf{Apple, Meta, and Bytedance}; built a custom Code Interpreter and evaluation harnesses.
+    }
+
+
+\WorkExperience
+    {Automation Consultant} % job title
+    {OIRRC} % company name
+    {Mar 2026 -- Apr 2026} % beginning and end of employment
+    {Islamabad, Pakistan} % city, country of employment
+    {
+        \item Embedded with clinical research stakeholders to scope and deliver an automation engagement for study document generation, reducing cycle time from \textbf{3 weeks to under 24 hours} --- a \textbf{95\%+} reduction in manual effort.
     }
 
 
@@ -46,20 +68,20 @@
     {Feb 2024 -- Jul 2025} % beginning and end of employment
     {Naperville, IL (Remote)} % city, country of employment
     {
-        \item Co-developed \textbf{`RC AI OPS'} GenAI agent using LangChain, automating error resolution and improving backend efficiency by \textbf{50\%}.
-        \item Architected GenAI integrations for \textbf{Fortune 500 clients} using Mulesoft, IBM \& Salesforce iPaaS platforms.
-        \item Built AI agents for Middleware (IBM ACE/MQ, Salesforce OMS), reducing developer workloads by \textbf{60\%}; fine-tuned Llama models on AWS Bedrock for financial services copilots.
+        \item Architected and delivered client-facing GenAI solutions for \textbf{Fortune 500 clients} using MuleSoft, Salesforce, IBM iPaaS, and Apache Kafka, taking use cases from technical discovery to production rollout.
+        \item Co-developed \textbf{`RC AI OPS'}, an agentic AI system using Python and LangChain, automating error resolution to improve backend efficiency by \textbf{50\%}.
+        \item Built AI agents for middleware (IBM ACE/MQ, Salesforce OMS), reducing developer workloads by \textbf{60\%}; fine-tuned Llama models on AWS Bedrock to build domain-specific copilots for financial services clients.
     }
 
 
 \WorkExperience
     {Deep Learning Researcher} % job title
-    {National Center of Artificial Intelligence (NCAI)} % company name
+    {Deep Learning Lab, National Center of Artificial Intelligence (NCAI)} % company name
     {Sep 2023 -- May 2024} % beginning and end of employment
     {Islamabad, Pakistan} % city, country of employment
     {
         \item Authored the award-winning (\textbf{1st Prize, SEECS Open House}) ``OptiGuard'' system for glaucoma detection (see Publications).
-        \item Developed novel CAD systems using PyTorch and Hugging Face, achieving state-of-the-art performance in medical imaging.
+        \item Built machine learning and computer vision systems using PyTorch and Hugging Face, achieving state-of-the-art results in medical imaging.
     }
 
 %-------------------------------------------------------------------------------
@@ -73,7 +95,7 @@
 \vspace{-2pt}
 \begin{itemize}[noitemsep, topsep=2pt, leftmargin=1em, parsep=0pt, partopsep=0pt]
     \item S. S. U. Shah, M. Huzaifa, \textbf{H. Tareen}, M. N. Bajwa
-    \item State-of-the-art CAD system for glaucoma detection with Explainable AI (XAI), achieving robust generalization across multiple benchmark datasets.
+    \item State-of-the-art deep learning system for glaucoma detection from Retinal Fundus Images with Explainable AI (XAI) for clinical transparency; robust generalization across the SMDG-19 and G1020 datasets.
 \end{itemize}
 
 %-------------------------------------------------------------------------------
@@ -95,10 +117,11 @@
 \section{Skills \& Certifications}
 
 \SkillList{
-    \SkillItem{AI/ML}{: Agentic Systems, RAG, RLHF, GenAI, Model Evaluation, PyTorch, LangChain}
-    \SkillItem{Backend \& Databases}{: Python, FastAPI, Microservices, PostgreSQL, Redis, SQL, APIs}
-    \SkillItem{Cloud \& DevOps}{: Google Cloud Platform (GCP), Docker, CI/CD, Kong Gateway}
+    \SkillItem{AI \& ML}{: LLMs, RAG, RLHF, Prompt Engineering, Agentic Systems, Fine-tuning, Model Evaluation, PyTorch, LangChain}
+    \SkillItem{Backend \& Data}{: Python, TypeScript, SQL, FastAPI, Next.js, Microservices, PostgreSQL, AlloyDB, pgvector, Redis, Kafka}
+    \SkillItem{Cloud \& DevOps}{: GCP (Cloud Run, GKE, Pub/Sub, Cloud Tasks, Cloud Scheduler), Kubernetes, AWS Bedrock, Docker, CI/CD}
+    \SkillItem{Delivery \& Integration}{: Technical Discovery, POC-to-Production, Stakeholder Management, MuleSoft, Salesforce, IBM iPaaS}
 }
-\noindent \textbf{Certifications:} IBM Certified Cloud Automation Sales Consultant, Microsoft Power Platform Fundamentals PL-900
+\noindent \textbf{Certifications:} IBM Certified Cloud Automation Sales Consultant, MuleSoft Certified Developer, Microsoft Power Platform Fundamentals (PL-900)
 
 \end{document}
