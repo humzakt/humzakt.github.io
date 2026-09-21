@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter — Humza Tareen</title>
+  <meta name="description" content="Collapsing four separate ad-creation entry points into one brief-driven flow, building a VSL Generator and an AI Presenter mode on top of it, and the sample-rendering and cost-quoting accuracy work needed to make the pre-review sample trustworthy before a paid run.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Product Engineering, Cost Engineering, UX">
+  <link rel="canonical" href="https://humzakt.github.io/blog/vsl-generator-ai-presenter-unification.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter">
+  <meta property="og:description" content="Collapsing four separate ad-creation entry points into one brief-driven flow, building a VSL Generator and an AI Presenter mode on top of it, and the sample-rendering and cost-quoting accuracy work needed to make the pre-review sample trustworthy before a paid run.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/vsl-generator-ai-presenter-unification.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="UX">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter">
+  <meta name="twitter:description" content="Collapsing four separate ad-creation entry points into one brief-driven flow, building a VSL Generator and an AI Presenter mode on top of it, and the sample-rendering and cost-quoting accuracy work needed to make the pre-review sample trustworthy before a paid run.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter",
+    "description": "Collapsing four separate ad-creation entry points into one brief-driven flow, building a VSL Generator and an AI Presenter mode on top of it, and the sample-rendering and cost-quoting accuracy work needed to make the pre-review sample trustworthy before a paid run.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/vsl-generator-ai-presenter-unification.html" },
+    "keywords": ["AI Video", "Product Engineering", "Cost Engineering", "UX"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"One Brief Instead of Four"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 13 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">UX</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service had accumulated four separate ways to start an ad: clone an ad, original from script, video sales letter, and — briefly — a fourth. Each had its own page, its own header, its own place in the sidebar. They looked like four products. Underneath, they were four thin page files sitting over one shared wizard component, and the words that told them apart never made it past the page layer into the code that actually planned and rendered anything. Collapsing that into one brief-driven flow, and then building two genuinely new product surfaces on top of the result, took about three weeks and touched navigation, script splitting, sample pricing, and — closing the loop — the first real finished output the new flow ever produced.</p>
+
+      <blockquote>
+        A chooser that asks a question whose answers converge is not a choice. It is a detour.
+      </blockquote>
+
+      <h2>Four routes, two runs</h2>
+
+      <p>PR #993 found the tell before it fixed anything: <code>videoTypeForCreateMode</code> mapped two of the four entry points — "AI Presenter" and "video sales letter" — to the exact same <code>short_vsl</code> job tag. Different headers, different marketing copy, byte-identical jobs underneath. The fix collapsed the chooser to one card, with the four original types demoted to a picker inside a single brief: storyboard, UGC video, VSL, or reference recreation. <code>/create/vsl</code> became the only page that actually mounts the form; the other three routes now just redirect into it. The pipeline itself — <code>/api/wizard/*</code> — wasn't touched at all, which is the property that made the change checkable: nothing about how a job renders was supposed to change, only how many doors led to it.</p>
+
+      <h2>A second card, justified by a different job</h2>
+
+      <p>PR #994 is the interesting counter-move to #993, and it's worth sitting with the order these two shipped in: the very next day. A stakeholder asked for a dedicated AI Presenter wizard — one person to camera, no reference video, none of the fancier modes — in the same conversation that asked to delete the "no reference" button from reference recreation. The PR's own comment names the standard #993 had just set: a chooser that converges to the same job is a detour, not a choice. So the new card only earns its place by producing something the merged flow didn't already produce — a distinct <code>videoType: "ai_presenter"</code> rather than a second front door to <code>short_vsl</code>. Two products that looked identical a day earlier now diverge by design, not by accident.</p>
+
+      <h2>Eight back buttons, none of them the same</h2>
+
+      <p>The AI Presenter card shipped with an unglamorous bug: no way back to the chooser screen. PR #995 could have patched that one path. Instead, asked to audit the whole tool's navigation rather than add a ninth arrow, it found eight hand-rolled back treatments across five different glyphs — <code>←</code>, <code>‹</code>, <code>↺</code>, a chevron, a bare dropdown caret — and <code>router.back()</code> appearing exactly zero times anywhere in the codebase. Two of the eight were the same bordered <code>←</code> chip routed to two different destinations depending on which screen rendered it. The fix is one shared back component with one behavior, replacing all eight, closing not just the reported bug but the entire class it came from.</p>
+
+      <h2>Splitting a script where a viewer would actually cut</h2>
+
+      <p>PR #996 fixed a scene-splitting bug that had been hiding behind a workaround written into the product's own documentation. A line like "When she told me about this, I smiled and said I'd look into it" is two beats of performance carried by one beat of picture — a natural cut point sits at the comma. The splitter had no way to see it: both the sentence-partition logic and the scene-count cap treated a sentence, not a clause, as the smallest unit a cut could land on. The operator-facing guidance for this exact problem was to punctuate a script with extra full stops to manufacture more cut points — grammatically wrong on purpose, as a workaround for a limit that shouldn't have existed. The fix moves the atom from sentence to clause boundary, following the same rule every subtitling authority independently converges on for exactly this reason.</p>
+
+      <h2>A sample that finally shows what the money buys</h2>
+
+      <p>The richest thread in this whole arc starts with a plain product complaint: the pre-review stage — the one screen positioned specifically to catch a bad plan before the pipeline renders and bills for the full fleet — showed nothing but still frames. Pacing and line delivery are both fundamentally time-domain; a still frame can't show either. PR #997 changes pre-review to actually render two real scenes before the operator commits to the rest, with a feedback box underneath so a correction can be applied to the sample and re-checked before the expensive part starts.</p>
+
+      <p>Three fast-follow PRs hardened it, and the middle one is worth reading as a genuine self-correction rather than a straight line of fixes:</p>
+
+      <ul>
+        <li><strong>#998</strong> closed a race: applying a feedback note re-renders and re-stitches the sample, which is safe only at the exact gate it was written for — mid-sample it collides with a render already in flight, and after approval it silently re-bills work the operator already paid for. The route now refuses anything outside that one window by name, because a safety property that depends on the screen never sending the request late is one stale tab away from being violated anyway.</li>
+        <li><strong>#999</strong> found the quote was reading half its own bill: the cost estimator priced a voice-bound clip at the bare per-second rate, while the actual billing code multiplied that same rate whenever the request carried image-set elements — which, on the UGC path, is every clip, single presenter included. A mirror test had been passing the whole time because it only checked that the base rate matched; nothing checked the multiplier.</li>
+        <li><strong>#1000</strong> then made a call that turned out to be wrong, and the PR that follows it says so directly rather than quietly overwriting it. #1000 reasoned that the sample quote and the full-run quote should share one number — the plan's average beat length — since they're "an inch apart" and answer what looked like the same question. #1001, written against a real paid run, showed they don't: the sample quote and the full quote answer two different questions ("what does this click spend" vs. "what does the whole ad cost"), and forcing them onto the same average produced a 12% under-quote on the exact number an operator is about to commit money against. The fix reverted to pricing each figure off the beats it actually renders — the sample from the sampled beats, the full estimate from the whole plan — and the PR is explicit that this reverses a call made one PR earlier, with the measured run that proved it wrong attached as evidence.</li>
+      </ul>
+
+      <p>That reversal is the part worth remembering longer than any individual bug: the fix that shipped first wasn't obviously wrong when it shipped. It took a real paid run, not more code review, to show the two numbers needed to diverge on purpose.</p>
+
+      <h2>A vendor's zero exit code is a claim, not proof</h2>
+
+      <p>Three defects landed on the same day, and the RCA that followed them is a small case study in not trusting your own fix. PR #1002 traced a transcription failure back to its real cause: ffmpeg had already refused to demux the uploaded file and logged exactly why, and the code downgraded that free, authoritative, local signal to a warning and handed the same unreadable file to a paid remote transcription vendor instead — which then failed with a much less specific error. The fix makes a failed local probe stop the pipeline immediately rather than pass the problem downstream.</p>
+
+      <p>PR #1005 is the sequel, and its own opening line states the discipline plainly: it exists because the author tested the #1002 fix instead of trusting it, by uploading a deliberately truncated file to the live deployment. The new guard didn't catch it. Every individual check the previous PR had added — video probe, ffmpeg exit code, non-empty output — passed cleanly on a corrupted result: ffmpeg reported success while writing a 799-byte MP3 with no decodable audio frames inside it, because a zero exit code only claims the tool didn't crash, not that its output means anything. The real fix probes the extracted audio file itself, not the process that produced it.</p>
+
+      <p>In between, PR #1003 traced a "scene cuts not applied" report back to the clause-splitter from #996: one sentence in a real script carried five commas and a dash, every individual clause candidate fell under the minimum word floor, and the merge-short-atoms step folded all of them into one indivisible 33-word atom — 30% of the whole script riding on one shot. The fix caps how large a single clause atom is allowed to grow before it's forced to split anyway, so a floor meant to prevent scenes that are too short can no longer produce one scene that eats a third of the ad. And PR #1004 traced a "the character doesn't look like Pixar, it looks like our normal avatar" report to a filename: the animated character had been generated and paid for correctly, uploaded to Drive under a name the serving route's lookup table didn't recognize, so every request for it silently 400'd and the pipeline fell back to the photographic original nobody had asked for.</p>
+
+      <h2>A progress bar that says how long "generating" actually takes</h2>
+
+      <p>PR #1006 is a smaller, purely UX fix worth including because of the number behind it: the render stage — the one that takes roughly five minutes per scene, the better part of an hour on a nine-scene ad — showed a bar frozen at 0% with the word "starting…" for the entire duration. It was one of roughly forty hand-rolled waiting states across the app, and only two of them used the shared progress component that already existed. The fix consolidates onto one component that names the current scene, elapsed time, and a realistic estimate range, mounted everywhere a screen can run for minutes rather than seconds.</p>
+
+      <h2>A seventh stage, because "done" was a dead end</h2>
+
+      <p>Before PR #1007, a delivered ad was terminal. Every edit allowlist in the repository named only the review steps that come before delivery, so the instant an ad shipped, the only way to change anything about it was to pay for an entirely new render — a standing do-not-retry. #1007 adds an eighth-hour-of-the-day feature that sounds simple and touches everything: a seventh pipeline stage, Edit, with per-scene regenerate priced on the button itself, saved takes, master version history, and a genuinely free editorial cut. It's registered once, in the shared <code>STAGES</code> array every flow already reads from — there's no separate per-flow wiring to forget.</p>
+
+      <p>The three PRs that followed it are the now-familiar shape of shipping something and then actually using it in production before calling it finished. #1008 found two of the new stage's refusal messages contradicting the condition they were checking — a delivered ad refused with "can only be edited once the ad is finished," describing a state the ad was already in. #1009 found the new edit route was the only mutating wizard route doing a bare in-memory job lookup instead of falling back to the Drive-backed restore every other route already used, which meant reopening an edit on an ad that had survived a container restart — the exact case the feature exists for — 404'd. #1010 found a fourth refusal site with the same contradictory wording that #1008's by-hand fix had missed, and closed it by centralizing the message next to the predicate it describes rather than leaving four hand-written copies of one rule for a future bug to hide in.</p>
+
+      <h2>The first finished VSL, and what it actually surfaced</h2>
+
+      <p>PR #1019 is where this whole arc reports back. Taking a real product script through the new VSL Generator, in the Pixar visual style, with an AI-generated presenter, produced the first ad this exact configuration had ever finished rendering — and finishing it surfaced nine real defects, four fixed same-day and five more detailed in this PR. The most interesting one is a retraction: an earlier report had blamed a density control for doing nothing. It wasn't inert. A second, unrelated cap on how many generated lifestyle spans could ship was silently deleting the density control's own output after placement — the density setting worked exactly as configured, and something downstream threw its answer away. Measured against two real finished runs, the arithmetic lines up exactly: four dropped spans totaling 10.42 seconds, and 20.56 minus 10.42 is 10.14 — the shipped total to the decimal. The bug wasn't where the first report pointed; the first report was simply reading the wrong layer.</p>
+
+      <h2>The pattern: a flow isn't unified until someone finishes an ad through it</h2>
+
+      <p>Every stage of this arc reads clean in isolation — collapse four routes to one, add a card that's actually different, fix the navigation it broke, split scripts at the right boundary, make the sample honest, make the quote honest, give delivered ads a way back in. What ties them together is where almost every fix came from: not code review, but a real run, watched end to end, with the actual numbers pulled from logs and job documents rather than assumed from reading the code that produced them. The reversal in the sample-pricing arc and the retraction in the closing PR are the clearest examples, but the shape repeats throughout — a fix that looks complete when it merges and turns out to be answering the wrong layer of the question, caught only once someone pushed a real script all the way through to a finished ad.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="dashboard-design-system-consolidation.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Four Stops Instead of Thirty</a><br><span style="color:#8892b0;font-size:13px;">The dashboard and navigation overhaul this unified create flow sits inside</span></li>
+        <li style="margin-bottom:12px;"><a href="run-index-cost-ledger-supabase-migration.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Retiring a Drive Folder Scan</a><br><span style="color:#8892b0;font-size:13px;">The ledger and run-index infrastructure the new sample-pricing quotes are built on</span></li>
+        <li style="margin-bottom:12px;"><a href="multi-presenter-cast-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">N-Person Cast</a><br><span style="color:#8892b0;font-size:13px;">The same "correct at every stage, inert end to end until proven otherwise" pattern, one arc earlier</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

@@ -20,7 +20,7 @@
   </url>
   <url>
     <loc>https://humzakt.github.io/blog.html</loc>
-    <lastmod>2026-08-26</lastmod>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -87,6 +87,72 @@
   <url>
     <loc>https://humzakt.github.io/blog/render-web-clip-repeat-pinning.html</loc>
     <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/vsl-generator-ai-presenter-unification.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/dashboard-design-system-consolidation.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/run-index-cost-ledger-supabase-migration.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/storyboard-reference-fidelity-verification.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/pixar-animated-lane-identity-guards.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/referenceless-mode-script-only-generation.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/enterprise-workflow-versioning-golden-data.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/ve-tools-internal-ops-platform.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/video-reframer-paid-render-reliability.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/speedup-export-hook-management.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://humzakt.github.io/blog/endcard-converter-new-tool-standards.html</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

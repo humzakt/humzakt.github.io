@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Pin One Hook Into Every Variant: Fixing a Hook-Management Builder — Humza Tareen</title>
+  <meta name="description" content="Eight PRs fixing an ad-variant export tool: a naming bug that made every lead vanish from its own library, pinning a hook across a whole batch instead of clip by clip, and an audit that found a green test suite that had never actually run.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Frontend Engineering, Video Production, TypeScript, UX">
+  <link rel="canonical" href="https://humzakt.github.io/blog/speedup-export-hook-management.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Pin One Hook Into Every Variant: Fixing a Hook-Management Builder">
+  <meta property="og:description" content="Eight PRs fixing an ad-variant export tool: a naming bug that made every lead vanish from its own library, pinning a hook across a whole batch instead of clip by clip, and an audit that found a green test suite that had never actually run.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/speedup-export-hook-management.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Frontend Engineering">
+  <meta property="article:tag" content="Video Production">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="UX">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pin One Hook Into Every Variant: Fixing a Hook-Management Builder">
+  <meta name="twitter:description" content="Eight PRs fixing an ad-variant export tool: a naming bug that made every lead vanish from its own library, pinning a hook across a whole batch instead of clip by clip, and an audit that found a green test suite that had never actually run.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Pin One Hook Into Every Variant: Fixing a Hook-Management Builder",
+    "description": "Eight PRs fixing an ad-variant export tool: a naming bug that made every lead vanish from its own library, pinning a hook across a whole batch instead of clip by clip, and an audit that found a green test suite that had never actually run.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/speedup-export-hook-management.html" },
+    "keywords": ["Frontend Engineering", "Video Production", "TypeScript", "UX"],
+    "articleSection": "Software Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Pin One Hook Into Every Variant"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Pin One Hook Into Every Variant: Fixing a Hook-Management Builder</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Frontend Engineering</span>
+        <span class="blog-tag">Video Production</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">UX</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The ad-variant export tool exists to reassemble sped-up ad variants with a swappable opening "hook" — an editor picks a fast-cut visual, pairs it against a library of alternate hooks, and the tool builds every combination as its own export. Eight PRs over three weeks fixed it from "editors keep reporting the same class of bug in different clothes" to something closer to what they'd actually asked for — and the most interesting finding wasn't a UI bug at all, it was a test suite that had been silently asserting nothing for months.</p>
+
+      <blockquote>
+        A green test suite is a claim about what ran, not about what passed. Check the first thing before trusting the second.
+      </blockquote>
+
+      <h2>A naming bug that erased the library</h2>
+
+      <p>PR #1 opens with the kind of bug that looks impossible until you see the exact ordering: <code>_clip_from_file</code> ran <code>parse_sop()</code> <em>before</em> it read the file's own stamped slot-type metadata. Any filename shaped like <code>&lt;adname&gt;_&lt;product&gt;_&lt;format&gt;</code> — which is exactly how the tool names its own short leads, e.g. <code>SL872_PRO99_916.mp4</code> — got reclassified as a finished ad purely from its filename shape, before the code ever checked the field that actually said what it was. Every short lead an editor exported vanished from the builder's own library, including leads the tool had generated itself moments earlier. The same PR also ported hook reordering and per-ad prelead handling from the tool's sibling "Export" repo, and fixed archiving that had been silently unreliable — three real fixes bundled together, with a fourth request (adding a product tracker) explicitly scoped out to a different repo rather than absorbed here.</p>
+
+      <h2>Pin one hook, not five clicks</h2>
+
+      <p>PR #2 tackled the feature editors actually wanted: apply one hook across an entire batch of variants in a single action, instead of dragging it into each one by hand. The PR also fixed something unrelated that had been quietly broken for a while — the preview panel stopped updating after the first build of a session, because <code>recompute()</code> short-circuited into the finished-job list whenever a prior batch's job list was non-empty, and nothing ever cleared that list once a job finished. Every keystroke, every product change, every rearrangement after that first build just repainted the old result. The only way to see a new arrangement was to commit to another full render — verifying your edit by paying for it.</p>
+
+      <h2>Built the wrong shape, twice — on purpose, not by accident</h2>
+
+      <p>PR #4 is a clean example of shipping something reasonable that still isn't what was asked for, and treating that as a spec problem rather than a regression. What landed in #2 was "pin to all" — one hook joins every other variant. What the editor actually needed was a <em>subset</em>: one specific hook applied to three of five variants, not all five. The fix — tick the hooks that should get it, then <em>Add a hook to each of 3…</em> — is asserted twice: once against the exact expected filename list in the unit suite, and again by driving the real browser controls end to end, so the assertion can't quietly stop matching what a user actually clicks.</p>
+
+      <p>PR #5 found the same feature was still subtly wrong one layer down. The picker that chose which clip to apply listed individual <em>clips</em>, not <em>lanes</em> — so if the source hook was a two-part opener, picking "one of its clips" split the pair in half: one half joined the target variants, the other was left behind as an orphaned alternate nobody asked for. Measured on a real five-hook batch, the fix took the lane count from six back down to the correct five. The picker now offers lanes, not clips, which makes "half an opener" structurally impossible to select.</p>
+
+      <h2>A test suite that reported success having asserted nothing</h2>
+
+      <p>PR #3 is the one worth sitting with longest. Two follow-up audits after #2 shipped — an accessibility/UX pass and a speed-mode pass — surfaced a batch of an editor's work disappearing entirely on a mid-task mode switch, and table rows wrapping awkwardly throughout the interface. But the finding that undermines trust in everything shipped before it is this: <code>test_builder_e2e.py</code> could report success having verified nothing at all. Flask auto-loads a local <code>.env</code> file, and on any machine where <code>HUB_SHARED_SECRET</code> happened to be set, every request the test suite made came back <code>403</code>. That 403 arrived as an <code>HTTPError</code> — a subclass of <code>URLError</code> — so the suite's own retry loop caught it, printed a friendly <code>SKIP: the Flask dev server did not come up</code>, and exited zero. Green. The suite that had been specifically added because a DOM stub is blind to real layout was itself blind, on exactly the machines most likely to have a shared secret configured — which is to say, on anything resembling a real environment. The fix forces the secret empty for the suite's own server and distinguishes a closed connection from an actual HTTP rejection, so a real failure can no longer disguise itself as an environment quirk.</p>
+
+      <h2>Small frictions, fixed for the reason an editor gave</h2>
+
+      <p>PR #6 closed a naming inconsistency that had been open since an earlier task: two different ways of including a hook in a batch — "include in every hook" and "add a hook to each" — defaulted to opposite ordering, producing two different filenames for what editors meant as the same operation. The fix wasn't a preference call; it was resolved from the editors' own worked example, and the reasoning is concrete: <code>buildSopName</code> emits the timeline in reverse, so a code placed <em>last</em> in the name plays <em>first</em> in the render — meaning "plays-first" was the only default that made both routes agree.</p>
+
+      <p>PR #7 investigated a report that the library picker "reloads" every time a filter is touched, and the finding was that it never actually reloads — the listing is fetched once per mode and cached, and a filter click issues zero network requests. What was real: reopening a cached library flashed a loading state it didn't need, and one specific filter path was needlessly rebuilding 480 row nodes in three seconds for a change that touched none of them. Three plausible-sounding causes, only one of which was doing real work — the kind of bug report that's only solvable by actually instrumenting the claim instead of guessing at it.</p>
+
+      <p>PR #8 closed the loop on a claim that turned out to be about a missing feature, not a broken one. A report read "apply hook to all — this is not applied," but the feature had been live and tested since #4. What was actually missing was the specific <em>route</em> to it that the sibling Export tool already had: a <code>⧉ Duplicate</code> gesture, stacking each copy with its visual. Rather than re-invent that interaction from scratch, this PR ported the row controls that already existed one repo over — the same workflow, available here for the first time, built the way it had already been proven to work elsewhere.</p>
+
+      <h2>The pattern: check what the test actually exercised</h2>
+
+      <p>Most of these bugs are unremarkable individually — a metadata read in the wrong order, a stale short-circuit, a picker granularity mismatch. What ties them together is that nearly every fix in this batch came from checking a claim against reality rather than trusting that a passing test, a shipped feature, or a plausible-sounding bug report was accurately describing what was actually happening. The test suite that reported green while testing nothing is the sharpest version of that lesson, but PR #2's stale preview, PR #7's "it reloads" report, and PR #8's "it's not applied" report are all the same shape: the thing that looked true on the surface wasn't, and the fix in every case started with measuring, not assuming.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="render-web-clip-repeat-pinning.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Repeat a Clip, Pin It Everywhere</a><br><span style="color:#8892b0;font-size:13px;">The closely related render-batch tool this one ports its row controls from</span></li>
+        <li style="margin-bottom:12px;"><a href="whole-ad-product-swap-deterministic-planning.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Whole-Ad Product Swap</a><br><span style="color:#8892b0;font-size:13px;">Another tool built around applying one change across many ad variants at once</span></li>
+        <li style="margin-bottom:12px;"><a href="endcard-converter-new-tool-standards.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One</a><br><span style="color:#8892b0;font-size:13px;">A newer tool in the same family, built to avoid exactly this kind of drift from the start</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

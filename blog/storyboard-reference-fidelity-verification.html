@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>The Storyboard Layer: Verifying an AI Ad Against Its Reference, Beat by Beat — Humza Tareen</title>
+  <meta name="description" content="Building a verification layer that checks a generated ad against its reference shot by shot — and the string of measurement bugs found once the checks themselves started getting checked: a gate comparing the reference to itself, a critic that couldn't tell its own product apart, and a reroll loop that could never close.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Video Generation, Prompt Engineering, Computer Vision">
+  <link rel="canonical" href="https://humzakt.github.io/blog/storyboard-reference-fidelity-verification.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="The Storyboard Layer: Verifying an AI Ad Against Its Reference, Beat by Beat">
+  <meta property="og:description" content="Building a verification layer that checks a generated ad against its reference shot by shot — and the string of measurement bugs found once the checks themselves started getting checked.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/storyboard-reference-fidelity-verification.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta property="article:tag" content="Computer Vision">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Storyboard Layer: Verifying an AI Ad Against Its Reference, Beat by Beat">
+  <meta name="twitter:description" content="Building a verification layer that checks a generated ad against its reference shot by shot — and the string of measurement bugs found once the checks themselves started getting checked.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The Storyboard Layer: Verifying an AI Ad Against Its Reference, Beat by Beat",
+    "description": "Building a verification layer that checks a generated ad against its reference shot by shot — and the string of measurement bugs found once the checks themselves started getting checked.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/storyboard-reference-fidelity-verification.html" },
+    "keywords": ["AI Video", "Video Generation", "Prompt Engineering", "Computer Vision"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"The Storyboard Layer"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">The Storyboard Layer: Verifying an AI Ad Against Its Reference, Beat by Beat</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">Prompt Engineering</span>
+        <span class="blog-tag">Computer Vision</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>"Approve" is the button that turns a plan into paid clips. On the main video-generation service, that button sits behind a storyboard gate: every establishing frame gets checked against the reference ad it's swiping — same instruments in frame, same hands occupied or empty, same product visible where the reference shows it. The idea is simple. The implementation spent a month finding out that a check which is itself unverified is just a second place for the bug to hide.</p>
+
+      <blockquote>
+        A gate that can be wrong is not a gate. It's an opinion with a veto.
+      </blockquote>
+
+      <h2>A gate that compared the reference to itself</h2>
+
+      <p>PR #773 is the cleanest example of the whole month's theme. A check called <code>cutaway-ad-as-talking-head</code> blocked auto-advance with the message "our plan covers 38% of it with cutaways" — a number that sounded like a real measurement of the plan. It wasn't. <code>gate.ts</code> supplied <code>referencePersonlessShare(referenceShots)</code> as the stand-in for "our share," so both sides of the comparison were measuring the <em>reference</em>, with two different instruments, and the check fired on their disagreement with each other rather than on any actual gap between plan and reference. The plan was never consulted.</p>
+
+      <p>PR #774 is the same failure mode from the opposite direction: the board gate refused to approve a plan it had already paid fourteen frames for ($5.87), because a critic looked at a cutaway render of the pipeline's own device and read it as a different device. The plan's motion description for that panel explicitly called for a translucent variant — the critic was correct that panel 4 looked different from panel 8, and wrong that "different" meant "wrong." A board that "does not agree with itself" is a real signal worth having. It just needs to be checked against what was actually asked for, not against an average of its own panels.</p>
+
+      <h2>A reroll loop that could never close</h2>
+
+      <p>PR #780 found a genuinely nasty state bug: the board gate's designed remedy for a bad panel is a cheap reroll (~$0.10 via <code>regenerate</code> with <code>ugc-dyn-frame</code>) instead of a full re-render (~$1.15). The reroll invalidated the old checkpoint and rendered a new frame — and then never re-graded it. <code>approve</code> kept reading the stale <code>failed[]</code> array from before the reroll, so once a panel triggered a failure, the loop had no path back to a clean state. The fix isn't clever; it's just closing the loop the first version left open, which is exactly the kind of bug that only shows up when someone actually exercises the recovery path instead of only testing the happy one.</p>
+
+      <p>PR #785 caught what shipped right behind that fix: after a reroll re-graded correctly for the first time, the board wrote <code>storyboardReport: checked: true, panels: 2, failed: []</code> on a run with fourteen scenes and fourteen rendered frames. A clean pass over 2 of 14 panels read as a pass on the whole board — on the exact gate guarding roughly $16 of clips per run. Probing all fourteen frames directly showed every one of them was still fetchable and gradable; nothing was actually lost, the report was just wrong about how much of the board it had covered. A short sheet reading as a full pass is worse than a gate that's too strict, because it looks identical to success from the outside.</p>
+
+      <h2>Messages that reported the question, not the answer</h2>
+
+      <p>PR #782 is a smaller fix with an outsized effect on trust in the system: seven gate messages led with the fixed, code-authored criterion instead of the model's actual finding. The real answer was there — thirty to eighty words later, in a trailing parenthetical the operator had to dig past boilerplate to reach, on the exact 409 response a human reads before deciding whether to override a block. When the thing you show first is the question rather than the answer, every gate reads as more opaque than it is, independent of whether the underlying check is right.</p>
+
+      <h2>Three PRs to find the real ceiling</h2>
+
+      <p>The token-limit saga across #796, #803, and #805 is worth walking through in full because it's a clean example of iterating toward a root cause instead of stopping at the first plausible fix. A two-hander re-plan (two people in one scene, doubling the planning complexity) truncated at a 16,000-token ceiling. PR #796 raised it to 32,000 — reasonable on its face. It broke every plan call in production within minutes: the Anthropic SDK refuses a non-streaming request whose <code>max_tokens</code> implies a response that could run over ten minutes, and the run function called <code>messages.create</code>, not <code>messages.stream</code>. PR #803 reverted the raise as an emergency fix, with an honest note that its own original reasoning had been wrong. PR #805 found the actual root cause at the SDK source rather than inferring it from docs, and fixed the transport instead of the symptom: stream every call, so the real ceiling becomes whatever the model itself supports, not an arbitrary number picked to dodge a client-side timeout heuristic. The two-hander plan that #796 was trying to unblock finally worked — through the fix that took three PRs to actually name the constraint correctly.</p>
+
+      <h2>Facts that died before the vendor call</h2>
+
+      <p>PR #781 traces a contradiction all the way to its source: a composite closing shot — presenter, brand mascot, and several product units grouped on a table, mirroring the reference's own end card — was fully wired in the data model and still rendered wrong. The scene's plan data was completely correct: <code>mascotEndCard: true</code>, the reference board correctly typed as an end-card at that position, the mascot correctly anchored to bookend the reference's own opening shot. The frame that actually rendered was a macro of one closed case, alone. The facts were right at every stage of the pipeline except the last one — they simply never survived into the prompt actually sent to the image model.</p>
+
+      <p>PR #798 found the same family of bug from a rendering angle: a library b-roll span painted over 41.9 to 45.5 seconds of a delivered master's closing composite shot, so the composite showed for about 1.2 of its intended 5 seconds. The root cause: <code>end-card</code> is a member of <code>CUTAWAY_SHOT_TYPES</code>, so whenever the reference's own last shot happens to be typed <code>end-card</code>, the ordinary b-roll span selector treats it as fair game for a cutaway candidate — nothing in that selector knew a composite closing shot needed protection from the exact category it was classified under.</p>
+
+      <h2>A rule that kept overruling its own plan</h2>
+
+      <p>PR #792 documents a recurring bug in the staging logic: an "empty hands" default rule kept overriding scenes where the plan explicitly described hands as occupied — this time with the presenter's motion reading "slides the closed case into his cardigan pocket and pats it flat," and the rendered frame prompt asserting "BOTH HANDS ARE COMPLETELY EMPTY." The PR notes this is the third recurrence with new verbs, after twelve prior beats across six runs — which is exactly the kind of pattern that signals a detector matching against a fixed vocabulary rather than the actual semantic claim, and each new verb choice in the script slips past it again.</p>
+
+      <h2>What "measure, don't guess" restraint looks like</h2>
+
+      <p>PR #800 is worth including for what it deliberately doesn't do. Comparing the reference and the pipeline's own output, the reference consistently builds toward the product touching the body — hands massaging cream into skin, an overlay glowing through contact — while the pipeline's beats never show the device making contact at all. The natural fix is to auto-generate a contact beat. The PR ships measurement only: a contact table across all seven reference/output pairs, agreeing exactly on the gap, with an explicit note that auto-generating the missing beat is a separate, riskier decision than measuring that it's missing. Not every finding needs to become a feature in the same PR that discovers it.</p>
+
+      <h2>The pattern: verify the verifier</h2>
+
+      <p>Every fix in this cluster is one layer removed from the bug you'd expect. The storyboard gate isn't "buggy" in the sense of producing wrong grades on correct inputs most of the time — it's buggy in the sense that the machinery grading the ad needed exactly as much scrutiny as the machinery generating it, and for a while got less. A gate that compares the reference to itself, a critic that can't distinguish its own product's variants, a reroll that never re-grades, a message that shows the question instead of the answer — none of these are algorithmically hard. They're the direct consequence of a verification layer being trusted the moment it started reporting failures, instead of being measured with the same discipline applied to the thing it verifies.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel</a><br><span style="color:#8892b0;font-size:13px;">Teaching an AI pipeline to check its own work — the layer this storyboard gate sits inside</span></li>
+        <li style="margin-bottom:12px;"><a href="reference-fidelity-swipe-fixes.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Making the Swipe Follow Its Reference</a><br><span style="color:#8892b0;font-size:13px;">The earlier round of reference-matching fixes this storyboard layer was built to catch regressions in</span></li>
+        <li style="margin-bottom:12px;"><a href="pixar-animated-lane-identity-guards.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Letting Operators Request Animated People Without Letting a Reference Do It By Accident</a><br><span style="color:#8892b0;font-size:13px;">The next capability built directly on top of this verification layer</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

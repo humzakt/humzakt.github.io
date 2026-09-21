@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One — Humza Tareen</title>
+  <meta name="description" content="A brand-new endcard conversion tool adopts hard-won engineering standards from its very first PR instead of re-learning them later — plus a short round of follow-up fixes on a sibling render-batch builder tool.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Video Production, Software Engineering, TypeScript, Tooling">
+  <link rel="canonical" href="https://humzakt.github.io/blog/endcard-converter-new-tool-standards.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One">
+  <meta property="og:description" content="A brand-new endcard conversion tool adopts hard-won engineering standards from its very first PR instead of re-learning them later — plus a short round of follow-up fixes on a sibling render-batch builder tool.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/endcard-converter-new-tool-standards.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Video Production">
+  <meta property="article:tag" content="Software Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta property="article:tag" content="Tooling">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One">
+  <meta name="twitter:description" content="A brand-new endcard conversion tool adopts hard-won engineering standards from its very first PR instead of re-learning them later — plus a short round of follow-up fixes on a sibling render-batch builder tool.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One",
+    "description": "A brand-new endcard conversion tool adopts hard-won engineering standards from its very first PR instead of re-learning them later — plus a short round of follow-up fixes on a sibling render-batch builder tool.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/endcard-converter-new-tool-standards.html" },
+    "keywords": ["Video Production", "Software Engineering", "TypeScript", "Tooling"],
+    "articleSection": "Software Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Shipping a New Tool With Standards From Day One"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Video Production</span>
+        <span class="blog-tag">Software Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+        <span class="blog-tag">Tooling</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Most of the tools in this ad-production suite learned their engineering standards the hard way — a 400-line file cap earned by splitting god files after the fact, deploy verification earned by chasing a stale build for a week, dead-code audits earned by tripping over five PRs of code nothing called. The endcard conversion tool — a small service that turns AppLovin MRAID HTML endcards into MP4 and back — is the first one to start with those lessons already applied, in its very first PR, rather than paying to relearn them.</p>
+
+      <blockquote>
+        The cheapest way to fix a class of bug is to never let a new codebase repeat it. That only works if day one remembers what day two hundred learned.
+      </blockquote>
+
+      <h2>Measuring the endcard instead of guessing at its length</h2>
+
+      <p>PR #1 is the tool's actual first feature, and it's a good one to lead with because it replaces a guess with a measurement. Converting an endcard to video used to mean typing a duration and hoping it lined up with the page's own animation loop. The new panel offers four real options instead: <strong>One play</strong> — one cycle of the biggest repeating element, usually the background video, with anything smaller that doesn't divide evenly into it cut where it lands and the UI naming exactly what got cut and where; <strong>Seamless loop</strong> — the shortest duration at which every animated element is simultaneously back at its starting position, so the loop point is invisible; <strong>Until it settles</strong> — render until nothing on the page is still moving; or a fixed number of seconds, for when an editor genuinely wants a specific length regardless of what the page is doing.</p>
+
+      <p>On the two real endcards used to validate this, the measured lengths were 5.000s and 7.000s — not the flat 10s a typed guess would have produced for either. That's the difference between a video that ends where the page's own motion actually resolves and one that just stops mid-loop because a human picked a round number.</p>
+
+      <h2>Standards adopted, not rediscovered</h2>
+
+      <p>The same PR's title says the quiet part out loud: it adopts the sibling repos' engineering standards as part of the initial build, not as a retrofit. That means the file-size discipline earned the hard way on the main video-generation service — the one that eventually needed an explicit 400-line cap enforced at lint time after files had grown past 15,000 lines — shows up here from commit one, when the codebase is still small enough that following it costs nothing.</p>
+
+      <h2>A changelog script that flagged its own example as real work</h2>
+
+      <p>PR #2 is a small bug with a genuinely funny cause: the automated changelog-stamping tool, ported from a sibling repo, refused to run on this repo's own changelog — one hour after being ported in. The reason was that <code>CHANGELOG.md</code>'s own documentation includes a fenced code example showing what an <code>## Unreleased</code> heading looks like, and the stamper's parser couldn't tell a worked example living inside a code fence from a real pending section waiting to be stamped. It saw two candidates where there was exactly one. The fix shipped with a new test file that pins down the fence case specifically — watched failing against the old logic first, so the test actually proves something — plus cases for the grouping rules that must not read as accumulation, genuine accumulation, and the empty case. Worth noting: every refusal in this script exits 0 on purpose, so a broken changelog stamper can never fail a merge — which is exactly why a bug in it can sit invisible until someone happens to look.</p>
+
+      <h2>Closing the gaps flagged at merge time</h2>
+
+      <p>PR #3 closes three things explicitly flagged as follow-ups when PR #1 merged, rather than left to rot as someday-maybe items. A <code>GET /api/version</code> endpoint reports which commit is actually answering — and, more importantly, <em>where that answer came from</em>, because on this host the deploy platform's variable list carries no git metadata by default, so the Dockerfile also bakes the commit sha in as a build argument and the endpoint reports which source won. <code>unknown</code> is a distinct, honest answer for "a deployment that can't identify itself," which is a different failure than simply reporting the wrong build with false confidence. A <code>GET /api/queue</code> endpoint answers whether a redeploy right now would lose in-flight work — the job table lives in the container's own memory, with nothing durable behind it, so a merge landing mid-conversion silently drops it. And the endcard's call-to-action hook, previously empty, got filled in.</p>
+
+      <h2>A documentation bug caught by checking the platform, not assuming it</h2>
+
+      <p>PRs #4 and #5 are a small, honest pair worth reading together. PR #4 discovered — by actually querying the deploy platform's API rather than trusting what the README claimed — that this service had received exactly one deployment ever, covering every merge made since. Merging to <code>main</code> was doing nothing; only a manual deploy command actually shipped anything. The root cause was a permissions gap: the deploy platform's GitHub App had never been granted access to this specific repository under the org, so the auto-deploy connection that every sibling tool takes for granted silently didn't exist here. The doc got corrected to say so, with the exact command and the exact place to grant access.</p>
+
+      <p>PR #5, same day, corrects the correction: once the GitHub App was actually granted access, deploys started working again, verified against the platform's own reported commit sha rather than assumed from the README changing. The stopgap <code>ENDCARD_BUILD_SHA</code> variable that had been covering for the missing auto-deploy got deleted once the real mechanism was confirmed live. Two documentation PRs in one day, each one checking a claim against the platform's actual state before writing it down, is a small thing — but it's the same discipline that, applied at scale on the main pipeline, is what turned "the docs said X" from a source of truth into something that has to earn trust every time.</p>
+
+      <h2>Meanwhile, on the render-batch builder tool</h2>
+
+      <p>A short update on the sibling tool this one shares engineering lineage with, already covered in an earlier post on fixing its instance-repeat semantics. A finished ad naming two clips instead of one exposed a classification hazard: an automated "migrate misclassified files" job moved anything matching a simple SOP-naming pattern out of the shared source library and into Full Ads — and a short lead clip named <code>SL872</code> matched that pattern purely by containing the substring <code>L8</code>. Measured against the live library, 15 of 196 visible clips were real short leads that had been silently reclassified and moved out of the library the builders actually read from — a namespace collision doing real data-model damage, caught by checking the actual library contents rather than trusting the classifier's logic in isolation.</p>
+
+      <p>Two more fixes rounded out the update: editors were seeing a bare <code>unauthorized</code> error — a string this repo doesn't even produce internally, traced to the shared hub proxy rejecting the session on its fast path — which was also killing in-progress exports outright rather than degrading gracefully, alongside a separately-discovered ffmpeg flag that had been removed and needed restoring. And the product dropdown moved from a hardcoded list to reading <code>export_products</code> live from the shared Supabase project the whole tool family now shares — the render-batch tool is a read-only consumer of a catalog owned and edited once, centrally, so a new product ships to every tool that reads it without a single per-tool PR.</p>
+
+      <h2>The pattern: cheap lessons the first time, free the second</h2>
+
+      <p>None of the standards this new tool adopted were invented for it. The file-size cap, the deploy-verification discipline, the habit of checking a platform's actual state before documenting a claim about it — all of them were paid for, expensively, by other tools in this family over the preceding months. The only thing that made them free here was writing them into the very first PR instead of waiting for the codebase to grow large enough to need them the hard way. A lesson that isn't carried forward gets paid for again, in full, by the next tool.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="render-web-clip-repeat-pinning.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Repeat a Clip, Pin It Everywhere</a><br><span style="color:#8892b0;font-size:13px;">The render-batch builder tool's own instance-semantics fix, from an earlier cycle</span></li>
+        <li style="margin-bottom:12px;"><a href="speedup-export-hook-management.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Pin One Hook Into Every Variant</a><br><span style="color:#8892b0;font-size:13px;">A sibling tool in the same family, hardened over the same stretch of weeks</span></li>
+        <li style="margin-bottom:12px;"><a href="modularization-400-line-file-cap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Every God File Split</a><br><span style="color:#8892b0;font-size:13px;">The engineering-standards post this new tool's first PR explicitly follows</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

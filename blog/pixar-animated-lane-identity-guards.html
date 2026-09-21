@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Letting Operators Request Animated People Without Letting a Reference Do It By Accident — Humza Tareen</title>
+  <meta name="description" content="Turning 'animated' from a reference-derived accident into a deliberate operator choice in an AI ad pipeline — and the identity-anchor, face-check, and negative-prompt bugs that only existed once animated people became a real code path.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Computer Vision, Product Engineering, Prompt Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/pixar-animated-lane-identity-guards.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Letting Operators Request Animated People Without Letting a Reference Do It By Accident">
+  <meta property="og:description" content="Turning 'animated' from a reference-derived accident into a deliberate operator choice in an AI ad pipeline — and the identity-anchor, face-check, and negative-prompt bugs that only existed once animated people became a real code path.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/pixar-animated-lane-identity-guards.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Letting Operators Request Animated People Without Letting a Reference Do It By Accident">
+  <meta name="twitter:description" content="Turning 'animated' from a reference-derived accident into a deliberate operator choice in an AI ad pipeline — and the identity-anchor, face-check, and negative-prompt bugs that only existed once animated people became a real code path.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Letting Operators Request Animated People Without Letting a Reference Do It By Accident",
+    "description": "Turning 'animated' from a reference-derived accident into a deliberate operator choice in an AI ad pipeline — and the identity-anchor, face-check, and negative-prompt bugs that only existed once animated people became a real code path.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/pixar-animated-lane-identity-guards.html" },
+    "keywords": ["AI Video", "Computer Vision", "Product Engineering", "Prompt Engineering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Letting Operators Request Animated People"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Letting Operators Request Animated People Without Letting a Reference Do It By Accident</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">Prompt Engineering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service had never had a real concept of "animated." It had a side effect: if a reference ad happened to be heavily CGI, the pipeline's presenter sometimes came back looking like a cartoon too, because "animated" was derived silently from how much of the reference was computer-generated and used to drive rendered inserts and rendered people together, as one undifferentiated signal. When an operator actually wanted a deliberately animated, Pixar-style ad — not an accident of a CGI-heavy reference, a real creative choice — that capability didn't exist. It had, in fact, just been removed, one dismantled channel at a time, by earlier fixes aimed at stopping presenters from accidentally turning into cartoons. Building it back as an intentional feature, rather than restoring the accident, is what this entire arc is about.</p>
+
+      <blockquote>
+        Two questions that look like one question — "should the medium be photoreal or animated" and "who is allowed to decide that" — need two different answers, and conflating them is how a feature disappears while every individual fix along the way looks correct.
+      </blockquote>
+
+      <h2>The design principle: an operator may ask, a reference may not</h2>
+
+      <p>PR #844 states the governing rule directly in its own title: an operator may ask for animated people; a reference may not. Before this PR, "animated" was never a separate, nameable choice — it was derived purely from the reference's measured CGI share and used to drive both non-human inserts and on-camera people from the same signal. On a reference that measured 43% CGI, the presenter kept coming back rendered as a cartoon, and the fix each time had been to dismantle another one of the four channels that could trigger it — across three separate earlier PRs, ending with the character-label channel closed in #834. Each of those fixes was individually correct: it stopped an unwanted cartoon presenter on that specific reference. Collectively, they had also deleted the only path by which an operator who genuinely wanted an animated ad could get one, and nobody had made that trade-off on purpose.</p>
+
+      <p>The reasoning behind PR #834 itself is worth sitting with, because it's a clean example of verifying against the actual artifact rather than the code's intent. Every one of seven person-beats in a delivered video had asked the image model, in the persisted prompt, for the subject to be "rendered as a high-fidelity, photoreal 3D-animated character that preserves his likeness precisely" — while, in the very same request, a separate rule promised "this shot is the PHOTOGRAPHED half ... the photograph underneath stays a photograph." The request was contradicting itself inside a single call, in exactly the clause that establishes a person's identity, and the only way to find that was reading the actual prompt the model received, not the code that assembled it.</p>
+
+      <h2>A negative prompt asking the wrong question</h2>
+
+      <p>PR #849 found a downstream consequence of that same medium/people conflation. A negative prompt meant to suppress the visual failure modes of a <em>photoreal human</em> render — "smooth plastic skin, exaggerated gestures" — was being stripped whenever the run's medium was animated, based on a check that read only <code>medium.medium</code> and ignored <code>medium.source</code>. Before the operator-choice split landed, medium and "are there animated people" really were the same fact, so that shortcut was harmless. After #844, they can disagree — a mixed ad can have an animated medium with photoreal people, or vice versa — and the negative prompt needs to answer the people question specifically, not the medium question by proxy. A term that used to be a safe stand-in for another term stopped being safe the moment the feature it was standing in for became independently choosable.</p>
+
+      <h2>Verifying with a controlled pair, not one lucky reference</h2>
+
+      <p>PR #857 is the handoff that reports the animated lane verified in both directions, and the verification method is worth naming: the same reference, avatar, voice, and lines launched twice on the identical build, changing only whether the medium was pinned as operator-requested-animated or reference-derived-animated — with both pins confirmed <em>before</em> any money was spent, not inferred afterward from the output. That's a controlled A/B on a single variable, which is a stronger claim than "we tried it and it looked right," because it rules out the reference's own content as the explanation for whatever came back.</p>
+
+      <h2>A face-check built for a face that was never photographed</h2>
+
+      <p>PR #863 found that the identity-drift critic — the one that verifies a rendered face actually matches the reference face — was asking the wrong question on a genuinely operator-animated run. Its predicate for "does this beat show live action" consulted only what the <em>reference</em> had filmed, never the newer <code>peopleMayBeAnimated</code> flag. On an operator-driven Pixar run, the pipeline itself is rendering the presenter as a character in every beat — there is no photographed face anywhere in that run for a face-similarity model to compare against. The check still ran, scored a drawn face against a real photograph, and reported the mismatch as a defect. A check firing on an input it has no meaningful answer for is a distinct failure mode from a check firing correctly on the wrong input — the first one needs a "this doesn't apply" branch, not a bug fix to its comparison logic.</p>
+
+      <p>PR #882 is the companion fix on the generation side of the same seam: a Pixar run's identity anchor — the reference image the model is told to match a face against — was still a real photograph, even though every text channel in the prompt correctly described an animated character. Every sentence was right and the frames still came back as photoreal CG humans, inconsistently across scenes, because the one non-text signal in the request — the anchor image itself — was still telling the model "match this specific real face," which pulls toward photorealism regardless of what the words around it say. The fix swaps the anchor to an actual generated Pixar-style character reference once one exists, so the image evidence and the text instruction finally agree instead of quietly fighting each other.</p>
+
+      <h2>A clause that never reached the manifest it was shipped to prove</h2>
+
+      <p>PR #876 caught the first real operator-animated render coming back photoreal-leaning rather than stylised, and the useful part of the fix isn't the bug itself — it's the diagnostic discipline in how it was isolated. The finished scene manifests listed camera, shot size, posture, wardrobe, stature, and setting, and said nothing at all about medium, on the one run whose entire purpose was proving the medium reaches the picture. The PR explicitly separates two different claims that a symptom like this can support — "the clause never arrived" versus "the clause arrived and the model disobeyed it" — because the fix for each is completely different, and conflating them wastes a diagnostic cycle chasing the wrong one. PR #878 found the same class of gap one layer over: the clip critic that judges a finished ad had never once referenced <code>peopleMayBeAnimated</code> across any of its four modules, meaning it was asking "are these people drawn" using the wrong signal on a mixed-medium ad where some people are animated on purpose and some aren't.</p>
+
+      <h2>A body-effect that authored zero times</h2>
+
+      <p>PR #932 shipped an "anatomical glow" overlay — a stylised body-part highlight the reference used on six of fourteen shots and a human editor's own manual recreation used on thirteen of twenty — behind a flag, defaulted off, specifically because it's a genuinely re-cast creative effect rather than a literal copy of the reference. PR #936 caught, at the plan-gate verification step and before a single frame was rendered, that the effect had authored on <em>zero</em> of the beats that should have carried it. The body-site lookup asked the storyboard graph's entity list which body part to target, and that entity list — by construction, elsewhere in the pipeline — only ever contained the literal string <code>"mascot"</code>, never an actual body-part name the glow logic could match against. The feature was fully built, flagged, and structurally incapable of authoring on any input, caught before it could waste a single paid render finding that out. PR #938 found a second, more subtle version of the same class of bug one step later: the glow's face-box coordinates were being converted using the render target read live at <em>paint</em> time, while a run's actual aspect ratio is pinned once at first dispatch specifically so later code doesn't re-resolve it — meaning the math was only correct by coincidence, whenever the live setting happened to still match the pin.</p>
+
+      <h2>Verified, retested, and still not quite right</h2>
+
+      <p>PR #1012 is a real editor's second-round retest of an earlier fix round, and it's a good example of distinguishing "the fix didn't ship" from "the fix shipped and is incomplete." The Pixar character-generation machinery itself worked correctly — billed five cents, mirrored, byte-for-byte the animated file rather than the photograph — but a "look" clause still needed to reach the actual frame-generation call, and the character's face needed rounding to read as more stylised. PR #1013, found by literally running the new cutting-pace control rather than trusting that it was wired, discovered the control could report success on a pass that changed nothing — the same beat count came back paced and unpaced, correctly, because the math genuinely produced an identical result on that particular script length, and the fix is making the tool say "this had no effect" explicitly rather than let a no-op read as an applied change. PR #1015 found the visual-style clause reaching every render except the manifest that's supposed to record it, on the one render whose entire purpose was proving the look reaches the picture — the same "arrived but unrecorded" shape as #876, recurring on a different clause. And PR #1018, the most recent in this arc, found that an animated ad's <em>generated</em> cutaways carried the run's style correctly, while cutaways pulled from the house b-roll bank of real filmed footage did not — a real human hand holding a real product, cut directly between cartoon beats, because the guard governing which cutaway source is allowed had never been taught that an animated run needs to exclude live-action b-roll specifically, not just avoid animating people who were never in it.</p>
+
+      <h2>The pattern: a capability and a decision-right are two different features</h2>
+
+      <p>Nearly every bug in this arc is the same shape wearing different clothes: something that looks like one flag — "is this animated" — is actually two separable facts, "what medium should this render in" and "who gets to decide that," and treating them as one value is what let the capability disappear in the first place, then let it come back in pieces that individually worked and collectively didn't reach the screen. The identity anchor, the negative prompt, the face-check predicate, the body-site lookup, the b-roll source guard — each one had its own copy of "does animated apply here," derived a different way, and each had to be taught the same operator-vs-reference distinction separately before the feature was actually whole. Naming the decision-right explicitly, in #844, is what turned a scattered set of ad hoc "is this a cartoon" checks into one governing rule the rest of the pipeline could be checked against.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="storyboard-reference-fidelity-verification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Storyboard Layer</a><br><span style="color:#8892b0;font-size:13px;">The reference-fidelity verification system this animated lane has to answer to</span></li>
+        <li style="margin-bottom:12px;"><a href="multi-presenter-cast-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">N-Person Cast</a><br><span style="color:#8892b0;font-size:13px;">The same "correct at every stage, inert end to end" failure shape, on a different feature</span></li>
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel</a><br><span style="color:#8892b0;font-size:13px;">The identity and motion critics extended here to stop assuming every face is photographed</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

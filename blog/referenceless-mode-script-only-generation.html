@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building a Reference-Less Mode: When There's No Video to Mirror — Humza Tareen</title>
+  <meta name="description" content="Every plan-quality check in an AI ad pipeline had quietly assumed a reference video existed to measure against. Building a script-only mode meant finding every one of those assumptions the hard way — by running it and paying for the answer.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Prompt Engineering, Product Engineering, AI Planning">
+  <link rel="canonical" href="https://humzakt.github.io/blog/referenceless-mode-script-only-generation.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building a Reference-Less Mode: When There's No Video to Mirror">
+  <meta property="og:description" content="Every plan-quality check in an AI ad pipeline had quietly assumed a reference video existed to measure against. Building a script-only mode meant finding every one of those assumptions the hard way — by running it and paying for the answer.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/referenceless-mode-script-only-generation.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="AI Planning">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building a Reference-Less Mode: When There's No Video to Mirror">
+  <meta name="twitter:description" content="Every plan-quality check in an AI ad pipeline had quietly assumed a reference video existed to measure against. Building a script-only mode meant finding every one of those assumptions the hard way — by running it and paying for the answer.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building a Reference-Less Mode: When There's No Video to Mirror",
+    "description": "Every plan-quality check in an AI ad pipeline had quietly assumed a reference video existed to measure against. Building a script-only mode meant finding every one of those assumptions the hard way — by running it and paying for the answer.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/referenceless-mode-script-only-generation.html" },
+    "keywords": ["AI Video", "Prompt Engineering", "Product Engineering", "AI Planning"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Building a Reference-Less Mode"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Building a Reference-Less Mode: When There's No Video to Mirror</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 10 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Prompt Engineering</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">AI Planning</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service had always been built around one assumption: somewhere in every run sits a reference video — a competitor's ad, or a past winner — that the plan gate measures the output against. Scene count is checked against the reference's cut count. Runtime against its runtime. Narration pace against its pace. Every one of those checks has a right-hand side because a reference always supplied one. Then an editor asked for a mode with no reference at all — just a script, because "your script is the whole brief." That single missing input turned out to be load-bearing under nearly every quality gate in the pipeline, and finding each place it was load-bearing took running real, paid jobs rather than reading the code.</p>
+
+      <blockquote>
+        A check that has quietly depended on an input for months doesn't fail loudly when that input disappears. It reports a pass — because zero minus zero still reads as "nothing lost."
+      </blockquote>
+
+      <h2>Blocked from the day it shipped</h2>
+
+      <p>PR #915 is the mode's origin story and its first bug in one PR. The route's own header read "No reference needed — your script is the whole brief," and the screenshot showed every step ticked, including a green "No reference" — directly above an error reading "missing referenceVideo file or link." The reject had been added to the request parser six weeks before the reference-less mode existed, and nobody had gone back to teach the parser about the new case when the mode shipped. The mode had never worked, not once, from the moment it went live.</p>
+
+      <h2>A word budget with no speaker to measure</h2>
+
+      <p>Once runs could actually start, PR #949 found every single reference-less plan logging the same warning on every run: four scenes over their word budget, every time, no exceptions. A warning that always fires teaches people to ignore the one time it matters. The cause was a clamp — <code>budgetWps = min(refWps, ours)</code> — where <code>refWps</code> silently fell back to a default whenever the reference's speaker hadn't been measured. On a swipe, that fallback is load-bearing: a real reference sits behind it most of the time. On a reference-less run, there is no reference speaker to measure, ever, so the fallback wasn't a fallback anymore — it was the only value the budget could ever see, quietly capping every script-only run at the same generic delivery rate regardless of what the actual voice model could speak.</p>
+
+      <h2>A prompt that argued with itself</h2>
+
+      <p>PR #948 is the fix I'd point to as the cleanest example of the whole arc's failure shape. The reference-less planner prompt opened with an explicit, correct instruction: "THE SCRIPT IS THE ONLY SOURCE OF STRUCTURE — there is no reference ad, and nothing about one is being withheld from you." Measured by actually building the prompt sent to the model — not by reading the template that assembles it, which the team's own engineering notes insist is the only way to know what a model actually receives — twenty-some lines later the same prompt instructed the planner to mirror a reference anyway. A leftover block from before reference-less mode existed had never been removed, and it directly contradicted the instruction two paragraphs above it. The planner wasn't ignoring a correct instruction. It was being given two instructions and picking one.</p>
+
+      <h2>The green tick that meant nothing</h2>
+
+      <p>PR #955 found the sharpest version of the pattern running through this whole arc. On a real job with no reference, the plan gate displayed: "✅ Script fills the reference — No issues found." The underlying check compared the plan's scene count against the reference's cut count. There was no reference, so the right-hand side was zero. <code>lostCuts = max(0, 0 - planScenes)</code> evaluates to zero no matter what the plan actually contains, and zero reads as "lost nothing" — a structurally guaranteed pass dressed up as a measurement. The team's own documentation makes the same point about a different guard elsewhere in the codebase: answering "no file is over the line-count cap" while several files actually are is worse than answering nothing at all, because the number reads as evidence when it's actually an artifact of nothing being measured. The fix doesn't make the check smarter — it makes an unmeasurable check say <code>unmeasured</code> instead of quietly manufacturing a pass.</p>
+
+      <h2>Four near-identical shots in one room</h2>
+
+      <p>PR #954 is where the fixes so far collided with a genuinely new problem rather than a leftover assumption. A verification render, once the prompt no longer contradicted itself, came back with a presenter addressing the camera, two cutaway spans, and passing identity checks — and also four near-identical seated medium close-ups in one room, with internal-cut detection reporting no cut inside any clip. Forty-six percent of a 28-second ad was one unbroken thirteen-second take. Removing the contradictions had fixed <em>who</em> the ad addressed. Nothing had ever told the system <em>how</em> to shoot it, because on a swipe that answer always came from the reference's own cuts — there was no equivalent instruction for a mode with nothing to cut against. The fix is a beat grammar: an explicit shot-framing vocabulary keyed off the ad's declared format, so the system has somewhere to look for pacing and composition that isn't a reference video.</p>
+
+      <h2>Cast from speaker labels, not a vision pass</h2>
+
+      <p>PR #956 closes the same gap one layer up, on casting rather than shot framing. A swipe proposes its cast by running a vision pass over the reference and counting distinct speakers. A reference-less run has no video to run a vision pass over, so <code>castProposal</code> was simply never written, and the cast gate silently offered one solo slot on every run — even though the mode's own chooser told editors, in as many words, that the system plans the scenes, the cast, <em>and the shots</em> from the words. Two of those three were true. The fix proposes cast directly from the script's own speaker labels, which was information the input already contained and nothing had been reading.</p>
+
+      <h2>Proving a negative for $0</h2>
+
+      <p>PR #947 is worth calling out on its own, because of what it cost to find the problem it prevents recurring. Every existing diagnostic instrument in the pipeline — the plan gate, the fork replay, the free fork-scope quote, the render fleet — starts from either a reference video or an existing run. A script-only plan is neither, so the only way to see what one would produce was to start a real job and pay for it: $14.68, in this case, to discover the planner-prompt contradiction that PR #948 later fixed. The response was a standalone script that replays the real sentence-splitting and scene-count logic against a script file directly, for $0, plus a small corpus of known scripts that pin down what a correct beat count should look like — so the next time this specific question comes up, it doesn't cost fourteen dollars and a full render cycle to answer it again.</p>
+
+      <h2>The same defect, six times</h2>
+
+      <p>By the time the round's handoff was rewritten, what had started as "the planner still writes near-identical shots" had grown from four confirmed instances of the same root defect to six. Every one of them was the identical shape: a check, a budget, or a proposal step that had quietly depended on a reference being present, silently degrading to a default, a fallback, or a false pass the moment that reference stopped existing. None of them threw an error. All of them looked, from a passing test suite, like working code. The fix in each case wasn't cleverness — it was tracing one more input all the way from "the reference supplies this" to "what happens when nothing does," and refusing to let a missing measurement read as a good one.</p>
+
+      <h2>The pattern</h2>
+
+      <p>Building a genuinely new mode into a pipeline that has one deeply-ingrained assumption baked into it — here, "a reference video exists" — is less about writing the new mode's own logic and more about auditing every place downstream that assumption quietly leaked into. The parser assumed it. The word budget assumed it. The planner's own prompt assumed it, twice, contradicting an instruction two lines away. The plan gate assumed it hard enough to manufacture a false pass out of a zero-versus-zero comparison. None of those were bugs in the new mode. They were bugs in the old assumption, invisible for as long as the assumption held, and each one only surfaced once a real, paid run went looking for the answer instead of trusting that a green check meant what it said.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="reference-matching-engine-inert-rollout.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Ship It Inert First</a><br><span style="color:#8892b0;font-size:13px;">Building the reference-matching engine this mode is the mirror image of</span></li>
+        <li style="margin-bottom:12px;"><a href="planner-hardening-gates-dead-code-scorer.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Hardening a Video Planner</a><br><span style="color:#8892b0;font-size:13px;">The same "a check that can't run shouldn't report success" discipline, an earlier round</span></li>
+        <li style="margin-bottom:12px;"><a href="vsl-generator-ai-presenter-unification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">One Brief Instead of Four</a><br><span style="color:#8892b0;font-size:13px;">Where reference-less mode became one of several create flows folded into a single wizard</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

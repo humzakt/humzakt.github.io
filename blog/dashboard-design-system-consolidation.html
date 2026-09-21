@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Four Stops Instead of Thirty: Rebuilding the Dashboard and Retiring Hand-Rolled UI — Humza Tareen</title>
+  <meta name="description" content="A month-long UI rebuild for an AI ad-video pipeline: collapsing thirty review-gate stops to four while keeping the ones that gate real spend, a dashboard reorganized around what needs a person versus what's merely recent, and eight hand-rolled component shapes retired into a shared design system.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Frontend Engineering, UX, React, Design Systems">
+  <link rel="canonical" href="https://humzakt.github.io/blog/dashboard-design-system-consolidation.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Four Stops Instead of Thirty: Rebuilding the Dashboard and Retiring Hand-Rolled UI">
+  <meta property="og:description" content="A month-long UI rebuild for an AI ad-video pipeline: collapsing thirty review-gate stops to four while keeping the ones that gate real spend, a dashboard reorganized around what needs a person versus what's merely recent, and eight hand-rolled component shapes retired into a shared design system.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/dashboard-design-system-consolidation.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Frontend Engineering">
+  <meta property="article:tag" content="UX">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="Design Systems">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Four Stops Instead of Thirty: Rebuilding the Dashboard and Retiring Hand-Rolled UI">
+  <meta name="twitter:description" content="A month-long UI rebuild for an AI ad-video pipeline: collapsing thirty review-gate stops to four while keeping the ones that gate real spend, a dashboard reorganized around what needs a person versus what's merely recent, and eight hand-rolled component shapes retired into a shared design system.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Four Stops Instead of Thirty: Rebuilding the Dashboard and Retiring Hand-Rolled UI",
+    "description": "A month-long UI rebuild for an AI ad-video pipeline: collapsing thirty review-gate stops to four while keeping the ones that gate real spend, a dashboard reorganized around what needs a person versus what's merely recent, and eight hand-rolled component shapes retired into a shared design system.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/dashboard-design-system-consolidation.html" },
+    "keywords": ["Frontend Engineering", "UX", "React", "Design Systems"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Four Stops Instead of Thirty"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Four Stops Instead of Thirty: Rebuilding the Dashboard and Retiring Hand-Rolled UI</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Frontend Engineering</span>
+        <span class="blog-tag">UX</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">Design Systems</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>An editor's real complaint about the main video-generation service's internal tool wasn't any single bug. It was the shape of using it: thirty confirmation stops on an attended run, a dashboard that buried the one thing you actually owed a click against three finished runs above it, and six different hand-rolled versions of a toggle scattered across screens that had each been built under deadline by whoever needed one that week. Over roughly thirty-five PRs across a month, the fix wasn't a redesign in the usual sense — it was systematically finding every place the tool disagreed with itself and picking one answer.</p>
+
+      <blockquote>
+        A tool that has quietly drifted its own visual language, its own vocabulary, and its own confirmation pattern isn't many small inconsistencies. It's one large tax, paid by whoever has to learn all of them at once.
+      </blockquote>
+
+      <h2>Thirty stops, or zero — nothing in between</h2>
+
+      <p>PR #869 names the actual defect precisely: oversight was bimodal. An attended run parks at <code>2N + 2</code> gates — script, board, then a frame gate and a clip gate for every scene after the first, then final — and the fleet's real runs run 14–15 scenes, so a fully attended run confirms roughly thirty times. The only alternative was <code>runAll</code>, which skips straight to autopilot. Thirty stops or zero was the entire range an editor could choose from. The fix collapses that to four real checkpoints while deliberately keeping the ones that actually gate money — the framing is explicit about which stops earned their place and which were just accumulated ceremony.</p>
+
+      <h2>Front doors that didn't open</h2>
+
+      <p>PR #865 is a small, sharp audit: inventory every screen and every way a user is supposed to reach it, then actually click through. Three paths dead-ended. The failed-run recovery link — the one button offered after a run has already failed — built a URL against a route deleted three weeks earlier, so the recovery path from a failure was itself a 404. PR #874 found the same shape in the diagnostics page: its only inbound link gated on a benchmark-model field that the create form had stopped writing entirely, so the gate could never open, on any run the app could currently start — a page that existed, worked, and was structurally unreachable. PR #880 found the whole library section — Products, B-roll, Avatars, Profiles — rendered only while its own section was already active in the URL, meaning from anywhere else in the app, four real destinations were simply invisible in the navigation that was supposed to expose them.</p>
+
+      <h2>A control that lied about what it did</h2>
+
+      <p>PR #871 catches something worse than a broken link: a control that renders as functional and isn't. The create form's flag system has a dependency graph — a flag whose parent requirement is unmet resolves to <code>false</code> no matter how the operator sets it. The UI didn't know that. All 56 flags rendered as equal toggles, so six of them could be clicked, visibly read "On," and change nothing about the run — on flags that decide what a paid generation actually does. The fix mirrors the same transitive resolution client-side rather than re-deciding it independently, so the control can't say something the system won't honor. PR #879 closed the readability half of the same problem: 32 of 32 settings had a group label: zero of 56 flags did, so the ones that spend real money sat unmarked in one long ungrouped scroll — a gap the component's own code comment had already conceded before anyone fixed it.</p>
+
+      <h2>A dashboard that answers the wrong question first</h2>
+
+      <p>PR #887 found the landing page sorting runs newest-first and showing five — so a run genuinely parked at a gate, waiting on a person, could sit below three finished runs and fall off the bottom of the strip entirely, while a paid render waited on a click nobody knew was owed. The fix cost zero new derivation: <code>groupRunRows</code> already computed which runs needed a person, oldest-wait-first, and already existed elsewhere in the app — the landing page had just never called it. PR #964 pushed the same idea one step further: rather than one sorted list with a badge as the only signal, the dashboard now renders two headed blocks, "Waiting for you (N)" and "Everything else," because an editor scanning the page is answering exactly one question, and a heading answers it faster than a sort order can.</p>
+
+      <h2>Clips you already paid for, hidden behind a spinner</h2>
+
+      <p>PR #883 is the kind of bug that costs real wall-clock time rather than just looking bad: the clip review gate keyed its <em>entire view</em> on whether the currently-focused scene had a finished take. While scene 3 rendered, scenes 0 through 2 — rendered, billed, fully playable — simply disappeared behind a loading panel. On a fourteen-scene run at four to six minutes a clip, that's most of an hour spent staring at one spinner with nothing to watch, for content that already existed and had already been paid for.</p>
+
+      <h2>The run page learns to say where the money went</h2>
+
+      <p>PR #881 traced a real cost surprise — one operator-animated run's total read $9.05 against a roughly $1.40 estimate, with nothing on screen explaining the gap. The answer was already being recorded in <code>costNotes</code> and simply never surfaced: 49 image calls for 14 frames, broken down by vendor and purpose (42 Anthropic clip-critic calls, 36 OpenAI-image frame generations, 27 Anthropic continuity checks, and so on). The fix isn't a new measurement — it's making an existing, accurate ledger finally visible on the one screen someone would actually look at after a surprising bill.</p>
+
+      <h2>Eight ways of saying the same two things</h2>
+
+      <p>The most concentrated part of this cluster is a ten-PR "editor-UI rebuild" run, each one stacked on the last. It starts with groundwork: PR #961 found two of the guardrails meant to detect hand-rolled UI duplication were themselves reading through re-export barrels rather than the actual leaf files, silently blind to exactly the drift they existed to catch. Once the detector could actually see, the list it produced was the whole story: <strong>eight different phrasings</strong> — "accordion header row," "inline expand toggles," "inline disclosure link," "dashed full-width add affordance," and five more — describing what were structurally only two shapes: a disclosure and an insert row. PR #968 replaced all eight with two shared controls. PR #962 did the same for booleans and one-of-N choices, retiring four hand-rolled toggle/segmented-control copies that shared no code with each other. PR #969 unified six separately-drawn media-thumbnail components behind one primitive specifically built to not re-fetch on every dashboard poll — a real performance bug hiding inside what looked like a pure styling duplication. PR #967 found the app's only focus-trapping modal had no test at all and sat on the exception list for its own close button; it became the shared overlay primitive, joined immediately by a drawer the library screens needed, so two hand-written Tab traps couldn't quietly disagree with each other about keyboard behavior.</p>
+
+<pre><code class="language-typescript">// before: eight components, eight names, zero shared code
+function InlineDisclosureLink() { /* ... */ }
+function DashedInsertAffordance() { /* ... */ }
+function StagedEditToggle() { /* ... */ }
+// ...five more, each solving the same two problems independently
+
+// after: two primitives, everything else composes them
+&lt;Disclosure summary="..."&gt;{children}&lt;/Disclosure&gt;
+&lt;InsertRow onInsert={...} /&gt;</code></pre>
+
+      <h2>One verb, one price formatter, one name for money</h2>
+
+      <p>PR #972 found five different names spread across nine UI labels for the single action "make this again" — "re-roll," "Regenerate frame," "Regenerate as new version," "Re-do this scene + the ones after it," among others — plus two different progress words for the identical underlying work on adjacent gates. An editor who learned one gate's vocabulary learned nothing transferable about the next one. The fix collapses all of it to one verb, "Regenerate," with scope carried as a separate, explicit parameter rather than folded into the verb's name. PR #974 found a subtler duplication in the same spirit: a currency formatter defined twice, with two different signatures, because two real contracts existed — a table cell that must never collapse to nothing gets an em-dash, while a chart label or sentence sometimes correctly shouldn't render at all. The fix wasn't to force one signature; it named both contracts explicitly and gave each one exactly one implementation instead of four call sites independently deciding how to paper over the difference.</p>
+
+      <h2>One wizard, not secretly two</h2>
+
+      <p>PR #988 found the create flow and the wizard flow were, structurally, two different pipeline models rendering on top of each other: the create form drew a six-stage progress bar, then submitted with a full page navigation into a wizard drawing an entirely separate five-phase stepper — so at the exact same script gate, one chart said "3 of 6" and the other said "2 of 5" for the identical run. PR #950 gave each pipeline phase its own URL specifically so a gate could be linked directly and the browser's Back button would do something meaningful between phases — reported by an editor, verbatim, as difficulty navigating the pipeline at all. PR #991 closed out four more pieces of the same feedback thread: a completed run no longer auto-navigates into History the instant it finishes, the two competing pipeline visualizations became one, and the interface dropped its warnings and blockers in favor of a state an editor described wanting as simply "clean." PR #992 finished the thread by retiring the app's last two native <code>window.confirm()</code> dialogs — the ones for restart and cancel — into the same custom confirmation pattern already used for the two gates that release money, so a spend confirmation and a destructive-action confirmation finally look and read the same way everywhere they appear.</p>
+
+      <h2>Speaking the editor's language, not the pipeline's</h2>
+
+      <p>PR #963 is a no-behavior-change PR that's really about respect for the audience: the library screens displayed pipeline internals directly to the people using them — a column literally labeled <code>ASL</code> (film-school shorthand for average shot length) where "Cuts every 1.83s" would do, and an empty state that handed an editor a shell script to run. PR #976 found the underlying library itself had silently shrunk to a fraction of its real size — 121 clips existed, but the app could browse only 29, because nothing in the UI could write the tag index that made the rest searchable; a project doc had already named re-tagging as "free and the prerequisite" for retrieval working at all, and it hadn't been free, because the write path simply didn't exist yet. PR #977 closed a related gap: reference videos in the library had already been measured once, at real cost, and every new run silently re-measured the same reference from scratch anyway — sometimes inconsistently, with the same file returning 13 shots on one run and 15 on the next. The fix keys a stored measurement by the file's own content hash, so picking a known reference reuses what was already paid for instead of re-deriving it.</p>
+
+      <h2>The pattern: consistency is a feature, not a cleanup task</h2>
+
+      <p>Nothing in this cluster added a capability the tool didn't already have in some form. Every PR either exposed a destination that already existed, reused a value that was already being computed, or replaced several independently-built versions of the same idea with one. The through-line worth naming is that a tool which drifts its own vocabulary, its own confirmation pattern, and its own component shapes doesn't fail all at once — it fails one small relearning cost at a time, paid by every person who has to move between its screens. Collapsing thirty gates to four, or eight component phrasings to two, isn't polish layered on top of working software. It's removing the tax the software had been quietly charging its own users to operate it.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="modularization-400-line-file-cap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Every God File Split</a><br><span style="color:#8892b0;font-size:13px;">The refactor discipline this UI rebuild inherited — split cleanly, then verify the pieces actually got wired together</span></li>
+        <li style="margin-bottom:12px;"><a href="run-index-cost-ledger-supabase-migration.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Retiring a Drive Folder Scan</a><br><span style="color:#8892b0;font-size:13px;">The run-index and cost-ledger work feeding the dashboard's new "where the money went" view</span></li>
+        <li style="margin-bottom:12px;"><a href="vsl-generator-ai-presenter-unification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">One Brief Instead of Four</a><br><span style="color:#8892b0;font-size:13px;">The same consolidation instinct applied to the tool's create flows themselves</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

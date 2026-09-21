@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Retiring a Drive Folder Scan: A Queryable Run Index and a Ledger That Doesn't Lose the Delta — Humza Tareen</title>
+  <meta name="description" content="Replacing a Drive-folder-scan run list with a fail-open Supabase index, building a durable per-charge cost ledger after finding the delta was computed and thrown away, and the 1,897-binding lint sweep that found four real bugs hiding in dead code.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Cost Engineering, Software Architecture, Code Quality, Database">
+  <link rel="canonical" href="https://humzakt.github.io/blog/run-index-cost-ledger-supabase-migration.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Retiring a Drive Folder Scan: A Queryable Run Index and a Ledger That Doesn't Lose the Delta">
+  <meta property="og:description" content="Replacing a Drive-folder-scan run list with a fail-open Supabase index, building a durable per-charge cost ledger after finding the delta was computed and thrown away, and the 1,897-binding lint sweep that found four real bugs hiding in dead code.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/run-index-cost-ledger-supabase-migration.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Software Architecture">
+  <meta property="article:tag" content="Code Quality">
+  <meta property="article:tag" content="Database">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Retiring a Drive Folder Scan: A Queryable Run Index and a Ledger That Doesn't Lose the Delta">
+  <meta name="twitter:description" content="Replacing a Drive-folder-scan run list with a fail-open Supabase index, building a durable per-charge cost ledger after finding the delta was computed and thrown away, and the 1,897-binding lint sweep that found four real bugs hiding in dead code.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Retiring a Drive Folder Scan: A Queryable Run Index and a Ledger That Doesn't Lose the Delta",
+    "description": "Replacing a Drive-folder-scan run list with a fail-open Supabase index, building a durable per-charge cost ledger after finding the delta was computed and thrown away, and the 1,897-binding lint sweep that found four real bugs hiding in dead code.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/run-index-cost-ledger-supabase-migration.html" },
+    "keywords": ["Cost Engineering", "Software Architecture", "Code Quality", "Database"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Retiring a Drive Folder Scan"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Retiring a Drive Folder Scan: A Queryable Run Index and a Ledger That Doesn't Lose the Delta</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Software Architecture</span>
+        <span class="blog-tag">Code Quality</span>
+        <span class="blog-tag">Database</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p><code>/runs</code> had no queryable store. The only durable copy of a run's state was one <code>job-state.json</code> file per run, sitting in that run's own Google Drive folder — so rendering a table of thirteen fields meant enumerating every Drive folder and downloading every run's entire job document to read them. Measured: a mean of 65 KB and a max of 445 KB per run, for a table that showed thirteen columns. The in-memory cache that was supposed to make this bearable was module-level, so the first load after every deploy returned an empty list. A sibling tool's own schema file had already named the smell: "read live state from a 5-minute-stale Drive folder scan."</p>
+
+      <blockquote>
+        Four of this round's defects were mine, and every one was found by measuring production rather than by reading the diff.
+      </blockquote>
+
+      <p>That's not a stray line — it's the author's own summary of the nine-PR round that closed this migration out. It's worth sitting with, because it sets the tone for everything below: replacing a Drive scan with a real index sounds like a clean infrastructure swap, and it produced instead a small, honest cluster of self-found production bugs, several of them shipped by the same person who then caught them.</p>
+
+      <h2>A queryable index, kept deliberately fail-open</h2>
+
+      <p>PR #890 built a Supabase-backed run index as a projection, and made one important choice explicit: the old Drive-scan path didn't get deleted yet. It stayed as a fallback if Supabase failed, and — just as useful — as a free oracle to diff the new projection against. Two systems both answering "what runs exist" isn't waste when one of them exists specifically to catch the other being wrong.</p>
+
+      <p>That oracle earned its keep. Run twice over the same production data, the comparison came back <code>$0</code> both times: 293 of 293 records identical, then 290 of 290, with job-ID sets matching exactly and 14 of 16 fields byte-identical on every row. The one legitimate difference was a projector-written row that was a few hours fresher than its frozen Drive snapshot — which is the index being <em>right</em>, not the index disagreeing. Only once that verification held up did PR #928 retire the Drive scan and make the index the single source of truth, closing the issue that had opened the whole migration.</p>
+
+      <h2>A cache that became a write's merge base by accident</h2>
+
+      <p>The migration's first real data-loss bug arrived immediately, in PR #892, and it's a sharp lesson in how a read path and a write path can silently start sharing state that was never designed to be shared. Every catalog writer in the pipeline is a read-modify-write: read the whole index, merge one record into it, upload the merged result back over the Drive copy. PR #890 had made the public <code>listProfiles()</code>/<code>listRips()</code> functions prefer the new Supabase mirror — and those were exactly the functions the writers used as their merge base. The mirror write was deliberately fail-open, so it could silently fail while the Drive upload succeeded, leaving the mirror stale. The next writer would then read that stale mirror, merge its own change in, and upload the result over Drive — permanently erasing whatever had changed in between. A cache that's allowed to be wrong is fine for reads. It is never allowed to be the base of a write.</p>
+
+      <p>The same shape reappeared for a second catalog a few days later. PR #910 found that <code>setLabel</code> — the writer behind display-name renames — re-read the current state before writing, which is the correct instinct against a stale cache. But its re-read path, <code>ensureLabelsFresh</code> plus <code>currentLabels()</code>, could not report failure: it failed open on a Drive error, and on a cold container with no existing cache, its fallback was an empty object. A cold container plus one failed Drive request was enough to upload an effectively-empty map over every rename anyone had ever made. PR #924 closed it by mirroring the display-name index into the same Supabase system as the others — the fifth and last of five app-written Drive-JSON indexes, and the only one still reading Drive on a cold start.</p>
+
+      <h2>A run's real spend, not just its final-video cost</h2>
+
+      <p>PR #893 is the kind of bug that's invisible until someone reads a real number. <code>total_cost_usd</code> summed <code>models[].costUsd</code> — the per-model cost of a <em>finished</em> video. A run that paused at a review gate, or failed before producing a final video, reported <code>$0</code> spent no matter how much detection and planning it had actually paid for. This was found by watching the very first row the new projector wrote in production: a run parked mid-pipeline, genuinely billed, reading as free. The "spend by week" query shipped in the same schema summed exactly that broken column.</p>
+
+      <p>The deeper fix landed in PR #930, and its own framing is the cleanest summary: "the delta was in hand and thrown away." The run's live ledger — <code>job.costSoFarUsd</code> plus a list of cost notes — lived only in-memory, persisted solely inside the Drive snapshot. Giving the run <em>total</em> a durable home (PR #893) wasn't enough, because a total can't answer "which specific charge was this for" — and that's exactly the question both of this round's documented money bugs turned on. The function that recorded every charge, <code>addCost</code>, already computed the exact dollar delta for each one. It just wrote that number to a log line and discarded it instead of persisting it anywhere durable.</p>
+
+<pre><code class="language-typescript">// before: the delta existed for one log line and nowhere else
+function addCost(job: Job, deltaUsd: number, note: string) {
+  job.costSoFarUsd += deltaUsd;
+  console.log(`[cost] +$${deltaUsd.toFixed(2)} — ${note}`);
+  // deltaUsd is gone the moment this function returns
+}
+
+// after: the same number, persisted per-charge
+function addCost(job: Job, deltaUsd: number, note: string) {
+  job.costSoFarUsd += deltaUsd;
+  ledger.record({ runId: job.id, deltaUsd, note, at: Date.now() });
+}</code></pre>
+
+      <p>PR #907 used that same underlying accounting to answer a question that had never had a real number attached to it: when an operator cancels a wedged run, how much money are they walking away from? Before this, "it will stop and be marked failed" was the entire message — no figure, no way to distinguish killing a forty-cent run from killing a fourteen-dollar one. A dedicated module now derives three figures — spent, committed, and not-yet-started — specifically so the number that actually matters for a cancel decision has somewhere to be shown.</p>
+
+      <h2>The age-out bug that emptied the dashboard's most important group</h2>
+
+      <p>This is the round's most instructive regression, because it's a bug introduced by a refactor that was itself a fix. PR #925 moved the stalled-run age-out logic from a client-side module into the server-side run-index reader — a legitimate move, made its own PR specifically because the team's own rule says a deletion must never share a PR with a behavior change. But the move carried the threshold across and quietly dropped the <em>ordering</em> of the checks — and the ordering turned out to be the whole rule.</p>
+
+      <p>The display status of a run is decided in three sequential steps: terminal state, then review-gate state, then freshness/staleness. Ageing a row out on the server rewrote its status to a terminal value directly, which meant the review-gate check downstream could never fire for it. A run sitting at a review gate isn't stalled — it's waiting for a human, has no running process that could have died, and its idle time carries no information at all. PR #927 caught the consequence in production: the age-out was emptying the dashboard's "needs you" group, silently hiding exactly the runs an operator most needed to see. The fix wasn't reverting the move — it was restoring the order the original code had gotten right by accident.</p>
+
+      <h2>Deleting the code that used to be true</h2>
+
+      <p>Alongside the index migration, a separate but related discipline ran through the same weeks: finding and removing code nobody calls anymore, using tools rather than instinct. PR #851 used the repo's own call-graph script to find two genuinely dead functions among thirty-four flagged candidates — most of the rest were framework callbacks the tool correctly knows to warn about rather than delete. PR #856 found three scratch files sitting at the repo root, invisible to every guard because the guard's glob only matched <code>.ts</code>/<code>.tsx</code> — the fourth time in this effort that a coverage gap, not a threshold, was the actual defect.</p>
+
+      <p>PR #906 is the capstone: two commits, the first clearing 1,747 dead import bindings left behind by an earlier file-splitting migration (every extracted file had kept importing what its pre-split self used, and nothing in the existing lint config could see the leftovers), the second turning on <code>no-unused-vars</code> so the count can't silently grow back. Fixing the tooling itself surfaced real defects: a file-wide bracket cleanup regex had turned <code>insertShape: shape,\n}</code> into a syntactically valid but semantically broken line across 162 files, and three separate source-scanning tools had been quietly missing files because of it. The sweep found four real bugs this way — not by someone going looking for bugs, but by making 1,897 pieces of dead weight visible enough that the four live wires tangled up in them couldn't hide anymore.</p>
+
+      <p>Not every "dead code" candidate survives contact with measurement, and that's worth stating plainly rather than glossing over. PR #973 audited eight items flagged as unread and found five were load-bearing — one route had four live callers serving labels to three different surfaces, one field appeared in eight separate schema assertions governing what a forked run inherits. The count of what's actually safe to delete keeps shrinking under real inspection, which is the entire point of measuring before cutting rather than after.</p>
+
+      <h2>A security deletion, not a hardening</h2>
+
+      <p>PR #921 is a smaller finding with an outsized blast radius if it had gone unnoticed longer: a legacy image proxy sat on a route excluded from the hub's auth gate, ostensibly so an image-editing model could pull frames by URL. In practice, it fetched an arbitrary URL out of job state and streamed the response body back — an unauthenticated request relay running from the service's own egress IP, returning someone else's content under this origin. Measured before deleting rather than assumed: of 86 archived job-state documents, exactly two carried the field this route needed, and every URL in both pointed at the service's own host. The fix was deletion, not hardening, because by the time anyone looked, the branch was already dead — which didn't make it any less of a live vulnerability while it existed.</p>
+
+      <h2>The pattern: infrastructure migrations create their own bug class</h2>
+
+      <p>Nothing in this cluster is a hard algorithm. A cache became a write's merge base because two independently-reasonable pieces of code started sharing state neither was designed to share. An age-out check regressed because a refactor preserved the threshold and silently dropped the order it ran in. A cost total was wrong because "spent" and "billed for a finished video" look identical until a run stops partway through. Every one of these is the specific bug class that infrastructure migrations create: not the new system being wrong, but the seam between the new system and everything that still assumes the old one — caches, readers, orderings, assumptions about what a field means — being wrong in ways that only show up once real production data runs through it. The fix, consistently, was the same discipline repeated four times: measure the live behavior, not the diff.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ledger-billing-reconciliation-paid-runs.html" style="color:#64ffda;text-decoration:none;font-size:15px;">What Paid Runs Found</a><br><span style="color:#8892b0;font-size:13px;">The earlier cost-ledger reconciliation work this durable per-charge ledger builds directly on</span></li>
+        <li style="margin-bottom:12px;"><a href="modularization-400-line-file-cap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Every God File Split</a><br><span style="color:#8892b0;font-size:13px;">The file-splitting migration whose leftover dead imports this lint sweep finally cleared</span></li>
+        <li style="margin-bottom:12px;"><a href="vsl-generator-ai-presenter-unification.html" style="color:#64ffda;text-decoration:none;font-size:15px;">One Brief Instead of Four</a><br><span style="color:#8892b0;font-size:13px;">The product-unification work that shipped in the same weeks as this infrastructure migration</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

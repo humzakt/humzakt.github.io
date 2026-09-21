@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Building an Internal Ops Platform: Employee Management, Evaluations, and a Proxy That Was Leaking Secrets — Humza Tareen</title>
+  <meta name="description" content="Moving a project tracker's hardcoded lists into Supabase-backed admin tables, shipping an Employee Management and Evaluations suite with access enforced at the API layer, and closing an SSRF-adjacent credential leak in a shared proxy.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Security, Access Control, Product Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ve-tools-internal-ops-platform.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Building an Internal Ops Platform: Employee Management, Evaluations, and a Proxy That Was Leaking Secrets">
+  <meta property="og:description" content="Moving a project tracker's hardcoded lists into Supabase-backed admin tables, shipping an Employee Management and Evaluations suite with access enforced at the API layer, and closing an SSRF-adjacent credential leak in a shared proxy.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ve-tools-internal-ops-platform.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Security">
+  <meta property="article:tag" content="Access Control">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building an Internal Ops Platform: Employee Management, Evaluations, and a Proxy That Was Leaking Secrets">
+  <meta name="twitter:description" content="Moving a project tracker's hardcoded lists into Supabase-backed admin tables, shipping an Employee Management and Evaluations suite with access enforced at the API layer, and closing an SSRF-adjacent credential leak in a shared proxy.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building an Internal Ops Platform: Employee Management, Evaluations, and a Proxy That Was Leaking Secrets",
+    "description": "Moving a project tracker's hardcoded lists into Supabase-backed admin tables, shipping an Employee Management and Evaluations suite with access enforced at the API layer, and closing an SSRF-adjacent credential leak in a shared proxy.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ve-tools-internal-ops-platform.html" },
+    "keywords": ["Security", "Access Control", "Product Engineering", "TypeScript"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Building an Internal Ops Platform"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Building an Internal Ops Platform: Employee Management, Evaluations, and a Proxy That Was Leaking Secrets</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Security</span>
+        <span class="blog-tag">Access Control</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>An internal ops platform for a video-production team started as a project tracker and grew, over about three weeks, into something closer to an HR system: employee scorecards, evaluation dashboards, a product catalog, and a shared proxy layer that every other internal tool routes through. That last part is what makes this cluster of PRs worth writing up together — a proxy sitting in front of several tools accumulates security bugs differently than any single tool does, because a mistake there isn't scoped to one screen. It's scoped to everything behind it.</p>
+
+      <blockquote>
+        A permission check that lives only in the UI is a suggestion. A permission check that lives at the route is a rule. Ship the rule.
+      </blockquote>
+
+      <h2>Turning hardcoded lists into admin tables</h2>
+
+      <p>The project tracker's list of valid projects lived in two places that had to agree with each other: a TypeScript union in the board component, and a database <code>CHECK</code> constraint. Adding a project meant a pull request and a deploy for what is, functionally, one row of data. PR #16 replaced both with a real <code>projects</code> table and an admin UI, and PR #18 shipped it to production with a detail worth keeping: a project's board section only renders once it actually has a task, so the board doesn't fill with empty tables as the project list grows ahead of real work. PR #19 then gave Projects its own sidebar entry under Admin instead of leaving it stacked under Users & Access — a small move, but it's the difference between an admin feature existing and an admin feature being findable.</p>
+
+      <p>The same pattern repeated twice more, each time for a reason specific enough to be worth its own PR. PR #47 moved the export tool's product dropdown out of hardcoded TypeScript in a sibling repo into an <code>export_products</code> table with its own admin page — and the PR body is explicit about why this didn't just reuse the existing <code>projects</code> table, walking through the field-level differences that made a shared table the wrong shortcut. PR #50 did the same for evaluation categories, and it's the richest of the three: <code>detectCategory</code> is an ordered ladder of string-matching rules where the order itself carries meaning — "LEAN UV Cleaner Upsell C1" is a real production row, and it scores correctly as a Lead only because the L-prefix rule is checked before anything that matches "Upsell." Turning that ladder into editable data meant preserving the ordering as a first-class <code>priority</code> column, not just a list — getting the migration wrong would have silently reclassified real historical rows.</p>
+
+      <h2>Applying a rule retroactively means measuring before writing</h2>
+
+      <p>PR #49 added Upsell as its own scoring category — a substring match, the only one in the whole ladder, deliberately placed last so it can only claim what no earlier, more specific rule already claimed. PR #52 then applied that rule to all of history, and the PR description is a small model of how to do a backfill safely: before writing anything, it measured read-only what was actually in the database — confirming nothing had ever been scored in this tool before a specific date, so there was no prior scorecard the backfill could silently contradict. PR #53 closes the loop with something that isn't a code change at all: a written record of a deliberate decision — asked directly whether any id containing "upsell" should always score as Upsell, the category owner said no, categories should strictly follow the first-letter code, because some upsells are really just leads or bodies underneath. That answer is exactly why the substring rule sits last in the ladder rather than first, and writing the reasoning down next to the rule is what stops a future well-intentioned refactor from "fixing" the ordering into something that quietly breaks four real rows.</p>
+
+      <h2>Employee Management: access enforced in the API, not the component</h2>
+
+      <p>PR #26 shipped the Employee Management tool, and its own description states plainly why it isn't simply the feature as originally built: the manager's board component was a 3,822-line client component making 34 direct Postgrest calls straight from the browser. Every one of those calls was only as safe as the row-level security policy behind it — a UI-only gate, dressed up as a feature. The shipped version moves access enforcement into the API layer and normalizes the editor reference so editor data is looked up once, not repeated across dozens of call sites.</p>
+
+      <p>PR #27 is the verification that followed the launch, and it's a good model for what "verify a permission boundary" actually looks like in practice: a manager asked directly whether the Evaluation tab was private to each editor, and rather than answer from memory, the check walked all three layers — route, API, and rendered payload — and found the tab genuinely was private, but also found a real bug hiding next to the correct behavior. An editor's page was unconditionally requesting a manager-only dashboard resource, which meant a guaranteed 403 firing silently on every single editor page load. Confirming a security property is correct doesn't mean the code path exercising it is clean, and this PR is the difference between checking the outcome and checking the mechanism.</p>
+
+      <p>PR #28 shipped a "you vs. the team" comparison card on an editor's own scorecard — four KPI averages plus their own numbers, side by side — and the type design does real work here: the payload type is a closed shape with exactly four numbers and a rating band, structurally unable to carry a per-editor name or id. Widening it into per-editor data later can't happen by accident, because there's nowhere in the type for that data to go. That's access control enforced by the shape of the data, not by a check someone has to remember to write.</p>
+
+      <h2>The proxy: four bugs, each found while fixing a different one</h2>
+
+      <p>The most consequential work landed on the shared proxy every tool in the platform sits behind, and it's a clean example of how security bugs cluster: fixing one often surfaces the next, sitting right next to it.</p>
+
+      <p>PR #29 found that GET and HEAD requests were proxied with <code>redirect: "follow"</code>, so the underlying HTTP client resolved any 3xx server-side without checking whose origin it was following to. One tool redirects a finished render to Google Drive; the proxy followed that redirect itself, with no Google session attached, got a 401 back from Google, and returned Google's raw HTML error page to the browser — under this app's own origin. A user who successfully finished a render an hour earlier saw a third-party error page served as if it came from the platform they were using. The fix scopes <code>follow</code> to same-origin redirects only, which is also the fix for the credential-leak shape this bug could have taken with a maliciously-controlled redirect target.</p>
+
+      <p>PR #31 closed a related but separate issue found while reviewing #29: the proxy stripped <code>content-length</code> from every upstream response, which kills the browser's download progress bar. On a 221MB deliverable, a progress bar with no length to report against looks exactly like a stuck download. The fix is narrower than the original strip — content length only needs to be dropped when the body is being transcoded, not when it passes through byte-for-byte unchanged.</p>
+
+      <p>PR #33 is the sharpest bug in this cluster, and it was found purely by re-reading code that PR #31 had just touched for an unrelated reason — a genuinely different defect sitting one function away from the one being fixed. Response headers were rebuilt using <code>Headers.forEach</code> plus <code>.set()</code>, and <code>set-cookie</code> is the one HTTP header that doesn't comma-fold into a single value — the Fetch API yields each cookie as a separate entry specifically so they don't get merged. Looping with <code>.set()</code> silently overwrote each prior cookie with the next one, so only the <em>last</em> upstream cookie ever survived the proxy. Measured directly against a real response: two Set-Cookie headers in, one out.</p>
+
+<pre><code class="language-typescript">// before: only the last Set-Cookie survives
+upstream.headers.forEach((value, key) => {
+  responseHeaders.set(key, value); // .set() overwrites on repeat keys
+});
+
+// after: append preserves every cookie in the response
+upstream.headers.forEach((value, key) => {
+  if (key.toLowerCase() === 'set-cookie') {
+    responseHeaders.append(key, value);
+  } else {
+    responseHeaders.set(key, value);
+  }
+});</code></pre>
+
+      <p>PR #34 is the one I'd flag as the most important, because it's not a proxy bug — it's an authentication check that only looked like one. A "fast path" for serving tool sub-resources authenticated requests by testing the <em>name</em> of a Supabase auth cookie — does it start with <code>sb-</code> and contain <code>-auth-token</code> — without ever parsing or verifying the value inside it. Confirmed directly against production: a cookie literally named <code>sb-probe-auth-token</code> holding a single arbitrary character passed the check, the asset was served, and the request was forwarded upstream with the platform's own internal secret header injected on top. The upstream tools trusted that secret unconditionally, which meant the proxy's cookie-name check was the <em>only</em> gate in the entire chain — and it was satisfied by a cookie any client could set itself. The fix verifies the token's actual claims offline, without a network round-trip, closing a gap where "looks like an auth cookie" and "is a valid session" had quietly become the same check.</p>
+
+      <h2>Small operational fixes that mattered in practice</h2>
+
+      <p>Not everything here is a security finding. PR #38 fixed a UX bug reported directly by an editor — the tracker board polled every fifteen seconds by bumping a counter that was part of its data-fetching cache key, so every poll looked like a brand-new request and reset the scroll position, several times a minute, on a page someone was actively working in. PR #36 added a visual distinction the queue was missing: a launch-queue row could land on the board for either of two different reasons — actually approved, or simply because its target date arrived — and both rendered identically, so a ready-to-ship row was visually indistinguishable from one that still needed sign-off. PR #37 turned a dead lint step back on after a framework upgrade had silently stopped enforcing it, and fixed everything it immediately found. PR #41 and PR #54 both fix the same category of trust problem from different ends: a scorecard was visible before its reporting period had actually posted, and a manager's written review and score corrections were silently never reaching the editor they were about — two separate defects sitting behind one hardcoded line of placeholder text.</p>
+
+      <h2>The pattern: a shared proxy multiplies the blast radius of every shortcut</h2>
+
+      <p>Four real defects — an off-origin redirect follow, a stripped content-length, a cookie-folding bug, and an authentication check that verified a name instead of a value — all sat in the same few hundred lines of proxy code, each found while looking for a different one. That's not a coincidence particular to this codebase; it's what happens when one piece of infrastructure sits in front of everything else. A shortcut in a single tool's own code affects that tool. A shortcut in the layer every tool routes through affects all of them at once, silently, until someone reads that code specifically looking for what else might be wrong nearby. The right response to finding one bug in shared infrastructure isn't just fixing it — it's treating the surrounding code as suspect and reading it again.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="rbac-hardening-resizable-admin-panels.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Locking Down an Admin Dashboard</a><br><span style="color:#8892b0;font-size:13px;">Role guards enforced at the route, the same discipline applied here to a shared proxy</span></li>
+        <li style="margin-bottom:12px;"><a href="modularization-400-line-file-cap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Every God File Split</a><br><span style="color:#8892b0;font-size:13px;">The same engineering-standards discipline this platform's sibling tools were built to share</span></li>
+        <li style="margin-bottom:12px;"><a href="cross-tool-defect-auditing-nextjs15-hardening.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Systematic Cross-Tool Defect Auditing</a><br><span style="color:#8892b0;font-size:13px;">Reading code again after one bug is found nearby, applied across an entire tool fleet</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

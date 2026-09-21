@@ -1,5 +1,209 @@
 [
   {
+    "id": "vsl-generator-ai-presenter-unification",
+    "title": "One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter",
+    "summary": "Collapsing four separate ad-creation entry points into one brief-driven flow, building a VSL Generator and an AI Presenter mode on top of it, and the sample-rendering and cost-quoting accuracy work needed to make the pre-review sample trustworthy before a paid run.",
+    "date": "2026-09-21",
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "AI Video",
+      "Product Engineering",
+      "Cost Engineering",
+      "UX"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/vsl-generator-ai-presenter-unification.html"
+    }
+  },
+  {
+    "id": "dashboard-design-system-consolidation",
+    "title": "Four Stops Instead of Thirty: Rebuilding the Dashboard and Retiring Hand-Rolled UI",
+    "summary": "A month-long UI rebuild for an AI ad-video pipeline: collapsing thirty review-gate stops to four while keeping the ones that gate real spend, a dashboard reorganized around what needs a person versus what's merely recent, and eight hand-rolled component shapes retired into a shared design system.",
+    "date": "2026-09-21",
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Frontend Engineering",
+      "UX",
+      "React",
+      "Design Systems"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/dashboard-design-system-consolidation.html"
+    }
+  },
+  {
+    "id": "run-index-cost-ledger-supabase-migration",
+    "title": "Retiring a Drive Folder Scan: A Queryable Run Index and a Ledger That Doesn't Lose the Delta",
+    "summary": "Replacing a Drive-folder-scan run list with a fail-open Supabase index, building a durable per-charge cost ledger after finding the delta was computed and thrown away, and the 1,897-binding lint sweep that found four real bugs hiding in dead code.",
+    "date": "2026-09-21",
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Cost Engineering",
+      "Software Architecture",
+      "Code Quality",
+      "Database"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/run-index-cost-ledger-supabase-migration.html"
+    }
+  },
+  {
+    "id": "storyboard-reference-fidelity-verification",
+    "title": "The Storyboard Layer: Verifying an AI Ad Against Its Reference, Beat by Beat",
+    "summary": "Building a verification layer that checks a generated ad against its reference shot by shot \u2014 and the string of measurement bugs found once the checks themselves started getting checked.",
+    "date": "2026-09-21",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Video",
+      "Video Generation",
+      "Prompt Engineering",
+      "Computer Vision"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/storyboard-reference-fidelity-verification.html"
+    }
+  },
+  {
+    "id": "pixar-animated-lane-identity-guards",
+    "title": "Letting Operators Request Animated People Without Letting a Reference Do It By Accident",
+    "summary": "Turning 'animated' from a reference-derived accident into a deliberate operator choice in an AI ad pipeline \u2014 and the identity-anchor, face-check, and negative-prompt bugs that only existed once animated people became a real code path.",
+    "date": "2026-09-21",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Video",
+      "Computer Vision",
+      "Product Engineering",
+      "Prompt Engineering"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/pixar-animated-lane-identity-guards.html"
+    }
+  },
+  {
+    "id": "referenceless-mode-script-only-generation",
+    "title": "Building a Reference-Less Mode: When There's No Video to Mirror",
+    "summary": "Every plan-quality check in an AI ad pipeline had quietly assumed a reference video existed to measure against. Building a script-only mode meant finding every one of those assumptions the hard way \u2014 by running it and paying for the answer.",
+    "date": "2026-09-21",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Video",
+      "Prompt Engineering",
+      "Product Engineering",
+      "AI Planning"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/referenceless-mode-script-only-generation.html"
+    }
+  },
+  {
+    "id": "enterprise-workflow-versioning-golden-data",
+    "title": "Roll-Forward Versioning and Concurrent Golden-Data Forks in an Enterprise Review Pipeline",
+    "summary": "Replacing claim-time draft clearing with source-preserving roll-forward versioning in an enterprise AI training-data review pipeline, the navigation and lineage bugs it introduced, and a real race condition in concurrent golden-data forking during QC rework.",
+    "date": "2026-09-21",
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Enterprise Platform",
+      "Data Versioning",
+      "TypeScript",
+      "Distributed Systems"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/enterprise-workflow-versioning-golden-data.html"
+    }
+  },
+  {
+    "id": "ve-tools-internal-ops-platform",
+    "title": "Building an Internal Ops Platform: Employee Management, Evaluations, and a Proxy That Was Leaking Secrets",
+    "summary": "Moving a project tracker's hardcoded lists into Supabase-backed admin tables, shipping an Employee Management and Evaluations suite with access enforced at the API layer, and closing an SSRF-adjacent credential leak in a shared proxy.",
+    "date": "2026-09-21",
+    "themes": [
+      "security",
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "Security",
+      "Access Control",
+      "Product Engineering",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ve-tools-internal-ops-platform.html"
+    }
+  },
+  {
+    "id": "video-reframer-paid-render-reliability",
+    "title": "Stop Losing Paid Renders: Hardening a Portrait-to-Widescreen Reframing Tool",
+    "summary": "A young AI outpainting tool that turns 9:16 video into 16:9 starts handling real paid work: vendor retries instead of abandoned renders, 720p quietly billed as 1080p, and a two-tier fallback chain across models that disagree with each other's documentation.",
+    "date": "2026-09-21",
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "AI Video",
+      "Reliability",
+      "Cost Engineering",
+      "Video Rendering"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/video-reframer-paid-render-reliability.html"
+    }
+  },
+  {
+    "id": "speedup-export-hook-management",
+    "title": "Pin One Hook Into Every Variant: Fixing a Hook-Management Builder",
+    "summary": "Eight PRs fixing an ad-variant export tool: a naming bug that made every lead vanish from its own library, pinning a hook across a whole batch instead of clip by clip, and an audit that found a green test suite that had never actually run.",
+    "date": "2026-09-21",
+    "themes": [
+      "infrastructure",
+      "ml-ai"
+    ],
+    "components": [
+      "Frontend Engineering",
+      "Video Production",
+      "TypeScript",
+      "UX"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/speedup-export-hook-management.html"
+    }
+  },
+  {
+    "id": "endcard-converter-new-tool-standards",
+    "title": "Shipping a New Tool With the Sibling Repos' Engineering Standards From Day One",
+    "summary": "A brand-new endcard conversion tool adopts hard-won engineering standards from its very first PR instead of re-learning them later \u2014 plus a short round of follow-up fixes on a sibling render-batch builder tool.",
+    "date": "2026-09-21",
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "Video Production",
+      "Software Engineering",
+      "TypeScript",
+      "Tooling"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/endcard-converter-new-tool-standards.html"
+    }
+  },
+  {
     "id": "multi-presenter-cast-pipeline",
     "title": "N-Person Cast: Teaching a One-Presenter Video Pipeline to Handle a Cast",
     "summary": "Extending an AI ad pipeline built for one on-camera presenter into one that can cast two: voice cloning from a vendor-accepted sample, a plan gate that binds a cast, and five separate ways the feature shipped correct and stayed inert.",

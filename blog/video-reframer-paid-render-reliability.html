@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Stop Losing Paid Renders: Hardening a Portrait-to-Widescreen Reframing Tool — Humza Tareen</title>
+  <meta name="description" content="A young AI outpainting tool that turns 9:16 video into 16:9 starts handling real paid work: vendor retries instead of abandoned renders, 720p quietly billed as 1080p, and a two-tier fallback chain across models that disagree with each other's documentation.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Reliability, Cost Engineering, Video Rendering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/video-reframer-paid-render-reliability.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Stop Losing Paid Renders: Hardening a Portrait-to-Widescreen Reframing Tool">
+  <meta property="og:description" content="A young AI outpainting tool that turns 9:16 video into 16:9 starts handling real paid work: vendor retries instead of abandoned renders, 720p quietly billed as 1080p, and a two-tier fallback chain across models that disagree with each other's documentation.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/video-reframer-paid-render-reliability.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-09-21T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Video Rendering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stop Losing Paid Renders: Hardening a Portrait-to-Widescreen Reframing Tool">
+  <meta name="twitter:description" content="A young AI outpainting tool that turns 9:16 video into 16:9 starts handling real paid work: vendor retries instead of abandoned renders, 720p quietly billed as 1080p, and a two-tier fallback chain across models that disagree with each other's documentation.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Stop Losing Paid Renders: Hardening a Portrait-to-Widescreen Reframing Tool",
+    "description": "A young AI outpainting tool that turns 9:16 video into 16:9 starts handling real paid work: vendor retries instead of abandoned renders, 720p quietly billed as 1080p, and a two-tier fallback chain across models that disagree with each other's documentation.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/video-reframer-paid-render-reliability.html" },
+    "keywords": ["AI Video", "Reliability", "Cost Engineering", "Video Rendering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Stop Losing Paid Renders"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Stop Losing Paid Renders: Hardening a Portrait-to-Widescreen Reframing Tool</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-09-21" itemprop="datePublished">September 21, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Video Rendering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The reframing tool does one job: take a 9:16 clip and outpaint it into 16:9, so a vertical ad can run on a widescreen placement without cropping the subject out. It's a young tool — its vendor integration dates back one month at the time of this audit — and it had reached the point where editors were running real, paid renders through it every day. That transition is where it stopped being a demo and started needing to survive redeploys, vendor flakiness, and its own money math being wrong.</p>
+
+      <blockquote>
+        Clean HTTP metrics don't mean nothing is failing. They mean nothing is failing at the layer you're measuring.
+      </blockquote>
+
+      <h2>A render abandoned by a coincidence of timing</h2>
+
+      <p>PR #1 traces a specific, maddening failure: a clip errors with "Lost connection to server... the render may have finished — check before re-running," which is a client-side give-up, not a real server error. The browser polls a status endpoint through a hub proxy in front of the tool, and while that hub redeploys — routinely 60 to 180 seconds of 502s on Railway — eight consecutive poll failures trip a client-side timeout and the UI marks the item as errored. The server was never told anything was wrong. The worker thread kept running. The job row survived. The editor just had no way to know that, so a perfectly good render looked abandoned because of unlucky timing against an unrelated deploy.</p>
+
+      <h2>Clean metrics, invisible losses</h2>
+
+      <p>PR #2 generalizes the fix, and its opening framing is the most useful sentence in the whole cluster: Railway's HTTP metrics were clean — 10.4k requests, zero 5xx, a flat 0.0% error rate. Nothing was failing at the web layer. <strong>Jobs were being lost, not erroring</strong>, and the only record of a failure was <code>str(exc)</code> in a dict that dies with the container the moment it restarts. Four distinct loss paths came out of the metrics and a production log — including the vendor rejecting a submission with a 429 when a shared account was busy — and the fix was to retry every vendor call and make failures diagnosable by writing them somewhere that outlives the process, instead of trusting a clean-looking dashboard to mean the system was healthy.</p>
+
+      <h2>720p, billed as 1080p</h2>
+
+      <p>PR #4 starts from an editor's finished render answering its own download link with Google's 401 page, an hour after the run completed with the file intact in Drive — and chasing that turned up something worse in the same batch of runs. Every run was supposed to use a specific native-1080p pipeline. Four independent measurements — wall-clock render time, bitrate, blur at 1fps sampled over 259 frames, and PSNR after a 1080→720→1080 round trip — separated the runs into two groups with <strong>no overlap</strong> between them:</p>
+
+      <table>
+        <thead><tr><th></th><th>wall-clock</th><th>bitrate</th><th>blur (n=259)</th><th>PSNR round-trip</th></tr></thead>
+        <tbody>
+          <tr><td>native 1080p</td><td>6.9 min median</td><td>6.40–7.74 Mbps</td><td>7.50 (sd 1.46)</td><td>48.2–51.0 dB</td></tr>
+          <tr><td>downgraded to 720p</td><td>lower</td><td>lower</td><td>higher (softer)</td><td>lower (out of range)</td></tr>
+        </tbody>
+      </table>
+
+      <p>Seven of twenty-eight delivered segments had shipped as upscaled 720p while billed at native-1080p price — ten of thirty-seven segment rows were missing the field that records which upscale pass actually ran, while still reading <code>status='complete'</code>. The fix wasn't just correcting the price. It was serving the actual durable copy of a finished render instead of a transient one that could expire and start answering with a login page.</p>
+
+      <h2>Two UI bugs nobody had reported, found by auditing the fix</h2>
+
+      <p>PR #5 is the follow-up audit on #4, and it catches the kind of bug that survives specifically because it fails quietly in a direction nobody's watching. The segment progress strip branched its color logic on <code>"done"</code>, <code>"rendering"</code>, <code>"processing"</code>, and <code>"abandoned"</code> — none of which is an actual value of the status field it was reading. The real "finished" value is <code>complete</code>; <code>abandoned</code> belongs to an entirely different enum. Only the <code>failed</code> branch ever matched anything real, so every complete, reused, or submitted segment rendered grey, as if it hadn't started — for the entire lifetime of the feature, with CSS that would have shown the correct color sitting right there, unused, the whole time. The fix pins the mapping end to end: a SQL CHECK constraint, an enum, and now two runtime guards, one in each direction, because the audit's own conclusion was that the second direction — catching an enum value with no matching UI branch — was the one that actually mattered.</p>
+
+      <h2>The same missing-import bug, twice</h2>
+
+      <p>PR #6 and PR #8 are the same failure mode a month apart, and the second time it happened is what made it worth fixing structurally rather than patching again. In #6, <code>formatMin</code> was called in two modules that never imported it — one inside a <code>confirm()</code> dialog string for the main "render N clips" button, meaning that button silently started zero renders, with no visible error, because the thrown <code>ReferenceError</code> pre-empted the dialog entirely. The per-row "run one clip" button worked fine, which is exactly why nobody noticed the batch button was dead. In #8, the same shape of bug hit <code>APP_PREFIX</code>: read in one module, imported in a sibling module it had been split out of, unreachable until a render actually succeeded and then thrown on every subsequent paint — so a row would sit on "Submitting..." for two real hours while the backend had already finished and failed nineteen minutes in. PR #9 is what actually closes the class of bug: a lint guard extended to flag any bare reference to an unimported binding, not just function calls — and the guard itself had a gap, since testing a name inside an <code>if (APP_PREFIX)</code> condition had been silently counted as a valid "use" that proved the name was bound, hiding 91 such cases across the codebase from the very check meant to catch them.</p>
+
+      <h2>An adopted row that couldn't actually retry</h2>
+
+      <p>PR #10 is a sharp one: a row restored from a prior partial run — an "adopted" row — carries a placeholder file object with <code>size: 0</code>, because the real bytes live on the server and the browser tab looking at it never had them. That fact had been recorded on the row since PR #3. No code had ever read it. So clicking "Retry anyway" on an adopted row ran the exact same fallback path as a fresh upload — <code>FormData.append("video", placeholder)</code> — which JavaScript happily stringifies into the literal text <code>"[object Object]"</code> as a form field, sent to a server that (correctly) rejected it as garbage, discarding a render that should have simply been re-run server-side from data it already had.</p>
+
+      <h2>Two deprecated vendor models and a fallback that made things worse</h2>
+
+      <p>PR #11 through #15 form the last arc, and it starts with a question someone asked directly: is the model outdated? PR #12 confirms it in the vendor's own words — both models the tool was using are explicitly deprecated, and the integration dated to the tool's very first commit, a month before the replacement model even shipped, never revisited since. But before reaching for the obvious "just upgrade," PR #11 measured what was actually happening: across 13 days and 64 submissions, the fast tier of the old model had a 0% failure-to-start rate; the tier the system fell back to when something went wrong had a 25% failure-to-start rate and was reached exclusively through the exact failure path meant to recover from trouble. <strong>The recovery path was less reliable than what it was recovering from</strong> — a fallback that can make an outage worse than doing nothing.</p>
+
+      <p>Moving to the current model (PR #12) opened a second, subtler problem: the two vendor integration paths — "brokers," in the tool's own language — disagreed with each other's documentation about a basic parameter. One broker's docs said an omitted duration field defaults to matching the source; the other's said it defaults to a flat 5 seconds. PR #13 fixed the code to match what each vendor's docs claimed. PR #14 then paid for three real generations to check the docs against reality, and found two of the three documented behaviors were simply wrong — the field made no observable difference to either broker's output. PR #15 finally exercised the previously-never-successful integration path end to end with a real purchase, confirming the correct behavior directly rather than trusting anyone's documentation, including the vendor's own.</p>
+
+      <h2>The pattern: measure the money, not just the uptime</h2>
+
+      <p>Nothing in this cluster failed loudly. A render abandoned by a proxy redeploy still looked like a normal error. A dashboard reporting 0% error rate was telling the truth about the layer it measured and nothing about the layer that mattered. Wrong-resolution output still played back fine in a preview. A fallback path can pass code review and still be worse than not falling back at all. The throughline across all fifteen PRs is the same: don't trust an instrument that's clean by construction — measure the actual bytes delivered, the actual price charged, and the actual vendor behavior under a real paid call, because that's the only place these bugs were ever visible.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="voice-pipeline-billing-lipsync-kling-v3.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Voice Pipeline Economics</a><br><span style="color:#8892b0;font-size:13px;">The same billing-correctness-under-real-load pattern, on a sibling tool's voice stack</span></li>
+        <li style="margin-bottom:12px;"><a href="aspect-ratio-single-source-of-truth.html" style="color:#64ffda;text-decoration:none;font-size:15px;">One Source of Truth for Aspect Ratio</a><br><span style="color:#8892b0;font-size:13px;">The frame-shape problem from the other side — retrofitting a second ratio instead of converting between two</span></li>
+        <li style="margin-bottom:12px;"><a href="presenter-generation-guardrails.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Guardrails for an AI Presenter</a><br><span style="color:#8892b0;font-size:13px;">More measure-the-real-artifact debugging on a young, fast-moving tool</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>
