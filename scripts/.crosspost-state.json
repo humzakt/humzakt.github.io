@@ -96,6 +96,11 @@
     "postedAt": "2026-08-25T21:08:32Z",
     "url": "https://dev.to/humzakt/systematic-cross-tool-defect-auditing-and-nextjs-15-middleware-hardening-1od4"
   },
+  "dashboard-design-system-consolidation": {
+    "id": 4709737,
+    "postedAt": "2026-09-21T18:10:22Z",
+    "url": "https://dev.to/humzakt/four-stops-instead-of-thirty-rebuilding-the-dashboard-and-retiring-hand-rolled-ui-1a35"
+  },
   "dead-letter-queue-pipeline-reliability": {
     "id": 4488288,
     "postedAt": "2026-08-25T21:09:08Z",
@@ -128,10 +133,20 @@
     "postedAt": "2026-08-25T21:09:48Z",
     "url": "https://dev.to/humzakt/dual-aspect-ratio-rendering-synchronizing-169-widescreen-and-916-portrait-ai-ads-j47"
   },
+  "endcard-converter-new-tool-standards": {
+    "id": 4709738,
+    "postedAt": "2026-09-21T18:10:26Z",
+    "url": "https://dev.to/humzakt/shipping-a-new-tool-with-the-sibling-repos-engineering-standards-from-day-one-1h4p"
+  },
   "enterprise-state-machine-bulk-admin-ops": {
     "id": 4488294,
     "postedAt": "2026-08-25T21:09:52Z",
     "url": "https://dev.to/humzakt/taming-a-state-machine-bulk-admin-ops-503j"
+  },
+  "enterprise-workflow-versioning-golden-data": {
+    "id": 4709740,
+    "postedAt": "2026-09-21T18:10:59Z",
+    "url": "https://dev.to/humzakt/roll-forward-versioning-and-concurrent-golden-data-forks-in-an-enterprise-review-pipeline-274k"
   },
   "event-driven-architecture-gcp-pubsub": {
     "id": 4488298,
@@ -249,6 +264,11 @@
     "postedAt": "2026-08-25T21:16:30Z",
     "url": "https://dev.to/humzakt/pipeline-hardening-timeouts-traceability-shutdown-pl9"
   },
+  "pixar-animated-lane-identity-guards": {
+    "id": 4709741,
+    "postedAt": "2026-09-21T18:11:04Z",
+    "url": "https://dev.to/humzakt/letting-operators-request-animated-people-without-letting-a-reference-do-it-by-accident-4a47"
+  },
   "plan-gate-contradiction-chain": {
     "id": 4488235,
     "postedAt": "2026-08-25T20:59:16Z",
@@ -331,6 +351,11 @@
     "postedAt": "2026-08-25T21:20:01Z",
     "url": "https://dev.to/humzakt/ship-it-inert-first-a-reference-matching-engine-that-was-dead-code-for-two-days-e2"
   },
+  "referenceless-mode-script-only-generation": {
+    "id": 4709743,
+    "postedAt": "2026-09-21T18:11:38Z",
+    "url": "https://dev.to/humzakt/building-a-reference-less-mode-when-theres-no-video-to-mirror-1khc"
+  },
   "render-web-clip-repeat-pinning": {
     "id": 4488354,
     "postedAt": "2026-08-25T21:20:36Z",
@@ -361,6 +386,11 @@
     "postedAt": "2026-08-25T21:21:56Z",
     "url": "https://dev.to/humzakt/building-an-rl-training-arena-for-ai-code-agents-on-gcp-5656"
   },
+  "run-index-cost-ledger-supabase-migration": {
+    "id": 4709744,
+    "postedAt": "2026-09-21T18:11:41Z",
+    "url": "https://dev.to/humzakt/retiring-a-drive-folder-scan-a-queryable-run-index-and-a-ledger-that-doesnt-lose-the-delta-4ae3"
+  },
   "seam-free-video-splicing-grade-match": {
     "id": 4488370,
     "postedAt": "2026-08-25T21:22:01Z",
@@ -385,6 +415,16 @@
     "id": 4488243,
     "postedAt": "2026-08-25T21:00:18Z",
     "url": "https://dev.to/humzakt/building-a-six-reference-sweep-an-eval-harness-for-ai-video-generation-3c42"
+  },
+  "speedup-export-hook-management": {
+    "id": 4709751,
+    "postedAt": "2026-09-21T18:12:15Z",
+    "url": "https://dev.to/humzakt/pin-one-hook-into-every-variant-fixing-a-hook-management-builder-4pj"
+  },
+  "storyboard-reference-fidelity-verification": {
+    "id": 4709752,
+    "postedAt": "2026-09-21T18:12:18Z",
+    "url": "https://dev.to/humzakt/the-storyboard-layer-verifying-an-ai-ad-against-its-reference-beat-by-beat-5hbl"
   },
   "streaming-ai-video-cloud-storage": {
     "id": 4488376,
@@ -446,6 +486,16 @@
     "postedAt": "2026-08-25T21:00:50Z",
     "url": "https://dev.to/humzakt/variant-multiplier-swapping-sections-of-winning-ads-into-fresh-variants-1d8c"
   },
+  "ve-tools-internal-ops-platform": {
+    "id": 4709757,
+    "postedAt": "2026-09-21T18:12:52Z",
+    "url": "https://dev.to/humzakt/building-an-internal-ops-platform-employee-management-evaluations-and-a-proxy-that-was-leaking-16k6"
+  },
+  "video-reframer-paid-render-reliability": {
+    "id": 4709758,
+    "postedAt": "2026-09-21T18:12:56Z",
+    "url": "https://dev.to/humzakt/stop-losing-paid-renders-hardening-a-portrait-to-widescreen-reframing-tool-53da"
+  },
   "viral-feel-parity-ai-video-ads": {
     "id": 4488391,
     "postedAt": "2026-08-25T21:26:38Z",
@@ -460,6 +510,11 @@
     "id": 4488394,
     "postedAt": "2026-08-25T21:27:18Z",
     "url": "https://dev.to/humzakt/voice-pipeline-economics-double-billing-a-backwards-ladder-and-a-lexicon-that-never-reached-the-pal"
+  },
+  "vsl-generator-ai-presenter-unification": {
+    "id": 4709761,
+    "postedAt": "2026-09-21T18:13:30Z",
+    "url": "https://dev.to/humzakt/one-brief-instead-of-four-unifying-create-flows-into-a-vsl-generator-and-an-ai-presenter-276l"
   },
   "whole-ad-product-swap-deterministic-planning": {
     "id": 4488395,
