@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases — Humza Tareen</title>
+  <meta name="description" content="Three clusters of real-content defects in an AI ad pipeline: non-Pixar visual styles silently unreachable or self-contradicting, review-gate previews that don't match what actually renders, and artifacts that a redeploy quietly drops on the floor.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Computer Vision, Reliability, Video Generation">
+  <link rel="canonical" href="https://humzakt.github.io/blog/styles-previews-redeploy-data-loss.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases">
+  <meta property="og:description" content="Three clusters of real-content defects in an AI ad pipeline: non-Pixar visual styles silently unreachable or self-contradicting, review-gate previews that don't match what actually renders, and artifacts that a redeploy quietly drops on the floor.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/styles-previews-redeploy-data-loss.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="Video Generation">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases">
+  <meta name="twitter:description" content="Three clusters of real-content defects in an AI ad pipeline: non-Pixar visual styles silently unreachable or self-contradicting, review-gate previews that don't match what actually renders, and artifacts that a redeploy quietly drops on the floor.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases",
+    "description": "Three clusters of real-content defects in an AI ad pipeline: non-Pixar visual styles silently unreachable or self-contradicting, review-gate previews that don't match what actually renders, and artifacts that a redeploy quietly drops on the floor.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/styles-previews-redeploy-data-loss.html" },
+    "keywords": ["AI Video", "Computer Vision", "Reliability", "Video Generation"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Styles, Previews, and Redeploy Data Loss"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">Video Generation</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Three unrelated-sounding questions turned out to share one root cause this round on the main video-generation service: why does every archived run use the same visual style, why does a $0.05 review-gate preview sometimes show something the paid render never produces, and why does restoring a run after a redeploy occasionally come back missing things nobody noticed were missing. Different symptoms, same answer each time — somewhere in the pipeline, two components had quietly stopped agreeing about what was true, and nothing was checking.</p>
+
+      <blockquote>
+        A preview that looks healthy and a render that looks healthy are not the same claim unless something has verified they're describing the same picture.
+      </blockquote>
+
+      <h2>Styles: an operator's choice silently overridden by a default</h2>
+
+      <p>The question that started this cluster was simple: do styles other than the pipeline's original Pixar-like default actually work? The measurement was blunt. Across all 53 archived runs on disk, <code>pixar</code> was the only <code>visualStyle</code> value ever recorded — and PR #1138 found that wasn't for lack of trying. <code>resolveRunMediumWithStyle</code> read <code>visualStyleMedium(vs) ?? imageMediumSetting</code>, and <code>visualStyleMedium("custom")</code> returned <code>"live-action"</code> — a non-undefined answer, so the <code>??</code> fallback never fired and a hand-set <code>imageMedium: animated</code> was silently discarded. An operator could pick "Others," type "claymation stop-motion," explicitly set the medium to animated, and still get live-action back. An entire category of output was unreachable through any combination of settings the form offered, and the deep machinery gated on <code>medium === "animated"</code> — the stylized twin, animated-person rules, realism-critic stand-downs — had simply never fired in production.</p>
+
+      <p>Fixing the gate didn't finish the job. PR #1139 ran two $0.20 probes at two operator-named styles and opened the resulting character twins at full size: a claymation request came back as genuine stop-motion, but a "2D hand-drawn anime, flat cel shading, no 3D rendering" request came back as a smooth 3D render — essentially the Pixar look again, just reachable now instead of blocked. No metric would have caught this; both runs reported <code>medium: animated</code> and carried their own style clause correctly. The cause was in the prompt itself: <code>STYLISE_PROMPT</code> opened by asserting <em>"a STYLISED 3D-ANIMATED CHARACTER"</em> and then appended the operator's 2D request afterward, rather than replacing the 3D assertion with it. PR #1140 traced this to a real finding in the generative-image literature the team already cited elsewhere — appending a contradicting instruction after an existing assertion is the weakest repair pattern tested, working in roughly 13% of cases, versus directly replacing the unwanted assertion with the desired one. The fix wasn't a better sentence; it was restructuring which clause got to make the claim at all.</p>
+
+      <p>The same contradiction showed up one layer down. PR #1154 found a character portrait — the single photograph that anchors every human frame's identity in a run — deciding its own visual register from a hardcoded string rather than the run's actual style clause, so a custom 2D request would get a Pixar-style portrait as its identity anchor regardless of what the operator typed. And PR #1160 found that a style's own described set and materials only ever reached cutaway shots, never person beats, because the compiler chose between a "has person" and "personless" style clause and routed the set description only through the personless branch — leaving every custom style with a person in frame and no description of the room around them at all.</p>
+
+      <h2>A fallback that quietly won by being prettier, not by being asked</h2>
+
+      <p>The sharpest bug in this cluster involved two different image models disagreeing about who should render a scene, with nobody deciding the winner on purpose. PR #1152 found one ad shipping with two image models' faces mixed across its clips — a scene's candidate list can hold outputs from more than one model when a fallback fires, and the scoring step that picks the best candidate has no opinion about which model drew it. The best-looking fallback output simply won, silently.</p>
+
+      <p>The initial diagnosis blamed the fallback mechanism itself. PR #1157 went back to the cost ledger, grouped by actual in-process task, and found that explanation didn't survive contact with the data: one task in the run held 34 frames from one model and 7 from another, mixed inside a single task — something the fallback logic can't produce, since it refuses to revise a pin once a frame already exists. The real cause, in PR #1159, was that the image-model "pin" — an in-process lock recording which model a run committed to — lived in a plain in-memory map that only got populated at the start of a full task. Editor-triggered redos and regenerations dispatched through a different code path that bound the run's scope but never acquired a pin, so a redo on a Gemini-pinned run would silently fall through to an unset ambient default that happened to resolve to a different model entirely. The team's first explanation — a vendor failing over — was wrong, and correcting it mattered, because the real fix (recover or re-acquire the pin on every dispatch path, not just the first one) is nothing like what you'd build to guard against vendor flakiness.</p>
+
+      <h2>Previews: the cheapest gate lying about the thing it exists to show</h2>
+
+      <p>A review-gate preview is supposed to be the inexpensive look at an ad before real money commits to it. This round found that promise broken in several distinct ways, each one undermining the entire reason the gate exists.</p>
+
+      <p>PR #1141 found every 4:5-aspect preview returning a 400 from the vendor — the requested resolution sat under a minimum pixel floor that 9:16 and 16:9 happened to clear. Because the failure surfaced as <code>previewStatus: null</code> rather than an explicit error, it read as "not generated yet" instead of "broken," and 4:5 happens to be the aspect every run using the pipeline's default style renders at. PR #1144 found the same null-reads-as-nothing-happened failure mode on reference-less runs: the batch preview pass skipped any scene missing a reference keyframe, and a reference-less run has no reference keyframes by definition — so eighteen of nineteen scenes on one measured run silently produced no preview at all, with only the single b-roll beat (which takes a different code branch) rendering anything.</p>
+
+      <p>PR #1150 found a preview that rendered successfully and was still wrong: a three-person cast beat's preview passed a single identity photo, while the real frame-generation step resolved every bound cast member and handed the rest over as additional reference images. The preview and the real frame answered "who is in this shot" from two different code paths, and only one of them was correct — so an operator approving nineteen beats of what looked like a solo presenter was approving a three-person ad they hadn't actually seen. PR #1153 found the plan-gate preview — the cheapest possible look at a swipe-mode ad, priced at five cents specifically so a bad plan could be caught before any paid frame exists — anchoring every post-scene-one person beat on "the first human scene's rendered frame," which is correct once frames exist and impossible at the plan gate, whose entire premise is that nothing has rendered yet. Those beats were handed a file path that didn't exist and couldn't until the operator had already approved and paid. And PR #1165 found the fallback preview template for every single scene using an identical, unconditional selfie composition — eyes at the lens, UGC framing — regardless of whether the beat was actually a narrated voiceover scene where the subject shouldn't be addressing the camera at all; the bug survived because every real, authored frame overrides the template entirely, so it was invisible on any run doing real work and only visible on the exact fallback path nobody was checking.</p>
+
+      <p>A gate is also supposed to stop a run, not just flag it. PR #1145 found a storyboard-error severity that the code's own documentation said should block approval without an explicit human acknowledgment — and nothing implemented that block. The only consumer was an autopilot "hold," which merely pauses automatic advancement; it doesn't make the approve route refuse. The team's own fleet-testing harness then cleared every such hold automatically after a 240-second stall, meaning a genuine plan-infeasibility or cast-contradiction error parked an unattended run for four minutes and was then waved through by the automation built to run tests, at precisely the one checkpoint where stopping was supposed to be mandatory and free.</p>
+
+      <h2>Checks that exist, fire correctly, and change nothing</h2>
+
+      <p>The most expensive bug shape in this round wasn't a missing check — it was a check that worked exactly as designed and had no path to acting on its own output. PR #1155 found that a lip-sync desync detector, built specifically to catch narrated beats whose rendered mouth movement can't possibly match the voice muxed in afterward (the two are generated independently, by construction), fired correctly on twelve of nineteen beats on one run and eleven of thirty on another — and <strong>nothing downstream ever read the result</strong>. The redo pipeline filtered only on a different, unrelated flag; the approve gate only blocked on error-severity findings, and this detector reported at warning severity. The detection logic had been deliberately split out of a broader check for accuracy, and in the split, silently lost the only code path that would have turned "detected" into "fixed."</p>
+
+      <p>A second judge is similarly only useful if its verdict is actually consulted correctly. PR #1148 found a redo mechanism whose own code comments insisted, twice, that only a criterion <em>both</em> judges failed should justify spending a paid retry — the intersection, not the union — while the actual implementation took the second judge's failure list wholesale. A clip got bought whenever the second judge failed any criterion at all, including ones the first judge had explicitly passed, defeating the entire reason a second judge exists.</p>
+
+      <h2>Restore: artifacts that a redeploy quietly fails to bring back</h2>
+
+      <p>The restore bugs in this round form their own small escalation. PR #1161 found that a bound cast's per-member reference photographs didn't survive a container redeploy — the restore routine's pattern-matching for "the character photo" matched only the single-presenter filename exactly, so per-member files written for a bound cast were never pulled back from storage. The failure mode was specifically deceptive: the legacy single-photo endpoint still answered with a 200, because a different, older photo genuinely did exist under that name, so the run looked healthy right up until something asked for a specific cast member by ID and hit a bare file-not-found five times in a row.</p>
+
+      <p>PR #1162 treated that as a symptom of a broader, unaudited mapping rather than a one-off miss, and checked every file-mirroring call site against every restore pattern in the codebase — finding four more mismatches, including the inverse of the cast-photo bug on a different code path, and a saved clip take whose filename convention (a dot the mirror step turns into a dash) simply had no corresponding restore rule at all. PR #1164 went one level further and asked a sharper question: what does the restore audit's own completeness check actually verify? The answer was that it could only catch artifact classes that <em>are</em> mirrored but map to the wrong name — an artifact nobody mirrors at all has no entry to fail on, so a true blind spot read as a clean bill of health. The fix wasn't more pattern-matching; it was an explicit, must-maintain list of every deliberately-unmirrored artifact and the reason each one is excluded, so the next person meets a documented decision instead of a silence that looks identical to correctness.</p>
+
+      <h2>The pattern: verify the second claim, not just the first</h2>
+
+      <p>Every bug in this post is the same shape wearing different clothes. A setting existed and a different code path silently overrode it. A prompt made an assertion and a second prompt contradicted it without replacing it. A preview rendered successfully and rendered the wrong thing. A check fired correctly and nothing consumed its output. A restore routine ran without error and restored the wrong subset of files. In every case, the first-order fact — "the setting is stored," "the check ran," "the restore completed" — was true and completely insufficient. The actual defect only became visible by checking the second, harder claim: does this setting reach the place that renders pixels, does this check's output reach a path that can act on it, does this restore step's coverage match everything a run actually writes. A system with enough moving parts will always have components that are each individually correct and collectively wrong — the only defense is measuring the handoff between them, not just the components themselves.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="pixar-animated-lane-identity-guards.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Letting Operators Request Animated People</a><br><span style="color:#8892b0;font-size:13px;">The animated lane whose style-reachability bugs this post picks up where that one left off</span></li>
+        <li style="margin-bottom:12px;"><a href="run-index-cost-ledger-supabase-migration.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Retiring a Drive Folder Scan</a><br><span style="color:#8892b0;font-size:13px;">The same restore/mirror-coverage problem class, one layer down in the storage system itself</span></li>
+        <li style="margin-bottom:12px;"><a href="stylizing-every-cast-member.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Stylizing Every Cast Member</a><br><span style="color:#8892b0;font-size:13px;">The multi-person casting and stylization work these style bugs surfaced inside</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Caching Correctly: Keys, Experiments, and a Decision Overturned — Humza Tareen</title>
+  <meta name="description" content="A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Cost Engineering, Software Architecture, A/B Testing, Video Generation">
+  <link rel="canonical" href="https://humzakt.github.io/blog/caching-correctly-cost-experiments.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Caching Correctly: Keys, Experiments, and a Decision Overturned">
+  <meta property="og:description" content="A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/caching-correctly-cost-experiments.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Software Architecture">
+  <meta property="article:tag" content="A/B Testing">
+  <meta property="article:tag" content="Video Generation">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Caching Correctly: Keys, Experiments, and a Decision Overturned">
+  <meta name="twitter:description" content="A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Caching Correctly: Keys, Experiments, and a Decision Overturned",
+    "description": "A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/caching-correctly-cost-experiments.html" },
+    "keywords": ["Cost Engineering", "Software Architecture", "A/B Testing", "Video Generation"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Caching Correctly"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Caching Correctly: Keys, Experiments, and a Decision Overturned</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 12 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Software Architecture</span>
+        <span class="blog-tag">A/B Testing</span>
+        <span class="blog-tag">Video Generation</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A cache that silently misses costs money. A cache that silently hits when it shouldn't costs correctness. The second half of a cost-instrumentation audit on the main video-generation service spent two weeks finding both kinds, in the same handful of caches, one key at a time — and ended with something rarer than either: a prior architectural decision, explicitly marked DO-NOT-RETRY, measured again on purpose and formally reversed once the new numbers contradicted the old ones.</p>
+
+      <blockquote>
+        I declared this cache working twice and was wrong both times.
+      </blockquote>
+
+      <p>That line, from the PR that finally verified the fix, is as good a summary as any of the discipline running through this whole round: nothing here got fixed by reasoning about what the code should do. Everything got fixed by running a real paid fork twice and reading what actually happened.</p>
+
+      <h2>A cache keyed on a derived artifact that the work itself regenerates</h2>
+
+      <p>PR #1193 started with a confession: a prior PR had claimed a product-variant cache worked, and it didn't. Measured on a real paid fork, two consecutive stitch passes over the same clips — nothing re-rendered in between — both paid in full. Rather than guess at a second fix, this PR built a diagnostic first: record a hash per panel, and on a cache miss, log exactly which panels moved and in which field. One free re-stitch later, the answer came back unambiguous — <code>bytes</code>, every time, never <code>scene</code> or <code>source</code> or the product noun.</p>
+
+      <p>PR #1196 used that diagnostic to find the actual root cause: the cache was hashing panel images that the stitch process itself re-extracts from clip files on every pass — files the stitch also rewrites, for audio muxing, retiming, and loudness normalization. The key was hashing a derived artifact that the repeated work regenerates by construction. No amount of tuning the hash would have fixed that; the fix was keying on the <em>render identity</em> upstream of the derivation instead — each scene's clip URL and generation timestamp, each span's asset identity, the panel path set, and the plan's own product states. Deliberately coarse: any one clip changing re-measures the whole check, because the consistency check compares scenes against each other, and invalidating a single panel would leave a verdict half-measured across two different renders.</p>
+
+      <h2>A field whose name was a lie its own write site told</h2>
+
+      <p>Fixing the scene half of that cache immediately exposed the span half. PR #1197 found four of twenty-seven key parts still moving on a pass that rendered <em>no clip at all</em> — all four were b-roll spans, all keyed on a field called <code>assetGeneratedAt</code>. The name promises "when this was generated." The actual write site set it on every repaint, cache hit or not — so it meant "when we last touched this," which is a value the repeated work rewrites on every single pass regardless of whether anything changed. The fix rekeyed spans on their plan — id, kind, timing, prompt prefix — and removed the lying field from the render-identity type entirely, so reading it again wouldn't even compile.</p>
+
+      <p>The same field caused a second bug two PRs later, and this one was self-inflicted by the first fix. PR #1201 made the timestamp honest — stamped only when something genuinely rewrote the asset, not on every touch — which is exactly correct in isolation. PR #1207 found that an unrelated re-plan step persisted the planned spans with a full-list replace, silently discarding every field a prior paint had patched onto them, including the now-honest timestamp. The old, dishonest behavior had been re-stamping the value on every repaint, which accidentally re-created what the re-plan had just erased — so the bug existed before the fix, and the fix is what made it visible by removing the thing that had been covering for it. That's a sharp, general lesson: making a lying field honest can retire the behavior that was silently working around the lie.</p>
+
+      <h2>A filename collision and a restore that never worked</h2>
+
+      <p>PR #1199 found the single leakiest artifact in the entire cost ledger: a stylized "product plate" image, re-paid in 47% of the sessions that touched it, against 4.1% for a structurally identical sibling artifact. Three independent defects stacked on top of each other. First, two separate generation channels — a staging set and an identity set — wrote to the same filename whenever a scene's product state matched a specific value, so whichever call finished second silently overwrote the first, meaning the identity channel could end up showing the staging picture it exists to be distinct from. Second, the Drive-restore regex couldn't match a digit, so any plate past index zero in a four-photograph set was never coming back after a redeploy. Third, the restore path wrote to a different directory than all three writers read from, so a restored file failed the next existence check exactly as if the restore had never run at all — costing a Drive download to accomplish nothing.</p>
+
+      <p>The thread connecting this to the span-key bug and the panel-byte bug is explicit in the PR itself: an artifact's name has to identify the artifact. A key that names a position in a list, or a timestamp that means "last touched," caches the wrong thing in both directions — sometimes missing when it should hit, sometimes hitting when it should miss.</p>
+
+      <h2>Re-confirming an old decision instead of assuming it still holds</h2>
+
+      <p>Not every investigation in this round found a new bug. PR #1198 re-measured a candidate-generation feature that had already been turned off over a month earlier, specifically because the image line it touched had never actually been looked at since. The investigation took two wrong turns on the way to confirming the original call: a scene's recorded "chosen candidate" index looked like evidence of a discriminating scorer until splitting by whether a critic had intervened showed the spread was the critic's redo logic, not the scorer, being read as the scorer. A second wrong turn overcounted "wasted" spend by treating four candidates of one scene as four repeats, because the cost ledger's own labels carried no candidate index to tell them apart.</p>
+
+      <p>The real instrument — replaying archived candidate images through the actual production scoring function, not a reimplementation — found 91% of complete candidate sets scored as a tie, reproducing the system's own historical pick on better than 93% of them. The flag stays off. The value of this PR isn't the conclusion; it's that the team re-ran the actual measurement rather than letting a month-old decision calcify into an assumption nobody checked.</p>
+
+      <h2>The guard that stopped a "free" model swap from breaking sixteen call sites</h2>
+
+      <p>PR #1202 looked for a cheaper model for two expensive roles and found something nobody had written down: a newer model variant beats the current default on every line of the rate card — input, output, and cached-read pricing all cheaper. It also, by design, reasons on every single call, and that reasoning is billed together with the answer against the same token budget. Grepping the codebase found sixteen of twenty-two call sites to this model family sitting below the floor that reasoning plus a real answer needs to fit inside — some as low as 120 tokens, a budget sized for a model that doesn't think before answering.</p>
+
+      <p>The likely failure mode wasn't a clean error. It was a silently truncated response — a half-written JSON plan — that the caller's own retry logic would re-ask for at full price, spending the rate cut several times over before any of it could be banked. The PR shipped as a guard, not a swap: an automated test that fails if the default model is ever pointed at an always-reasoning model family while call sites sit below the safe floor, listing every offending site by name. The guard's design detail matters — it imports the floor and the model-family list from the same source the production client uses, rather than copying the numbers, so the guard can't quietly drift out of sync with the thing it's guarding.</p>
+
+      <h2>Keeping the expensive critic on purpose</h2>
+
+      <p>PR #1204 asked the same cheaper-model question of the service's most expensive critic role, and this time the answer held up the other way. Run against 147 real accept-criteria checks through the actual critic function — not a reimplementation — the cheaper model agreed with the incumbent 87% of the time. The two kinds of disagreement aren't symmetric, though: the cheaper model being stricter costs a bounded redo. The cheaper model being <em>laxer</em> — waving through a criterion the frame actually fails — ships a defect, which is precisely the failure the critic exists to prevent. That happened on 2% of checks, sitting right at the stated break-even the role's own code comment had set in advance, before even counting the cost of the stricter-redo cases. The expensive model stays.</p>
+
+      <h2>Billing bugs that needed real vendor data to see at all</h2>
+
+      <p>A cluster of PRs closed invisible billing gaps by finally reading data the pipeline had access to but had never looked at. PR #1200 found that a flat per-call image cost was charged before anything checked whether an image actually came back — so a blocked or refused generation billed the identical price as a successful one, under the identical label, with nothing downstream able to tell them apart; one in four attempts in a measured window silently fell into this bucket. PR #1194 and PR #1203 read a vendor-provided billing header that nothing in the codebase had ever parsed, and used it as a genuine control: two pricing tiers the pipeline's own constants already matched reconciled at almost exactly 1.00x against the vendor's own number, which is what made the mismatch in a third tier — a combined surcharge the pipeline was charging that the vendor, provably, was not — trustworthy rather than coincidental. Roughly $105 of a $443 cost line turned out to be over-reported because of it, and six stale code comments asserting the old, wrong multiplier got corrected in the same pass.</p>
+
+      <h2>The reversal: an experiment overturns its own premise</h2>
+
+      <p>The centerpiece of this round is PR #1208, and it's worth telling in the order it actually happened, mistakes included. A "DO-NOT-RETRY" architectural rule stood against making a continuity thread append-only, based on one measured fork that showed it costing seven times more. Re-examining that fork found it was the population's statistical outlier on both axes it had been judged by — a gap between model calls three to four times longer than a measured average across forty-seven real runs, and an inherited conversation thread shape that a separate fix had since made structurally impossible to reproduce.</p>
+
+      <p>Re-testing it properly took two attempts. The first attempt used a timing proxy that read roughly two and a half times too long — and because a longer gap between calls is exactly what expires the large context an append-only approach depends on, that proxy was quietly rigging the experiment in favor of the old conclusion. PR #1205 caught this specifically because the gap <em>is</em> the experiment, stopped the run mid-arm rather than publish a number built on a bad premise, and fixed the timing to match real measured production cadence.</p>
+
+      <p>The corrected re-test — two arms, same stored thread, same number of turns, real model calls, differing only in the one setting under test — found append-only sending more total tokens overall and costing <strong>27.5% less</strong>, because its cache prefix never slides out from under it the way a sliding-window trim's does. The trim's own cache was shown collapsing at a specific, identifiable exchange, after which every subsequent call paid full uncached price. The DO-NOT-RETRY was overturned, in writing, in the same documents that had recorded the original decision — not quietly reversed, but formally corrected with the new evidence attached, including an honest note about which parts of the measurement still carry a caveat and why the production default stays unchanged for now until the resulting change in ad content is visually reviewed.</p>
+
+      <h2>Closing the loop: a docs sweep for claims measurement had already overturned</h2>
+
+      <p>PR #1209 is the kind of unglamorous cleanup that keeps an audit like this one trustworthy over time: a sweep specifically for any remaining comment still describing a number as unsettled after it had, in fact, just been settled. It found three — including, pointedly, the comment inside the exact file whose entire purpose was to answer the question, still describing the answer as unknown because an earlier PR had changed the constant without touching the comment beside it. A file whose job is to settle a number has no excuse for still calling that number a guess.</p>
+
+      <h2>Away from cost: a Studio editors actually asked for, and a script writer that forgot to look at its own target</h2>
+
+      <p>Not every PR in this window was about money. PR #1217 is a large, consolidated response to direct editor feedback on a real production run, collecting a status strip that doesn't claim a finished ad is still "animating," every rendered frame kept and choosable instead of discarded, hard cuts restored as the default transition, product stills gated to lines that are actually about the product, a CapCut export, and presenter voice-timbre matching — shipped behind a flag, default off, pending a listen to the one known artifact it introduces. The whole stack landed as one unified "Studio" merging what had been separate frame, sample, clip, and final-cut surfaces into a single flow, with a fast follow-up (PR #1218) fixing the finished-ad status message and making the final cut list the ad's own actual rendered scenes instead of every scene that was ever planned.</p>
+
+      <p>And PR #1222 closed a gap that's almost funny in hindsight: a video sales letter mode had been given a real target length and sales-letter narrative arc several PRs earlier — the planner received it correctly — but the one code path behind the "write it for me" button never passed along which mode the editor had actually chosen. Every VSL draft was silently coming back shaped like a short testimonial script, regardless of what the operator selected, because the single piece of information that would have told the writer otherwise never made it across one specific HTTP boundary.</p>
+
+      <h2>The pattern: measure the artifact, not the intent</h2>
+
+      <p>Every fix in this round shares the same shape. A cache key, a billing header, a model's actual behavior under load, a prior architectural decision — all of them were things someone had a reasonable belief about, and every reasonable belief turned out to be wrong in a specific, measurable way once someone actually looked. The discipline that makes this round worth reading isn't the individual fixes. It's the repeated willingness to say "I claimed this worked twice and was wrong both times," run the real experiment a third time, and let the number — not the prior belief, and not the sunk cost of having been wrong already — decide what ships.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="billing-what-the-vendor-billed.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Billing What the Vendor Billed</a><br><span style="color:#8892b0;font-size:13px;">The first half of this same cost-instrumentation audit</span></li>
+        <li style="margin-bottom:12px;"><a href="run-index-cost-ledger-supabase-migration.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Retiring a Drive Folder Scan</a><br><span style="color:#8892b0;font-size:13px;">The ledger infrastructure this round's cost instrumentation builds directly on</span></li>
+        <li style="margin-bottom:12px;"><a href="modularization-400-line-file-cap.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Every God File Split</a><br><span style="color:#8892b0;font-size:13px;">The same measure-before-you-cut discipline, applied to dead code instead of cost</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life — Humza Tareen</title>
+  <meta name="description" content="An AI video pipeline's cost-tracing tool had recorded $0 for every day of its operational life. A vendor worth 36% of total spend reported $0 on every call. The audit that found both, and the dozen smaller leaks hiding next to them.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Cost Engineering, Observability, Video Generation, LLM Infrastructure">
+  <link rel="canonical" href="https://humzakt.github.io/blog/billing-what-the-vendor-billed.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life">
+  <meta property="og:description" content="An AI video pipeline's cost-tracing tool had recorded $0 for every day of its operational life. A vendor worth 36% of total spend reported $0 on every call. The audit that found both, and the dozen smaller leaks hiding next to them.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/billing-what-the-vendor-billed.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="Video Generation">
+  <meta property="article:tag" content="LLM Infrastructure">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life">
+  <meta name="twitter:description" content="An AI video pipeline's cost-tracing tool had recorded $0 for every day of its operational life. A vendor worth 36% of total spend reported $0 on every call. The audit that found both, and the dozen smaller leaks hiding next to them.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life",
+    "description": "An AI video pipeline's cost-tracing tool had recorded $0 for every day of its operational life. A vendor worth 36% of total spend reported $0 on every call. The audit that found both, and the dozen smaller leaks hiding next to them.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/billing-what-the-vendor-billed.html" },
+    "keywords": ["Cost Engineering", "Observability", "Video Generation", "LLM Infrastructure"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Billing What the Vendor Billed"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">Video Generation</span>
+        <span class="blog-tag">LLM Infrastructure</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>Langfuse had ingested 31,321 observations across 1,315 traces on the main video-generation service. Every model name, every token count, every prompt label, every parent span — all correct. Every cost field: null. The dashboard that was supposed to answer "where does the money go" had never once answered it, for the entire time it had been running, and nobody had noticed because a dashboard reading $0 doesn't look broken. It looks like a quiet day.</p>
+
+      <blockquote>
+        A cost instrument that silently reads zero is not a quiet day. It's an outage in the one system whose entire job is to make outages like this visible.
+      </blockquote>
+
+      <h2>The tracker that never worked</h2>
+
+      <p>PR #1177 found two defects, and they had to land together because each one hid the other. Langfuse reserves the key <code>total</code> inside its <code>costDetails</code> object as the aggregate it actually sums and displays — any other key name gets stored as a separate custom bucket that the dashboard never reads. The pipeline's cost-reporting code had been writing to a differently-named key the entire time. Separately, the cost was being attached to the wrong span in the trace tree, so even a correctly-keyed value wouldn't have rolled up to the totals the dashboard shows. Two independent bugs, same symptom, and fixing only one would still have shown $0.</p>
+
+      <p>The scale of what that blindness cost is the real headline. Two separate runs made 1,555 and 844 high-resolution vision calls each, against a per-run median of seven. Nothing alerted, because the one system built to notice spend anomalies had never been capable of noticing anything. Meanwhile a separate, simpler cost-notes mechanism had quietly recorded the true number for the same 22-day window: $1,191.85. The money was never actually untracked — it just wasn't visible anywhere a human would look.</p>
+
+      <h2>36% of the bill, reporting $0 on every call</h2>
+
+      <p>PR #1177 fixed the bug class for Anthropic and ElevenLabs calls. PR #1185 found the same bug class had never been checked at all on fal — the single transport behind every Kling clip, lipsync pass, multi-shot bundle, split, b-roll animation, preview, and voice-create call in the product. A grep for the string "usd" anywhere in the fal integration code returned nothing. Measured against the honest cost-notes ledger for a single day — 15,170 notes, 181 runs, $1,227.51 total — fal clips alone were $443.58, or 36.1% of everything spent that day. Reported in Langfuse: zero, on every single observation, since the day #1177 shipped and the team believed the dashboard had been fixed.</p>
+
+      <p>That's the sharpest lesson in the whole cluster. Fixing a bug class in two of three places and believing it's fixed everywhere is itself a kind of bug — the fix needs to be verified against every vendor integration independently, not assumed to generalize just because the root cause was the same shape.</p>
+
+      <h2>A retry that was already right, and a ladder that billed for one</h2>
+
+      <p>PR #1179 found a vision call that retries three times whenever it comes back with an empty result — reasonable, except that on a scene whose plan never placed a product in frame, an empty box set is the <em>correct</em> answer, not a failure. Two of the three retries were buying the same correct nothing again, at roughly 2,981 high-resolution input tokens each, across 2,796 calls measured over 26 runs. The retry logic had no way to distinguish "the call failed" from "the call succeeded and the honest answer is nothing."</p>
+
+      <p>PR #1180 found the inverse failure shape on a different feature: a provider fallback ladder designed to represent multiple distinct paid attempts, where the billing call sat below every quality check on the result. A generation that failed its checks after being purchased fell back to per-scene generation — paid for once, billed for zero, then billed again as new per-scene clips. Measured impact today: $0, because the feature defaults off and the failure path hadn't fired yet in production. The PR ships the fix anyway, on the reasoning that an unmeasured bug costing nothing today is exactly the cheapest moment to close it — before the feature is on and the bug has a real dollar figure attached.</p>
+
+      <h2>A name that meant something different from what it said</h2>
+
+      <p>PR #1181 is a small bug with an expensive incident attached. A setting called <code>CLIP_REDOS_PER_RUN</code> reads as a once-per-run budget. The function that resets it actually ran at the end of every stitch pass — and re-stitching is a normal, frequent operation, triggered by a lip-sync pass, an editor's scene redo, or an editor's clip redo. Every one of those re-armed the budget from scratch. On one measured incident, a 21st clip finished rendering at $32.20; the run was cancelled 70 minutes later at $42.97, having silently re-run its entire stitch sequence a second time — three clips the budget existed specifically to refuse, purchased anyway because its name promised a guarantee its implementation didn't keep.</p>
+
+      <h2>The $290 line item hiding inside a label nobody read</h2>
+
+      <p>PR #1186 is the best example in this cluster of a cost leak that was visible the whole time, in a number nobody had looked at closely. <code>anthropic:ugc-continuity</code> was the second-largest Anthropic cost line in the product at $290.87 across 49 runs — and it should, by design, cost roughly one call per scene. The call's own label happened to carry an exchange number, which meant the ledger had been recording exactly how many times each run re-authored its continuity context, in plain sight, the entire time. Of 49 runs, 25 reached exchange 25 or higher on plans with only 10 to 17 scenes — and those 25 runs accounted for 81% of the entire line item. Worse, every single one of 27 measured runs showed calls getting about 1.85x more expensive as the exchange count climbed, because the context being resent grows with every exchange. The fix wasn't exotic — it was reading a number the system had already been recording and asking why it kept climbing instead of resetting.</p>
+
+      <p>That finding fed directly into one of the more interesting reversals in the cluster. An earlier decision had marked an append-only version of the same continuity mechanism DO-NOT-RETRY, on the belief that resending the full growing context at a 1.25x premium was obviously worse than periodically trimming it — a roughly 40% win, on paper. PR #1184 measured it for real on a specific fork and found the opposite: $2.54 for five calls under the trimmed approach against $0.36 under append-only, because the trim sends roughly 14,375 tokens per call against append-only's ~100,000, but the frames being authored five to eleven minutes apart meant the expensive long-context prefix was being paid for and then expiring, unread, before it could be reused. A follow-up measurement a week later (PR #1208) made it official: append-only continuity is 27.5% cheaper overall, and the prior DO-NOT-RETRY was overturned by the same kind of direct measurement that had originally justified it.</p>
+
+      <h2>One timestamp was fine; the call next to it was not</h2>
+
+      <p>PR #1188 started from a one-line operator question — "I turned off bbox stamping completely, why is it still here?" — and the honest answer was that the feature the operator turned off was in fact off, correctly, and contributing zero calls. The spend was coming from a different, default-on feature that happened to share a code path: a product-consistency check that locates the product in every identity panel to compare color across scenes, changing no pixels but running the same expensive vision call. Two separate features, one expensive call between them, and only one had ever been switched off. PR #1187, investigated in parallel, found a related coordinate bug: a Claude vision tier enforces two separate limits — a long-edge cap and a total visual-token cap — and the bounding-box math had only ever respected the one the team happened to have coded for, silently downscaling images wrong whenever the untested limit bound first.</p>
+
+      <h2>Finishing the instrument, and correcting your own last round</h2>
+
+      <p>PR #1189 closed three smaller holes specifically so the dashboard could be trusted, not just read: speech-to-text calls reporting $0 on every span despite having carried a real charge since #1177 (fixed carefully, as a cost-only note rather than a normal charge, since double-billing the ledger would have been a worse failure than the original gap); two routes that had never been traced at all; and a usage counter that structurally could never fire. PR #1190 found the single largest uncached Anthropic line in the product — a clip critic re-sending the same two product reference photographs, unchanged for the whole run, on every one of 4,724 calls, at roughly 2,350 of each call's 5,264 input tokens.</p>
+
+      <p>And PR #1191 is the honesty check the whole cluster runs on itself: a documentation pass that had to correct four claims, three of which the same author had written the round before — including a six-row vendor pricing table where the last three rows turned out to just be the first three doubled, cited as its own evidence for being credible. Measuring your own prior claims against reality, on a fixed cadence, catches the kind of error that confidence alone never will.</p>
+
+      <h2>A sibling tool, the same discipline</h2>
+
+      <p>The measurement habits built here traveled. On a sibling AI-presenter tool, a later audit (presenter-generation PR #29) found that every default clip was being priced 2.33x too high — a Kling v3 voice bind riding on an "element" was being charged the element-rate multiplier on top of the voice rate, based on a constant explicitly commented "NOT YET CONFIRMED AGAINST AN INVOICE." The correction came directly from this cluster's work: PR #1194 on the main service had already found that fal returns an <code>x-fal-billable-units</code> header on every response, and that fal's own documentation says that header is authoritative. Once one tool in the family learned to read the vendor's own receipt instead of a hand-transcribed rate table, the fix for a sibling tool's pricing bug was a lookup, not a new investigation.</p>
+
+      <h2>The pattern: the instrument can fail exactly like the thing it measures</h2>
+
+      <p>Every bug in this cluster is a variant of the same failure: a cost signal that was computed, or should have been computed, and didn't reach the place a human would look at it — a wrong key name, a call site that forgot to pass a charge, a label nobody read closely, a feature flag that looked like it governed the spend it didn't. None of these are exotic bugs. They're the same class of wiring failure that shows up anywhere a value is produced in one place and consumed in another, except here the value is money and the consequence of it silently vanishing is that the team spends weeks believing a system has been priced and verified when it's never once actually been checked. The fix isn't a smarter dashboard. It's treating the dashboard itself as a thing that can be wrong, and auditing it against the vendor's own invoice on a schedule — not once, and not assuming a fix for one vendor integration generalizes to the next one before you've actually measured it.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ledger-billing-reconciliation-paid-runs.html" style="color:#64ffda;text-decoration:none;font-size:15px;">What Paid Runs Found</a><br><span style="color:#8892b0;font-size:13px;">An earlier reconciliation pass on the same ledger, before the Langfuse instrument itself was audited</span></li>
+        <li style="margin-bottom:12px;"><a href="run-index-cost-ledger-supabase-migration.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Retiring a Drive Folder Scan</a><br><span style="color:#8892b0;font-size:13px;">The run-index and per-charge ledger work this audit builds directly on top of</span></li>
+        <li style="margin-bottom:12px;"><a href="caching-correctly-cost-experiments.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Caching Correctly: Keys, Experiments, and a Decision Overturned</a><br><span style="color:#8892b0;font-size:13px;">The next round of this same cost-investigation discipline, applied to caching</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

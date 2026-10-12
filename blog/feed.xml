@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Sep 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 12 Oct 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -160,6 +160,136 @@
       <category>UX</category>
       <category>TypeScript</category>
       <category>Video Production</category>
+    </item>
+
+    <item>
+      <title>Caching Correctly: Keys, Experiments, and a Decision Overturned</title>
+      <link>https://humzakt.github.io/blog/caching-correctly-cost-experiments.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/caching-correctly-cost-experiments.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.</description>
+      <category>Cost Engineering</category>
+      <category>Software Architecture</category>
+      <category>A/B Testing</category>
+      <category>Video Generation</category>
+    </item>
+
+    <item>
+      <title>Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life</title>
+      <link>https://humzakt.github.io/blog/billing-what-the-vendor-billed.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/billing-what-the-vendor-billed.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>An AI video pipeline's cost-tracing tool had recorded $0 for every day of its operational life. A vendor worth 36% of total spend reported $0 on every call. The audit that found both, and the dozen smaller leaks hiding next to them.</description>
+      <category>Cost Engineering</category>
+      <category>Observability</category>
+      <category>Video Generation</category>
+      <category>LLM Infrastructure</category>
+    </item>
+
+    <item>
+      <title>Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases</title>
+      <link>https://humzakt.github.io/blog/styles-previews-redeploy-data-loss.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/styles-previews-redeploy-data-loss.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Three clusters of real-content defects in an AI ad pipeline: non-Pixar visual styles silently unreachable or self-contradicting, review-gate previews that don't match what actually renders, and artifacts that a redeploy quietly drops on the floor.</description>
+      <category>AI Video</category>
+      <category>Computer Vision</category>
+      <category>Reliability</category>
+      <category>Video Generation</category>
+    </item>
+
+    <item>
+      <title>The Narrated-Beat Repair That Kept Causing Its Own Bug</title>
+      <link>https://humzakt.github.io/blog/narrated-beat-repair-identity-critics.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/narrated-beat-repair-identity-critics.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A repair step built to fix narrated-beat framing in an AI ad pipeline kept producing the exact defect it was meant to prevent — plus critics that could detect identity drift but never repair it, grade a cutaway on criteria it was never shown, and a verdict describing frames that had already been replaced.</description>
+      <category>AI Evaluation</category>
+      <category>Prompt Engineering</category>
+      <category>Computer Vision</category>
+      <category>Video Generation</category>
+    </item>
+
+    <item>
+      <title>Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped</title>
+      <link>https://humzakt.github.io/blog/stylizing-every-cast-member.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/stylizing-every-cast-member.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A single-presenter 'animated' feature meets a real multi-person cast: one twin stylized and two left photoreal in the same frame, a redeploy that silently re-buys an expensive identity render, and a planner that finally declares which cast member a shot is about.</description>
+      <category>AI Video</category>
+      <category>Computer Vision</category>
+      <category>Product Engineering</category>
+      <category>Prompt Engineering</category>
+    </item>
+
+    <item>
+      <title>Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline</title>
+      <link>https://humzakt.github.io/blog/config-driven-gate-thresholds-analytics.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/config-driven-gate-thresholds-analytics.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Replacing a hardcoded pass/fail bar with per-category, admin-editable thresholds for an enterprise review pipeline's QC gates, a stack rebuilt from scratch after a merge-gate wall, and the analytics layer built alongside it.</description>
+      <category>Enterprise Platform</category>
+      <category>Admin Tooling</category>
+      <category>Observability</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider</title>
+      <link>https://humzakt.github.io/blog/locking-down-sign-in-session-lifecycle.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/locking-down-sign-in-session-lifecycle.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Restricting sign-in to a verified company Workspace domain, closing identity-forwarding and shared-table gaps a security audit found in one evening, and building a session lifecycle whose idle and absolute limits are tuned to match the identity provider's own clock.</description>
+      <category>Security</category>
+      <category>Access Control</category>
+      <category>Authentication</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform</title>
+      <link>https://humzakt.github.io/blog/forty-hand-rolled-variants-retired.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/forty-hand-rolled-variants-retired.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>Retiring roughly forty hand-rolled UI component variants into a shared design system across an internal ops platform — tokens, a lint rule that proves it can fail, and the two production outages the migration itself caused.</description>
+      <category>Frontend Engineering</category>
+      <category>Design Systems</category>
+      <category>React</category>
+      <category>UX</category>
+    </item>
+
+    <item>
+      <title>Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep</title>
+      <link>https://humzakt.github.io/blog/stop-paying-twice-generations.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/stop-paying-twice-generations.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A background sweep meant to collect vendor generations a reframing tool had already paid for turned out to have the same class of bugs as the pipeline it was auditing — including being structurally unable to see the one case it was built for.</description>
+      <category>Cost Engineering</category>
+      <category>Reliability</category>
+      <category>AI Video</category>
+      <category>Video Rendering</category>
+    </item>
+
+    <item>
+      <title>Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost</title>
+      <link>https://humzakt.github.io/blog/ci-gate-seven-flips-runaway-costs.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/ci-gate-seven-flips-runaway-costs.html</guid>
+      <pubDate>Mon, 12 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A CI gate on an AI video pipeline flipped between blocked and working seven times in a month, for reasons that had nothing to do with the code under test — alongside the runaway-cost bugs a stalled stream, a hung ffmpeg, and an uncapped filter graph were quietly writing off as normal.</description>
+      <category>CI/CD</category>
+      <category>DevOps</category>
+      <category>Reliability</category>
+      <category>Cost Engineering</category>
     </item>
 
     <item>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>The Narrated-Beat Repair That Kept Causing Its Own Bug — Humza Tareen</title>
+  <meta name="description" content="A repair step built to fix narrated-beat framing in an AI ad pipeline kept producing the exact defect it was meant to prevent — plus critics that could detect identity drift but never repair it, grade a cutaway on criteria it was never shown, and a verdict describing frames that had already been replaced.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Evaluation, Prompt Engineering, Computer Vision, Video Generation">
+  <link rel="canonical" href="https://humzakt.github.io/blog/narrated-beat-repair-identity-critics.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="The Narrated-Beat Repair That Kept Causing Its Own Bug">
+  <meta property="og:description" content="A repair step built to fix narrated-beat framing in an AI ad pipeline kept producing the exact defect it was meant to prevent — plus critics that could detect identity drift but never repair it, grade a cutaway on criteria it was never shown, and a verdict describing frames that had already been replaced.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/narrated-beat-repair-identity-critics.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Evaluation">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Video Generation">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Narrated-Beat Repair That Kept Causing Its Own Bug">
+  <meta name="twitter:description" content="A repair step built to fix narrated-beat framing in an AI ad pipeline kept producing the exact defect it was meant to prevent — plus critics that could detect identity drift but never repair it, grade a cutaway on criteria it was never shown, and a verdict describing frames that had already been replaced.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The Narrated-Beat Repair That Kept Causing Its Own Bug",
+    "description": "A repair step built to fix narrated-beat framing in an AI ad pipeline kept producing the exact defect it was meant to prevent — plus critics that could detect identity drift but never repair it, grade a cutaway on criteria it was never shown, and a verdict describing frames that had already been replaced.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/narrated-beat-repair-identity-critics.html" },
+    "keywords": ["AI Evaluation", "Prompt Engineering", "Computer Vision", "Video Generation"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"The Narrated-Beat Repair"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">The Narrated-Beat Repair That Kept Causing Its Own Bug</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 12 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Evaluation</span>
+        <span class="blog-tag">Prompt Engineering</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Video Generation</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A "narrated" beat in the main video-generation service renders silent — the person on screen doesn't speak, the voiceover is added at the stitch — which means the frame-authoring prompt has to actively un-say things a normal talking beat would say: don't look at the lens, don't open the mouth, don't gesture like you're mid-sentence. That's a narrow, specific rewrite, and over five straight days it turned out to be one of the hardest things in the whole pipeline to get right, because every fix for one failure mode of "don't do that" created a new way for the beat to come out wrong.</p>
+
+      <p>This post is about that repair step, and about a parallel cluster of identity and relevance critics that had the opposite problem — not saying the wrong thing, but being structurally unable to say anything useful at all.</p>
+
+      <blockquote>
+        A repair that fixes what it looks at and never checks what it leaves behind is not a repair. It's a relocation of the same bug.
+      </blockquote>
+
+      <h2>The repair that produced the defect it prevented</h2>
+
+      <p>PR #1126 is the fix that should have closed the book on narrated-beat framing, and instead opened a new chapter. Measured on a real reference-less run, the strip step that removes camera-facing language ran on 15 of 30 beats — and the plan critic flagged six of them anyway, not for anything the strip left in, but for what it left dangling. "Tipping it side to side" survived with no object ever established to tip. "The other hand gesturing outward" survived with no first hand established. The strip was removing individual clauses correctly and leaving the clauses around them referring back to something that no longer existed.</p>
+
+      <p>The fix PR #1126 shipped was a cascade: once a clause gets removed, drop anything downstream that refers back to it. PR #1128 reverted that same-day, measured against a different run, because the cascade over-corrected — three scenes came back with every action clause stripped, leaving nothing but a bare shot size and the standard not-looking-at-the-lens note. The plan critic's own words on the result: "no staging at all beyond a shot size." The fix for dangling references had traded one defect for a worse one, found and reverted before a single clip was rendered.</p>
+
+      <p>PR #1127 caught the regression's quieter half: #1126 correctly made the narrated-direction repair reachable on every narrated beat instead of only the ones whose role had just changed — and that exposed that the repair had only ever touched a beat's <code>motion</code> field, never its <code>accept</code> field, the list of criteria the critic grades the rendered clip against. Measured: 18 of 30 beats had their motion stripped of camera-facing language, and all eighteen still carried an accept list requiring "facing camera." The repair and the check it fed were now disagreeing about what a narrated beat even is, on every single beat the repair touched — and the check, correctly, was the one catching it.</p>
+
+      <p>PR #1129 found a third failure shape in the same system: the repair wasn't just removing language, it was appending a denial — "not looking at the lens" — directly next to direction it had deliberately chosen to keep, like "leans in hard toward the camera." A lean toward the lens while narrating is legal, established direction. Writing a denial of eye contact one sentence after affirming a lean toward the camera is a contradiction the module wrote itself, and both the plan critic and the image model reacted to it as exactly that.</p>
+
+      <h2>The instruction that existed and had no way to arrive</h2>
+
+      <p>PR #1130 is the root-cause finding underneath the whole cluster, and it's almost funny in how simple it is once stated. The prompt template had, all along, contained the correct instruction: a per-beat block telling the planner a scene's role is "narrated," already decided, don't change it, write motion and accept for someone who is not talking to the camera. That block was gated on a field stamped only by the code path that reads a reference video's own shots. A reference-less run has no reference — so the field was never set, the block was never emitted, and the planner was simply never told. The correct instruction existed in the codebase the entire time; it had no path to reach the one case where it mattered most.</p>
+
+      <h2>The twin that forbade and requested in one breath</h2>
+
+      <p>PR #1124 caught the same disease from a different angle: a narrated beat's per-scene message introduced its own voiceover line as "they are mid-delivery of this" — explicit direction to draw an open, speaking mouth — and two lines later, the same message appended "mouth relaxed and closed." One author was told to do a thing and forbidden from doing it in the same breath, which isn't ambiguity, it's a coin flip the model has to resolve on its own. The reviewer's note on the delivered ad was that the cast "appear to be talking over a narration they are not speaking" — exactly the failure mode the contradiction predicted.</p>
+
+      <p>And a narrower version of the same bug, caught by PR #1106: a strip rule matched the literal phrase "to the lens" but not the paraphrase "toward the lens," so a clause aiming a face at the camera survived the strip intact and sat right next to the note the module had just appended saying the opposite. Measured on a real run: the critic flagged visual mismatches on 6 of 33 beats, each one a variant of the same near-miss string match.</p>
+
+      <h2>A check that only detects, and a redo that isn't allowed to help</h2>
+
+      <p>A parallel thread this same week was about critics that could see a problem and had no way to act on it, or acted in a way that made the problem worse. PR #1114 found that an identity-anchor check added specifically to catch cast drift between frames contradicted a repair mechanism meant to fix exactly that drift: the anchor check fires when a frame shows the wrong person, and a candidate that successfully repairs that has, by definition, changed who's in the frame relative to the one it's replacing — so a second check, comparing the fix against the broken original, correctly says "this is a different person" and reverts the fix. The detector and the repair couldn't coexist on the one defect the detector existed to catch.</p>
+
+      <p>PR #1115 found the same check failing in the opposite direction: comparing an anchor frame against later frames by matching people on where they physically stand in the shot, rather than by who they are, produced consistent false positives on a cast that never actually changed — three correct frames failed, every time, because the people in them had simply moved around the room between shots. PR #1110 closed a related gap at the source: a frame-redo mechanism had no rule against changing who the redo produces, so a redo meant to fix a lighting or composition flaw could — and on one real animated run, did — swap in a visibly different person, aging one character down twenty years and completely changing another's hair and glasses between two adjacent scenes of the same ad.</p>
+
+      <h2>Grading on criteria nobody showed, verdicts about frames already gone</h2>
+
+      <p>PR #1113 found a b-roll cutaway that shipped into a finished ad carrying its own critic's warning — "no person, face or hand in frame" on a span that was supposed to show someone — with a status field reading "ready" right next to it. The root cause: the generator that paints the cutaway is never shown the acceptance criteria it's later graded against. The criteria exist, the critic reads them, and the thing being critiqued never saw them — which makes a failing grade not a safety net but a formality nobody could have passed.</p>
+
+      <p>PR #1111 found a stranger version of the same blind spot at the whole-board level: a storyboard verdict reporting "matches all 2 of the plan's checks, zero failures" was describing frames that, by the time anyone read that verdict, had already been regenerated three times by the step that runs immediately after grading. The board graded real pictures and told the truth about them — the pictures just didn't exist anymore by the time the truth reached anyone.</p>
+
+      <h2>The audit that found eleven more</h2>
+
+      <p>PR #1131 is the capstone of the week, and it's refreshingly blunt about what it is: an adversarial audit — 88 agents, 7 lenses, 3 independent skeptics per finding — run specifically against this session's own changes, the same day they shipped. Seventeen raised findings, none refuted, deduplicating to eleven distinct defects, every one introduced earlier that same session and fixed in the same PR that confessed to them. One finding alone — a product-reveal rule that shipped and was structurally inert because the one code arm every real run actually takes never called the function that read it — echoes the exact shape of bug this whole cluster kept rediscovering: correct logic, unreachable from where it needed to run.</p>
+
+      <h2>The pattern: narration is a double negative, and double negatives don't compose</h2>
+
+      <p>Every bug in this cluster is a version of the same thing. "Narrated" isn't a positive instruction — it's a list of things a normal talking beat does that this beat must not do, layered on top of direction that was written assuming the beat could talk. Stripping language correctly requires knowing what else in the same message depends on it; appending a denial correctly requires knowing what else in the same message it might contradict; checking a repair correctly requires grading the thing the repair touched, not just the field everyone remembers to update. None of these are hard algorithmically. They're the specific, grinding difficulty of maintaining two true statements — "do this" and "but never like that" — in the same generated paragraph, across every beat, every run, every time the underlying direction changes. The fix was never a smarter model. It was finding, by measurement rather than assumption, every place the pipeline had quietly let the two statements drift out of sync.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ai-critic-panel-verifying-generated-ads.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Critic Panel</a><br><span style="color:#8892b0;font-size:13px;">The critics that first went looking for cross-scene and cross-clip identity drift</span></li>
+        <li style="margin-bottom:12px;"><a href="plan-gate-contradiction-chain.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Plan Gate Contradiction Chain</a><br><span style="color:#8892b0;font-size:13px;">The earlier, broader pattern of a planner and its own grading criteria disagreeing</span></li>
+        <li style="margin-bottom:12px;"><a href="stylizing-every-cast-member.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Stylizing Every Cast Member</a><br><span style="color:#8892b0;font-size:13px;">The animated-cast feature this same week's identity critics were built to protect</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

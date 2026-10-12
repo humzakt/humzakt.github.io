@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform — Humza Tareen</title>
+  <meta name="description" content="Retiring roughly forty hand-rolled UI component variants into a shared design system across an internal ops platform — tokens, a lint rule that proves it can fail, and the two production outages the migration itself caused.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Frontend Engineering, Design Systems, React, UX">
+  <link rel="canonical" href="https://humzakt.github.io/blog/forty-hand-rolled-variants-retired.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform">
+  <meta property="og:description" content="Retiring roughly forty hand-rolled UI component variants into a shared design system across an internal ops platform — tokens, a lint rule that proves it can fail, and the two production outages the migration itself caused.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/forty-hand-rolled-variants-retired.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Frontend Engineering">
+  <meta property="article:tag" content="Design Systems">
+  <meta property="article:tag" content="React">
+  <meta property="article:tag" content="UX">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform">
+  <meta name="twitter:description" content="Retiring roughly forty hand-rolled UI component variants into a shared design system across an internal ops platform — tokens, a lint rule that proves it can fail, and the two production outages the migration itself caused.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform",
+    "description": "Retiring roughly forty hand-rolled UI component variants into a shared design system across an internal ops platform — tokens, a lint rule that proves it can fail, and the two production outages the migration itself caused.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/forty-hand-rolled-variants-retired.html" },
+    "keywords": ["Frontend Engineering", "Design Systems", "React", "UX"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Forty Hand-Rolled Variants Retired"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Frontend Engineering</span>
+        <span class="blog-tag">Design Systems</span>
+        <span class="blog-tag">React</span>
+        <span class="blog-tag">UX</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>An internal ops platform I work on had never had a design system, and it showed in specific, countable ways: thirteen primary-button call sites across seven distinct class strings, eleven tables with six different header conventions, a type scale with sixteen arbitrary pixel values, and — the one that actually mattered — roughly half the form controls in the app with no visible keyboard focus indicator at all. Over about twenty-four PRs, the fix was deliberately boring: lay down tokens, build a handful of primitives on top of them, migrate every screen one at a time, and write a lint rule that makes the drift mechanically impossible to reintroduce.</p>
+
+      <blockquote>
+        Six PRs of unification are worth nothing if the next screen hand-rolls an eighth primary button. The guard is not the cleanup; the guard is the point.
+      </blockquote>
+
+      <h2>Tokens first, components second</h2>
+
+      <p>The first PR restyled nothing. It laid down surface, text, line, brand, and status color tokens as CSS custom properties, each one annotated in the source with the exact contrast ratio that justified it — and fixed every accessibility failure that was measurable without touching layout. The sharpest of those: <code>globals.css</code> ended in a single rule, <code>button:focus { outline: none; }</code>, and only about half the form controls had ever put a ring back. Every button and checkbox in the tool had no visible keyboard focus indicator at all, a WCAG 2.4.7 failure sitting in the global stylesheet the entire time. It was replaced with one <code>:focus-visible</code> rule in the base layer, so components that already carried their own ring kept it and everything else inherited this one for free.</p>
+
+      <h2>Forty variants, four primitives</h2>
+
+      <p>With tokens in place, <code>Button</code>, <code>Badge</code>, <code>EmptyState</code>, and <code>Field</code> landed together and immediately retired the worst of the duplication: thirteen primary-button sites, five icon-button variants, the app's only purple button, and disabled-state opacity that had drifted across four different values. <code>Button</code> applies tone — default, success, critical — orthogonally to hierarchy rather than as an extra rank, because a destructive action can just as easily be a dialog's main action as a quiet row action, and a rank can't express that. <code>Field</code> replaced a shared class string that four different copies had each drifted slightly from, and switched its border from a decorative gray that measured 1.47:1 to one that clears the 3:1 minimum WCAG 1.4.11 sets for a border that's how you identify a control — fields are visibly darker now, and that's the fix, not a side effect.</p>
+
+      <p>The component tests caught the author's own mistakes twice in this one PR: <code>Button</code>'s critical tone hardcoded a raw red hover shade — exactly the raw-palette-for-meaning the token layer exists to prevent — and a test asserting no raw palette class in the component failed on its own first draft. The same slip had already shipped one PR earlier, on the tokens PR's own success-tone buttons, and got caught the same way.</p>
+
+      <h2>A bug the screenshot caught and the source code didn't</h2>
+
+      <p>The next PR unified four different tile treatments — different radii, different label sizes, two different label-to-value orderings — into one <code>StatTile</code>, and in doing so hit a bug that no amount of reading the diff would have surfaced: a tint prop was meant to layer on top of a tone, but both supply a background color, and CSS resolves the conflict by stylesheet order, not by the order the two class names were concatenated in the source. The code read correctly. On screen, four of five category tiles rendered with no tint at all. It was only visible by actually rendering the component against the real compiled CSS and comparing it to a screenshot — which is exactly how it was found, and exactly the discipline that runs through this entire project: build it, then look at it, because looking at the diff proves nothing about what a browser does with cascading styles.</p>
+
+      <h2>Tabs that were never tabs</h2>
+
+      <p>A table-spec PR found that <code>tabular-nums</code> existed in exactly one of eleven tables, so numeric columns visibly shifted on every refetch everywhere else — the precise problem one table's own code comment claimed to have already solved. A segmented-control PR then applied a sharper distinction: by the standard rule that tabs navigate between distinct content areas while a switcher toggles alternate views of the same content, five of six "tab" strips in the app weren't tabs at all — they were filters dressed as navigation, with zero ARIA semantics and zero keyboard support between them. <code>SegmentedControl</code> is a <code>radiogroup</code>, not a <code>tablist</code>, and the new tests pin that distinction specifically: that it renders no tabpanel, exposes exactly one <code>aria-checked</code>, and that a group of one option renders nothing at all, because a group of one isn't a choice.</p>
+
+      <h2>A guard that proved it could fail, in both directions</h2>
+
+      <p>Six PRs of unification are only as durable as the thing stopping the seventh hand-rolled button. The lint rule that landed next fails the build on any raw <code>&lt;button&gt;</code> or <code>&lt;table&gt;</code> outside four explicitly-named, explicitly-justified exceptions — and the PR's own verification is the part worth noting: a raw button and a raw table were each deliberately reintroduced to confirm the rule actually fires, then reverted to confirm it passes again. The first draft of the guard had exempted an entire directory, which also accidentally exempted the three shared components that most needed the rule to apply to them. Run for the first time, it immediately found four raw tables that six prior PRs of "done" migration work had simply missed.</p>
+
+      <h2>Verified, not assumed</h2>
+
+      <p>A small <code>/api/version</code> endpoint shipped next, deliberately public and deliberately boring, for one reason stated plainly in the PR: every "deployed ✅" claim up to that point had been an inference from the service still answering, which it would also do before a bad deploy. Within a minute of the first production deploy, the endpoint itself disproved a claim its own author had just written in the same PR — that the host exposed no git commit variable, so the field would always read null. Production returned the exact merge commit. The author had checked the wrong surface: a CLI command that lists user-defined environment variables, not the actual runtime environment a deployed process sees. The fix was a one-line doc correction, and the honest write-up of being wrong about your own infrastructure in the same week you shipped it is a better tell for engineering maturity than getting it right the first time would have been.</p>
+
+      <h2>Two outages the migration itself caused</h2>
+
+      <p>The riskiest part of a consolidation like this isn't the components — it's moving them across a server/client boundary that doesn't forgive a wrong guess. A route split that made every manager module independently linkable also, in the same PR, took down every single one of those routes in production: a helper function was exported from a file carrying <code>"use client"</code>, and in the App Router, every export of a client module becomes a client reference on the server, including a destination that's a plain exported function. A server component that calls it isn't invoking a function anymore — it's holding a reference, and the render throws. Four hundred and some passing tests said nothing, for a specific, structural reason the author wrote up rather than shrugged off: the test suite renders everything as a client component, so there's no server/client seam in the test environment for the bug to cross, and the build step never executes a dynamic route at build time either. The local gate was architecturally blind to this exact class of bug.</p>
+
+      <p>The same mistake recurred one PR later in a different shape — a <em>const string</em> exported from a client module, not a function, breaking <code>/login</code> and all five admin panels — and the scanner written specifically to catch the first occurrence missed the second, because it only looked for called functions, and a string is read, never called. The fix wasn't the component; it was the detector, rewritten to flag any lowercase import from a client module regardless of how it's used, and to walk the actual server-reachable file graph instead of trusting the presence or absence of a directive. Worth saying plainly: the fix for <code>/login</code> was reported as resolved once already, on the strength of a working deploy and clean route sweep, before the root cause — a React render prop crossing a boundary it can't cross — was actually found by loading the page and reading the error.</p>
+
+      <h2>Eighteen silent bombs</h2>
+
+      <p>Admin was the single riskiest surface in the whole migration, with zero render-test coverage across sixteen files, because the whole area is server components with server actions that fetch on render — nothing in the test harness can mount them. Eighteen of its twenty-one buttons were bare elements inside a form relying on the browser's implicit submit-on-click behavior. The shared <code>Button</code> primitive deliberately defaults to a non-submitting type, specifically so a button can't accidentally submit a form — which meant migrating any of those eighteen without also adding an explicit submit type would silently stop the form from doing anything, with no error, on a diff that reads correctly line by line. The guard for this was written and proven before a single button moved. It's also where the project's most repeated lesson shows up explicitly three separate times across three different PRs: a verification script that prints a success message instead of asserting a precondition can report a clean pass while having checked nothing at all, and the fix each time was the same — stop trusting a quiet result as evidence, and confirm the check can actually fail before trusting that it can pass.</p>
+
+      <h2>What rendering caught that the Tailwind sweep couldn't</h2>
+
+      <p>A tracker-migration PR found a progress-bar color applied through an inline style rather than a class — invisible to every one of the prior color-token sweeps, because none of them touch inline styles, and it had survived as roughly 2.4:1 contrast the whole time. The same PR fixed a delete-confirmation dialog with no dialog role, no focus trap, and no focus return — Tab walked a keyboard user straight through it into the page underneath, and Escape did nothing. And a follow-up PR closed the gap in the lint guard itself: color had never had a checker at all, which is exactly how over a hundred raw palette classes survived an earlier "completed" pass. Once written, that checker immediately found a single UI state — "AI usage: Major" — rendered in three different colors across three different files, one of which was dead code reachable from nowhere, from a decision nobody could any longer explain.</p>
+
+      <h2>Safari rings every clicked button, and nobody can test that from a laptop</h2>
+
+      <p>Fixing the original missing-focus-ring bug correctly for Chrome accidentally broke it for Safari: Safari's native <code>:focus-visible</code> heuristic matches after a mouse click, where Chrome's doesn't, so identical CSS produced two different behaviors depending on which engine rendered it. The fix stopped trusting the browser's heuristic and tracked the last input modality explicitly, defaulting to "keyboard" so a tracking failure fails toward more accessibility rather than less. The honest limit, stated directly in the PR: there's no browser automation installed in this environment and a page script can't produce a trusted click event, so the one thing that actually needed verifying — does a real mouse click in real Safari produce a ring — could not be verified by the person who wrote the fix. It shipped flagged as needing a human to physically click a button after deploy, rather than quietly marked done.</p>
+
+      <h2>The loading skeleton that forgot where it lived</h2>
+
+      <p>The very next PR was a regression from the one before it: clicking into Admin or the Tracker rendered a full-bleed wall of loading bars with no sidebar and no page margins, while the one section whose layout had already been restructured during the route split looked correct. A route's <code>loading.tsx</code> replaces the page but leaves the surrounding layout alone — and in the two sections that hadn't been touched yet, the shared shell component lived inside the page itself, so the skeleton took the chrome down with it. The fix was caught, by the author's own account, specifically because it was verified against a running production build rather than an isolated component harness — the exact check that had been skipped the first time, and the one that mattered.</p>
+
+      <h2>The pattern: a consolidation is a migration, not a cleanup</h2>
+
+      <p>Every one of these production incidents happened <em>because</em> the consolidation was working as intended — pulling shared logic into fewer places is precisely what makes a server/client boundary violation in one of those places take down every screen that now depends on it, instead of just the one screen that used to hand-roll its own copy. The lesson that recurs across this whole arc isn't "write more tests." It's that a check which can pass vacuously is worse than no check, because it gets quoted back with confidence — and the fix, every time it happened, was the same one: before trusting a green result, go break the thing on purpose and watch the check turn red.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="dashboard-design-system-consolidation.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Four Stops Instead of Thirty</a><br><span style="color:#8892b0;font-size:13px;">The same consolidation instinct applied to a different codebase — eight hand-rolled component shapes, not forty</span></li>
+        <li style="margin-bottom:12px;"><a href="ve-tools-internal-ops-platform.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an Internal Ops Platform</a><br><span style="color:#8892b0;font-size:13px;">The same platform's earlier security and access-control work</span></li>
+        <li style="margin-bottom:12px;"><a href="locking-down-sign-in-session-lifecycle.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Locking Down Sign-In</a><br><span style="color:#8892b0;font-size:13px;">The session and auth hardening that followed this same migration on the same platform</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

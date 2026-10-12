@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped — Humza Tareen</title>
+  <meta name="description" content="A single-presenter 'animated' feature meets a real multi-person cast: one twin stylized and two left photoreal in the same frame, a redeploy that silently re-buys an expensive identity render, and a planner that finally declares which cast member a shot is about.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="AI Video, Computer Vision, Product Engineering, Prompt Engineering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/stylizing-every-cast-member.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped">
+  <meta property="og:description" content="A single-presenter 'animated' feature meets a real multi-person cast: one twin stylized and two left photoreal in the same frame, a redeploy that silently re-buys an expensive identity render, and a planner that finally declares which cast member a shot is about.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/stylizing-every-cast-member.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Computer Vision">
+  <meta property="article:tag" content="Product Engineering">
+  <meta property="article:tag" content="Prompt Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped">
+  <meta name="twitter:description" content="A single-presenter 'animated' feature meets a real multi-person cast: one twin stylized and two left photoreal in the same frame, a redeploy that silently re-buys an expensive identity render, and a planner that finally declares which cast member a shot is about.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped",
+    "description": "A single-presenter 'animated' feature meets a real multi-person cast: one twin stylized and two left photoreal in the same frame, a redeploy that silently re-buys an expensive identity render, and a planner that finally declares which cast member a shot is about.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/stylizing-every-cast-member.html" },
+    "keywords": ["AI Video", "Computer Vision", "Product Engineering", "Prompt Engineering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Stylizing Every Cast Member"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 12 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Computer Vision</span>
+        <span class="blog-tag">Product Engineering</span>
+        <span class="blog-tag">Prompt Engineering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>The main video-generation service's animated lane shipped and worked — for a solo presenter. The moment a real multi-person cast ran through it, the feature's own single-presenter assumption surfaced as a visible, embarrassing defect: three people in one frame, one prompt, and only one of them actually drawn as a cartoon. Getting from "works for one person" to "works for a cast" touched the stylization pipeline, the identity references handed to the clip model, the planner's own vocabulary, and a caching layer that was quietly re-buying the most expensive image a run makes every time the container restarted.</p>
+
+      <blockquote>
+        A bail-out guard written for "this isn't supported yet" and a bail-out guard written for "this is intentionally out of scope" look identical in a diff. Only one of them should still be there once the feature ships.
+      </blockquote>
+
+      <h2>A guard that quietly made multi-person impossible</h2>
+
+      <p>PR #1067 found the root cause sitting in a single early return. <code>ensureStylisedCharacter</code> bailed immediately whenever a job's cast had more than one member, with a comment explaining the deferral: a multi-member animated cast would render from raw photographs "exactly as it does today," rather than from stylized twins nobody had built yet. That comment was accurate the day it was written and had quietly become a landmine, because <code>castIdentityRefFor</code> pins a cast member to its photograph for the entire run unless that member's first appearance happens to be solo — and in an ensemble, nobody's first appearance is solo. A run on three men at one table proved it by accident: one member's identity reference happened to already be a stylized image, so he rendered "unmistakably Pixar" — round eyes, smooth bald head, caricatured features — while the other two, pinned to ordinary stock photographs, rendered fully photoreal. Same frame, same prompt, three different identity references producing three different mediums.</p>
+
+      <p>Fixing the frames alone would have shipped a new, subtler version of the same bug. PR #1068 found the other half: the two code paths that resolve a cast member's reference photographs for a clip — as opposed to a still frame — had never asked the question at all, reading straight from the catalog. A single-presenter module had already worked this out explicitly, with a comment reasoning that handing back real catalog photographs "would bind the voice at the price of the look, and the look is what the operator asked for." That reasoning simply hadn't been copied to the cast paths, so an animated two-hander would have opened on a stylized start frame and then handed the clip model several photoreal stills of the real people as the thing to match motion against — the exact failure mode a decision-log entry already called "the standing failure," now proven on a cast rather than a solo. The fix made one identity-twin derivation answer the question once, with three consumers reading the same answer instead of three places re-deriving it differently.</p>
+
+      <h2>Independently stylized is not consistently stylized</h2>
+
+      <p>Even after every member in frame was correctly drawn rather than photographed, a reviewer flagged that "the friends looks differently animated" — the protagonist fully stylized, a companion barely so. PR #1122's own first diagnosis was wrong, and it says so directly: the author expected a member had fallen back to a raw photograph, and the cost ledger disproved it before any code needed to change — every member had in fact billed a stylized-twin render. The actual defect was structural: each twin came from an independent, unseeded image-edit call over the same fixed prompt and a different source photograph, with nothing comparing the three outputs to each other. Three independent calls against one text description land at three different points on a photoreal-to-stylized spectrum, the same way three artists working from one written brief and no reference sketch will draw three visibly different styles. The fix didn't touch the prompt at all — it passed the first finished twin along as a second reference image to every subsequent member's stylization call, so the second and third renders have something concrete to match rather than another independent roll of the same dice. The number of paid vendor calls didn't change; what each call was given to work from did.</p>
+
+      <h2>A plan that widened the cast and forgot to tell everyone</h2>
+
+      <p>A separate pass, <code>holdCastAcrossNarration</code>, exists to keep the same person's face on screen across a narrated sequence — real identity continuity, and the reason the pass exists at all. PR #1086 found it conflating that fact with a second, unrelated one: "all of the cast are present." On one run, the planner wrote a beat as a two-shot of two specific friends; the hold shipped it as three people, discarding which pair the planner had actually staged while quietly widening the headcount. The root cause was a regex trying to infer shot size from the prose description of motion, returning nothing usable on ten of twelve beats — so the pass fell back to taking the full cast union almost every time, which is precisely the "uniform three" its own code comment says it exists to prevent.</p>
+
+      <p>Widening the cast without updating everything downstream that described the old, narrower staging produced two more bugs in the same shape. PR #1070 caught frames being graded against acceptance criteria the plan itself had made impossible — eight beats in a row scored against "one person," rendered with two or three people in frame, because the hold rewrote the cast list but nothing touched the grading criteria that referenced the cast size directly. PR #1072 found the shot's own <code>motion</code> description — the field that tells the image model how the shot should actually look — suffering the identical staleness, and called out why it's a harder fix than the acceptance criteria: criteria can simply be dropped when they go stale, but <code>motion</code> is the entire shot description and can't be discarded, so the fix moves the cast to match the shot's declared size instead, always trimming to the same anchor member in a consistent order rather than an arbitrary one.</p>
+
+      <h2>Teaching the planner to say who a shot is about</h2>
+
+      <p>Once a shot could legitimately hold two or three people, a new question had no owner at all: of the people present, who is the shot actually <em>about</em>? PR #1087 found every downstream consumer of that question — which member gets photographs, which gets the element label, which gets the voice — silently defaulting to index zero in the cast array, agreeing with each other by coincidence rather than by any actual contract. A reviewer's real complaint, "who is John? we're zooming in on the guy in the middle, but apparently John is the one in the blue collar," was this exact bug: the shot's composition followed array order, and array order read left-to-right by whoever was authoring the frame.</p>
+
+      <p>The fix had to clear a real constraint first. The team had already ruled out solving this with more prompt injection — the project's own decision log states the principle plainly: "a prompt guard is a guess; a measurement is not" — and a vendor capability sweep across five different providers confirmed there was no structured subject-of-camera binding available anywhere to lean on instead. So the planner itself was given a new field to declare which specific member a shot is about, rather than asking a human to intuit it from prose or asking a model to infer it from context. PR #1088 found two fresh bugs in that same change within a day of shipping it: the new directive told beats to say "the subject" while every existing substitution pass still only recognized the literal phrase "the presenter," so the new field fired on zero live beats until the vocabulary was widened; and the directive itself had quietly asked for two different things — "whoever the camera favors" and, separately, "whoever the line is about" — which genuinely diverge on a reaction shot. PR #1079 is the honest coda to the same arc: an earlier subject-clause fix had been reported as working, verified off the rendered board frames, and the report was wrong — the clause had never actually reached the vendor request at all, because it had been attached to the wrong one of two parallel prompt-assembly paths, and the real improvement that run showed came from an unrelated change in setting and cast size.</p>
+
+      <h2>A redeploy that silently re-bought the most expensive image in the run</h2>
+
+      <p>PR #1093 is the sharpest bug in this cluster because nothing about it is visible in the output — only in the bill. The stylized "twin" is the single most expensive image a run generates, and the code cached it by checking whether the file already existed on disk. That check was written against Railway's ephemeral container filesystem, which a mid-run redeploy wipes clean. A real run showed the signature directly in its cost ledger: the same stylized-character render, for the same member, billed twice at the same price, tagged with two different process identifiers — the unmistakable fingerprint of a container restart. The fix had, in fact, already been half-written down as a TODO in an unrelated module months earlier, explicitly anticipating this exact failure for text artifacts and noting that binary artifacts like images would need the same treatment "later." Later had arrived in the form of real paid, wasted spend, and the fix extended the existing download-and-restore-from-Drive path to cover binary files the same way it already covered text ones.</p>
+
+      <h2>Letting a mascot share the frame instead of banning it</h2>
+
+      <p>The last gap in this arc wasn't about people at all. PR #1095 found that a mascot character sharing a frame with human cast members fell into the pipeline's "people-free" rendering branch by construction, regardless of what the actual plan called for — meaning an ad whose reference genuinely depends on its mascot appearing alongside its humans in most shots could not be reproduced at all under the existing binary. A second, related bug fell out of fixing the first: a mascot-only beat with no human cast was being given the generic product negative prompt, which explicitly bans "arm, silhouette, figure" — banning the exact anatomy a mascot character is made of, because the two files responsible for choosing the right branch disagreed on what information they even had access to decide with.</p>
+
+      <h2>The pattern: a feature isn't done at one, it's done at N</h2>
+
+      <p>Every bug in this arc has the same shape: a path built and verified against exactly one cast member — one presenter, one identity reference, one subject, one cached twin — that silently stopped being correct the moment a second or third person entered the frame. None of these were algorithmically hard problems. They were places where "the" quietly meant "the one," and nobody had gone back to ask what happens when there's more than one. The through-line that actually closed each gap wasn't a smarter model or a cleverer prompt — it was measuring the real artifact a run produced, over and over, instead of trusting that a fix verified on a solo presenter would generalize for free.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="pixar-animated-lane-identity-guards.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Letting Operators Request Animated People</a><br><span style="color:#8892b0;font-size:13px;">The feature this post's whole arc is hardening for a real cast</span></li>
+        <li style="margin-bottom:12px;"><a href="multi-presenter-cast-pipeline.html" style="color:#64ffda;text-decoration:none;font-size:15px;">N-Person Cast</a><br><span style="color:#8892b0;font-size:13px;">The original cast feature this arc is built directly on top of</span></li>
+        <li style="margin-bottom:12px;"><a href="narrated-beat-repair-identity-critics.html" style="color:#64ffda;text-decoration:none;font-size:15px;">The Narrated-Beat Repair That Kept Causing Its Own Bug</a><br><span style="color:#8892b0;font-size:13px;">The identity and narration critics this same cast work ran straight into</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

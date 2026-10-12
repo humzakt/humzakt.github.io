@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider — Humza Tareen</title>
+  <meta name="description" content="Restricting sign-in to a verified company Workspace domain, closing identity-forwarding and shared-table gaps a security audit found in one evening, and building a session lifecycle whose idle and absolute limits are tuned to match the identity provider's own clock.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Security, Access Control, Authentication, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/locking-down-sign-in-session-lifecycle.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider">
+  <meta property="og:description" content="Restricting sign-in to a verified company Workspace domain, closing identity-forwarding and shared-table gaps a security audit found in one evening, and building a session lifecycle whose idle and absolute limits are tuned to match the identity provider's own clock.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/locking-down-sign-in-session-lifecycle.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Security">
+  <meta property="article:tag" content="Access Control">
+  <meta property="article:tag" content="Authentication">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider">
+  <meta name="twitter:description" content="Restricting sign-in to a verified company Workspace domain, closing identity-forwarding and shared-table gaps a security audit found in one evening, and building a session lifecycle whose idle and absolute limits are tuned to match the identity provider's own clock.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider",
+    "description": "Restricting sign-in to a verified company Workspace domain, closing identity-forwarding and shared-table gaps a security audit found in one evening, and building a session lifecycle whose idle and absolute limits are tuned to match the identity provider's own clock.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/locking-down-sign-in-session-lifecycle.html" },
+    "keywords": ["Security", "Access Control", "Authentication", "TypeScript"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Locking Down Sign-In"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 10 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Security</span>
+        <span class="blog-tag">Access Control</span>
+        <span class="blog-tag">Authentication</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>An internal ops platform that started as a project tracker had, by this point, grown into the shared front door for eight internal tools — which means its authentication and session handling weren't just protecting a tracker anymore. A single evening security audit found four real gaps behind that front door, and the two weeks after it were spent building something auth code rarely gets: an explicit, logged, correctly-attributed session lifecycle instead of a vague sense that "sessions expire eventually."</p>
+
+      <blockquote>
+        A valid token proves who someone is. It doesn't prove they belong in this specific shared table. Those are two different checks, and conflating them is how open data looks like access control.
+      </blockquote>
+
+      <h2>Restricting sign-in to a verified company domain</h2>
+
+      <p>PR #94 replaced password sign-in entirely with Google OAuth, scoped to the company's own Google Workspace domain — not "sign in with any Google account," but specifically the organization's verified domain, enforced at four independent layers: the Google consent screen itself is configured Internal, direct Supabase signups are disabled, the OAuth callback explicitly refuses any email outside the domain, and the session gate plus the tool proxy both re-check the domain on every single request rather than trusting the callback's one-time check. Four layers sounds like overkill until you consider what each one is actually independent protection against — a misconfigured consent screen, a stale signup path, a forged callback, and a long-lived session created before the policy existed.</p>
+
+      <p>The migration detail worth noting: existing accounts kept their role, tool grants, and editor links intact because Supabase links a new Google identity to the existing user record by matching verified email addresses — the underlying user id never changes, so nothing downstream had to be re-provisioned. PR #97 followed up with the unglamorous polish that makes an auth migration usable rather than merely correct: a clear message instead of a raw <code>invalid_request</code> when someone takes longer than Google's 5-minute OAuth state window to pick an account, an email input for admin-created users that can't be tricked into doubling the company domain, and a sign-in button built to Google's exact branding specification — a new primitive built specifically because the platform's own design-system lint forbids raw unstyled buttons everywhere else, and Google's own brand guidelines forbid restyling their button as anything else.</p>
+
+      <h2>The audit: four gaps, found and fixed as one coordinated plan</h2>
+
+      <p>PRs #89 through #93 are explicitly labeled as parts of a single security audit conducted in one evening, and reading them as a set is more illuminating than reading any one in isolation — each finding is a different flavor of the same root mistake: trusting a signal that looked like proof of identity or membership but wasn't.</p>
+
+      <p>PR #89 found that a "fast path" serving tool API calls read the caller's role from an <code>x-hub-user-role</code> cookie — HttpOnly stops a browser script from reading that cookie, but says nothing about stopping a person from setting it directly in a request. Any authenticated user with one legitimate tool grant could send a crafted role cookie and reach every tool API call as a superadmin. A second header, the caller's forwarded email, was read out of the unsigned JSON payload sitting next to the one actually-verified field in the auth cookie — so an attacker holding a real token could still rewrite which email every downstream tool believed it was talking to. The fix reads signature-checked claims directly and derives the role from the same database lookup the full authentication path already computed, instead of trusting a second, separately-settable copy of it.</p>
+
+      <p>PR #92 is the audit's sharpest finding: because the identity provider allowed open signup with auto-confirmation, anyone holding the public API key could obtain an authenticated session — and nearly every shared table trusted "authenticated" as sufficient proof of belonging. The project tracker could be read, rewritten, and deleted wholesale by that session. A specific account-creation trigger, matched by email string, silently granted one particular address full superadmin access with every tool grant attached — a backdoor that existed by construction, not by exploit. The fix introduces a real membership check — an active profile row, not merely a valid session — and gates every shared table on it. New profiles now start inactive by default, so "I have a session" stops being equivalent to "I am a member of this team."</p>
+
+      <p>PR #91 closed the same gap at the admin layer: a form field accepting an arbitrary profile id to link to an editor record, with no check that the id existed, was active, or wasn't already linked elsewhere — meaning an editor's evaluations and work history could be silently redirected onto any account. The same PR fixed <code>granted_by</code> recording a self-promoted user as their own granter, which is exactly the kind of audit-trail bug that only matters the day someone needs to answer "who approved this."</p>
+
+      <p>PR #93 is the audit's closing phase, and it's a good model for knowing when a cleanup pass is actually done: it confirms row-level security is live everywhere, every view runs with invoker security rather than inherited privilege, and the few genuinely sensitive database functions aren't callable by low-trust roles — and then revokes <code>TRUNCATE</code>, <code>TRIGGER</code>, and <code>REFERENCES</code> privileges that the database platform grants to anonymous and authenticated roles by default. None of those three are reachable through the application's actual API surface, which is precisely why the PR frames the fix as hygiene rather than a live exploit — closing a door nothing was using yet is still worth doing before something learns to.</p>
+
+      <h2>A session cookie that doesn't comma-fold, and other quiet correctness bugs</h2>
+
+      <p>Several of the fixes in this cluster aren't access-control gaps so much as the kind of subtle correctness bug that security hardening tends to surface as a side effect of reading code more carefully than usual.</p>
+
+      <p>PR #88 found that the function responsible for ending a disabled user's sessions had been calling the wrong overload of the identity provider's sign-out method for its entire existence — the first argument that API expects is the user's own JWT, not their id, so every single invocation failed with an invalid-token error that was logged and silently swallowed. Disabling, demoting, or deleting an account through the admin panel had never actually ended anyone's session. The bug was caught the ordinary way real security bugs get caught in a working system: while closing a specific person's access after an email change, and it stayed caught because the fix shipped with a new test that fails against the old code and passes against the new — proof the original code path never worked, not just an assertion that the new one does.</p>
+
+      <p>PR #90 is the single largest fix in the cluster, closing five separate session-correctness gaps the audit's other PRs had exposed: the one-hour idle timeout had never actually fired, because the activity-tracking cookie expired at exactly the idle window and an idle session simply arrived with no stamp at all — which the code read as "first contact" rather than "this session has been idle." Disabled accounts kept access to every page except the ones that explicitly checked an active-status flag. Sign-out and access revocation never propagated to the tool layer at all, so a revoked token kept working on tool API calls until its underlying JWT naturally expired up to twelve hours later. An open-redirect vector let a crafted path slip past validation by exploiting how browsers collapse a tab character into what the URL parser then reads as a protocol-relative double-slash. And the session cookie itself was readable by any script on the page, rather than marked HttpOnly — which matters precisely because this platform's tools share its origin, making that cookie reachable from any tool-side cross-site-scripting bug, not just a bug in the hub itself.</p>
+
+      <h2>Choosing a session lifetime nobody guessed at</h2>
+
+      <p>The idle and absolute session timeouts went through three revisions in two weeks, and the sequence is a better story than any single number would be. The first policy — one hour idle, twelve hours absolute — sounded reasonable until it meant every editor was being signed out once a day regardless of when they'd started working, since twelve hours from a 9am sign-in lapses mid-afternoon rather than at a natural break point. PR #87 widened the absolute limit to thirty-six hours specifically so a single morning sign-in survives through the end of the following working day — a deviation from a published security guideline's recommended twenty-four-hour ceiling, documented explicitly as a deliberate, justified exception rather than an unexamined default.</p>
+
+      <p>That still wasn't the end of it. Production logs showed editors being signed out mid-session for reasons the hub's own policy couldn't explain — PR #100 traced it to the identity provider's own separate inactivity timeout, which was returning a specific "session expired (inactivity)" error hundreds of times over three days while its own dashboard reported the setting as disabled. PR #102 found the actual root cause: an earlier attempt to configure that timeout had been applied as a hot-reload the provider's own config-loading code can't actually unset once a value is set, and the dashboard reporting "0" meant "unchanged from whatever's still running," not "off." The real fix was setting the provider's own inactivity timeout to a value functionally equivalent to "never" and documenting, in detail, why that field should never be set to zero expecting it to mean disabled. PR #96 then landed the actual final numbers — twelve hours idle, forty-eight hours absolute — chosen not arbitrarily but specifically to match the identity provider's own session limits, so the platform's policy and the provider's policy tell the same story instead of two different, silently conflicting ones.</p>
+
+      <table>
+        <thead><tr><th>Revision</th><th>Idle</th><th>Absolute</th><th>Why it changed</th></tr></thead>
+        <tbody>
+          <tr><td>Original</td><td>1h</td><td>12h</td><td>Signed everyone out daily, at an arbitrary time</td></tr>
+          <tr><td>PR #87</td><td>1h</td><td>36h</td><td>One sign-in should survive to the end of the next working day</td></tr>
+          <tr><td>PR #96 (final)</td><td>12h</td><td>48h</td><td>Matched to the identity provider's own actual limits</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Four reasons a session ends, and none of them were being logged</h2>
+
+      <p>PR #103 is a small PR carrying a large point: a session on this platform can end for four genuinely distinct reasons — idle timeout, absolute timeout, a domain check failing, or an account being disabled — and until this PR, none of the four were logged. One morning's cluster of idle sign-outs had to be reconstructed after the fact from the identity provider's own auth logs, because the application itself had no record of what it had done or why. The fix is purely additive logging with no behavior change, which is exactly the right scope for this kind of gap — you don't need a new mechanism to end sessions correctly if the four mechanisms already exist and just aren't visible. PR #101 fixed a sharp edge in that same logging: the new log line was reading the session owner's id from a cookie jar <em>after</em> the very refresh failure that deletes that cookie, so every production log line it had produced so far recorded no user at all. Reading the id first, before the operation that invalidates it, fixed a bug in the fix.</p>
+
+      <h2>The small bugs a real deploy cycle finds</h2>
+
+      <p>PR #98 fixed sign-out breaking for anyone who had a tab open across a deploy — the sign-out action was implemented as a framework server action, and a server action's identifier changes with every build, so a stale tab's sign-out request simply 404'd. The fix routes sign-out through a stable URL instead, hardened to accept only same-origin POST requests so a stray link or prefetch can't trigger it. PR #99 preserved the query string through the sign-in redirect, so a deep link into a specific filtered view survived a forced re-authentication instead of dumping the user back at a bare top-level page. PR #104 closed out two silent failure paths found in a late-night log review: a proxied request that failed at the connection level with no logging at all, fixed with one same-method retry for safe, idempotent requests only, and a cold-start race where concurrent first requests after a deploy each tried to fetch the same cryptographic key set independently, producing a false key-mismatch error that a shared, de-duplicated fetch eliminates entirely.</p>
+
+      <h2>The pattern: a session isn't one event, it's a lifecycle with four exits</h2>
+
+      <p>Every fix in this cluster traces back to the same realization stated different ways: "the user is signed out" is not one event. It's at least four distinct events — ran out of activity, ran out of absolute time, left the company's identity boundary, or had access explicitly revoked — and each one needs its own correct detection, its own correct cookie cleanup, its own propagation to every layer that enforces access, and its own log line explaining which of the four just happened. Treating session termination as a single undifferentiated "logged out" state is exactly how a disabled account keeps working for twelve more hours, how an idle timeout silently never fires, and how a genuine security incident becomes a mystery nobody can reconstruct from the one bit of information the system bothered to record.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="ve-tools-internal-ops-platform.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building an Internal Ops Platform</a><br><span style="color:#8892b0;font-size:13px;">The same shared-proxy platform, from the first security pass this one continues</span></li>
+        <li style="margin-bottom:12px;"><a href="rbac-hardening-resizable-admin-panels.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Locking Down an Admin Dashboard</a><br><span style="color:#8892b0;font-size:13px;">The same route-level permission discipline, applied to a different platform</span></li>
+        <li style="margin-bottom:12px;"><a href="forty-hand-rolled-variants-retired.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Forty Hand-Rolled Variants Retired</a><br><span style="color:#8892b0;font-size:13px;">The same platform's design-system consolidation, which is why the new Google button had to be built as its own primitive</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

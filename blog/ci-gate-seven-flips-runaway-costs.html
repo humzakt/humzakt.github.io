@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost — Humza Tareen</title>
+  <meta name="description" content="A CI gate on an AI video pipeline flipped between blocked and working seven times in a month, for reasons that had nothing to do with the code under test — alongside the runaway-cost bugs a stalled stream, a hung ffmpeg, and an uncapped filter graph were quietly writing off as normal.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="CI/CD, DevOps, Reliability, Cost Engineering, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/ci-gate-seven-flips-runaway-costs.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost">
+  <meta property="og:description" content="A CI gate on an AI video pipeline flipped between blocked and working seven times in a month, for reasons that had nothing to do with the code under test — alongside the runaway-cost bugs a stalled stream, a hung ffmpeg, and an uncapped filter graph were quietly writing off as normal.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/ci-gate-seven-flips-runaway-costs.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="CI/CD">
+  <meta property="article:tag" content="DevOps">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost">
+  <meta name="twitter:description" content="A CI gate on an AI video pipeline flipped between blocked and working seven times in a month, for reasons that had nothing to do with the code under test — alongside the runaway-cost bugs a stalled stream, a hung ffmpeg, and an uncapped filter graph were quietly writing off as normal.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost",
+    "description": "A CI gate on an AI video pipeline flipped between blocked and working seven times in a month, for reasons that had nothing to do with the code under test — alongside the runaway-cost bugs a stalled stream, a hung ffmpeg, and an uncapped filter graph were quietly writing off as normal.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/ci-gate-seven-flips-runaway-costs.html" },
+    "keywords": ["CI/CD", "DevOps", "Reliability", "Cost Engineering"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Seven Flips"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 9 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">CI/CD</span>
+        <span class="blog-tag">DevOps</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">Cost Engineering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A CI gate that is sometimes red and sometimes green looks, at a glance, like a flaky test. On the main video-generation service, the gate spent roughly a month doing something different: it kept getting refused by GitHub itself, for reasons that had nothing to do with the code under review, in a pattern specific enough that the team started numbering the incidents. By the time it was over, they'd counted seven flips — and the honest accounting of what that month actually cost turned out to be as valuable as the fix. Alongside it, a separate but related cluster of bugs was quietly letting single paid renders run far longer, and far more expensively, than anyone intended.</p>
+
+      <blockquote>
+        A flaky gate you can ignore case by case. A gate that is unsatisfiable by construction will train everyone who touches it to stop trusting green, which is worse than training them to ignore red.
+      </blockquote>
+
+      <h2>The shape that isn't a test failure</h2>
+
+      <p>The first thing worth understanding is that most of these "flips" weren't CI failing — they were CI never starting. PR #1171, the fifth recorded instance, captured the exact signature: a Merge Gate job reporting <code>conclusion=failure</code> with <code>steps=0</code> in three seconds flat, Build and Unit Tests both silently skipping, and an annotation reading <em>"the job was not started because recent account payments have failed or your spending limit needs to be increased."</em> That's a billing failure on the CI provider's account, surfacing as a red check indistinguishable at a glance from a real test failure — unless you know to look at the step count. A job with zero steps didn't run long enough to fail anything; it was refused before it started.</p>
+
+      <p>The team's own fix for telling the two apart wasn't a script — it was a paragraph in <code>CLAUDE.md</code> instructing every future reader to distinguish the shapes: a real failure has steps and a duration; an account block has neither. That paragraph needed updating five separate times as the state kept recurring, and each update recorded the "cleanest specimen yet" so the next person wouldn't have to re-derive the diagnosis from scratch.</p>
+
+      <h2>A gate that was unsatisfiable, not merely unlucky</h2>
+
+      <p>The sixth flip, PR #1175, is the one that mattered most, because it found CI finally executing for the first time since <strong>September 1st</strong> — and discovered two real conditions sitting underneath all the noise, neither one a regression in the code being tested. The first was a build step running under three different names across two workflows, all hitting the exact same out-of-memory ceiling; patching one name by itself had left the other two silently broken. The second was sharper: a test suite that drove real data from a directory where exactly one file was actually tracked in git. On a CI runner, that directory is empty by construction, so the test's own guard against a vacuous pass had been failing — correctly — since an earlier PR, number 1011, with nobody connecting the dots that the test had never once passed in CI.</p>
+
+      <p>The fix doesn't relax the test. It separates "the corpus directory is absent" (skip loudly, and say explicitly that a skip is not evidence of anything) from "the corpus directory is present but too short" (fail, exactly as before). That distinction — a permanently red guard teaches people to skip it, but a guard that goes vacuously green teaches them to trust a lie — is the same discipline a dead-man's-switch needs anywhere: silence and success have to be distinguishable states, or the gate stops being a gate.</p>
+
+      <table>
+        <thead><tr><th>Flip</th><th>What actually happened</th></tr></thead>
+        <tbody>
+          <tr><td>Fifth</td><td>Account-block signature finally pinned down precisely, by shape</td></tr>
+          <tr><td>Sixth</td><td>First green run since Sept 1 — found the real OOM and vacuous-corpus bugs underneath</td></tr>
+          <tr><td>Seventh</td><td>A <em>partial</em> block — only the final summary job refused, four real jobs upstream had already passed</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Getting the diagnosis wrong, in writing, on purpose</h2>
+
+      <p>The seventh flip, PR #1221, is the most interesting entry in this whole saga because the PR description documents its author's own mistaken first read. The block landed mid-run, so four real jobs — lint, build, unit tests, and the merge gate itself — had already started and completed successfully before a fifth job, the PR summary, was refused with the same billing annotation. The author's first instinct was: the other jobs ran for fifteen minutes, so the account can't actually be blocked. That reasoning is wrong whenever a block arrives partway through a run rather than at the start, and the PR corrects it in the same document that contains the mistake, specifically so the next person doesn't re-derive the same wrong conclusion. A partial block, it turns out, is also the cheapest version of this failure to live with: the substantive gate genuinely ran and its green result is real evidence — only the final summary comment is missing, which calls for naming the refused job rather than writing off a mostly-green run as entirely red.</p>
+
+      <p>PR #1176 and #1224 close the loop with the part of this story that's easiest to skip: a direct accounting of what a month of unreliable CI actually cost. Three separate breakages — the memory ceiling, the vacuous test corpus, and a duplicate YAML key that silently invalidated an entire workflow file in a way that never showed up in the normal <code>gh pr checks</code> output — had all been accumulating underneath the account-block noise, invisible precisely because the account block was the more obvious, more dramatic failure mode sitting on top of them. #1224 goes further and tallies real numbers: 616 merged PRs since the last clean baseline, cross-checked against the actual <code>dev</code>/<code>main</code> branch divergence (zero, despite an earlier assumption that dev was lagging) and a re-priced cost line in the roadmap docs that had been wrong by roughly 20% because nobody had gone back to update a constant after a vendor's real billed rate was measured.</p>
+
+      <h2>The other half: runaway cost from processes that never die</h2>
+
+      <p>A parallel cluster of fixes this cycle tackled a different flavor of the same root problem — a safety mechanism that can't fire because the failure it's guarding against doesn't look like a failure. PR #1109 found that an Anthropic streaming call had no bound on total output: <code>max_tokens</code> is where the <em>model</em> stops, but the code was draining the entire stream via <code>finalMessage()</code> before ever checking the stop reason. Measured directly on two real jobs: a healthy response used 6,254 output tokens; a runaway one, given the identical prompt, generated 64,000 tokens over eight minutes before being caught as truncated and thrown away — all of it already billed. The fix bounds total output tokens directly and aborts the stream early, stopping the runaway "at under a third of the price" instead of waiting for it to finish failing.</p>
+
+      <p>PR #1117 found a related but distinct bug: a vision call that stalled completely — zero output, zero error — for 75 minutes, holding a render open that had already cost $37.87 in rendered clips. <strong>It never threw, so every <code>.catch</code> written around it was inert</strong> — a hang isn't an exception, so exception-handling code can't see it. The fix bounds <em>idle</em> time rather than total time, specifically so a legitimately long generation that's still producing text is never cut short, while true silence trips a watchdog. PR #1118 found the same failure mode one layer down, in an ffmpeg child process: a stitch that could hang forever is, in the PR's own framing, "an ad that never ships" — not a metaphor, a literal description of the failure. And PR #1119 is the fix that made the other two trustworthy: the kill mechanism for a stuck process was firing silently, leaving no trace of what it had killed or why — which meant diagnosing a slow render meant re-discovering the same root cause from scratch every time. Three separate bugs were investigated and ruled out by actual measurement before the real one, a 30-second-per-panel contact-sheet render wedging ffmpeg past roughly 30 panels, was found — because the first local repro used a cheap, downscaled test image that made an expensive filter graph look fast.</p>
+
+      <h2>The pattern: a safeguard only works if its trigger condition can actually occur</h2>
+
+      <p>Every failure in this cycle — the CI account-block, the vacuous test corpus, the inert <code>.catch</code> blocks, the silent kill — shares the same shape. Each one had a safety mechanism already in place, written by someone who had reasoned correctly about the failure they expected. What none of them accounted for was a failure mode where the triggering condition itself never arrives: a job that never starts isn't a failed test, a hang isn't a thrown error, a silent kill isn't a kill anyone can learn from. A safeguard is only as good as its ability to detect that it should have fired at all — and the fix, every time in this cycle, wasn't a smarter retry or a bigger timeout. It was making the absence of a signal into a signal of its own.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="six-reference-sweep-eval-harness.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Building a Six-Reference Sweep</a><br><span style="color:#8892b0;font-size:13px;">The same measure-before-you-trust discipline, applied to render quality instead of CI</span></li>
+        <li style="margin-bottom:12px;"><a href="run-index-cost-ledger-supabase-migration.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Retiring a Drive Folder Scan</a><br><span style="color:#8892b0;font-size:13px;">A ledger that stopped losing the cost delta — the billing-honesty half of this same infrastructure discipline</span></li>
+        <li style="margin-bottom:12px;"><a href="billing-what-the-vendor-billed.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Billing What the Vendor Billed</a><br><span style="color:#8892b0;font-size:13px;">The cost-instrumentation deep dive this same cycle's runaway-cost fixes feed into</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

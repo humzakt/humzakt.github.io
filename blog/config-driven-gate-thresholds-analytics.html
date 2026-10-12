@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline — Humza Tareen</title>
+  <meta name="description" content="Replacing a hardcoded pass/fail bar with per-category, admin-editable thresholds for an enterprise review pipeline's QC gates, a stack rebuilt from scratch after a merge-gate wall, and the analytics layer built alongside it.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Enterprise Platform, Admin Tooling, Observability, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/config-driven-gate-thresholds-analytics.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline">
+  <meta property="og:description" content="Replacing a hardcoded pass/fail bar with per-category, admin-editable thresholds for an enterprise review pipeline's QC gates, a stack rebuilt from scratch after a merge-gate wall, and the analytics layer built alongside it.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/config-driven-gate-thresholds-analytics.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Enterprise Platform">
+  <meta property="article:tag" content="Admin Tooling">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline">
+  <meta name="twitter:description" content="Replacing a hardcoded pass/fail bar with per-category, admin-editable thresholds for an enterprise review pipeline's QC gates, a stack rebuilt from scratch after a merge-gate wall, and the analytics layer built alongside it.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline",
+    "description": "Replacing a hardcoded pass/fail bar with per-category, admin-editable thresholds for an enterprise review pipeline's QC gates, a stack rebuilt from scratch after a merge-gate wall, and the analytics layer built alongside it.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/config-driven-gate-thresholds-analytics.html" },
+    "keywords": ["Enterprise Platform", "Admin Tooling", "Observability", "TypeScript"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Config-Driven Gate Thresholds and Analytics"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 10 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Enterprise Platform</span>
+        <span class="blog-tag">Admin Tooling</span>
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>On the enterprise workflow platform, two separate quality gates — External QC and Final Review — both decided pass or fail off a single hardcoded bar. Every category of feedback a verifier could raise (task design, source data, prompt, verifiers, golden data) was judged against the same binary cutoff, and the two gates had no way to disagree with each other even when the work they were reviewing called for it. AGT-1774 replaced that with per-category, admin-editable thresholds for both gates independently. The feature itself is a month of work. What makes it worth writing about is that it got built twice — once as four separate PRs, and then again, from scratch, as a five-PR stack, because the first version hit a wall that had nothing to do with the code.</p>
+
+      <blockquote>
+        A quality bar is a policy decision, not a code constant. The month this took wasn't about computing a threshold — it was about building the plumbing so that decision could live in an admin UI instead of a pull request.
+      </blockquote>
+
+      <h2>Build one: four PRs, shipped in order</h2>
+
+      <p>The first pass landed in a straightforward sequence. PR #1028 extended the existing External QC config infrastructure with an optional <code>gateThresholds</code> field — per-category passing percentages stored as JSON on the existing config row, deliberately reusing the existing table rather than adding a migration. PR #1029 replaced a binary <code>isVerifierFeedbackItem</code> classification with a five-category classifier and a pure <code>evaluateThresholdDecision</code> function that groups feedback by category, computes a per-category pass rate, and compares it against the configured number — mirroring a scoring pattern (<code>computePostqaScore</code>) that already existed elsewhere in the codebase rather than inventing a new shape. PR #1030 did the same for Final Review specifically, adding a <code>loadGateThresholdConfig</code> helper with per-field fallback to sane defaults. PR #1031 put an admin UI on top: five threshold input fields, reusing the existing config fetch/update pattern with no new endpoint.</p>
+
+      <p>That's a complete, working feature in four PRs. It also had a commit with an unsigned signature somewhere in its history, which blocked the repository's verified-signatures branch-protection rule from letting it merge.</p>
+
+      <h2>Build two: the same feature, five PRs, properly signed — and better architected</h2>
+
+      <p>Rather than hunt down and re-sign one commit in an otherwise-merged history, the whole stack got rebuilt. PR #1154, explicitly labeled "replacement for #1027," is stack position one of five: the core terminal/rework lifecycle, durable completion recovery, and shared gate contracts — threshold configuration and its UI deliberately deferred to later PRs in the stack. #1105 (replacing #1028) added independently persisted thresholds for both gates with atomic config updates. #1106 (replacing #1029) applied the shared evaluator to External QC specifically, with decision consumption for Final Review intentionally left out. #1107 (replacing #1030) applied it to Final Review, with admin editing intentionally deferred again. #1108 (replacing #1031) closed the stack with the admin UI and a canonical cache-invalidation fix.</p>
+
+      <p>The rebuild isn't just the same four PRs re-signed. Splitting "add thresholds to External QC" and "add thresholds to Final Review" into two sequential PRs that each explicitly say what they're deferring is a more disciplined decomposition than the first attempt's four roughly-feature-sized chunks — each PR in the second version has a narrower, independently-testable claim, and the stack notes spell out exactly which PR depends on which. A signing problem is a bad reason to redo a month of work. A redo that uses the occasion to ship a cleaner decomposition than the original is the only good version of that story.</p>
+
+      <h2>The redirect bug that keeps needing the same fix</h2>
+
+      <p>Threaded through both builds is a recurring bug shape worth calling out on its own. An earlier fix (AGT-1760, covered in <a href="enterprise-workflow-versioning-golden-data.html">a previous post</a>) made a golden-data rework redirect fire only for its actual source version, not every older version. PR #1024 found that guard still fired one hop too eagerly — clicking the immediate predecessor version in a dropdown redirected forward again, because nothing distinguished "this session is the one that just triggered the fork" from "a user navigated here on purpose to inspect it." PR #1180 found the identical bug shape on External QC's own version dropdown, independently, and fixed it the same way: a <code>prevManifestVersionRef</code> plus a pure <code>shouldFireExternalQcRedirect</code> helper, explicitly modeled on the golden-data fix rather than reinvented. The same underlying mistake — conflating "a transition just happened" with "the user wants to leave" — showed up on two different gates built by different people at different times, which is a reasonable argument for making the transition-gate pattern a shared primitive rather than something each gate re-derives.</p>
+
+      <h2>A false "Submit failed" from a schema that wasn't lying, exactly</h2>
+
+      <p>PR #1018 traced a confusing failure: the golden-data finalize route could return <code>status: "qc_in_progress"</code> without two fields — <code>effectiveVersion</code> and <code>reworkVersionCreated</code> — that the client's response schema required on every branch of the union. The server had genuinely succeeded; the client's own validation rejected the honestly-formed response before the UI ever got to react to it, so the panel never transitioned to the QC view and the user saw "Submit failed" for a submission that had, in fact, succeeded. Schema validation did exactly what it's supposed to do here — reject a response that didn't match the contract — the actual bug was that the contract was stricter than what one legitimate server branch produced.</p>
+
+      <h2>Building a real analytics layer, not a bigger spreadsheet</h2>
+
+      <p>Alongside the threshold work, PR #1167 added a Task-Level Metrics tab to the task-detail page — and per direct stakeholder feedback during review, the original plan to show raw-data tables was replaced with interactive charts before it shipped, because tables of per-step durations are much harder to spot a trend in than the equivalent line chart. PR #1097 built the top-level admin Analytics dashboard separately, deliberately sourced only from the existing rl-world API and GCS manifests — "zero v0 code remains" — rather than adding a new direct-to-database query path that would have had to be maintained as a second source of truth.</p>
+
+      <p>PR #1170 is the bug that would have quietly undermined both: the step-timing charts derived their list of steps and versions from GCS <code>step_started</code>/<code>step_completed</code> events, and when those events were missing or incomplete, the charts rendered empty — "no step timing data available" — even on tasks where the more authoritative rl-world API had the real timing data the whole time. A first attempted fix unioned both sources together, which meant a step that only ever existed in sparse GCS events still forced its way into the list and diluted the result. The real fix makes rl-world the primary source outright, falling back to GCS events only as a last resort — a priority order, not a union, because one of the two sources is simply more trustworthy than the other and averaging them together doesn't produce a better answer.</p>
+
+      <h2>Smaller fixes that are really about who's being shown what</h2>
+
+      <p>PR #1178 found the Final Review gate's confirmation modal collapsing a <code>verifier.json</code> artifact holding nineteen individual per-verifier results — eight approved, eleven rejected — into a single row reading "1 Rejected · 0 Approved · 0 Incomplete — 1 artifact." The modal's job is to tell a reviewer what they're about to approve past; showing one artifact instead of nineteen decisions is technically accurate about file count and completely misleading about what's actually being waved through. The fix expands aggregation to count individual verifier results rather than the artifact file that happens to contain them.</p>
+
+      <p>PR #1169 closed three separate permission bugs — a visible Clone Task button, an accessible Events tab, and a reachable Force QC Pass action — all under platform-admin impersonation of a lower-privileged role, and all three traced to the exact same root cause: the client's auth context tracked <em>that</em> impersonation was active but never tracked <em>which role</em> was being impersonated, so every permission check kept reading the real admin's role underneath. One shared fix (threading the impersonated role through <code>fetchUserProfile</code> via <code>authFetch</code>) closed all three, which is the useful signal that it was one bug with three symptoms rather than three unrelated ones — bugs findable only by actually testing as an impersonated user, not as yourself.</p>
+
+      <p>A smaller cluster rounds out the access-and-trust side: PR #1187 blocked reassigning a reviewer-step task to a role explicitly ineligible to hold it — a gap on the older "classic" reassign route that a newer route had already closed, found only because the two routes had drifted apart. PR #1188 widened the new analytics dashboard's access from platform admins only to standard admins too, specifically scoped to analytics and nothing else, because the dashboard's own access model and the platform's broader admin-tier model hadn't been reconciled when the dashboard first shipped. PR #1182 made a post-claim run lookup fail loudly instead of swallowing a transient GCS error as "not found" — the quiet version of that bug could have wiped an already-approved review off the back of a storage blip that had nothing to do with the review's actual status. And PR #1181 fixed a dropdown option plainly mislabeled "Block approval for rework" in a context — Final Review — where rework was never actually a possible outcome; a small fix, but exactly the kind of thing that erodes an admin's trust in every other label on the same screen if left uncorrected.</p>
+
+      <h2>The pattern: a quality bar only works as policy if it's actually editable</h2>
+
+      <p>The headline feature here — admin-editable thresholds instead of a hardcoded cutoff — is the kind of change that sounds almost too simple to take a month. It took a month because making a number configurable is the easy 10%; the other 90% is every place downstream that assumed the number would never change, every version-navigation path that needed to agree with every other one, and an analytics layer built at the same time that needed its own data sources prioritized correctly rather than averaged. None of the individual fixes in this cluster are large. What they have in common is that each one is a place where "the system does roughly the right thing" and "the system does exactly the right thing for the person relying on it" turned out to be different claims — and closing that gap, repeatedly, is what actually shipping a policy-configurable gate costs.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="enterprise-workflow-versioning-golden-data.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Roll-Forward Versioning and Concurrent Golden-Data Forks</a><br><span style="color:#8892b0;font-size:13px;">The same redirect-gating bug pattern, first found on golden-data rework</span></li>
+        <li style="margin-bottom:12px;"><a href="trainer-gate-qc-claim-lifecycle.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Trainer Gate QC: Claim Lifecycle</a><br><span style="color:#8892b0;font-size:13px;">The claim/review gate semantics this threshold work builds on top of</span></li>
+        <li style="margin-bottom:12px;"><a href="rbac-hardening-resizable-admin-panels.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Locking Down an Admin Dashboard</a><br><span style="color:#8892b0;font-size:13px;">More admin-tier access reconciliation on the same platform</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

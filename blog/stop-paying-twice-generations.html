@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep — Humza Tareen</title>
+  <meta name="description" content="A background sweep meant to collect vendor generations a reframing tool had already paid for turned out to have the same class of bugs as the pipeline it was auditing — including being structurally unable to see the one case it was built for.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Cost Engineering, Reliability, AI Video, Video Rendering">
+  <link rel="canonical" href="https://humzakt.github.io/blog/stop-paying-twice-generations.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep">
+  <meta property="og:description" content="A background sweep meant to collect vendor generations a reframing tool had already paid for turned out to have the same class of bugs as the pipeline it was auditing — including being structurally unable to see the one case it was built for.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/stop-paying-twice-generations.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-12T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Cost Engineering">
+  <meta property="article:tag" content="Reliability">
+  <meta property="article:tag" content="AI Video">
+  <meta property="article:tag" content="Video Rendering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep">
+  <meta name="twitter:description" content="A background sweep meant to collect vendor generations a reframing tool had already paid for turned out to have the same class of bugs as the pipeline it was auditing — including being structurally unable to see the one case it was built for.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep",
+    "description": "A background sweep meant to collect vendor generations a reframing tool had already paid for turned out to have the same class of bugs as the pipeline it was auditing — including being structurally unable to see the one case it was built for.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-12",
+    "dateModified": "2026-10-12",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/stop-paying-twice-generations.html" },
+    "keywords": ["Cost Engineering", "Reliability", "AI Video", "Video Rendering"],
+    "articleSection": "ML / AI"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Stop Paying Twice"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-12" itemprop="datePublished">October 12, 2026</time>
+        <span>· 11 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Cost Engineering</span>
+        <span class="blog-tag">Reliability</span>
+        <span class="blog-tag">AI Video</span>
+        <span class="blog-tag">Video Rendering</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A vendor error called <code>VendorQueuedTooLong</code> carried a comment that read, in effect: "nothing was rendered, so resubmitting is free." The reframing tool's render pipeline believed that comment and acted on it every time a generation sat in queue too long. Both halves of the claim were false, and they cost real money. The vendor pre-charges at submission time and only refunds a generation that reaches a documented <code>failed</code> state — and the "abandoned" generations weren't failing. Twelve for twelve of the ones this exact error killed in production had actually reached <code>completed</code> at the vendor, sitting there, paid for, with nobody ever coming back to collect them.</p>
+
+      <p>That discovery is where a 27-PR arc started: build a background sweep that finds generations the vendor has already billed for and reclaims them instead of quietly resubmitting and paying twice. What makes this cluster worth a post of its own isn't the sweep's existence — it's that the sweep itself turned out to need the same scrutiny as the pipeline it was auditing, right down to a defect that made it structurally blind to its own primary use case.</p>
+
+      <blockquote>
+        A cost-reconciliation process is still software. It can have the exact bug class it exists to catch.
+      </blockquote>
+
+      <h2>Measuring the vendor instead of trusting the error message</h2>
+
+      <p>Across the account's whole history — 1,020 generations between May and September — 1,005 completed normally and only six ever reached a true <code>failed</code> state. The remaining nine had sat in a <code>queued</code> state for 122 to 146 days with no assets attached: the vendor, it turned out, holds a generation indefinitely rather than ever failing it outright, which meant any sweep built on "wait for failed" needed a give-up condition of its own. PR #16 recovered the twelve stranded result URLs directly and, just as importantly, stopped creating new orphans: the queue-timeout error now parks a run in an <code>awaiting_vendor</code> state instead of marking it terminally failed, so a boot scan or sweep still has something alive to reconsider later.</p>
+
+      <p>PR #17 is a small, disciplined piece of measurement worth calling out on its own. The render-budget logic depended on observing a specific vendor transition state — <code>dreaming</code> — and nothing had ever confirmed that state was actually observable at the poll interval being used. A history tally couldn't settle it either, since every past generation has already resolved one way or another; a snapshot reads zero <code>dreaming</code> states whether or not the state is really samplable. The only way to know was to spend one real, paid 540p probe and watch the transitions land in real time. It confirmed the state is entered within about five seconds and held for roughly nineteen — comfortably inside the poll window — which is the only reason the rest of the budget logic downstream could be trusted at all.</p>
+
+      <h2>The sweep that couldn't see the case it was built for</h2>
+
+      <p>PR #21 is the center of this whole story. A high-effort review of the accumulated sweep code turned up fourteen findings, and the first one undid the premise of everything before it: <strong>the sweep could never actually observe a parked run.</strong> The in-memory job registry's "live" check returned every non-terminal job, including parked ones — so the very container that had parked a run kept heartbeating it forever, which meant its lease never went stale, which meant both of the sweep's own filters excluded it: the process-local id check, and the stale-heartbeat condition in its query. The one container that could have collected the parked generation was, by construction, the one container that never would. That is precisely the failure mode parking was built to solve, and the sweep had been quietly unable to touch it the whole time.</p>
+
+      <p>The same review surfaced a cluster of smaller but equally real defects, each pinned down with a test that fails the moment the fix is reverted:</p>
+
+      <table>
+        <thead><tr><th>Finding</th><th>Consequence</th></tr></thead>
+        <tbody>
+          <tr><td>A hand-back path skipped the resume-attempt cap</td><td>the sweep itself could push a run past its maximum resume attempts</td></tr>
+          <tr><td>A give-up wrote nothing to the row</td><td>every later cycle re-probed the vendor for a case already settled</td></tr>
+          <tr><td>A write's return value was discarded</td><td>a silently dropped write reported as a successful collection</td></tr>
+          <tr><td>The give-up clock read the row's own update time</td><td>candidates read as minutes old when they were really 11–19 days old</td></tr>
+          <tr><td>A 404 was treated as a vendor failure</td><td>indistinguishable from what a rotated API key also returns</td></tr>
+          <tr><td>Status vocabulary duplicated in three places</td><td>a second and third copy could silently drift from the first</td></tr>
+        </tbody>
+      </table>
+
+      <p>None of these are exotic bugs. They're the ordinary failure modes of any stateful background job — and they existed in the code written specifically to catch ordinary failure modes in the pipeline next door.</p>
+
+      <h2>A fallback ladder that was buying the same seconds twice</h2>
+
+      <p>PR #22 found a second, more direct instance of the same root cause. The fallback ladder that escalates across vendor brokers caught every subclass of a generic vendor-error type and advanced to the next broker — including the two states, queue-timeout and stall, that the system's own error documentation explicitly flagged as <strong>already billed</strong>. The ladder's entire justification had been written as "one queue starving is the whole problem this exists for" — but a starved generation is, by the vendor's own pricing model, one that's already been accepted and paid for. Advancing past it didn't recover from a starved queue; it bought the same seconds a second time on a different broker. The fix narrows which error types are allowed to advance the ladder to ones that provably bought nothing — a bad request, an auth failure, an exhausted retry with no generation id ever issued — and makes everything else degrade to the output already on hand instead of spending again.</p>
+
+      <h2>A database constraint that was actively hostile to the feature it sat next to</h2>
+
+      <p>PR #23 found a uniqueness constraint that made the sweep's entire purpose impossible at the schema level. A vendor-generation id was marked unique across the whole table, on the reasoning that one generation belongs to exactly one segment. But a rerun is specifically designed to <em>reuse</em> a prior run's generation ids — that's the entire point of recording them — so writing a reused id against a table-wide unique index threw a constraint violation that got silently swallowed as a warning. Measured against the three reruns that existed in production at the time: zero of them had successfully recorded a single shared id. Every one of them had re-attached to a prior generation for free in memory, written nothing durable about it, and was one interruption away from re-buying every segment it had just silently reused, at full price. The fix narrows the constraint to per-run uniqueness — the actual invariant worth enforcing — rather than per-table.</p>
+
+      <h2>A receipt written too late to survive the exact failure it needed to survive</h2>
+      <p>PR #24 found that a fallback generation's payment receipt was held in an in-memory Python list and only persisted to durable storage after the entire fallback block completed — after the poll, the download, and the length check. Every way a segment could die in between (a container redeploy mid-poll, an editor cancellation, an ffmpeg fault) lost the receipt for a generation that had already been bought, at up to roughly eighty cents a run. The primary generation path had followed the opposite, correct rule since it was first written — record the id the instant the vendor returns it, before the first poll — and the fallback path's own documentation claimed it did the same thing. It didn't. The fix records the id at the moment of purchase, and deliberately does not yet let the sweep act on fallback ids until a separate vendor-routing fix (below) makes probing them safe.</p>
+
+      <h2>Guessing which vendor to ask is itself a bug</h2>
+
+      <p>PR #34 is maybe the cleanest illustration in the whole arc of a sweep auditing a three-vendor pipeline while only being able to speak to one vendor. The query selected a <code>vendor</code> column and then discarded it, defaulting every probe to a single hardcoded API. Tested against one real, completed generation routed three different ways: asked correctly, it returned complete with a usable URL and the verdict "collect." Asked as either of the two wrong vendors, it came back <code>not_found</code> — read by the decision logic as "this generation is gone" — and the verdict was "give up." Two routings out of three threw away a paid, finished asset. The fix removes the default entirely: an unrecognized vendor or a missing credential now returns "could not ask," which is a different answer from "the generation doesn't exist," and the sweep is required to tell the two apart.</p>
+
+      <h2>Honest messaging to the editor, not just a correct ledger</h2>
+
+      <p>A smaller cluster (PR #29, #33, #35, #36) fixed what the editor actually sees once the sweep does its job correctly. A give-up verdict was being written to a field the run-detail panel never read, so an editor was told to keep waiting for — and explicitly not resubmit — a generation the system had just internally concluded was never coming. A successfully collected and finished run could still display a stale <code>VendorQueuedTooLong</code> error sitting right next to the word "Done," because nothing cleared the field once the generation was recovered. And a rerun's own cost-savings estimate was wrong in the specific population the whole sweep exists to serve: a segment only counted as "reusable" if every part of it was free, so a recovered generation with only its upscale step still pending read as zero savings, telling an editor "this is a full re-render" on a job that was actually 78% already paid for.</p>
+
+      <h2>Operability and the parts that touch real money directly</h2>
+
+      <p>The remaining PRs round out the picture: a confirmation dialog for stopping a parked run used to fire only once a segment had completed, which meant a run parked on its very first segment — with a generation already bought and in flight at the vendor — could be cancelled with one unconfirmed click, forfeiting money that cancellation (unlike collection) never recovers. A cost ledger was charging $0.00 for a completed, billed generation that had simply been rejected on quality grounds after the fact — real line items from production showed every other segment billing at the same consistent per-second rate while the rejected one logged as free. A quality audit that only checked whether an upscale URL was present missed an entire letterboxed, defective master shipping to an editor, because the two fallback outcomes it could distinguish both looked identical through that one narrow signal. And a logging bug meant five of seven real warning conditions in one production run never reached the log at all — a plain Python <code>print</code> statement reaches a platform's log aggregator classified only by which stream it came from, so warnings printed to stdout were filed as routine "info" lines sitting beside ordinary request chatter.</p>
+
+      <p>Woven through nearly every PR in this batch is a documentation discipline worth naming directly: a README was rewritten to describe files that no longer existed and omit the directory holding essentially all the maintained code; a gunicorn dependency got pinned to the exact version its configuration had been silently relying on, because a looser version range had already let one redeploy quietly resolve a new major and undo a prior log-level fix without anything alerting on it; and a one-write-per-poll bug inflated a 37-minute render into a database row that looked, from its timestamps alone, like it had taken 68 seconds — hundreds of identical writes whose only lasting effect was whichever one happened to land last.</p>
+
+      <h2>The pattern: the auditor needs an auditor</h2>
+
+      <p>Every bug in this arc shares the same shape. A background process was built specifically to catch money the main pipeline was losing — and it lost money the exact same way, for the exact same reasons: state that doesn't survive a restart, a constraint that doesn't model the real invariant, a default that stands in for a verdict nobody actually computed, a receipt written at the wrong moment to survive the failure it needed to survive. Building a reconciliation layer on top of a system doesn't automatically inherit correctness from good intentions. It's new code, with its own state machine and its own edge cases, and — as PR #21 proved outright — it can be built with such confidence that nobody notices it's structurally incapable of seeing the one case it exists to handle, until someone runs a high-effort review against real production data and checks.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="video-reframer-paid-render-reliability.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Stop Losing Paid Renders</a><br><span style="color:#8892b0;font-size:13px;">The same tool's first reliability pass — vendor retries, wrong-resolution billing, and a fallback that made outages worse</span></li>
+        <li style="margin-bottom:12px;"><a href="billing-what-the-vendor-billed.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Billing What the Vendor Billed</a><br><span style="color:#8892b0;font-size:13px;">The same billing-correctness audit pattern applied to the main video-generation service's own cost ledger</span></li>
+        <li style="margin-bottom:12px;"><a href="ledger-billing-reconciliation-paid-runs.html" style="color:#64ffda;text-decoration:none;font-size:15px;">What Paid Runs Found</a><br><span style="color:#8892b0;font-size:13px;">Cost-accounting bugs that only ever surface under real, metered, paid load</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

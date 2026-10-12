@@ -1,5 +1,190 @@
 [
   {
+    "id": "caching-correctly-cost-experiments",
+    "title": "Caching Correctly: Keys, Experiments, and a Decision Overturned",
+    "summary": "A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.",
+    "date": "2026-10-12",
+    "themes": [
+      "infrastructure",
+      "ml-ai"
+    ],
+    "components": [
+      "Cost Engineering",
+      "Software Architecture",
+      "A/B Testing",
+      "Video Generation"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/caching-correctly-cost-experiments.html"
+    }
+  },
+  {
+    "id": "billing-what-the-vendor-billed",
+    "title": "Billing What the Vendor Billed: A Cost Audit That Found a Tracker Recording $0 for Its Entire Life",
+    "summary": "An AI video pipeline's cost-tracing tool had recorded $0 for every day of its operational life. A vendor worth 36% of total spend reported $0 on every call. The audit that found both, and the dozen smaller leaks hiding next to them.",
+    "date": "2026-10-12",
+    "themes": [
+      "infrastructure",
+      "ml-ai"
+    ],
+    "components": [
+      "Cost Engineering",
+      "Observability",
+      "Video Generation",
+      "LLM Infrastructure"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/billing-what-the-vendor-billed.html"
+    }
+  },
+  {
+    "id": "styles-previews-redeploy-data-loss",
+    "title": "Styles That Fight Their Own Prompts, Previews That Lie, and Artifacts a Redeploy Erases",
+    "summary": "Three clusters of real-content defects in an AI ad pipeline: non-Pixar visual styles silently unreachable or self-contradicting, review-gate previews that don't match what actually renders, and artifacts that a redeploy quietly drops on the floor.",
+    "date": "2026-10-12",
+    "themes": [
+      "ml-ai",
+      "infrastructure"
+    ],
+    "components": [
+      "AI Video",
+      "Computer Vision",
+      "Reliability",
+      "Video Generation"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/styles-previews-redeploy-data-loss.html"
+    }
+  },
+  {
+    "id": "narrated-beat-repair-identity-critics",
+    "title": "The Narrated-Beat Repair That Kept Causing Its Own Bug",
+    "summary": "A repair step built to fix narrated-beat framing in an AI ad pipeline kept producing the exact defect it was meant to prevent \u2014 plus critics that could detect identity drift but never repair it, grade a cutaway on criteria it was never shown, and a verdict describing frames that had already been replaced.",
+    "date": "2026-10-12",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Evaluation",
+      "Prompt Engineering",
+      "Computer Vision",
+      "Video Generation"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/narrated-beat-repair-identity-critics.html"
+    }
+  },
+  {
+    "id": "stylizing-every-cast-member",
+    "title": "Stylizing Every Cast Member: Hardening an Animated-Cast Feature After It Shipped",
+    "summary": "A single-presenter 'animated' feature meets a real multi-person cast: one twin stylized and two left photoreal in the same frame, a redeploy that silently re-buys an expensive identity render, and a planner that finally declares which cast member a shot is about.",
+    "date": "2026-10-12",
+    "themes": [
+      "ml-ai"
+    ],
+    "components": [
+      "AI Video",
+      "Computer Vision",
+      "Product Engineering",
+      "Prompt Engineering"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/stylizing-every-cast-member.html"
+    }
+  },
+  {
+    "id": "config-driven-gate-thresholds-analytics",
+    "title": "Config-Driven Gate Thresholds and an Analytics Layer for an Enterprise Review Pipeline",
+    "summary": "Replacing a hardcoded pass/fail bar with per-category, admin-editable thresholds for an enterprise review pipeline's QC gates, a stack rebuilt from scratch after a merge-gate wall, and the analytics layer built alongside it.",
+    "date": "2026-10-12",
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Enterprise Platform",
+      "Admin Tooling",
+      "Observability",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/config-driven-gate-thresholds-analytics.html"
+    }
+  },
+  {
+    "id": "locking-down-sign-in-session-lifecycle",
+    "title": "Locking Down Sign-In: Workspace-Only Auth and a Session Lifecycle That Matches Its Provider",
+    "summary": "Restricting sign-in to a verified company Workspace domain, closing identity-forwarding and shared-table gaps a security audit found in one evening, and building a session lifecycle whose idle and absolute limits are tuned to match the identity provider's own clock.",
+    "date": "2026-10-12",
+    "themes": [
+      "security",
+      "infrastructure"
+    ],
+    "components": [
+      "Security",
+      "Access Control",
+      "Authentication",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/locking-down-sign-in-session-lifecycle.html"
+    }
+  },
+  {
+    "id": "forty-hand-rolled-variants-retired",
+    "title": "Forty Hand-Rolled Variants Retired: A Design System Consolidation for an Internal Ops Platform",
+    "summary": "Retiring roughly forty hand-rolled UI component variants into a shared design system across an internal ops platform \u2014 tokens, a lint rule that proves it can fail, and the two production outages the migration itself caused.",
+    "date": "2026-10-12",
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "Frontend Engineering",
+      "Design Systems",
+      "React",
+      "UX"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/forty-hand-rolled-variants-retired.html"
+    }
+  },
+  {
+    "id": "stop-paying-twice-generations",
+    "title": "Stop Paying Twice: Hardening a Reframing Tool's Generation-Collection Sweep",
+    "summary": "A background sweep meant to collect vendor generations a reframing tool had already paid for turned out to have the same class of bugs as the pipeline it was auditing \u2014 including being structurally unable to see the one case it was built for.",
+    "date": "2026-10-12",
+    "themes": [
+      "infrastructure",
+      "ml-ai"
+    ],
+    "components": [
+      "Cost Engineering",
+      "Reliability",
+      "AI Video",
+      "Video Rendering"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/stop-paying-twice-generations.html"
+    }
+  },
+  {
+    "id": "ci-gate-seven-flips-runaway-costs",
+    "title": "Seven Flips: A CI Gate That Could Never Go Green, and What a Dark Month Cost",
+    "summary": "A CI gate on an AI video pipeline flipped between blocked and working seven times in a month, for reasons that had nothing to do with the code under test \u2014 alongside the runaway-cost bugs a stalled stream, a hung ffmpeg, and an uncapped filter graph were quietly writing off as normal.",
+    "date": "2026-10-12",
+    "themes": [
+      "infrastructure"
+    ],
+    "components": [
+      "CI/CD",
+      "DevOps",
+      "Reliability",
+      "Cost Engineering"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/ci-gate-seven-flips-runaway-costs.html"
+    }
+  },
+  {
     "id": "vsl-generator-ai-presenter-unification",
     "title": "One Brief Instead of Four: Unifying Create Flows Into a VSL Generator and an AI Presenter",
     "summary": "Collapsing four separate ad-creation entry points into one brief-driven flow, building a VSL Generator and an AI Presenter mode on top of it, and the sample-rendering and cost-quoting accuracy work needed to make the pre-review sample trustworthy before a paid run.",
