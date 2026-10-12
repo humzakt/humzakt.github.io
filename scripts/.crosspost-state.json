@@ -56,6 +56,11 @@
     "postedAt": "2026-08-25T21:06:29Z",
     "url": "https://dev.to/humzakt/automated-dead-air-trimming-cleaning-up-leading-silence-in-short-form-video-hooks-352l"
   },
+  "billing-what-the-vendor-billed": {
+    "id": 4837649,
+    "postedAt": "2026-10-12T10:28:53Z",
+    "url": "https://dev.to/humzakt/billing-what-the-vendor-billed-a-cost-audit-that-found-a-tracker-recording-0-for-its-entire-life-4d8j"
+  },
   "bootstrapping-engineering-standards-legacy-codebase": {
     "id": 4488275,
     "postedAt": "2026-08-25T21:06:33Z",
@@ -86,10 +91,20 @@
     "postedAt": "2026-08-25T21:07:53Z",
     "url": "https://dev.to/humzakt/building-cicd-quality-gates-that-actually-catch-bugs-407c"
   },
+  "ci-gate-seven-flips-runaway-costs": {
+    "id": 4837656,
+    "postedAt": "2026-10-12T10:29:30Z",
+    "url": "https://dev.to/humzakt/seven-flips-a-ci-gate-that-could-never-go-green-and-what-a-dark-month-cost-5ek3"
+  },
   "claim-timeout-decoupling-expert-review-ux": {
     "id": 4488286,
     "postedAt": "2026-08-25T21:08:28Z",
     "url": "https://dev.to/humzakt/decoupling-claim-timeouts-from-feature-flags-4f0a"
+  },
+  "config-driven-gate-thresholds-analytics": {
+    "id": 4837658,
+    "postedAt": "2026-10-12T10:29:35Z",
+    "url": "https://dev.to/humzakt/config-driven-gate-thresholds-and-an-analytics-layer-for-an-enterprise-review-pipeline-30bc"
   },
   "cross-tool-defect-auditing-nextjs15-hardening": {
     "id": 4488287,
@@ -163,6 +178,11 @@
     "postedAt": "2026-08-25T21:11:09Z",
     "url": "https://dev.to/humzakt/from-fixed-levels-to-ln-building-an-extensible-taxonomy-system-4dh5"
   },
+  "forty-hand-rolled-variants-retired": {
+    "id": 4837662,
+    "postedAt": "2026-10-12T10:30:09Z",
+    "url": "https://dev.to/humzakt/forty-hand-rolled-variants-retired-a-design-system-consolidation-for-an-internal-ops-platform-33kn"
+  },
   "gcs-backed-auto-seeder-platform": {
     "id": 4488231,
     "postedAt": "2026-08-25T20:58:29Z",
@@ -219,6 +239,11 @@
     "postedAt": "2026-08-25T21:13:49Z",
     "url": "https://dev.to/humzakt/when-rag-says-duplicate-but-the-llm-disagrees-building-an-adjudication-layer-2ioa"
   },
+  "locking-down-sign-in-session-lifecycle": {
+    "id": 4837663,
+    "postedAt": "2026-10-12T10:30:13Z",
+    "url": "https://dev.to/humzakt/locking-down-sign-in-workspace-only-auth-and-a-session-lifecycle-that-matches-its-provider-5hfp"
+  },
   "long-horizon-rl-task-pipelines": {
     "id": 4488319,
     "postedAt": "2026-08-25T21:13:53Z",
@@ -243,6 +268,11 @@
     "id": 4488327,
     "postedAt": "2026-08-25T21:15:10Z",
     "url": "https://dev.to/humzakt/multi-turn-agent-evaluation-at-scale-1f83"
+  },
+  "narrated-beat-repair-identity-critics": {
+    "id": 4837669,
+    "postedAt": "2026-10-12T10:30:47Z",
+    "url": "https://dev.to/humzakt/the-narrated-beat-repair-that-kept-causing-its-own-bug-57hc"
   },
   "narrative-continuity-story-spine-video-gen": {
     "id": 4488328,
@@ -421,6 +451,11 @@
     "postedAt": "2026-09-21T18:12:15Z",
     "url": "https://dev.to/humzakt/pin-one-hook-into-every-variant-fixing-a-hook-management-builder-4pj"
   },
+  "stop-paying-twice-generations": {
+    "id": 4837670,
+    "postedAt": "2026-10-12T10:30:51Z",
+    "url": "https://dev.to/humzakt/stop-paying-twice-hardening-a-reframing-tools-generation-collection-sweep-1cf2"
+  },
   "storyboard-reference-fidelity-verification": {
     "id": 4709752,
     "postedAt": "2026-09-21T18:12:18Z",
@@ -435,6 +470,16 @@
     "id": 4488377,
     "postedAt": "2026-08-25T21:23:22Z",
     "url": "https://dev.to/humzakt/streaming-master-uploads-to-disk-preventing-memory-exhaustion-in-video-pipelines-30a3"
+  },
+  "styles-previews-redeploy-data-loss": {
+    "id": 4837677,
+    "postedAt": "2026-10-12T10:31:24Z",
+    "url": "https://dev.to/humzakt/styles-that-fight-their-own-prompts-previews-that-lie-and-artifacts-a-redeploy-erases-4a41"
+  },
+  "stylizing-every-cast-member": {
+    "id": 4837678,
+    "postedAt": "2026-10-12T10:31:28Z",
+    "url": "https://dev.to/humzakt/stylizing-every-cast-member-hardening-an-animated-cast-feature-after-it-shipped-2j1e"
   },
   "systematic-service-hardening-guard-notification": {
     "id": 4488379,
