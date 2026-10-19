@@ -29,6 +29,11 @@
     "postedAt": "2026-08-25T21:05:49Z",
     "url": "https://dev.to/humzakt/one-source-of-truth-for-aspect-ratio-retrofitting-169-into-a-portrait-only-pipeline-5bh3"
   },
+  "assignee-dimension-fleet-guards-lineage-fix": {
+    "id": 4877243,
+    "postedAt": "2026-10-19T10:42:05Z",
+    "url": "https://dev.to/humzakt/assignee-dimension-fleet-guards-and-a-lineage-fix-for-an-unclaimable-task-1dn5"
+  },
   "atlas-evaluations-core-engine": {
     "id": 3263413,
     "postedAt": "2026-03-23T11:30:00.000Z",
@@ -243,6 +248,11 @@
     "id": 4837663,
     "postedAt": "2026-10-12T10:30:13Z",
     "url": "https://dev.to/humzakt/locking-down-sign-in-workspace-only-auth-and-a-session-lifecycle-that-matches-its-provider-5hfp"
+  },
+  "log-levels-that-lie-week-overview-access": {
+    "id": 4877244,
+    "postedAt": "2026-10-19T10:42:08Z",
+    "url": "https://dev.to/humzakt/log-levels-that-lie-one-sweep-two-repos-the-same-bug-2lj5"
   },
   "long-horizon-rl-task-pipelines": {
     "id": 4488319,
