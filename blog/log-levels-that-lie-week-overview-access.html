@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Log Levels That Lie: One Sweep, Two Repos, the Same Bug — Humza Tareen</title>
+  <meta name="description" content="A Railway log sweep finds the same false-alarm pattern in two unrelated tools — routine lines filed as errors because log level gets assigned by output stream, not content — plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Observability, DevOps, Access Control, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Log Levels That Lie: One Sweep, Two Repos, the Same Bug">
+  <meta property="og:description" content="A Railway log sweep finds the same false-alarm pattern in two unrelated tools — routine lines filed as errors because log level gets assigned by output stream, not content — plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-19T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="DevOps">
+  <meta property="article:tag" content="Access Control">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Log Levels That Lie: One Sweep, Two Repos, the Same Bug">
+  <meta name="twitter:description" content="A Railway log sweep finds the same false-alarm pattern in two unrelated tools — routine lines filed as errors because log level gets assigned by output stream, not content — plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Log Levels That Lie: One Sweep, Two Repos, the Same Bug",
+    "description": "A Railway log sweep finds the same false-alarm pattern in two unrelated tools — routine lines filed as errors because log level gets assigned by output stream, not content — plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-19",
+    "dateModified": "2026-10-19",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html" },
+    "keywords": ["Observability", "DevOps", "Access Control", "TypeScript"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Log Levels That Lie"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Log Levels That Lie: One Sweep, Two Repos, the Same Bug</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-19" itemprop="datePublished">October 19, 2026</time>
+        <span>· 6 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">DevOps</span>
+        <span class="blog-tag">Access Control</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A routine log sweep across a family of internal tools on October 12th turned up the same false-alarm pattern twice, in two codebases that share no code: a service's own startup messages were being filed as errors, purely because of which output stream they happened to be written to. Alongside it, a smaller but more interesting access-control story — opening a manager-only weekly dashboard to every editor, and discovering that "remove the UI restriction" was the easy 10% of that change.</p>
+
+      <blockquote>
+        A log aggregator usually can't read your message. It reads your stream. If your routine output goes to stderr, it's an error now, whether anything is actually wrong or not.
+      </blockquote>
+
+      <h2>Eighteen stack traces that were all the same expected event</h2>
+
+      <p>On an internal ops platform, a log sweep found its error bucket full of <code>AuthApiError: Invalid Refresh Token: Session Expired</code> stack traces — eighteen of them in seven days, each about eleven lines long. Every single one was a session Supabase had ended exactly as designed, on its own 48-hour time-box. Nothing was actually failing. The cause traces to how the Supabase SSR client is wired up: <code>createServerClient</code> registers an <code>onAuthStateChange</code> handler, and when the underlying auth library's initial-session load hits a refused refresh, it throws a bare error up through that handler rather than treating an expired session as a normal, expected outcome. The fix files the event as a single warning line instead of letting an expected state transition print an eleven-line stack trace under <code>@level:error</code>, which is exactly the kind of noise that trains a team to stop reading its own error bucket.</p>
+
+      <h2>The same root cause, in a completely different tool</h2>
+
+      <p>The genuinely interesting part is that the same sweep, on the same day, found the identical class of bug in an unrelated ad-variant export tool. Every deploy filed five error-level lines — <code>Starting gunicorn</code>, <code>Listening at</code>, <code>Using worker</code>, <code>Booting worker</code>, and <code>Control socket</code> — none of which indicate any problem whatsoever. The mechanism is almost comically simple once you see it: Railway assigns a log line's severity based on which stream it arrived on, not its content, and gunicorn writes its entire startup log to stderr by convention. Meanwhile, the two print statements in the actual application code that <em>do</em> report a real failure had been going to stdout, and were being filed as mere info.</p>
+
+      <p>So the error bucket had it exactly backwards: completely routine infrastructure chatter marked as errors, and the one place something could legitimately go wrong marked as unremarkable info. The fix routes gunicorn's routine lines to stdout and keeps the two genuine failure prints distinct. Finding this pattern twice in one sweep, in tools that don't share a line of code, says less about either codebase specifically and more about how easy it is for a hosting platform's stream-based log-level heuristic to quietly misclassify an entire category of output — worth checking for deliberately rather than assuming it only happens once.</p>
+
+      <h2>Opening a manager-only dashboard without leaking other people's numbers</h2>
+
+      <p>The access-control story this week came from direct editor feedback: a request to show one ad-network's performance section inside the broader Week Overview dashboard rather than as a separate page, and a follow-up request a few days later to open the <em>entire</em> Week Overview to every editor, not just managers, "so they are also aware of the stats."</p>
+
+      <p>The first request had a real structural reason behind the original split: Week Overview had been manager-only specifically because editors work the backlog, not the aggregate view, so the ad-network section had been pulled out into its own page to be reachable by editors at all. Folding it back in meant the overview itself had to open up — for managers, as a new tab alongside the existing views; for editors, as the single section they're allowed to see, with the manager-only tabs hidden rather than merely disabled.</p>
+
+      <p>The second request — opening the <em>whole</em> overview, not just that one section — is where the real engineering work was. Un-hiding a UI tab is trivial. The actual blockers were two routes (<code>/overview/trend</code> and <code>/evaluations/dashboard</code>) that explicitly refused any non-manager caller, and a row-level security policy on the underlying tables scoped to <code>is_admin() or editor_id = my_editor_id()</code> — meaning an editor's own database session could only ever read their own rows. Had the UI restriction simply been removed without addressing either of those, "This week" would have rendered correctly for a manager and silently shown an editor their own individual numbers mislabeled as the whole team's aggregate — a data-correctness bug disguised as a successful feature launch, and a worse outcome than just leaving the page locked.</p>
+
+      <h2>Making two comparison views agree with each other first</h2>
+
+      <p>A smaller companion fix tightened the Four-Week Comparison to show only completed weeks, anchoring the comparison window on the selected week once it's finished, or on the last fully-completed week otherwise, with the same clamp applied to a week selected in the future. Applied identically server-side across both the category comparison and the ad-network's own week-on-week table, so the two views can no longer silently disagree about which weeks count — the same "two dashboards reading slightly different windows" failure mode that showed up on the enterprise platform's analytics rebuild this same week, just on a smaller surface.</p>
+
+      <h2>The pattern: infrastructure defaults and permission removals both hide a second problem</h2>
+
+      <p>Two unrelated threads, one lesson each. A hosting platform's log-level heuristic is a default nobody chose and most teams never audit — it's worth treating "is my error bucket actually full of errors" as a question to ask periodically, not an assumption. And removing an access restriction is never just a UI change when the restriction was load-bearing for more than the interface — the route guards and the row-level security policy underneath this week's dashboard change were doing real work that a hidden tab had been quietly relying on.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="locking-down-sign-in-session-lifecycle.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Locking Down Sign-In: Workspace-Only Auth</a><br><span style="color:#8892b0;font-size:13px;">The same internal ops platform's session-lifecycle work, from the cycle just before this one</span></li>
+        <li style="margin-bottom:12px;"><a href="forty-hand-rolled-variants-retired.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Forty Hand-Rolled Variants Retired</a><br><span style="color:#8892b0;font-size:13px;">The design-system consolidation this platform's Week Overview UI is built on</span></li>
+        <li style="margin-bottom:12px;"><a href="assignee-dimension-fleet-guards-lineage-fix.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Assignee Dimension, Fleet Guards, and a Lineage Fix</a><br><span style="color:#8892b0;font-size:13px;">The same week's quieter maintenance pass on the enterprise workflow platform</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

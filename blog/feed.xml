@@ -9,7 +9,7 @@
     <link>https://humzakt.github.io/engineering.html#articles</link>
     <atom:link href="https://humzakt.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <lastBuildDate>Mon, 12 Oct 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 19 Oct 2026 00:00:00 +0000</lastBuildDate>
     <managingEditor>humzakhawartareen@gmail.com (Humza Tareen)</managingEditor>
     <webMaster>humzakhawartareen@gmail.com (Humza Tareen)</webMaster>
     <copyright>Copyright 2026 Humza Tareen</copyright>
@@ -160,6 +160,32 @@
       <category>UX</category>
       <category>TypeScript</category>
       <category>Video Production</category>
+    </item>
+
+    <item>
+      <title>Log Levels That Lie: One Sweep, Two Repos, the Same Bug</title>
+      <link>https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html</guid>
+      <pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A Railway log sweep finds the same false-alarm pattern in two unrelated tools — routine lines filed as errors because log level gets assigned by output stream, not content — plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.</description>
+      <category>Observability</category>
+      <category>DevOps</category>
+      <category>Access Control</category>
+      <category>TypeScript</category>
+    </item>
+
+    <item>
+      <title>Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task</title>
+      <link>https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html</link>
+      <guid isPermaLink="true">https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html</guid>
+      <pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Humza Tareen</dc:creator>
+      <description>A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.</description>
+      <category>Enterprise Platform</category>
+      <category>Access Control</category>
+      <category>Observability</category>
+      <category>TypeScript</category>
     </item>
 
     <item>

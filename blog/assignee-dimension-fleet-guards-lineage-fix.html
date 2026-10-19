@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="wMlOLQ_b24HQGcpLsEuaGHjUXDq8cv6ecTxUaOph6Hc" />
+  <title>Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task — Humza Tareen</title>
+  <meta name="description" content="A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.">
+  <meta name="author" content="Humza Tareen">
+  <meta name="keywords" content="Enterprise Platform, Access Control, Observability, TypeScript">
+  <link rel="canonical" href="https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html">
+  <link rel="author" href="https://humzakt.github.io/llms.txt" type="text/plain" title="LLMs.txt">
+  <meta property="og:title" content="Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task">
+  <meta property="og:description" content="A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html">
+  <meta property="og:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Humza Tareen">
+  <meta property="article:published_time" content="2026-10-19T00:00:00Z">
+  <meta property="article:author" content="Humza Tareen">
+  <meta property="article:tag" content="Enterprise Platform">
+  <meta property="article:tag" content="Access Control">
+  <meta property="article:tag" content="Observability">
+  <meta property="article:tag" content="TypeScript">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task">
+  <meta name="twitter:description" content="A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.">
+  <meta name="twitter:image" content="https://humzakt.github.io/suit-blue-bg.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task",
+    "description": "A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.",
+    "image": "https://humzakt.github.io/suit-blue-bg.jpg",
+    "author": { "@type": "Person", "name": "Humza Tareen", "url": "https://humzakt.github.io" },
+    "publisher": { "@type": "Person", "name": "Humza Tareen" },
+    "datePublished": "2026-10-19",
+    "dateModified": "2026-10-19",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html" },
+    "keywords": ["Enterprise Platform", "Access Control", "Observability", "TypeScript"],
+    "articleSection": "Infrastructure"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://humzakt.github.io/"},
+      {"@type":"ListItem","position":2,"name":"Blog","item":"https://humzakt.github.io/blog.html"},
+      {"@type":"ListItem","position":3,"name":"Assignee Dimension and Fleet Guards"}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Humza Tareen Blog" href="https://humzakt.github.io/blog/feed.xml">
+  <style>
+    .blog-post { max-width: 800px; margin: 0 auto; padding: calc(var(--nav-height) + 40px) 24px 80px; }
+    .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 14px; margin-bottom: 32px; }
+    .blog-back:hover { gap: 12px; }
+    .blog-header { margin-bottom: 40px; }
+    .blog-title { font-size: clamp(28px, 5vw, 42px); color: var(--heading); line-height: 1.2; margin-bottom: 16px; font-weight: 700; }
+    .blog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--text); font-size: 14px; font-family: var(--font-mono); margin-bottom: 24px; }
+    .blog-meta time { color: var(--accent); }
+    .blog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .blog-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: rgba(100,255,218,0.08); color: var(--accent); font-family: var(--font-mono); }
+    .blog-content { color: var(--text-light); line-height: 1.8; font-size: 17px; }
+    .blog-content h2 { color: var(--heading); font-size: 24px; margin: 48px 0 16px; font-weight: 600; }
+    .blog-content h3 { color: var(--heading); font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+    .blog-content p { margin-bottom: 20px; }
+    .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .blog-content li { margin-bottom: 8px; }
+    .blog-content strong { color: var(--heading); font-weight: 600; }
+    .blog-content code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .blog-content pre { background: var(--bg-light); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+    .blog-content pre code { background: none; padding: 0; color: var(--text-light); }
+    .blog-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .blog-content a:hover { color: var(--heading); }
+    .blog-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .blog-content th, .blog-content td { padding: 12px 16px; border: 1px solid var(--card-border); text-align: left; }
+    .blog-content th { background: var(--bg-light); color: var(--heading); font-weight: 600; }
+    .blog-content blockquote { border-left: 3px solid var(--accent); margin: 0 0 24px; padding: 12px 20px; color: var(--text); font-style: italic; background: rgba(100,255,218,0.03); border-radius: 0 8px 8px 0; }
+    @media (max-width: 600px) { .blog-post { padding: calc(var(--nav-height) + 20px) 16px 60px; } .blog-title { font-size: 24px; } .blog-content { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo" aria-label="Humza Tareen - Home">HT</a>
+    <div class="nav-links" role="list">
+      <div class="page-switcher">
+        <a href="../engineering.html">Engineering</a>
+        <a href="../research.html">Research</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <a href="../blog.html" class="blog-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+    <header class="blog-header">
+      <h1 class="blog-title" itemprop="headline">Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task</h1>
+      <div class="blog-meta">
+        <span>By <span itemprop="author">Humza Tareen</span></span>
+        <time datetime="2026-10-19" itemprop="datePublished">October 19, 2026</time>
+        <span>· 7 min read</span>
+      </div>
+      <div class="blog-tags">
+        <span class="blog-tag">Enterprise Platform</span>
+        <span class="blog-tag">Access Control</span>
+        <span class="blog-tag">Observability</span>
+        <span class="blog-tag">TypeScript</span>
+      </div>
+    </header>
+
+    <div class="blog-content" itemprop="articleBody">
+      <p>A quiet week on the enterprise workflow platform still produced one genuinely tricky lineage bug, two access-control gaps worth understanding precisely, and the kickoff of a real analytics rebuild. None of these individually needed a deep dive — together they're a good snapshot of what week-to-week maintenance on a mature review pipeline actually looks like once the big features are built.</p>
+
+      <blockquote>
+        A permission check that's technically correct but inconsistent with its sibling checks is still a bug — the inconsistency itself is what a user experiences.
+      </blockquote>
+
+      <h2>A task that couldn't be claimed because its own history was valid</h2>
+
+      <p>The sharpest bug this week was a task that became permanently unclaimable after passing through External QC. The root cause was almost paradoxical: the lineage walk that reconstructs a task version's ancestry explicitly skips over External QC markers when building the chain — by design, since those markers aren't part of the content lineage — but then required the node where the walk stopped to be markerless. When the walk legitimately stopped at a <em>committed</em> External QC marker, the code treated a valid, expected state as an error and threw. That turned <code>GET /api/v1/tasks/&lt;id&gt;/versions</code> into a 500, which failed the claim pre-check, which meant the claim button simply never submitted.</p>
+
+      <p>The fix adds a dedicated helper that recognizes this specific case — stopping at a committed External QC marker that's an ancestor, not the target — and returns the marker's own source version as the chain base instead of throwing. The bug is a good reminder that "skip X when building the chain" and "X should never appear in the chain" are two different rules, and conflating them turns a deliberately-ignored case into an unhandled one.</p>
+
+      <h2>A fleet guard that was stricter than the page it was feeding</h2>
+
+      <p>Separately, ADMIN-tier users had been granted access to the platform's <code>/analytics</code> page, but the Talent Performance tab and the Overview's "Active now" list both depend on an underlying fleet-status endpoint that was still locked to PLATFORM_ADMIN only. Because the Next.js route simply forwards the caller's bearer token straight through to that backend, an ADMIN user's otherwise-valid request got a 403 from the layer underneath the page they were already allowed to view. On screen, that surfaced as a generic "Failed to load analytics data" message on one tab and a silently empty "Active now" list on another — neither of which points a reader back to the actual cause.</p>
+
+      <p>The fix widens the fleet guard to accept both ADMIN and PLATFORM_ADMIN, mirroring a pattern the task-archive endpoints already used elsewhere in the platform. The lesson is narrow but recurs constantly in systems with more than one permission tier: granting access to a page is not the same as granting access to every endpoint that page calls, and the gap between the two shows up as a confusing error far from its actual cause.</p>
+
+      <h2>A status chip that disagreed with the badge right next to it</h2>
+
+      <p>A cancelled production run displayed "Cancelled" correctly in both the task list and the detail page's header badge — but the External QC step's own chip, sitting in the same view, still read "QC Pending." The cause: External QC is modeled as a document-driven step, so the general status-overlay logic deliberately skips it, deferring to a separate resolver that reads the gate document directly. That resolver never checked whether the overall task had been cancelled. The per-step chip rendering path had simply never been taught that "cancelled" was a state it needed to represent. The fix teaches it. It's a small bug, but a visible one — nothing erodes trust in a status dashboard faster than two labels on the same screen disagreeing with each other.</p>
+
+      <h2>A retry budget charging the wrong party</h2>
+
+      <p>External QC's retry-budget logic had the actors backwards relative to every other gate on the platform. Where Trainer and Final Review charge retries against the <em>reviewer's</em> actions, External QC had been charging the budget against the QC team's own feedback upload instead. The fix inverts it: a feedback upload with non-pass results and an exhausted retry budget is now accepted regardless, with the reviewer locked out from sending it back further; the retry is consumed specifically on a reviewer's own send-back action, not on the QC team doing their job. Getting this backwards meant the party being held accountable for a limited resource was the one least able to control whether it got consumed.</p>
+
+      <h2>Rebuilding analytics on one shared catalog</h2>
+
+      <p>The largest piece of work this week was the first PR in a three-PR stack building out a real analytics layer: an assignee dimension, a per-task talent drill-down, time-and-iterations tracking, and CSV export, covering four separate ticketed requirements plus a handful of audit-driven fixes found along the way. The architecturally important decision sits underneath those features rather than in them: Overview, Delivery, and Distribution are rewritten to read from the exact same shared task catalog that the All Tasks page already uses, with the server-side overview listing removed entirely. Counts match the Tasks page <em>by construction</em> now, computed from one status-counting function rather than from two independently-maintained queries that happened to usually agree.</p>
+
+      <p>That's the real fix here, even more than the new dimensions themselves. Two views of the same underlying data drifting slightly apart is one of the most common and hardest-to-notice classes of dashboard bug — nothing throws an error, numbers just quietly don't match, and users lose confidence in whichever number they saw first. Collapsing both consumers onto one source eliminates the category of bug rather than patching each instance of it.</p>
+
+      <h2>The pattern: consistency bugs hide in the seams between correct pieces</h2>
+
+      <p>Every fix this week was individually "correct code doing the wrong thing in context" rather than a straightforward logic error: a lineage rule that was right for most cases and wrong for one explicitly-designed one; a permission check that was internally consistent but inconsistent with a sibling page; a status resolver that was right about its own domain and silent about a domain it didn't own; a retry budget that charged a real cost to the wrong actor. None of these would show up in a unit test of the function where the bug lived — they only show up when you check that function against its neighbors.</p>
+    </div>
+
+    <section style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(100,255,218,0.1);">
+      <h2 style="font-size:20px;color:#ccd6f6;margin-bottom:16px;">Related Articles</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:12px;"><a href="config-driven-gate-thresholds-analytics.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Config-Driven Gate Thresholds and an Analytics Layer</a><br><span style="color:#8892b0;font-size:13px;">The threshold and admin-analytics work this week's analytics rebuild builds directly on top of</span></li>
+        <li style="margin-bottom:12px;"><a href="enterprise-workflow-versioning-golden-data.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Roll-Forward Versioning and Concurrent Golden-Data Forks</a><br><span style="color:#8892b0;font-size:13px;">The same platform's lineage/versioning system this week's claim-lineage bug lives inside</span></li>
+        <li style="margin-bottom:12px;"><a href="rbac-hardening-resizable-admin-panels.html" style="color:#64ffda;text-decoration:none;font-size:15px;">Locking Down an Admin Dashboard</a><br><span style="color:#8892b0;font-size:13px;">The same "page access and endpoint access aren't the same thing" lesson, from an earlier cycle</span></li>
+      </ul>
+    </section>
+  </article>
+  </main>
+
+  <footer style="text-align: center; padding: 40px 20px; color: #495670; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+    Built by Humza Tareen
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var readTime = Math.ceil(document.querySelector('.blog-content').textContent.trim().split(/\s+/).length / 200);
+      var metaEl = document.querySelector('.blog-meta');
+      if (metaEl) { var spans = metaEl.querySelectorAll('span'); if (spans.length >= 3) spans[2].textContent = '· ' + readTime + ' min read'; }
+    });
+  </script>
+</body>
+</html>

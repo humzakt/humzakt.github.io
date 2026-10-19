@@ -90,6 +90,22 @@ A render-batch builder tool couldn't do what every NLE and design tool takes for
 
 ---
 
+## Log Levels That Lie: One Sweep, Two Repos, the Same Bug
+
+URL: https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html
+
+A Railway log sweep finds the same false-alarm pattern in two unrelated tools — routine lines filed as errors because log level gets assigned by output stream, not content — plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.
+
+---
+
+## Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task
+
+URL: https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html
+
+A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.
+
+---
+
 ## Caching Correctly: Keys, Experiments, and a Decision Overturned
 
 URL: https://humzakt.github.io/blog/caching-correctly-cost-experiments.html

@@ -1,5 +1,43 @@
 [
   {
+    "id": "log-levels-that-lie-week-overview-access",
+    "title": "Log Levels That Lie: One Sweep, Two Repos, the Same Bug",
+    "summary": "A Railway log sweep finds the same false-alarm pattern in two unrelated tools \u2014 routine lines filed as errors because log level gets assigned by output stream, not content \u2014 plus opening a manager-only weekly dashboard to every editor without leaking other editors' numbers.",
+    "date": "2026-10-19",
+    "themes": [
+      "infrastructure",
+      "security"
+    ],
+    "components": [
+      "Observability",
+      "DevOps",
+      "Access Control",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/log-levels-that-lie-week-overview-access.html"
+    }
+  },
+  {
+    "id": "assignee-dimension-fleet-guards-lineage-fix",
+    "title": "Assignee Dimension, Fleet Guards, and a Lineage Fix for an Unclaimable Task",
+    "summary": "A lineage walk that couldn't handle its own QC marker, a fleet guard that locked ADMIN out of analytics meant for them, a retry budget charging the wrong party, and a shared-catalog analytics rebuild so Overview and All Tasks can't disagree.",
+    "date": "2026-10-19",
+    "themes": [
+      "infrastructure",
+      "security"
+    ],
+    "components": [
+      "Enterprise Platform",
+      "Access Control",
+      "Observability",
+      "TypeScript"
+    ],
+    "platforms": {
+      "medium": "https://humzakt.github.io/blog/assignee-dimension-fleet-guards-lineage-fix.html"
+    }
+  },
+  {
     "id": "caching-correctly-cost-experiments",
     "title": "Caching Correctly: Keys, Experiments, and a Decision Overturned",
     "summary": "A cost-instrumentation audit finds caches keyed on the wrong field, a guard that stopped a 'cheaper' model from silently breaking 16 call sites, and a controlled experiment that overturns a prior DO-NOT-RETRY decision once the real numbers come in 27.5% cheaper than believed.",
